@@ -1,5 +1,8 @@
 - hosts: arbeitsplatz
   tasks:
+  - name: ucs domain join repository
+    apt_repository:
+      repo: 'ppa:univention-dev/ppa'
   - name: Installiere Packete
     apt:
       name: "{{ packages }}"
@@ -10,6 +13,9 @@
       - libreoffice-l10n-de
       - ncdu
       - git
+      - univention-domain-join
+      - univention-domain-join-cli
+      - ansible
   - name: Erstelle /etc/issue
     template:
       src: issue
