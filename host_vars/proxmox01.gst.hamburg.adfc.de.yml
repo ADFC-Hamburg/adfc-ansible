@@ -1,0 +1,3 @@
+ansible_port: 822
+ansible_host: babelfish.spdns.de
+ansible_user: root

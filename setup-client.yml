@@ -1,0 +1,9 @@
+---
+- hosts: arbeitsplatz
+  tasks:
+  - name: Installiere Packete
+    apt:
+      name: "{{ packages }}"
+    vars:
+      packages:
+      - emacs
