@@ -1,4 +1,3 @@
----
 - hosts: arbeitsplatz
   tasks:
   - name: Installiere Packete
@@ -7,3 +6,12 @@
     vars:
       packages:
       - emacs
+      - libreoffice
+      - libreoffice-l10n-de
+      - ncdu
+      - git
+  - name: Erstelle /etc/issue
+    template:
+      src: issue
+      dest: /etc/issue
+    tags: aktiv

@@ -1,0 +1,3 @@
+Willkommen beim ADFC-Hamburg
+
+auf dem Rechner {{ ansible_host }}
