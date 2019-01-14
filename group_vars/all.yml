@@ -1,0 +1,9 @@
+ansible_user: root
+key_path: 'ssh_keys/'
+ssh_users_admins:
+  - falkh
+  - joergw
+  - matthiasr
+  - svena
+  - tobiasd
+  - volkerk
