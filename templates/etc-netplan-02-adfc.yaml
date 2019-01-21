@@ -1,0 +1,13 @@
+# {{ ansible_managed }}
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    {{ ansible_default_ipv4.interface }}:
+      addresses:
+        - {{ ansible_host }}/{{ adfc_lan_net_bits }}
+      dhcp4: no
+      gateway4: {{ adfc_lan_gateway }}
+      nameservers:
+          search: [{{ adfc_dns_search }}]
+          addresses: [{{ adfc_dns_ip }}]
