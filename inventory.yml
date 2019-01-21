@@ -6,3 +6,4 @@ all:
     arbeitsplatz:
       hosts:
         adfc-testclient.gst.hamburg.adfc.de:
+        kubuntu-vm.gst.hamburg.adfc.de:
