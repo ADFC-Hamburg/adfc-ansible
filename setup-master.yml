@@ -6,3 +6,15 @@
     - name: test
       debug:
         msg: hello world
+
+# Skripte aktualisieren
+    - name: copy script to server
+      copy:
+          src: files/create_homedirs_for_users_on_server.sh
+          dest: /usr/local/sbin/create_homedirs.sh
+          owner: root
+          group: root
+          mode: 0755
+# Homeverzeichnisse anlegen
+#    - name : create home dirs
+#      command : /usr/local/sbin/create_homedirs.sh
