@@ -16,6 +16,7 @@
       - univention-domain-join
       - univention-domain-join-cli
       - ansible
+      - darktable
   - name: Erstelle /etc/issue
     template:
       src: issue
