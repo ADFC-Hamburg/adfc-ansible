@@ -64,20 +64,19 @@
   - name: Reboot after domain join
     reboot:
     when: stat_ucs_mkhomedir.stat.exists == False
+
 # mount NFS shares
-#  - name: create folder for mounting NFS shares
-#    file:
-#      path: /adfc
-#      state: directory
   - name: Mount NFS /adfc
     mount:
       path: /adfc
       src: ucs-master.gst.hamburg.adfc.de:/adfc
+      fstype: nfs
       state: mounted
   - name: Mount NFS /home
     mount:
       path: /home
       src: ucs-master.gst.hamburg.adfc.de:/home
+      fstype: nfs
       state: mounted
       
     
