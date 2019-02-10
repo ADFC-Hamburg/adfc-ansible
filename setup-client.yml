@@ -17,7 +17,8 @@
       - git
       - univention-domain-join
       - univention-domain-join-cli
-      - ansible
+      - htop
+      - mc
   - name: Erstelle /etc/issue
     template:
       src: issue
@@ -34,6 +35,3 @@
       src: etc-netplan-02-adfc.yaml
       dest: /etc/netplan/02-adfc.yaml
     register: interfaces_create
-  - name: Reboot if interfaces changes
-    reboot:
-    when: interfaces_create.changed
