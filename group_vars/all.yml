@@ -7,3 +7,9 @@ ssh_users_admins:
   - svena
   - tobiasd
   - volkerk
+adfc_lan_netmask: 255.255.255.0
+adfc_lan_net_bits: 24
+adfc_lan_gateway: 192.168.123.1
+adfc_dns_ip: 192.168.123.32
+adfc_dns_search: gst.hamburg.adfc.de
+
