@@ -20,7 +20,6 @@
       - gdm3
       - vim
       - openjdk-11-jre
-      - freemind
       - flameshot
       - gstreamer0.10-plugins-base
       - kdenlive
