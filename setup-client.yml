@@ -19,6 +19,23 @@
       - univention-domain-join-cli
       - gdm3
       - vim
+      - openjdk-11-jre
+      - freemind
+      - flameshot
+      - gstreamer0.10-plugins-base
+      - kdenlive
+      - vlc
+      - thunderbird
+      - thunderbird-locale-de
+      - firefox
+      - language-pack-de-base
+      - gnupg2
+      - gimp
+      - language-pack-gnome-de
+      - gimp-help-de
+      - glabels
+      - htop
+      - mc
   - name: Erstelle /etc/issue
     template:
       src: issue
