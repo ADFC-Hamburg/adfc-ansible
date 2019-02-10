@@ -2,6 +2,7 @@ all:
   hosts:
     proxmox01.gst.hamburg.adfc.de:
     ucs-master.gst.hamburg.adfc.de:
+    tools.adfc-hamburg.de:
   children:
     arbeitsplatz:
       hosts:

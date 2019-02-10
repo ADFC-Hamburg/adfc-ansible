@@ -1,0 +1,7 @@
+---
+- name: Get installed version
+  command: grep VERSION /opt/otrs/RELEASE
+  register: version
+  changed_when: False
+
+# Download from https://ftp.otrs.org/pub/otrs/otrs-6.0.16.tar.bz2
