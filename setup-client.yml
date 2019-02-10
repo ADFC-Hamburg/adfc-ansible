@@ -20,4 +20,18 @@
     template:
       src: issue
       dest: /etc/issue
-    tags: aktiv
+  - name: Stat Netplan Network-manager-cfg
+    stat:
+      path: /etc/netplan/01-network-manager-all.yaml
+    register: netplan_nmgr_stat
+  - name: Move Netplan Network-manager-cfg
+    command: mv /etc/netplan/01-network-manager-all.yaml /etc/netplan/01-network-manager-all.yaml.unused
+    when: netplan_nmgr_stat.stat.exists
+  - name: Erstelle /etc/netplan/02-adfc.yaml
+    template:
+      src: etc-netplan-02-adfc.yaml
+      dest: /etc/netplan/02-adfc.yaml
+    register: interfaces_create
+  - name: Reboot if interfaces changes
+    reboot:
+    when: interfaces_create.changed
