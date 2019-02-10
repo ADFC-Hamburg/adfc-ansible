@@ -1,0 +1,8 @@
+- hosts: ucs-master.gst.hamburg.adfc.de
+  gather_facts: no
+  roles:
+    - ssh-keys
+  tasks:
+    - name: test
+      debug:
+        msg: hello world

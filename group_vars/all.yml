@@ -1,5 +1,15 @@
+ansible_user: root
+key_path: 'ssh_keys/'
+ssh_users_admins:
+  - falkh
+  - joergw
+  - matthiasr
+  - svena
+  - tobiasd
+  - volkerk
 adfc_lan_netmask: 255.255.255.0
 adfc_lan_net_bits: 24
 adfc_lan_gateway: 192.168.123.1
 adfc_dns_ip: 192.168.123.32
 adfc_dns_search: gst.hamburg.adfc.de
+

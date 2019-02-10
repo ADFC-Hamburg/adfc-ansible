@@ -1,4 +1,6 @@
 - hosts: arbeitsplatz
+  roles:
+  - ssh-keys
   tasks:
   - name: ucs domain join repository
     apt_repository:
