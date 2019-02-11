@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# Copyright 2019 Sven Anders <sven@anders-hamburg.de>
+
+
+ARG=$1
+
+JQ=$(which jq)
+
+if [ -z "$ARG" ] ; then
+   echo 'please spezify a hostname' >&2
+   exit 1
+fi
+
+if [ -z "$JQ" ] ; then
+   echo 'jq not found, please install it with "apt install jq"' >&2
+   exit 2
+fi
+
+JSON=$(ansible-inventory  --host=${ARG})
+ANSIBLE_HOST=$(echo $JSON |$JQ -r .ansible_host )
+ANSIBLE_PORT=$(echo $JSON |$JQ -r '.ansible_port // 22' )
+ANSIBLE_USER=$(echo $JSON |$JQ -r '.ansible_user // "root"' )
+ANSIBLE_ARGS=$(echo $JSON |$JQ -r '.ansible_ssh_common_args // ""')
+
+echo '= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ='
+echo ssh -p $ANSIBLE_PORT -l $ANSIBLE_USER $ANSIBLE_ARGS $ANSIBLE_HOST
+echo scp -P $ANSIBLE_PORT -l $ANSIBLE_USER $ANSIBLE_ARGS $ANSIBLE_HOST:/some/file myfile
+echo '= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ='
+
+eval "ssh -p $ANSIBLE_PORT -l $ANSIBLE_USER $ANSIBLE_ARGS $ANSIBLE_HOST"
