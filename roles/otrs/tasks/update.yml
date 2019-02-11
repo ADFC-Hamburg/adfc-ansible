@@ -1,0 +1,73 @@
+---
+- name: get OTRS
+  get_url:
+    url: https://ftp.otrs.org/pub/otrs/otrs-{{otrs_version}}.tar.bz2
+    dest: /tmp/otrs.tar.bz2
+    mode: 0400
+    checksum: md5:{{ otrs_md5sum_tar_bz2 }}
+
+- name: 'Unpack OTRS archive'
+  unarchive:
+    src: /tmp/otrs.tar.bz2
+    dest: /opt
+    remote_src: yes
+
+- name: stop services
+  systemd:
+     name: "{{ item }}"
+     state: stopped
+  with_items:
+     - cron
+     - exim4
+     - apache2
+     - otrs
+
+- name: mysqldump
+  shell: mysqldump -u root -p`cat /etc/mysql.secret` otrs >/opt/otrs/mysqldump.sql
+
+- name: save otrs in otrs.old
+  shell: mv -f /opt/otrs /opt/otrs.old
+
+- name: move new otrs to /opt/otrs
+  shell: mv /opt/otrs-{{ otrs_version }} /opt/otrs
+
+- name: Copy Kernel.config
+  command: cp /opt/otrs.old/Kernel/Config.pm /opt/otrs/Kernel/Config.pm
+
+- name: Set Permission
+  command: "bin/otrs.SetPermissions.pl"
+  args:
+    chdir: /opt/otrs
+
+- name: 'Check Perl modules'
+  command: perl /opt/otrs/bin/otrs.CheckModules.pl
+  become: true
+  become_user: otrs
+  register: perl
+
+- name: OTRS Check Modules
+  debug: var=perl.stdout_lines
+
+- name: Update DB
+  command: perl scripts/DBUpdate-to-6.pl
+  args:
+    chdir: /opt/otrs
+  become: true
+  become_user: otrs
+
+- name: Upgrade Packages
+  command: perl bin/otrs.Console.pl Admin::Package::UpgradeAll
+  args:
+    chdir: /opt/otrs
+  become: true
+  become_user: otrs
+
+- name: start services
+  systemd:
+     name: "{{ item }}"
+     state: started
+  with_items:
+     - cron
+     - exim4
+     - apache2
+     - otrs
