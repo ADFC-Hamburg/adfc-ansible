@@ -5,6 +5,9 @@
   - name: ucs domain join repository
     apt_repository:
       repo: 'ppa:univention-dev/ppa'
+  - name: ppa fuer hibiskus hinzu
+    apt_repository:
+      repo: 'ppa:marko-preuss/hibiscus'
   - name: Installiere Packete
     apt:
       name: "{{ packages }}"
@@ -19,6 +22,26 @@
       - univention-domain-join-cli
       - gdm3
       - vim
+      - openjdk-11-jre
+      - flameshot
+      - gstreamer1.0-plugins-base
+      - kdenlive
+      - vlc
+      - thunderbird
+      - thunderbird-locale-de
+      - firefox
+      - language-pack-de-base
+      - gnupg2
+      - gimp
+      - language-pack-gnome-de
+      - gimp-help-de
+      - glabels
+      - htop
+      - mc
+      - openshot-qt
+      - hibiscus-ppa
+      - gnucash
+      - gnucash-docs
   - name: Erstelle /etc/issue
     template:
       src: issue
