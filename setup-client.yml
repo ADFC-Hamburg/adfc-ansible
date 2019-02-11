@@ -1,4 +1,6 @@
 - hosts: arbeitsplatz
+  roles:
+  - ssh-keys
   tasks:
   - name: ucs domain join repository
     apt_repository:
@@ -15,9 +17,49 @@
       - git
       - univention-domain-join
       - univention-domain-join-cli
-      - ansible
+      - gdm3
+      - vim
   - name: Erstelle /etc/issue
     template:
       src: issue
       dest: /etc/issue
-    tags: aktiv
+  - name: Stat Netplan Network-manager-cfg
+    stat:
+      path: /etc/netplan/01-network-manager-all.yaml
+    register: netplan_nmgr_stat
+  - name: Move Netplan Network-manager-cfg
+    command: mv /etc/netplan/01-network-manager-all.yaml /etc/netplan/01-network-manager-all.yaml.unused
+    when: netplan_nmgr_stat.stat.exists
+  - name: Erstelle /etc/netplan/02-adfc.yaml
+    template:
+      src: etc-netplan-02-adfc.yaml
+      dest: /etc/netplan/02-adfc.yaml
+    register: interfaces_create
+  - name: Reboot on network interfaces changes
+    reboot:
+    when: interfaces_create.changed
+  - name: Check if join is alread done
+    stat:
+      path: /usr/share/pam-configs/ucs_mkhomedir
+    register: stat_ucs_mkhomedir
+  - name: Prompt for Admin Password
+    pause:
+       prompt: "Enter UCS-Master Administrator password"
+    register: UCSAdminPassword
+    no_log: true
+    when: stat_ucs_mkhomedir.stat.exists == False
+  - name: create password file
+    copy:
+      content: "{{ UCSAdminPassword.user_input }}"
+      dest: "/root/ucs-admin-pw.secret"
+    when: stat_ucs_mkhomedir.stat.exists == False
+  - name: Do univention domain join
+    command: "/usr/sbin/univention-domain-join-cli --username Administrator --master-ip ucs-master --password-file /root/ucs-admin-pw.secret"
+    when: stat_ucs_mkhomedir.stat.exists == False
+  - name: delete password file
+    file:
+      state: absent
+      path: "/root/ucs-admin-pw.secret"
+  - name: Reboot after domain join
+    reboot:
+    when: stat_ucs_mkhomedir.stat.exists == False

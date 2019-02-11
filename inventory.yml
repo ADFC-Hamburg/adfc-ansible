@@ -1,9 +1,11 @@
 all:
-  hosts:
-    proxmox01.gst.hamburg.adfc.de:
-    ucs-master.gst.hamburg.adfc.de:
-    tools.adfc-hamburg.de:
   children:
+    server:
+      hosts:
+        proxmox01.gst.hamburg.adfc.de:
+        ucs-master.gst.hamburg.adfc.de:
+        babelfish.gst.hamburg.adfc.de:
+        tools.adfc-hamburg.de:
     arbeitsplatz:
       hosts:
         adfc-testclient.gst.hamburg.adfc.de:
