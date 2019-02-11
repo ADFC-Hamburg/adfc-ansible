@@ -22,6 +22,7 @@
       - univention-domain-join-cli
       - gdm3
       - vim
+      - nfs-common
       - openjdk-11-jre
       - flameshot
       - gstreamer1.0-plugins-base
@@ -42,6 +43,7 @@
       - hibiscus-ppa
       - gnucash
       - gnucash-docs
+      
   - name: Erstelle /etc/issue
     template:
       src: issue
@@ -86,3 +88,20 @@
   - name: Reboot after domain join
     reboot:
     when: stat_ucs_mkhomedir.stat.exists == False
+
+# mount NFS shares
+  - name: Mount NFS /adfc
+    mount:
+      path: /adfc
+      src: ucs-master.gst.hamburg.adfc.de:/adfc
+      fstype: nfs
+      state: mounted
+  - name: Mount NFS /home
+    mount:
+      path: /home
+      src: ucs-master.gst.hamburg.adfc.de:/home
+      fstype: nfs
+      state: mounted
+      
+    
+    
