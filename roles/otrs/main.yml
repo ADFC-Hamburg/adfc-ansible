@@ -1,7 +1,10 @@
 ---
 - name: Get installed version
-  command: grep VERSION /opt/otrs/RELEASE
-  register: version
-  changed_when: False
+  slurp:
+    src: /opt/otrs/RELEASE
+  register: release
+
+- debug:
+    msg: "{{ release }}"
 
 # Download from https://ftp.otrs.org/pub/otrs/otrs-6.0.16.tar.bz2
