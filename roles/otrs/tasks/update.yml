@@ -34,6 +34,9 @@
 - name: Copy Kernel.config
   command: cp /opt/otrs.old/Kernel/Config.pm /opt/otrs/Kernel/Config.pm
 
+- name: Copy GnuPG Directory
+  command: cp -rap /opt/otrs.old/.gnupg /opt/otrs/
+
 - name: Set Permission
   command: "bin/otrs.SetPermissions.pl"
   args:
