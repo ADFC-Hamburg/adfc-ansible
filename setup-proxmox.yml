@@ -6,3 +6,13 @@
     - name: test
       debug:
         msg: hello world
+    - name: Erstellen eine Unix User fuer Tools-Server Backup
+      user:
+        name: tools-backup
+        comment: tools Server Backup
+    - name: Kopiere SSH Public Key fuer Tools-Server Backup
+      authorized_key:
+         user: tools-backup
+         state: present
+         key: "{{ lookup('file', 'ssh-tools-server-backup.pub') }}"
+         key_options: 'no-port-forwarding'
