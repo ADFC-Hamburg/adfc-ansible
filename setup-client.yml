@@ -48,6 +48,14 @@
     template:
       src: issue
       dest: /etc/issue
+  - name: Erstelle /usr/share/khotkeys/flameshot.khotkeys
+    template:
+      src: flameshot.khotkeys
+      dest: /usr/share/khotkeys/flameshot.khotkeys
+  - name: Standard-Hotkeys fuer Spectacle löschen
+    file:
+      path: /usr/share/khotkeys/spectacle.khotkeys
+      state: absent
   - name: Stat Netplan Network-manager-cfg
     stat:
       path: /etc/netplan/01-network-manager-all.yaml
