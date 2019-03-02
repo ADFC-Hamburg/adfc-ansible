@@ -138,6 +138,20 @@
       dest: /etc/gdm3/greeter.dconf-defaults
     register: gdm_file
     tags: gdm
+  - name: copy ubuntu.css to client
+    copy:
+      src: ubuntu-adfc.css
+      dest: /usr/share/gnome-shell/theme/ubuntu.css
+      mode: 0644
+    register: gdm_file
+    tags: gdm
+  - name: copy ADFC-Login background 
+    copy:
+      src: ADFC-login-background.png
+      dest: /usr/local/share/themes/adfc/ADFC-login-background.png
+      mode: 0644
+    register: gdm_file
+    tags: gdm  
   - name: restart service gdm3
     systemd:
       state: restarted
