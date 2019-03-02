@@ -43,7 +43,7 @@
       - hibiscus-ppa
       - gnucash
       - gnucash-docs
-      
+
   - name: Erstelle /etc/issue
     template:
       src: issue
@@ -102,6 +102,45 @@
       src: ucs-master.gst.hamburg.adfc.de:/home
       fstype: nfs
       state: mounted
-      
-    
-    
+  - name: Create Themes Directory
+    file:
+      path: /usr/local/share/themes/adfc/
+      state: directory
+      mode: 0755
+    tags: gdm
+  - name: Copy ADFC Logo
+    copy:
+      src: ADFC-HH-rgb.jpg
+      dest: /usr/local/share/themes/adfc/ADFC-HH-rgb.jpg
+      mode: 0644
+    tags: gdm
+  - name: Remove Gnome Desktop file ubuntu.desktop
+    command:
+      argv:
+       - "/bin/mv"
+       - "/usr/share/xsessions/ubuntu.desktop"
+       - "/usr/share/xsessions/ubuntu.desktop.dontuse"
+      creates: /usr/share/xsessions/ubuntu.desktop.dontuse
+      removes: /usr/share/xsessions/ubuntu.desktop
+    tags: gdm
+  - name: Remove Gnome Desktop file ubuntu-communitheme-snap.desktop
+    command:
+      argv:
+       - "/bin/mv"
+       - "/usr/share/xsessions/ubuntu-communitheme-snap.desktop"
+       - "/usr/share/xsessions/ubuntu-communitheme-snap.desktop.dontuse"
+      creates: /usr/share/xsessions/ubuntu-communitheme-snap.desktop.dontuse
+      removes: /usr/share/xsessions/ubuntu-communitheme-snap.desktop
+    tags: gdm
+  - name: Copy GDM Config file
+    copy:
+      src: client-etc-gdm3-greeter.dconf-defaults
+      dest: /etc/gdm3/greeter.dconf-defaults
+    register: gdm_file
+    tags: gdm
+  - name: restart service gdm3
+    systemd:
+      state: restarted
+      name: gdm3
+    when: gdm_file.changed
+    tags: gdm

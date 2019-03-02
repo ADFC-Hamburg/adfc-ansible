@@ -3,6 +3,17 @@
   roles:
     - ssh-keys
   tasks:
-    - name: test
-      debug:
-        msg: hello world
+    # SSH Key /root/.ssh/rsync-key ist nicht hier eingecheckt und wird nicht deployed, wegen security
+    - name: copy rsync script
+      copy:
+         src: ucs-master-sync-babelfish.sh
+         dest: /usr/local/sbin/ucs-master-sync-babelfish.sh
+         mode: 755
+      tags: rsync
+    - name: Immer um x:12 Uhr rsync anwerfen
+      cron:
+        name: "sync-babelfish"
+        minute: "12,42"
+        cron_file: sync-babelfish
+        user: root
+        job: /usr/local/sbin/ucs-master-sync-babelfish.sh
