@@ -1,0 +1,4 @@
+otrs_version: 6.0.16
+otrs_md5sum_tar_bz2: 5edd2d4c51cb11b87e77d6482dcac2fc
+ssh_users_admins:
+  - svena
