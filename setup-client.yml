@@ -147,8 +147,8 @@
     tags: gdm
   - name: copy ADFC-Login background 
     copy:
-      src: ADFC-login-background.png
-      dest: /usr/local/share/themes/adfc/ADFC-login-background.png
+      src: ADFC-login-background.jpg
+      dest: /usr/local/share/themes/adfc/ADFC-login-background.jpg
       mode: 0644
     register: gdm_file
     tags: gdm  

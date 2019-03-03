@@ -1812,7 +1812,7 @@ StScrollBar {
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.4); }
 
 #lockDialogGroup {
-  background: #f0f0f0 url(file:///usr/local/share/themes/adfc/ADFC-login-background.png);
+  background: #f0f0f0 url(file:///usr/local/share/themes/adfc/ADFC-login-background.jpg);
   background-repeat: no-repeat; 
   background-size: cover;
   background-position: center; }
