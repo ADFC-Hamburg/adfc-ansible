@@ -143,18 +143,18 @@
       src: ubuntu-adfc.css
       dest: /usr/share/gnome-shell/theme/ubuntu.css
       mode: 0644
-    register: gdm_file
+    register: gdm_ubuntu_css_file
     tags: gdm
   - name: copy ADFC-Login background 
     copy:
       src: ADFC-login-background.jpg
       dest: /usr/local/share/themes/adfc/ADFC-login-background.jpg
       mode: 0644
-    register: gdm_file
+    register: gdm_adfc_bg_file
     tags: gdm  
   - name: restart service gdm3
     systemd:
       state: restarted
       name: gdm3
-    when: gdm_file.changed
+    when: gdm_file.changed or gdm_adfc_bg_file.changed or gdm_ubuntu_css_file.changed
     tags: gdm
