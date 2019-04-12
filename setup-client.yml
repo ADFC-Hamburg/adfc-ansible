@@ -110,6 +110,31 @@
       src: ucs-master.gst.hamburg.adfc.de:/home
       fstype: nfs
       state: mounted
+      
+      
+# ADFC - Desktop theme
+
+  - name: Create Desktop Theme Directory
+    file:
+      path: /usr/share/plasma/desktopthemes/ADFC
+      state: directory
+      mode: 0755
+    register: desktoptheme
+    tags: gdmx   
+  - name: Sync Theme folder
+    synchronize:
+      src: desktopthemes/ADFC
+      dest: /usr/share/plasma/desktopthemes/ADFC
+      recursive: yes
+    register: desktoptheme
+    tags: gdmx
+  - name: Copy config for default desktoptheme
+    copy:
+      src: desktoptheme/kubuntu-default-plasmarc
+      dest: /usr/share/kubuntu-default-settings/kf5-settings/plasmarc
+      mode: 0644
+    tags: gdmx
+    
   - name: Create Themes Directory
     file:
       path: /usr/local/share/themes/adfc/
@@ -166,6 +191,7 @@
       name: gdm3
     when: gdm_file.changed or gdm_adfc_bg_file.changed or gdm_ubuntu_css_file.changed
     tags: gdm
+    
   - name: sudoer erstellen
     template:
       src: sudoers-client
