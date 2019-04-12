@@ -17,3 +17,17 @@
         cron_file: sync-babelfish
         user: root
         job: /usr/local/sbin/ucs-master-sync-babelfish.sh
+        
+    - name: enable cool solutions
+      #ucr: 
+      #  values: 
+      #    repository/online/component/cool-solutions: True
+      #    repository/online/component/cool-solutions/version: "current" 
+      #    repository/online/component/cool-solutions/unmaintained: True
+      #tags: ucs_cool_solutions
+      command: ucr set repository/online/component/cool-solutions=yes repository/online/component/cool-solutions/version="current" repository/online/component/cool-solutions/unmaintained=yes
+      tags: cool_solutions
+    - name: install module for autocreation of home dirs
+      command: univention-install univention-homedir-autocreate
+      tags: cool_solutions
+      

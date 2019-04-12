@@ -48,6 +48,14 @@
     template:
       src: issue
       dest: /etc/issue
+  - name: Erstelle /usr/share/khotkeys/flameshot.khotkeys
+    template:
+      src: flameshot.khotkeys
+      dest: /usr/share/khotkeys/flameshot.khotkeys
+  - name: Standard-Hotkeys fuer Spectacle löschen
+    file:
+      path: /usr/share/khotkeys/spectacle.khotkeys
+      state: absent
   - name: Stat Netplan Network-manager-cfg
     stat:
       path: /etc/netplan/01-network-manager-all.yaml
@@ -158,3 +166,11 @@
       name: gdm3
     when: gdm_file.changed or gdm_adfc_bg_file.changed or gdm_ubuntu_css_file.changed
     tags: gdm
+  - name: sudoer erstellen
+    template:
+      src: sudoers-client
+      dest: /etc/sudoers.d/adfc-ansible
+      validate: '/usr/sbin/visudo -cf %s'
+      mode: 0440
+    tags: sudo
+
