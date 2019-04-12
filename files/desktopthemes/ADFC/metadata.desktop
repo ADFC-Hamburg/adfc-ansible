@@ -1,23 +1,23 @@
 [Desktop Entry]
-Name=Kubuntu
-Comment=Default Kubuntu theme
+Name=ADFC
+Comment=Default ADFC theme
 
-X-KDE-PluginInfo-Author=KDE Visual Design Group
-X-KDE-PluginInfo-Email=kde-artists@kde.org
-X-KDE-PluginInfo-Name=kubuntu
-X-KDE-PluginInfo-Version=5.30
-X-KDE-PluginInfo-Website=http://plasma.kde.org
+X-KDE-PluginInfo-Author=
+X-KDE-PluginInfo-Email=
+X-KDE-PluginInfo-Name=ADFC
+X-KDE-PluginInfo-Version=
+X-KDE-PluginInfo-Website=
 X-KDE-PluginInfo-Category=
 X-KDE-PluginInfo-Depends=
-X-KDE-PluginInfo-License=LGPLv2+
+X-KDE-PluginInfo-License=
 X-KDE-PluginInfo-EnabledByDefault=true
 X-Plasma-API=5.0
 
 [Wallpaper]
-defaultWallpaperTheme=Next
+defaultWallpaperTheme=ADFC
 defaultFileSuffix=.png
 defaultWidth=1920
-defaultHeight=1080
+defaultHeight=1200
 
 [ContrastEffect]
 enabled=true
