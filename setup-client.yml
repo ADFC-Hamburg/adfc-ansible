@@ -43,6 +43,8 @@
       - hibiscus-ppa
       - gnucash
       - gnucash-docs
+      - bsd-mailx
+    tags: software
 
   - name: Erstelle /etc/issue
     template:
