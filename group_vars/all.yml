@@ -12,3 +12,4 @@ adfc_lan_net_bits: 24
 adfc_lan_gateway: 192.168.123.1
 adfc_dns_ip: 192.168.123.32
 adfc_dns_search: gst.hamburg.adfc.de
+deb_name_master_pdf_editor: master-pdf-editor-5.3.22_qt5.amd64.deb
