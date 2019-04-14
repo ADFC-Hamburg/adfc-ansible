@@ -33,3 +33,21 @@
       command: univention-install univention-homedir-autocreate
       when: stat_homedir_listener.stat.exists == False
       tags: cool_solutions
+      
+    - name: install postfix sender_canonical
+      template:
+        src: ucs-master-sender_canonical
+        dest: /etc/postfix/sender_caonical
+    - name: install postfix main.cf
+      template:
+        src: ucs-master-postfix-main.cf.local
+        dest: /etc/postfix/main.cf.local
+      register: postfix_maincf
+    - name: commit postfix main.cf change
+      command: "ucr commit /etc/postfix/main.cf"
+      when: postfix_maincf.changed
+    - name: restart postfix service
+      systemd:
+        name: postfix
+        state: restarted
+      when: postfix_maincf.changed

@@ -2,12 +2,16 @@
   roles:
   - ssh-keys
   tasks:
+
+# spezielle Repositories hinzufügen
   - name: ucs domain join repository
     apt_repository:
       repo: 'ppa:univention-dev/ppa'
   - name: ppa fuer hibiskus hinzu
     apt_repository:
       repo: 'ppa:marko-preuss/hibiscus'
+
+# benötigte Programme installieren
   - name: Installiere Packete
     apt:
       name: "{{ packages }}"
@@ -43,11 +47,41 @@
       - hibiscus-ppa
       - gnucash
       - gnucash-docs
+      - wine32
+      - winetricks
+      - playonlinux
 
-  - name: Erstelle /etc/issue
-    template:
-      src: issue
-      dest: /etc/issue
+  - name: Downloadverzeichnis für deb-Pakete erstellen
+    file:
+      path: /usr/local/share/ansible_downloads/
+      state: directory
+      mode: 0755
+
+# XnViewMP installieren
+  - name: XnViewMP manuell runterladen
+    get_url:
+      url: http://download.xnview.com/XnViewMP-linux-x64.deb
+      dest: /usr/local/share/ansible_downloads/XnViewMP-linux-x64.deb
+    register: xnview_download
+  - name: XnViewMP manuell installieren
+    apt: deb="/usr/local/share/ansible_downloads/XnViewMP-linux-x64.deb"
+    when: xnview_download.changed
+
+# Master-PDF-Editor installieren
+  - name: PDF-Editor manuell runterladen
+    get_url:
+      url: https://code-industry.net/public/{{ deb_name_master_pdf_editor }}
+      dest: /usr/local/share/ansible_downloads/{{ deb_name_master_pdf_editor }}
+    register: pdfeditor_download
+  - name: PDF-Editor manuell installieren
+    apt: deb="/usr/local/share/ansible_downloads/{{ deb_name_master_pdf_editor }}"
+    when: pdfeditor_download.changed
+
+# Freemind als Snap installieren
+  - name: Freemind-Snap installieren
+    command: snap install freemind
+
+# Shortcuts für Flameshot einrichten
   - name: Erstelle /usr/share/khotkeys/flameshot.khotkeys
     template:
       src: flameshot.khotkeys
@@ -56,6 +90,12 @@
     file:
       path: /usr/share/khotkeys/spectacle.khotkeys
       state: absent
+
+  - name: Erstelle /etc/issue
+    template:
+      src: issue
+      dest: /etc/issue
+
   - name: Stat Netplan Network-manager-cfg
     stat:
       path: /etc/netplan/01-network-manager-all.yaml
@@ -110,6 +150,45 @@
       src: ucs-master.gst.hamburg.adfc.de:/home
       fstype: nfs
       state: mounted
+      
+      
+# ADFC - Desktop theme
+
+  - name: Create Desktop Theme Directory
+    file:
+      path: /usr/share/plasma/desktoptheme/ADFC
+      state: directory
+      mode: 0755
+    register: desktoptheme
+    tags: gdm  
+  - name: Sync Theme folder
+    synchronize:
+      src: desktopthemes/ADFC
+      dest: /usr/share/plasma/desktoptheme/
+      recursive: yes
+    register: desktoptheme
+    tags: gdm
+  - name: Copy config for default desktoptheme
+    copy:
+      src: desktopthemes/kubuntu-default-plasmarc
+      dest: /usr/share/kubuntu-default-settings/kf5-settings/plasmarc
+      mode: 0644
+    tags: gdm
+  - name: Create wallpaper directory
+    file: 
+      path: /usr/share/wallpapers/ADFC
+      state: directory
+      mode: 0755
+    register: desktoptheme
+    tags: gdm
+  - name: Sync wallpaper directory
+    synchronize: 
+      src: wallpapers/ADFC
+      dest: /usr/share/wallpapers/
+      recursive: yes
+    register: desktoptheme
+    tags: gdm  
+ 
   - name: Create Themes Directory
     file:
       path: /usr/local/share/themes/adfc/
@@ -146,12 +225,34 @@
       dest: /etc/gdm3/greeter.dconf-defaults
     register: gdm_file
     tags: gdm
+  - name: copy ubuntu.css to client
+    copy:
+      src: ubuntu-adfc.css
+      dest: /usr/share/gnome-shell/theme/ubuntu-adfc.css
+      mode: 0644
+    register: gdm_ubuntu_css_file
+    tags: gdm
+  - name: Create Symbolic link to ubuntu-adfc.css
+    file: 
+      src: /usr/share/gnome-shell/theme/ubuntu-adfc.css
+      dest: /etc/alternatives/gdm3.css
+      state: link
+    register: gdm_ubuntu_css_file
+    tags: gdm
+  - name: copy ADFC-Login background 
+    copy:
+      src: ADFC-login-background.png
+      dest: /usr/local/share/themes/adfc/ADFC-login-background.png
+      mode: 0644
+    register: gdm_adfc_bg_file
+    tags: gdm  
   - name: restart service gdm3
     systemd:
       state: restarted
       name: gdm3
-    when: gdm_file.changed
+    when: gdm_file.changed or gdm_adfc_bg_file.changed or gdm_ubuntu_css_file.changed
     tags: gdm
+    
   - name: sudoer erstellen
     template:
       src: sudoers-client
@@ -159,3 +260,4 @@
       validate: '/usr/sbin/visudo -cf %s'
       mode: 0440
     tags: sudo
+
