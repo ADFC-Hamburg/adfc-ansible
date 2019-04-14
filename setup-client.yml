@@ -51,29 +51,31 @@
       - winetricks
       - playonlinux
 
+  - name: Downloadverzeichnis für deb-Pakete erstellen
+    file:
+      path: /usr/local/share/ansible_downloads/
+      state: directory
+      mode: 0755
+
 # XnViewMP installieren
   - name: XnViewMP manuell runterladen
     get_url:
       url: http://download.xnview.com/XnViewMP-linux-x64.deb
-      dest: /tmp/XnViewMP-linux-x64.deb
+      dest: /usr/local/share/ansible_downloads/XnViewMP-linux-x64.deb
+    register: xnview_download
   - name: XnViewMP manuell installieren
-    apt: deb="/tmp/XnViewMP-linux-x64.deb"
-  - name: deb-Paket für XnViewMP löschen
-    file:
-      path: /tmp/XnViewMP-linux-x64.deb
-      state: absent
+    apt: deb="/usr/local/share/ansible_downloads/XnViewMP-linux-x64.deb"
+    when: xnview_download.changed
 
 # Master-PDF-Editor installieren
   - name: PDF-Editor manuell runterladen
     get_url:
-      url: https://code-industry.net/public/master-pdf-editor-5.3.02_qt5.amd64.deb
-      dest: /tmp/master-pdf-editor-5.3.02_qt5.amd64.deb
+      url: https://code-industry.net/public/{{ deb_name_master_pdf_editor }}
+      dest: /usr/local/share/ansible_downloads/{{ deb_name_master_pdf_editor }}
+    register: pdfeditor_download
   - name: PDF-Editor manuell installieren
-    apt: deb="/tmp/master-pdf-editor-5.3.02_qt5.amd64.deb"
-  - name: deb-Paket für PDF-Editor löschen
-    file:
-      path: /tmp/master-pdf-editor-5.3.02_qt5.amd64.deb
-      state: absent
+    apt: deb="/usr/local/share/ansible_downloads/{{ deb_name_master_pdf_editor }}"
+    when: pdfeditor_download.changed
 
 # Freemind als Snap installieren
   - name: Freemind-Snap installieren
