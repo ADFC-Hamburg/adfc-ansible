@@ -116,25 +116,39 @@
 
   - name: Create Desktop Theme Directory
     file:
-      path: /usr/share/plasma/desktopthemes/ADFC
+      path: /usr/share/plasma/desktoptheme/ADFC
       state: directory
       mode: 0755
     register: desktoptheme
-    tags: gdmx   
+    tags: gdm  
   - name: Sync Theme folder
     synchronize:
       src: desktopthemes/ADFC
-      dest: /usr/share/plasma/desktopthemes/ADFC
+      dest: /usr/share/plasma/desktoptheme/
       recursive: yes
     register: desktoptheme
-    tags: gdmx
+    tags: gdm
   - name: Copy config for default desktoptheme
     copy:
-      src: desktoptheme/kubuntu-default-plasmarc
+      src: desktopthemes/kubuntu-default-plasmarc
       dest: /usr/share/kubuntu-default-settings/kf5-settings/plasmarc
       mode: 0644
-    tags: gdmx
-    
+    tags: gdm
+  - name: Create wallpaper directory
+    file: 
+      path: /usr/share/wallpapers/ADFC
+      state: directory
+      mode: 0755
+    register: desktoptheme
+    tags: gdm
+  - name: Sync wallpaper directory
+    synchronize: 
+      src: wallpapers/ADFC
+      dest: /usr/share/wallpapers/
+      recursive: yes
+    register: desktoptheme
+    tags: gdm  
+ 
   - name: Create Themes Directory
     file:
       path: /usr/local/share/themes/adfc/
@@ -174,14 +188,21 @@
   - name: copy ubuntu.css to client
     copy:
       src: ubuntu-adfc.css
-      dest: /usr/share/gnome-shell/theme/ubuntu.css
+      dest: /usr/share/gnome-shell/theme/ubuntu-adfc.css
       mode: 0644
+    register: gdm_ubuntu_css_file
+    tags: gdm
+  - name: Create Symbolic link to ubuntu-adfc.css
+    file: 
+      src: /usr/share/gnome-shell/theme/ubuntu-adfc.css
+      dest: /etc/alternatives/gdm3.css
+      state: link
     register: gdm_ubuntu_css_file
     tags: gdm
   - name: copy ADFC-Login background 
     copy:
-      src: ADFC-login-background.jpg
-      dest: /usr/local/share/themes/adfc/ADFC-login-background.jpg
+      src: ADFC-login-background.png
+      dest: /usr/local/share/themes/adfc/ADFC-login-background.png
       mode: 0644
     register: gdm_adfc_bg_file
     tags: gdm  
