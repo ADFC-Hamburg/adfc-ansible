@@ -1,0 +1,8 @@
+##
+## ACHTUNG Datei ist im Ansible Git, bitte dort berarbeiten
+##
+##
+
+
+
+sender_canonical_maps = regexp:/etc/postfix/sender_canonical
