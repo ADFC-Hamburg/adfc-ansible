@@ -133,7 +133,7 @@ def main():
     for key, value in module.params['values'].items():
         if not present:
             value = None
-        rtn[key] = handle_item(module, ucr, key, value)
+        rtn[key] = handle_item(module, ucr, key, str(value))
         if rtn[key]['changed']:
             num_changed= num_changed+1
             glob_changed=True

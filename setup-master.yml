@@ -17,19 +17,23 @@
         cron_file: sync-babelfish
         user: root
         job: /usr/local/sbin/ucs-master-sync-babelfish.sh
-        
+
     - name: enable cool solutions
-      #ucr: 
-      #  values: 
-      #    repository/online/component/cool-solutions: True
-      #    repository/online/component/cool-solutions/version: "current" 
-      #    repository/online/component/cool-solutions/unmaintained: True
-      #tags: ucs_cool_solutions
-      command: ucr set repository/online/component/cool-solutions=yes repository/online/component/cool-solutions/version="current" repository/online/component/cool-solutions/unmaintained=yes
+      ucr:
+        values:
+          repository/online/component/cool-solutions: True
+          repository/online/component/cool-solutions/version: "current"
+          repository/online/component/cool-solutions/unmaintained: True
       tags: cool_solutions
+    - name: check if univention-homedir-autocreate is installed
+      stat:
+        path: /usr/lib/univention-directory-listener/system/homedir-autocreate.py
+      register: stat_homedir_listener
     - name: install module for autocreation of home dirs
       command: univention-install univention-homedir-autocreate
+      when: stat_homedir_listener.stat.exists == False
       tags: cool_solutions
+      
     - name: install postfix sender_canonical
       template:
         src: ucs-master-sender_canonical
