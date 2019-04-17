@@ -23,15 +23,20 @@
 #   - name: Reboot
 #     reboot:
 #     when: reboot_required_file.stat.exists == true
-    
+
+# https://github.com/jnv/ansible-role-unattended-upgrades    
     
   roles:
   - role: jnv.unattended-upgrades
     unattended_origins_patterns:
     - 'origin=Ubuntu,archive=${distro_codename}-security'
     - 'o=Ubuntu,a=${distro_codename}-updates'
-#     unattended_package_blacklist: [cowsay, vim]
+    unattended_package_blacklist: [playonlinux, wine]
     unattended_mail: 'yml@liquid-center.de'
-    unattended_install_on_shutdown: true
+    unattended_install_on_shutdown: false
+    unattended_verbose: 1
+    unattended_random_sleep: 1800
+    unattended_automatic_reboot_time: 03:00
+
 
 # https://github.com/jnv/ansible-role-unattended-upgrades
