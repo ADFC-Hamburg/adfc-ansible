@@ -2,12 +2,16 @@
   roles:
   - ssh-keys
   tasks:
+
+# spezielle Repositories hinzufügen
   - name: ucs domain join repository
     apt_repository:
       repo: 'ppa:univention-dev/ppa'
   - name: ppa fuer hibiskus hinzu
     apt_repository:
       repo: 'ppa:marko-preuss/hibiscus'
+
+# benötigte Programme installieren
   - name: Installiere Packete
     apt:
       name: "{{ packages }}"
@@ -44,12 +48,42 @@
       - gnucash
       - gnucash-docs
       - bsd-mailx
+      - wine32
+      - winetricks
+      - playonlinux
     tags: software
 
-  - name: Erstelle /etc/issue
-    template:
-      src: issue
-      dest: /etc/issue
+  - name: Downloadverzeichnis für deb-Pakete erstellen
+    file:
+      path: /usr/local/share/ansible_downloads/
+      state: directory
+      mode: 0755
+
+# XnViewMP installieren
+  - name: XnViewMP manuell runterladen
+    get_url:
+      url: http://download.xnview.com/XnViewMP-linux-x64.deb
+      dest: /usr/local/share/ansible_downloads/XnViewMP-linux-x64.deb
+    register: xnview_download
+  - name: XnViewMP manuell installieren
+    apt: deb="/usr/local/share/ansible_downloads/XnViewMP-linux-x64.deb"
+    when: xnview_download.changed
+
+# Master-PDF-Editor installieren
+  - name: PDF-Editor manuell runterladen
+    get_url:
+      url: https://code-industry.net/public/{{ deb_name_master_pdf_editor }}
+      dest: /usr/local/share/ansible_downloads/{{ deb_name_master_pdf_editor }}
+    register: pdfeditor_download
+  - name: PDF-Editor manuell installieren
+    apt: deb="/usr/local/share/ansible_downloads/{{ deb_name_master_pdf_editor }}"
+    when: pdfeditor_download.changed
+
+# Freemind als Snap installieren
+  - name: Freemind-Snap installieren
+    command: snap install freemind
+
+# Shortcuts für Flameshot einrichten
   - name: Erstelle /usr/share/khotkeys/flameshot.khotkeys
     template:
       src: flameshot.khotkeys
@@ -58,6 +92,12 @@
     file:
       path: /usr/share/khotkeys/spectacle.khotkeys
       state: absent
+
+  - name: Erstelle /etc/issue
+    template:
+      src: issue
+      dest: /etc/issue
+
   - name: Stat Netplan Network-manager-cfg
     stat:
       path: /etc/netplan/01-network-manager-all.yaml
