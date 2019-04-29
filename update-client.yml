@@ -34,9 +34,7 @@
     unattended_package_blacklist: [playonlinux, wine]
     unattended_mail: 'yml@liquid-center.de'
     unattended_install_on_shutdown: false
-    unattended_verbose: 1
+    unattended_verbose: 0
     unattended_random_sleep: 1800
     unattended_automatic_reboot_time: 03:00
 
-
-# https://github.com/jnv/ansible-role-unattended-upgrades
