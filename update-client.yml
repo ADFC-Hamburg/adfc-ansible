@@ -32,9 +32,10 @@
     - 'origin=Ubuntu,archive=${distro_codename}-security'
     - 'o=Ubuntu,a=${distro_codename}-updates'
     unattended_package_blacklist: [playonlinux, wine]
-    unattended_mail: 'yml@liquid-center.de'
+    unattended_mail: "{{adfc_notification_email}}"
     unattended_install_on_shutdown: false
     unattended_verbose: 0
     unattended_random_sleep: 1800
+    unattended_automatic_reboot: true
     unattended_automatic_reboot_time: 03:00
 

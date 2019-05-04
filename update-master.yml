@@ -1,0 +1,18 @@
+- hosts: server
+
+
+# https://github.com/jnv/ansible-role-unattended-upgrades    
+    
+  roles:
+  - role: jnv.unattended-upgrades
+    unattended_origins_patterns:
+    - 'origin=Ubuntu,archive=${distro_codename}-security'
+    - 'o=Ubuntu,a=${distro_codename}-updates'
+    unattended_package_blacklist: [playonlinux, wine]
+    unattended_mail: "{{adfc_notification_email}}"
+    unattended_install_on_shutdown: false
+    unattended_verbose: 0
+    unattended_random_sleep: 3600
+    unattended_automatic_reboot: false
+#    unattended_automatic_reboot_time: 03:00
+    unattended_update_days: {"Sat"}
