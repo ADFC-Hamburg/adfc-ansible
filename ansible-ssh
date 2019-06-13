@@ -5,6 +5,11 @@
 
 ARG=$1
 
+if [ -z "$ARG" ] ; then
+   echo 'please spezify a hostname' >&2
+   exit 1
+fi
+
 if [ ${ARG:0:10} == "host_vars/" ] ; then
 	echo Found host_vars-file as argument
 	ARG=${ARG:10:${#ARG}}
@@ -15,10 +20,7 @@ fi
 
 JQ=$(which jq)
 
-if [ -z "$ARG" ] ; then
-   echo 'please spezify a hostname' >&2
-   exit 1
-fi
+
 
 if [ -z "$JQ" ] ; then
    echo 'jq not found, please install it with "apt install jq"' >&2
