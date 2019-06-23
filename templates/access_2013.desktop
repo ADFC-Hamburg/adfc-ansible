@@ -1,0 +1,5 @@
+[Desktop Entry]
+Exec=WINEPREFIX="/opt/wine_access_2013_${USER}" wine "/opt/wine_access_2013_${USER}/drive_c/Program Files/Microsoft Office/Office15/MSACCESS.EXE"
+Name=Microsoft Access 2013
+Type=Application
+
