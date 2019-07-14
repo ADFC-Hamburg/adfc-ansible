@@ -53,13 +53,6 @@
       when: postfix_maincf.changed
 
 # Access 2013 ueber Wine einrichten
-#  - name: Wineprefix-Tar auf Client kopieren
-#    copy:
-#      src: /adfc/software/Ansible/wine_access_2013_vorlage.tar.gz
-#      dest: /usr/local/share/ansible_downloads/wine_access_2013_vorlage.tar.gz
-#      remote_src: yes
-#    register: wineprefix_tar_file
-
     - name: Wineprefix benutzerabhaengig entpacken
       unarchive:
         src: /adfc/software/Ansible/wine_access_2013.tar.gz
