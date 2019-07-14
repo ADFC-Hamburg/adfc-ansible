@@ -90,33 +90,6 @@
       path: /usr/share/khotkeys/spectacle.khotkeys
       state: absent
 
-# Access 2013 ueber Wine einrichten
-  - name: Wineprefix-Tar auf Client kopieren
-    copy:
-      src: /adfc/software/Ansible/wine_access_2013_vorlage.tar.gz
-      dest: /usr/local/share/ansible_downloads/wine_access_2013_vorlage.tar.gz
-      remote_src: yes
-    register: wineprefix_tar_file
-
-  - name: Wineprefix benutzerabhaengig entpacken
-    unarchive:
-      src: /usr/local/share/ansible_downloads/wine_access_2013_vorlage.tar.gz
-      dest: /opt/
-      remote_src: yes
-      owner: "{{ item }}"
-      group: users
-      extra_opts:
-        - --transform
-        - 's/vorlage/{{ item }}/g'
-    when: wineprefix_tar_file.changed
-    with_items:
-      - thomasn
-
-  - name: Menueeintrag fuer Access erstellen
-    template:
-      src: access_2013.desktop
-      dest: /usr/share/applications/access_2013.desktop
-#
   - name: Erstelle /etc/issue
     template:
       src: issue
