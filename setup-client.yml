@@ -48,8 +48,7 @@
       - gnucash
       - gnucash-docs
       - wine32
-      - winetricks
-      - playonlinux
+      - winbind
 
   - name: Downloadverzeichnis für deb-Pakete erstellen
     file:
@@ -150,8 +149,8 @@
       src: ucs-master.gst.hamburg.adfc.de:/home
       fstype: nfs
       state: mounted
-      
-      
+
+
 # ADFC - Desktop theme
 
   - name: Create Desktop Theme Directory
@@ -160,7 +159,7 @@
       state: directory
       mode: 0755
     register: desktoptheme
-    tags: gdm  
+    tags: gdm
   - name: Sync Theme folder
     synchronize:
       src: desktopthemes/ADFC
@@ -175,20 +174,20 @@
       mode: 0644
     tags: gdm
   - name: Create wallpaper directory
-    file: 
+    file:
       path: /usr/share/wallpapers/ADFC
       state: directory
       mode: 0755
     register: desktoptheme
     tags: gdm
   - name: Sync wallpaper directory
-    synchronize: 
+    synchronize:
       src: wallpapers/ADFC
       dest: /usr/share/wallpapers/
       recursive: yes
     register: desktoptheme
-    tags: gdm  
- 
+    tags: gdm
+
   - name: Create Themes Directory
     file:
       path: /usr/local/share/themes/adfc/
@@ -233,26 +232,26 @@
     register: gdm_ubuntu_css_file
     tags: gdm
   - name: Create Symbolic link to ubuntu-adfc.css
-    file: 
+    file:
       src: /usr/share/gnome-shell/theme/ubuntu-adfc.css
       dest: /etc/alternatives/gdm3.css
       state: link
     register: gdm_ubuntu_css_file
     tags: gdm
-  - name: copy ADFC-Login background 
+  - name: copy ADFC-Login background
     copy:
       src: ADFC-login-background.png
       dest: /usr/local/share/themes/adfc/ADFC-login-background.png
       mode: 0644
     register: gdm_adfc_bg_file
-    tags: gdm  
+    tags: gdm
   - name: restart service gdm3
     systemd:
       state: restarted
       name: gdm3
     when: gdm_file.changed or gdm_adfc_bg_file.changed or gdm_ubuntu_css_file.changed
     tags: gdm
-    
+
   - name: sudoer erstellen
     template:
       src: sudoers-client
