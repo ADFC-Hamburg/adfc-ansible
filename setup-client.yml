@@ -47,8 +47,13 @@
       - hibiscus-ppa
       - gnucash
       - gnucash-docs
+      - bsd-mailx
       - wine32
+      - winetricks
+      - playonlinux
       - winbind
+    tags: software
+
 
   - name: Downloadverzeichnis für deb-Pakete erstellen
     file:
