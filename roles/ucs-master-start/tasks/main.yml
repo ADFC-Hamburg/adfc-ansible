@@ -4,8 +4,22 @@
   delegate_to:
     localhost
   register: get_password
+- name: test if reachable
+  ping:
+  ignore_errors: yes
+  register: ping_result
+  delegate_to: ucs-master.gst.hamburg.adfc.de
+- name: fail if ucs is reachable"
+  fail: 
+   msg: "UCS is reachable"
+  when: not ping_result.failed 
+- name: "stop ucs-master"
+  command: "qm stop 100"
+- name: "wait"
+  pause:
+    seconds: 5
 - name: "start ucs-master"
-  command: "qm-test start 100"
+  command: "qm start 100"
 - name: "wait"
   pause:
     seconds: 30
@@ -15,12 +29,10 @@
     char: "{{ item }}"
   with_items: "{{ get_password.content |b64decode |list }}"
 - name: send return
-  command: "qm-test sendkey 100 enter"
+  command: "qm sendkey 100 enter"
 - name: "wait"
   pause:
     seconds: 90
 - name: test
   ping:
   delegate_to: ucs-master.gst.hamburg.adfc.de
-#  register: prompt_pw
-#  when: get_password.failed 
