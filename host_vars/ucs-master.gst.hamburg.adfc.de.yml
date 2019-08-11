@@ -1,2 +1,4 @@
 ansible_ssh_common_args: '-o ProxyCommand="ssh -W %h:%p -q root@babelfish.spdns.de -p 2222"'
 ansible_host: 192.168.123.32
+ansible_web_port: 443
+ansible_web_subdir: '/univention'

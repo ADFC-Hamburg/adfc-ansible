@@ -1,25 +1,17 @@
 - hosts: arbeitsplatz
-  tasks:
 
-  - name: Update Packete
-    apt:
-      upgrade: dist
-      update_cache: yes
+# https://github.com/jnv/ansible-role-unattended-upgrades    
+    
+  roles:
+  - role: jnv.unattended-upgrades
+    unattended_origins_patterns:
+    - 'origin=Ubuntu,archive=${distro_codename}-security'
+    - 'o=Ubuntu,a=${distro_codename}-updates'
+    unattended_package_blacklist: [playonlinux, wine]
+    unattended_mail: "{{adfc_notification_email}}"
+    unattended_install_on_shutdown: false
+    unattended_verbose: 0
+    unattended_random_sleep: 1800
+    unattended_automatic_reboot: true
+    unattended_automatic_reboot_time: 03:00
 
-  - name: Apt Cache leeren
-    apt:
-      autoclean: yes
-
-  - name: Nicht genutzte Dependencies entfernen
-    apt:
-      autoremove: yes
-
-  - name: "Ist ein Reboot erforderlich?"
-    stat:
-      path: /var/run/reboot-required
-      get_md5: no
-    register: reboot_required_file
-
-  - name: Reboot
-    reboot:
-    when: reboot_required_file.stat.exists == true
