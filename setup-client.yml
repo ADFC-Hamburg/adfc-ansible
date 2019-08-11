@@ -81,9 +81,15 @@
     apt: deb="/usr/local/share/ansible_downloads/{{ deb_name_master_pdf_editor }}"
     when: pdfeditor_download.changed
 
+  - name: Pruefe Freemind-snap
+    stat:
+      path: /var/lib/snapd/desktop/applications/freemind_freemind.desktop
+    register: freemind_snap_result
+
 # Freemind als Snap installieren
   - name: Freemind-Snap installieren
     command: snap install freemind
+    when: not freemind_snap_result.stat.exists
 
 # Shortcuts für Flameshot einrichten
   - name: Erstelle /usr/share/khotkeys/flameshot.khotkeys
