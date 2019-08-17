@@ -7,12 +7,13 @@
 - name: test if reachable
   ping:
   ignore_errors: yes
+  ignore_unreachable: yes
   register: ping_result
   delegate_to: ucs-master.gst.hamburg.adfc.de
 - name: fail if ucs is reachable"
-  fail: 
+  fail:
    msg: "UCS is reachable"
-  when: not ping_result.failed 
+  when: not ping_result.unreachable
 - name: "stop ucs-master"
   command: "qm stop 100"
 - name: "wait"
@@ -29,7 +30,7 @@
     char: "{{ item }}"
   with_items: "{{ get_password.content |b64decode |list }}"
 - name: send return
-  command: "qm sendkey 100 enter"
+  command: "qm sendkey 100 kp_enter"
 - name: "wait"
   pause:
     seconds: 90
