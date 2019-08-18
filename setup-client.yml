@@ -48,10 +48,7 @@
       - gnucash
       - gnucash-docs
       - bsd-mailx
-      - wine32
-      - winetricks
-      - playonlinux
-      - winbind
+      - krdc
     tags: software
 
 
@@ -100,6 +97,11 @@
     file:
       path: /usr/share/khotkeys/spectacle.khotkeys
       state: absent
+
+  - name: Menueeintrag fuer ADFC-Datenbank erstellen
+    template:
+      src: adfc-datenbank.desktop
+      dest: /usr/share/applications/adfc-datenbank.desktop
 
   - name: Erstelle /etc/issue
     template:
