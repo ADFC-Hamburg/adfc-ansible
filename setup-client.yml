@@ -90,7 +90,7 @@
 
 # Shortcuts für Flameshot einrichten
   - name: Erstelle /usr/share/khotkeys/flameshot.khotkeys
-    template:
+    copy:
       src: flameshot.khotkeys
       dest: /usr/share/khotkeys/flameshot.khotkeys
   - name: Standard-Hotkeys fuer Spectacle löschen
@@ -99,7 +99,7 @@
       state: absent
 
   - name: Menueeintrag fuer ADFC-Datenbank erstellen
-    template:
+    copy:
       src: adfc-datenbank.desktop
       dest: /usr/share/applications/adfc-datenbank.desktop
 
