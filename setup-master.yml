@@ -51,22 +51,3 @@
         name: postfix
         state: restarted
       when: postfix_maincf.changed
-
-# Access 2013 ueber Wine einrichten
-    - name: Wineprefix benutzerabhaengig entpacken
-      unarchive:
-        src: /adfc/software/Ansible/wine_access_2013.tar.gz
-        dest: /home/{{ item }}
-        remote_src: yes
-        owner: "{{ item }}"
-        group: users
-      with_items:
-        - thomasn
-
-    - name: Menueeintrag fuer Access benutzerabhaengig erstellen
-      template:
-        src: access_2013.desktop
-        dest: /home/{{ item }}/.local/share/applications/access_2013.desktop
-      with_items:
-        - thomasn
-#
