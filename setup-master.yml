@@ -51,3 +51,14 @@
         name: postfix
         state: restarted
       when: postfix_maincf.changed
+    - name: enable unmaintained 
+      ucr:
+        values:
+          repository/online/unmaintained: True
+    - name: check if borgbackup installed
+      stat:
+        path: /usr/bin/borgbackup
+      register: stat_borgbackup
+    - name: install borgbackup
+      command: univention-install borgbackup borgbackup-doc
+      when: stat_borgbackup.stat.exists == False
