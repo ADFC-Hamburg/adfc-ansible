@@ -1,0 +1,39 @@
+- hosts: backup-clients
+  roles:
+  - ssh-keys
+  - ubuntu-basic
+  tasks:
+
+
+# benötigte Programme installieren
+  - name: Installiere Packete
+    apt:
+      name: "{{ packages }}"
+    vars:
+      packages:
+      - vpnc
+      - borgbackup
+
+
+  - name: sudoer erstellen
+    template:
+      src: sudoers-client
+      dest: /etc/sudoers.d/adfc-ansible
+      validate: '/usr/sbin/visudo -cf %s'
+      mode: 0440
+    tags: sudo
+
+  - name: VPNC - Konfiguration erstellen
+    template: 
+
+#vpnc-Konfiguration
+  - name: Erstelle /etc/vpnc/vpnc.conf
+    template:
+      src: vpnc.conf
+      dest: /etc/vpnc/vpnc.conf
+      owner: root
+      group: root
+      mode: '0600'
+    tags: vpnc
+
+

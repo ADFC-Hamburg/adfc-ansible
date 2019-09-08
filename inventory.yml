@@ -10,3 +10,6 @@ all:
       hosts:
         adfc-testclient.gst.hamburg.adfc.de:
         kubuntu-vm.gst.hamburg.adfc.de:
+    backup-clients:
+      hosts:
+        adfc-hh-bak-1: 

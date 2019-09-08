@@ -1,6 +1,7 @@
 - hosts: arbeitsplatz
   roles:
   - ssh-keys
+  - ubuntu-basic
   tasks:
 
 # spezielle Repositories hinzufügen
@@ -17,7 +18,6 @@
       name: "{{ packages }}"
     vars:
       packages:
-      - emacs
       - libreoffice
       - libreoffice-l10n-de
       - ncdu
@@ -25,7 +25,6 @@
       - univention-domain-join
       - univention-domain-join-cli
       - gdm3
-      - vim
       - nfs-common
       - openjdk-11-jre
       - flameshot
@@ -41,8 +40,6 @@
       - language-pack-gnome-de
       - gimp-help-de
       - glabels
-      - htop
-      - mc
       - openshot-qt
       - hibiscus-ppa
       - gnucash
@@ -50,11 +47,6 @@
       - wine32
       - winbind
 
-  - name: Downloadverzeichnis für deb-Pakete erstellen
-    file:
-      path: /usr/local/share/ansible_downloads/
-      state: directory
-      mode: 0755
 
 # XnViewMP installieren
   - name: XnViewMP manuell runterladen
@@ -110,6 +102,7 @@
   - name: Reboot on network interfaces changes
     reboot:
     when: interfaces_create.changed
+    
   - name: Check if join is alread done
     stat:
       path: /usr/share/pam-configs/ucs_mkhomedir
