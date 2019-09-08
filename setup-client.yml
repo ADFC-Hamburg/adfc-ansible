@@ -1,6 +1,7 @@
 - hosts: arbeitsplatz
   roles:
   - ssh-keys
+  - firefox-client
   tasks:
 
 # spezielle Repositories hinzufügen
@@ -34,7 +35,6 @@
       - vlc
       - thunderbird
       - thunderbird-locale-de
-      - firefox
       - language-pack-de-base
       - gnupg2
       - gimp

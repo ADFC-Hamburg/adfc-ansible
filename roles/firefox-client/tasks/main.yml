@@ -1,0 +1,12 @@
+- name: "Installiere Firefox"
+  apt:
+    name: "{{ packages }}"
+  vars:
+    packages:
+     - firefox
+     - firefox-locale-de
+- name: "Set Firefox sysprefs.js"
+  template:
+    src: sysprefs.js
+    dest: /etc/firefox/syspref.js
+    mode: 0644
