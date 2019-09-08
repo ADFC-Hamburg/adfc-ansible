@@ -2,3 +2,4 @@ ansible_ssh_common_args: '-o ProxyCommand="ssh -W %h:%p -q root@babelfish.spdns.
 ansible_host: 192.168.123.3
 ansible_web_port: 8006
 ansible_web_subdir: '/'
+postfix_host_email: proxmox01@hamburg.adfc.de

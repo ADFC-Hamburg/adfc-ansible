@@ -1,0 +1,32 @@
+myhostname={{ ansible_fqdn }}
+
+compatibility_level=2
+
+smtpd_banner = $myhostname ESMTP $mail_name (Debian/GNU)
+biff = no
+
+# appending .domain is the MUA's job.
+append_dot_mydomain = no
+
+# Uncomment the next line to generate "delayed mail" warnings
+#delay_warning_time = 4h
+
+alias_maps = hash:/etc/aliases
+alias_database = hash:/etc/aliases
+mydestination = $myhostname, localhost.$mydomain, localhost
+mynetworks = 127.0.0.0/8
+inet_interfaces = loopback-only
+recipient_delimiter = +
+
+# Configuration for using a relay host
+relayhost = sslout.df.eu
+smtp_sasl_auth_enable = yes
+smtp_sasl_password_maps = hash:/etc/postfix/smtp_auth
+smtp_sasl_security_options = noanonymous
+
+# Configuration for smtp security
+smtp_tls_security_level = may
+
+# Ensure sender address gets remapped to a valid value
+sender_canonical_maps = regexp:/etc/postfix/sender_canonical
+
