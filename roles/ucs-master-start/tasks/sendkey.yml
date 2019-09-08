@@ -1,0 +1,9 @@
+- name: send small chars
+  command: "qm sendkey 100 {{ char }}"
+  when: "(char >= 'a' and char <='z' )"
+- name: send num 
+  command: "qm sendkey 100 {{ char }}"
+  when: "(char >= '0' and char <='9' )"
+- name: send big chars
+  command: "qm sendkey 100 shift-{{ char |lower }}"
+  when: "(char >= 'A' and char <= 'Z' )"
