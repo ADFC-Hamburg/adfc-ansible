@@ -51,3 +51,7 @@
         name: postfix
         state: restarted
       when: postfix_maincf.changed
+    - name: Copy OTRS Nagios Check
+      copy:
+        src: nagios-otrs.cfg
+        dest: /etc/nagios/conf.local.d/check_otrs.cfg
