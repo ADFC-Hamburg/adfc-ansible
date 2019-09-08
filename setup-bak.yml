@@ -1,9 +1,8 @@
-- hosts: backup-clients
+- hosts: backup_stations
   roles:
   - ssh-keys
   - ubuntu-basic
   tasks:
-
 
 # benötigte Programme installieren
   - name: Installiere Packete
