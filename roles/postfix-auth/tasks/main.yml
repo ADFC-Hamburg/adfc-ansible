@@ -1,7 +1,7 @@
 ---
-# Playbook to configure Postfix on Proxmox to be able to send emails to admins
+# Playbook to configure Postfix on a server to be able to send emails to admins
 
-- name: Install libsasl2-modules to prevent "no mechanisms found error"
+- name: install libsasl2-modules to prevent "no mechanisms found error"
   apt:
     name: libsasl2-modules
     state: present
@@ -21,11 +21,11 @@
 - name: Check that smtp_auth file exists
   stat:
     path: /etc/postfix/smtp_auth
-  register: sym
+  register: smtp_auth
 
 - debug:
     msg: "smtp_auth does not exist"
-  when: sym.stat.exists == False
+  when: smtp_auth.stat.exists == False
 
 - name: Do postmap on smtp_auth
   command: /usr/sbin/postmap /etc/postfix/smtp_auth

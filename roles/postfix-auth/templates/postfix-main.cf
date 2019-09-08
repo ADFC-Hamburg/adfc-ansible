@@ -25,8 +25,12 @@ smtp_sasl_password_maps = hash:/etc/postfix/smtp_auth
 smtp_sasl_security_options = noanonymous
 
 # Configuration for smtp security
-smtp_tls_security_level = may
+smtp_tls_security_level = encrypt
+smtp_tls_mandatory_ciphers = high
 
 # Ensure sender address gets remapped to a valid value
 sender_canonical_maps = regexp:/etc/postfix/sender_canonical
+
+# Logging
+smtp_tls_loglevel = 1
 
