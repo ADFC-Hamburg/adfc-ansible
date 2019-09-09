@@ -13,15 +13,6 @@
       - vpnc
       - borgbackup
 
-
-  - name: sudoer erstellen
-    template:
-      src: sudoers-client
-      dest: /etc/sudoers.d/adfc-ansible
-      validate: '/usr/sbin/visudo -cf %s'
-      mode: 0440
-    tags: sudo
-
   - name: VPNC - Konfiguration erstellen
     template: 
 
