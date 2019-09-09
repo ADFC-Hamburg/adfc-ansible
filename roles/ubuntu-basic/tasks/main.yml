@@ -1,5 +1,5 @@
 # benötigte Programme installieren
-  - name: Installiere Packete
+  - name: Installiere Pakete
     apt:
       name: "{{ packages }}"
     vars:
