@@ -1,6 +1,7 @@
 - hosts: arbeitsplatz
   roles:
   - ssh-keys
+  - libreoffice
   tasks:
 
 # spezielle Repositories hinzufügen
@@ -18,8 +19,6 @@
     vars:
       packages:
       - emacs
-      - libreoffice
-      - libreoffice-l10n-de
       - ncdu
       - git
       - univention-domain-join
@@ -272,4 +271,3 @@
       validate: '/usr/sbin/visudo -cf %s'
       mode: 0440
     tags: sudo
-
