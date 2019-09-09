@@ -1,4 +1,5 @@
 
 .DS_Store
 .project
-adfc-secrets
+adfc-secrets/*.sec
+adfc-secrets/*.secret
