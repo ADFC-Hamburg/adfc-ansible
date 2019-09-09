@@ -1,0 +1,8 @@
+- hosts: proxmox01.gst.hamburg.adfc.de
+  gather_facts: no
+  roles:
+    - ucs-master-start
+  tasks:
+    - name: test
+      debug:
+        msg: hello world

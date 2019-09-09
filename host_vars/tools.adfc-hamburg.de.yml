@@ -1,4 +1,8 @@
-otrs_version: 6.0.16
-otrs_md5sum_tar_bz2: 5edd2d4c51cb11b87e77d6482dcac2fc
+otrs_version: 6.0.22
+otrs_md5sum_tar_bz2: 3691eea95cc01288ceeb79b2f62a6d37
 ssh_users_admins:
+  - matthiasr
   - svena
+  - tobiasd
+  - volkerk
+  - martinw
