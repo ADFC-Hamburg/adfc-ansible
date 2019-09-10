@@ -23,7 +23,7 @@
     path: /etc/postfix/smtp_auth
   register: smtp_auth
 
-- debug:
+- fail:
     msg: "smtp_auth does not exist"
   when: smtp_auth.stat.exists == False
 
