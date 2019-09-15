@@ -52,6 +52,10 @@
     dest: "/usr/share/mozilla/extensions/{ec8030f7-c20a-464f-9b0e-13a3a9e97384}/uBlock0@raymondhill.net.xpi"
     state: link
 
+- name: "Check if prerequisites for script are fulfilled"
+  apt:
+   name: wget
+
 - name: "Copy firefox extension update cron script"
   copy:
     src: firefox-extension-update.sh
