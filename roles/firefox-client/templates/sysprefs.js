@@ -92,6 +92,8 @@ pref("extensions.screenshots.upload-disabled", true);
 pref("extensions.systemAddon.update.enabled", false);
 pref("extensions.systemAddon.update.url", "");
 pref("extensions.webextensions.restrictedDomains", "");
+pref("extensions.autoDisableScopes", 0);
+pref("extensions.enabledScopes", 15);
 pref("media.cache_size", 0);
 pref("network.allow-experiments", false);
 pref("network.captive-portal-service.enabled", false);

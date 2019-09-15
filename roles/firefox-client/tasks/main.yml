@@ -10,3 +10,20 @@
     src: sysprefs.js
     dest: /etc/firefox/syspref.js
     mode: 0644
+# Extensions installed this way are not automatically updated, this has to be done manually, for example by using ansible
+- name: "Install newest 'https-anywhere' plugin"
+  get_url:
+    url: https://www.eff.org/files/https-everywhere-latest.xpi
+    dest: /usr/share/mozilla/extensions/{ec8030f7-c20a-464f-9b0e-13a3a9e97384}/https-everywhere@eff.org.xpi
+    mode: 0755
+    force: yes
+- name: "Install 'I don't care about cookies' plugin v3.0.4"
+  get_url:
+    url: https://addons.mozilla.org/firefox/downloads/file/3397453/
+    dest: /usr/share/mozilla/extensions/{ec8030f7-c20a-464f-9b0e-13a3a9e97384}/jid1-KKzOGWgsW3Ao4Q@jetpack.xpi
+    mode: 0755
+- name: "Install 'uBlock Origin' plugin v1.22.2"
+  get_url:
+    url: https://addons.mozilla.org/firefox/downloads/file/3398284/
+    dest: /usr/share/mozilla/extensions/{ec8030f7-c20a-464f-9b0e-13a3a9e97384}/uBlock0@raymondhill.net.xpi
+    mode: 0755
