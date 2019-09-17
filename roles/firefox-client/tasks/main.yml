@@ -5,59 +5,34 @@
     packages:
      - firefox
      - firefox-locale-de
+
 - name: "Set Firefox sysprefs.js"
   template:
     src: sysprefs.js
     dest: /etc/firefox/syspref.js
     mode: 0644
-# Extensions installed this way are not automatically updated by firefox, this has to be done manually, and is completed by the cron script further below
-- name: Check that ansible_downloads folder exists
+
+- name: "Check that ansible_downloads folder exists"
   stat:
     path: /usr/local/share/ansible_downloads
-  register: ansible_downloads
-- fail:
-    msg: "ansible_downloads does not exist"
-  when: ansible_downloads.stat.exists == False
+    state: directory
 
-- name: "Download newest 'https-anywhere' plugin"
-  get_url:
-    url: "https://addons.mozilla.org/firefox/downloads/file/3060290/https_everywhere.xpi"
-    dest: "/usr/local/share/ansible_downloads/https_everywhere.xpi"
-    mode: 0755
-- name: "Create symbolic link for 'https-anywhere' plugin"
-  file:
-    src: "/usr/local/share/ansible_downloads/https_everywhere.xpi"
-    dest: "/usr/share/mozilla/extensions/{ec8030f7-c20a-464f-9b0e-13a3a9e97384}/https-everywhere@eff.org.xpi"
-    state: link
-
-- name: "Download newest 'I don't care about cookies' plugin"
-  get_url:
-    url: "https://addons.mozilla.org/firefox/downloads/file/3397453/i_dont_care_about_cookies.xpi"
-    dest: "/usr/local/share/ansible_downloads/i_dont_care_about_cookies.xpi"
-    mode: 0755
-- name: "Create symbolic link for 'I don't care about cookies' plugin"
-  file:
-    src: "/usr/local/share/ansible_downloads/i_dont_care_about_cookies.xpi"
-    dest: "/usr/share/mozilla/extensions/{ec8030f7-c20a-464f-9b0e-13a3a9e97384}/jid1-KKzOGWgsW3Ao4Q@jetpack.xpi"
-    state: link
-
-- name: "Download newest 'uBlock Origin' plugin"
-  get_url:
-    url: "https://addons.mozilla.org/firefox/downloads/file/1166954/ublock_origin.xpi"
-    dest: "/usr/local/share/ansible_downloads/ublock_origin.xpi"
-    mode: 0755
-- name: "Create symbolic link for 'uBlock Origin' plugin"
-  file:
-    src: "/usr/local/share/ansible_downloads/ublock_origin.xpi"
-    dest: "/usr/share/mozilla/extensions/{ec8030f7-c20a-464f-9b0e-13a3a9e97384}/uBlock0@raymondhill.net.xpi"
-    state: link
-
-- name: "Check if prerequisites for script are fulfilled"
+- name: "Check if prerequisite applicatins for script are fulfilled"
   apt:
    name: wget
 
 - name: "Copy firefox extension update cron script"
-  copy:
+  template:
     src: firefox-extension-update.sh
     dest: /etc/cron.daily/firefox-extension-update.sh
     mode: 0755
+
+- name: "Run firefox extension update script to initially download extensions"
+  command: /etc/cron.daily/firefox-extension-update.sh
+
+- name: "Create symbolic links for extensions"
+  file:
+    src: "/usr/local/share/ansible_downloads/{{ item.name  }}"
+    dest: "/usr/share/mozilla/extensions/{ec8030f7-c20a-464f-9b0e-13a3a9e97384}/{{ item.id }}"
+    state: link
+    with_items: firefox_extensions
