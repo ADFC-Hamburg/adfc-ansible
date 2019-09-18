@@ -7,6 +7,7 @@
         - {name: "https_everywhere.xpi", id: "https-everywhere@eff.org.xpi", url: "https://addons.mozilla.org/firefox/downloads/file/3060290/https_everywhere.xpi"}
         - {name: "i_dont_care_about_cookies.xpi", id: "jid1-KKzOGWgsW3Ao4Q@jetpack.xpi", url: "https://addons.mozilla.org/firefox/downloads/file/3397453/i_dont_care_about_cookies.xpi"}
         - {name: "ublock_origin.xpi", id: "uBlock0@raymondhill.net.xpi", url: "https://addons.mozilla.org/firefox/downloads/file/1166954/ublock_origin.xpi"}
+    tags: roles
 
   tasks:
 
