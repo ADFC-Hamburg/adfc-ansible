@@ -6,6 +6,7 @@
      - firefox
      - firefox-locale-de
      - wget
+     - bsd-mailx
 
 - name: "Set Firefox sysprefs.js"
   template:
