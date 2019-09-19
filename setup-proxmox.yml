@@ -3,6 +3,7 @@
   roles:
     - ssh-keys
     - postfix-auth
+
   tasks:
     - name: Erstellen eine Unix User fuer Tools-Server Backup
       user:
@@ -35,12 +36,11 @@
       apt:
         name: bsd-mailx   
     
-    - name: Kopiere check_ip Skript
-      copy:
+    - name: Kopiere check_ips Skript
+      template:
         src: check_ips.sh
         dest: /usr/local/bin/check_ips.sh
         mode: 0755
-
     - name: Erstelle cron Eintrag für check_ips
       cron:
         name: "check_ips"
