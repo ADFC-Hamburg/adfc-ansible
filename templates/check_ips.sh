@@ -4,7 +4,7 @@
 ## Script wird über ansible deployed
 ##
 
-ping_targets="{% for ip in check_ips %}{{ ip }} {% endfor %}"
+ping_targets="{{ check_ips | join(' ') }}"
 failed_hosts=""
 
 for i in $ping_targets
