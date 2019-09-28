@@ -59,6 +59,12 @@
       state: directory
       mode: 0755
 
+  - name: Kein KDE Update Icon mehr anzeigen
+    apt:
+      name: plasma-discover
+      state: absent
+    tags: plasma-discover
+
 # XnViewMP installieren
   - name: XnViewMP manuell runterladen
     get_url:
@@ -273,4 +279,3 @@
       validate: '/usr/sbin/visudo -cf %s'
       mode: 0440
     tags: sudo
-
