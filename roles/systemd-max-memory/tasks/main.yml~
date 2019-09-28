@@ -1,0 +1,18 @@
+- name: Create Direcotry
+  file:
+    path: "/etc/systemd/system/{{ item.service_name }}"
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
+  with_items: "{{ systemd_max_memory_servics }}"
+- name: Setup Memory extension
+  template:
+    src: systemd-memory-extension.con
+    dest: "/etc/systemd/system/{{ item.service_name }}.service.de/ansible_max_menory.conf"
+    mode: 0644
+    owner: root
+    group: root
+  with_items: "{{ systemd_max_memory_servics }}"
+  notify:
+    - restart systemd
