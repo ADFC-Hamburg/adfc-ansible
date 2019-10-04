@@ -4,7 +4,7 @@
 ## Script wird über ansible deployed
 ##
 
-ping_targets="192.168.123.32"
+ping_targets="{{ check_ips | join(' ') }}"
 failed_hosts=""
 
 for i in $ping_targets
