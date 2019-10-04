@@ -2,3 +2,13 @@ ansible_ssh_common_args: '-o ProxyCommand="ssh -W %h:%p -q root@babelfish.spdns.
 ansible_host: 192.168.123.32
 ansible_web_port: 443
 ansible_web_subdir: '/univention'
+
+systemd_max_memory:
+  - service_name: univention-management-console-web-server
+    memory_high: 400M
+    memory_max: 600M
+    restart: on-failure
+  - service_name: univention-management-console-server
+    memory_high: 400M
+    memory_max: 600M
+    restart: on-failure
