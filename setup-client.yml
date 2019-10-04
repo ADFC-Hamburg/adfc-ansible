@@ -2,7 +2,6 @@
   roles:
   - ssh-keys
   - firefox-client
-
   tasks:
 
 # spezielle Repositories hinzufügen
@@ -12,6 +11,7 @@
   - name: ppa fuer hibiskus hinzu
     apt_repository:
       repo: 'ppa:marko-preuss/hibiscus'
+      state: absent
 
 # benötigte Programme installieren
   - name: Installiere Packete
@@ -45,13 +45,24 @@
       - htop
       - mc
       - openshot-qt
-      - hibiscus-ppa
       - gnucash
       - gnucash-docs
       - bsd-mailx
       - krdc
     tags: software
 
+  - name: uninstall hibiscus-ppa
+    apt:
+      name: hibiscus-ppa
+      state: absent
+    tags: hibiscus
+    # Rollen erst includieren wenn das hibiscus-ppa paktet deinstalliert ist
+  - name: install jameica
+    include_role:
+      name: jameica
+  - name: install hibiscus
+    include_role:
+      name: hibiscus
 
   - name: Downloadverzeichnis für deb-Pakete erstellen
     file:
@@ -179,6 +190,7 @@
       src: desktopthemes/ADFC
       dest: /usr/share/plasma/desktoptheme/
       recursive: yes
+      use_ssh_args: yes
     register: desktoptheme
     tags: gdm
   - name: Copy config for default desktoptheme
@@ -199,6 +211,7 @@
       src: wallpapers/ADFC
       dest: /usr/share/wallpapers/
       recursive: yes
+      use_ssh_args: yes
     register: desktoptheme
     tags: gdm
 
@@ -273,4 +286,3 @@
       validate: '/usr/sbin/visudo -cf %s'
       mode: 0440
     tags: sudo
-
