@@ -14,7 +14,9 @@ jobs:
 
     steps:
     - name: install ansible-lint
-      run: pip install ansible-lint
+      run: |
+       pip install --upgrade setuptools wheel
+       pip install ansible-lint
     - uses: actions/checkout@v1
     - name: lint files
       run: ~/.local/bin/ansible-lint -x '503,504,301,701' *.yml
