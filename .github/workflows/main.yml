@@ -13,8 +13,10 @@ jobs:
     runs-on: ubuntu-18.04
 
     steps:
-    - uses: actions/checkout@v1
     - name: install ansible-lint
-      run: pip install ansible-lint
+      run: pip3 install ansible-lint
+    - name: find
+      run: ls -ltraR ~/ 
+    - uses: actions/checkout@v1
     - name: lint files
       run: ansible-lint *.yml
