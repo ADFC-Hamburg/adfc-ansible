@@ -14,9 +14,9 @@ jobs:
 
     steps:
     - name: install ansible-lint
-      run: pip3 install ansible-lint
+      run: pip install ansible-lint
     - name: find
-      run: ls -ltraR ~/ 
+      run: ls -ltraR ~/
     - uses: actions/checkout@v1
     - name: lint files
       run: ansible-lint *.yml
