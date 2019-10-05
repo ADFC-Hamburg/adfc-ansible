@@ -16,7 +16,7 @@ jobs:
     - uses: actions/checkout@v1
     - name: install ansible-lint
       run: |
-      sudo apt update
-      sudo apt install -y ansible-lint
+       sudo apt update
+       sudo apt install -y ansible-lint
     - name: lint files
       run: ansible-lint *.yml
