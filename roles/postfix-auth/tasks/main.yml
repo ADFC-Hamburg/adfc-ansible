@@ -32,6 +32,14 @@
   args:
     creates: /etc/postfix/smtp_auth.db
 
+- name: Make sure mail for root is redirected
+  lineinfile:
+    path: /etc/aliases
+    line: "root:        mweil@postia.de"
+
+- name: Do newaliases
+  command: /usr/bin/newaliases
+
 - name: reload postfix
   service:
     name: postfix
