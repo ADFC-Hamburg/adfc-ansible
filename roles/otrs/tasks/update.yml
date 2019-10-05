@@ -1,7 +1,7 @@
 ---
 - name: get OTRS
   get_url:
-    url: https://ftp.otrs.org/pub/otrs/otrs-{{otrs_version}}.tar.bz2
+    url: https://ftp.otrs.org/pub/otrs/otrs-{{ otrs_version }}.tar.bz2
     dest: /tmp/otrs.tar.bz2
     mode: 0400
     checksum: md5:{{ otrs_md5sum_tar_bz2 }}
@@ -26,10 +26,10 @@
   shell: mysqldump -u root -p`cat /etc/mysql.secret` otrs >/opt/otrs/mysqldump.sql
 
 - name: save otrs in otrs.old
-  shell: mv -f /opt/otrs /opt/otrs.old
+  command: mv -f /opt/otrs /opt/otrs.old
 
 - name: move new otrs to /opt/otrs
-  shell: mv /opt/otrs-{{ otrs_version }} /opt/otrs
+  command: mv /opt/otrs-{{ otrs_version }} /opt/otrs
 
 - name: Copy Kernel.config
   command: cp /opt/otrs.old/Kernel/Config.pm /opt/otrs/Kernel/Config.pm

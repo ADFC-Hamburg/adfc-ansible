@@ -7,12 +7,12 @@
     state: present
 
 - name: copy postfix configuration file
-  template: 
+  template:
     src: postfix-main.cf
     dest: /etc/postfix/main.cf
     mode: 0644
 
-- name: copy sender_canonical 
+- name: copy sender_canonical
   template:
     src: sender-canonical
     dest: /etc/postfix/sender_canonical
@@ -23,9 +23,10 @@
     path: /etc/postfix/smtp_auth
   register: smtp_auth
 
-- fail:
+- name: fail is smpt_auth does not exists
+  fail:
     msg: "smtp_auth does not exist"
-  when: smtp_auth.stat.exists == False
+  when: not smtp_auth.stat.exists
 
 - name: Do postmap on smtp_auth
   command: /usr/sbin/postmap /etc/postfix/smtp_auth
