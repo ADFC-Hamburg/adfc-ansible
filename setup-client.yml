@@ -1,6 +1,7 @@
 - hosts: arbeitsplatz
   roles:
   - ssh-keys
+  - firefox-client
   - libreoffice
   tasks:
 
@@ -11,6 +12,7 @@
   - name: ppa fuer hibiskus hinzu
     apt_repository:
       repo: 'ppa:marko-preuss/hibiscus'
+      state: absent
 
 # benötigte Programme installieren
   - name: Installiere Packete
@@ -33,7 +35,6 @@
       - vlc
       - thunderbird
       - thunderbird-locale-de
-      - firefox
       - language-pack-de-base
       - gnupg2
       - gimp
@@ -43,19 +44,36 @@
       - htop
       - mc
       - openshot-qt
-      - hibiscus-ppa
       - gnucash
       - gnucash-docs
       - bsd-mailx
       - krdc
     tags: software
 
+  - name: uninstall hibiscus-ppa
+    apt:
+      name: hibiscus-ppa
+      state: absent
+    tags: hibiscus
+    # Rollen erst includieren wenn das hibiscus-ppa paktet deinstalliert ist
+  - name: install jameica
+    include_role:
+      name: jameica
+  - name: install hibiscus
+    include_role:
+      name: hibiscus
 
   - name: Downloadverzeichnis für deb-Pakete erstellen
     file:
       path: /usr/local/share/ansible_downloads/
       state: directory
       mode: 0755
+
+  - name: Kein KDE Update Icon mehr anzeigen
+    apt:
+      name: plasma-discover
+      state: absent
+    tags: plasma-discover
 
 # XnViewMP installieren
   - name: XnViewMP manuell runterladen
@@ -177,6 +195,7 @@
       src: desktopthemes/ADFC
       dest: /usr/share/plasma/desktoptheme/
       recursive: yes
+      use_ssh_args: yes
     register: desktoptheme
     tags: gdm
   - name: Copy config for default desktoptheme
@@ -197,6 +216,7 @@
       src: wallpapers/ADFC
       dest: /usr/share/wallpapers/
       recursive: yes
+      use_ssh_args: yes
     register: desktoptheme
     tags: gdm
 
