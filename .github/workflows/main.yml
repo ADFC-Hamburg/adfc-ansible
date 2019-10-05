@@ -1,0 +1,22 @@
+# GitHub Actions docs
+# https://help.github.com/en/articles/about-github-actions
+# https://help.github.com/en/articles/workflow-syntax-for-github-actions
+# see also: https://github.com/filipesilva/ng-github-actions/blob/master/.github/workflows/main.yml
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+
+    # Machine environment:
+    runs-on: ubuntu-18.04
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: install ansible-lint
+      run: |
+      sudo apt update
+      sudo apt install -y ansible-lint
+    - name: lint files
+      run: ansible-lint *.yml
