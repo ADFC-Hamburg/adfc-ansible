@@ -35,7 +35,7 @@
 - name: Make sure mail for root is redirected
   lineinfile:
     path: /etc/aliases
-    line: "root:        mweil@postia.de"
+    line: "root:        {{ lookup('csvfile', 'adfc_notification_email file=adfc-secrets/adfc-hh-contacts.sec delimiter=,') }}"
 
 - name: Do newaliases
   command: /usr/bin/newaliases
