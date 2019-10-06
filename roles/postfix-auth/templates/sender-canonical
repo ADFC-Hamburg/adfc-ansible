@@ -1,1 +1,1 @@
-/.+/   {{ postfix_host_email }}
+/^.*gst.hamburg.adfc.de$/   {{ postfix_host_email }}
