@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Encoding=UTF-8
+Name=Jameica / Hibiscus
+Type=Application
+Terminal=false
+Exec=/opt/jameica/jameica.sh
+Icon=/opt/jameica/jameica-icon.png
+Categories=Office;Finance;

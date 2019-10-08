@@ -1,0 +1,24 @@
+---
+- name: Create required directories
+  file:
+    path: /opt
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- unarchive:
+    src: "{{ jameica_archive_url }}"
+    remote_src: yes
+    dest: /opt
+    creates: /opt/jameica
+    owner: root
+    group: root
+
+- name: Create starter
+  copy:
+    src: jameica.desktop
+    dest: /usr/share/applications/
+    owner: root
+    group: root
+    mode: 0755
