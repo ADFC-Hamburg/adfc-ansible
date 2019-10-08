@@ -8,7 +8,7 @@
     - 'origin=Ubuntu,archive=${distro_codename}-security'
     - 'o=Ubuntu,a=${distro_codename}-updates'
     unattended_package_blacklist: [playonlinux, wine]
-    unattended_mail: "{{ lookup('csvfile', 'adfc_notification_email file=adfc-secrets/adfc-hh-contacts.sec delimiter=,') }}"
+    unattended_mail_only_on_error: "{{ lookup('csvfile', 'adfc_notification_email file=adfc-secrets/adfc-hh-contacts.sec delimiter=,') }}"
     unattended_install_on_shutdown: false
     unattended_verbose: 0
     unattended_random_sleep: 1800
