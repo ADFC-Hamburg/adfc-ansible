@@ -6,3 +6,13 @@ firefox_extensions:
 
 jameica_archive_url: https://www.willuhn.de/products/jameica/releases/nightly/jameica-linux64-2.9.0-nightly.zip
 hibiscus_archive_url: https://www.willuhn.de/products/hibiscus/releases/nightly/hibiscus-2.9.0-nightly.zip
+
+unattended_origins_patterns:
+  - 'origin=Ubuntu,archive=${distro_codename}-security'
+  - 'origin=Ubuntu,archive=${distro_codename}-updates'
+unattended_package_blacklist: [playonlinux, wine]
+unattended_mail_only_on_error: "{{ lookup('csvfile', 'adfc_notification_email file=adfc-secrets/adfc-hh-contacts.sec delimiter=,') }}"
+unattended_install_on_shutdown: false
+unattended_random_sleep: 1800
+unattended_automatic_reboot_time: 03:00
+
