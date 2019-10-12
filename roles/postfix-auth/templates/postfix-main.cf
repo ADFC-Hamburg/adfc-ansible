@@ -1,4 +1,4 @@
-myhostname={{ ansible_fqdn }}
+myhostname={{ inventory_hostname }}
 
 compatibility_level=2
 
