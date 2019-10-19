@@ -31,8 +31,20 @@
   command: /usr/sbin/postmap /etc/postfix/smtp_auth
   args:
     creates: /etc/postfix/smtp_auth.db
+  register: postmap
+
+- name: Make sure mail for root is redirected
+  lineinfile:
+    path: /etc/aliases
+    line: "root: {{ lookup('csvfile', 'adfc_notification_email file=adfc-secrets/adfc-hh-contacts.sec delimiter=,') }}"
+  register: aliases_changed
+
+- name: Do newaliases
+  command: /usr/bin/newaliases
+  when: aliases_changed.changed == True
 
 - name: reload postfix
   service:
     name: postfix
     state: restarted
+  when: (postmap['changed'] == True or aliases_changed['changed'] == True)

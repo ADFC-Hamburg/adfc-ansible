@@ -1,8 +1,11 @@
 - hosts: arbeitsplatz
   roles:
   - ssh-keys
+  - postfix-auth
   - firefox-client
   - libreoffice
+  - jnv.unattended-upgrades
+
   tasks:
 
 # spezielle Repositories hinzufügen
