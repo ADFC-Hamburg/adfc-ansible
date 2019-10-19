@@ -42,10 +42,10 @@
 
 - name: Do newaliases
   command: /usr/bin/newaliases
-  when: aliases_changed.changed == True
+  when: aliases_changed.changed
 
 - name: reload postfix
   service:
     name: postfix
     state: restarted
-  when: (postmap['changed'] == True or aliases_changed['changed'] == True)
+  when: (postmap['changed'] or aliases_changed['changed'])
