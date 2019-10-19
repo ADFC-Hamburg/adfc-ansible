@@ -3,6 +3,8 @@
   - ssh-keys
   - postfix-auth
   - firefox-client
+  - jnv.unattended-upgrades
+
   tasks:
 
 # spezielle Repositories hinzufügen
