@@ -2,3 +2,5 @@
 .DS_Store
 .project
 *.sec
+*.sec.yml
+
