@@ -26,4 +26,20 @@
       mode: '0600'
     tags: vpnc
 
+#backup-script
+  - name: copy backup script
+      copy:
+         src: backup-script_client.sh
+         dest: /usr/local/sbin/backup-script_client.sh
+         mode: 755
+      tags: script
+    - name: cron erstellen # https://docs.ansible.com/ansible/latest/modules/cron_module.html?highlight=cron
+      cron:
+        name: "run-remote-backup"
+        minute: "10"
+        hour: "2"
+        weekday: "2"
+        cron_file: remote-backup
+        user: root
+        job: /usr/local/sbin/backup-script_client.sh
 
