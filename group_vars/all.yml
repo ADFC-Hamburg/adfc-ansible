@@ -1,18 +1,9 @@
 ansible_user: root
-key_path: 'ssh_keys/'
-ssh_users_admins:
-  - falkh
-  - joergw
-  - matthiasr
-  - svena
-  - tobiasd
-  - volkerk
-  - martinw
+key_path: 'adfc_secrets/ssh_keys.sec/'
 adfc_lan_netmask: 255.255.255.0
 adfc_lan_net_bits: 24
 adfc_lan_gateway: 192.168.123.1
 adfc_dns_ip: 192.168.123.32
 adfc_dns_search: gst.hamburg.adfc.de
 deb_name_master_pdf_editor: master-pdf-editor-5.3.22_qt5.amd64.deb
-adfc_vpnc_gateway: babelfish.spdns.de
-adfc_notification_email: yml@liquid-center.de
+#adfc_vpnc_gateway: babelfish.spdns.de

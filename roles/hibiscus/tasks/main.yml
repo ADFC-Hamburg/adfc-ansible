@@ -1,0 +1,8 @@
+---
+- unarchive:
+    src: "{{ hibiscus_archive_url }}"
+    remote_src: yes
+    dest: /opt/jameica/plugins
+    creates: /opt/jameica/plugins/hibiscus
+    owner: root
+    group: root

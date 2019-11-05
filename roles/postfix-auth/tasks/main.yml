@@ -1,5 +1,8 @@
 ---
 # Playbook to configure Postfix on a server to be able to send emails to admins
+- name: include adfc-secrets/adfc-hh-contacts.sec.yml
+  include_vars: 
+    file: "{{playbook_dir}}/adfc-secrets/adfc-hh-contacts.sec.yml"
 
 - name: install libsasl2-modules to prevent "no mechanisms found error"
   apt:
@@ -31,8 +34,20 @@
   command: /usr/sbin/postmap /etc/postfix/smtp_auth
   args:
     creates: /etc/postfix/smtp_auth.db
+  register: postmap
+
+- name: Make sure mail for root is redirected
+  lineinfile:
+    path: /etc/aliases
+    line: "{{ adfc_notification_email }}"
+  register: aliases_changed
+
+- name: Do newaliases
+  command: /usr/bin/newaliases
+  when: aliases_changed.changed == True
 
 - name: reload postfix
   service:
     name: postfix
     state: restarted
+  when: (postmap['changed'] == True or aliases_changed['changed'] == True)

@@ -1,4 +1,7 @@
 ---
+- name: include adfc-secrets/adfc-hh-users.sec.yml
+  include_vars: "{{ playbook_dir }}/adfc-secrets/adfc-hh-users.sec.yml"
+
 - name: search for excluded direcories
   local_action:
      module: find

@@ -2,6 +2,7 @@
   gather_facts: no
   roles:
     - ssh-keys
+    - systemd-max-memory
   tasks:
     # SSH Key /root/.ssh/rsync-key ist nicht hier eingecheckt und wird nicht deployed, wegen security
     - name: copy rsync script
@@ -71,7 +72,8 @@
         key: "{{ lookup('file', 'ssh-key-knocker/backup_clients_knocker.pub') }}"
         key_options: 'restrict, command="touch /bakcl_vpn_online/$SSH_ORIGINAL_COMMAND"'
         state: present
-    - name: enable unmaintained 
+        
+    - name: enable unmaintained
       ucr:
         values:
           repository/online/unmaintained: True
