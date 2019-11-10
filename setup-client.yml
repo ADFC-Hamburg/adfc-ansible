@@ -15,8 +15,15 @@
     apt_repository:
       repo: 'ppa:marko-preuss/hibiscus'
       state: absent
+  - name: Skype-Repo und GPG-Key hinzu
+    apt_key:
+      url: https://repo.skype.com/data/SKYPE-GPG-KEY
+      state: present
+  - name: skype repository
+    apt_repository:
+      repo: 'deb https://repo.skype.com/deb stable main'
 
-# benötigte Programme installieren
+      # benötigte Programme installieren
   - name: Installiere Packete
     apt:
       name: "{{ packages }}"
@@ -55,6 +62,8 @@
       - krdc
       - pdfmod
       - pdfsam
+      - skypeforlinux
+      - apt-transport-https
     tags: software
 
   - name: uninstall hibiscus-ppa
