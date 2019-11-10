@@ -52,6 +52,8 @@
       - gnucash-docs
       - bsd-mailx
       - krdc
+      - pdfmod
+      - pdfsam
     tags: software
 
   - name: uninstall hibiscus-ppa
