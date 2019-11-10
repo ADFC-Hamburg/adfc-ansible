@@ -4,4 +4,3 @@
 # from galaxy
 - src: jnv.unattended-upgrades
   version: v1.7.0
-# Version funktioniert im Moment nicht
