@@ -13,33 +13,40 @@
       - vpnc
       - borgbackup
 
-  - name: VPNC - Konfiguration erstellen
-    template: 
 
 #vpnc-Konfiguration
-  - name: Erstelle /etc/vpnc/vpnc.conf
-    template:
-      src: vpnc.conf
+
+  - name: Get vpnc.conf from master
+    slurp:
+      src: "{{ '/etc/ansible/secrets/vpnc/' + ansible_hostname + '_vpnc.conf' }}"
+    delegate_to: ucs-master.gst.hamburg.adfc.de
+    register: VPNC_CONF
+    tags: vpnc
+
+  - name: Create vpnc.conf 
+    copy:
+      content: "{{ VPNC_CONF.content | b64decode }}"
       dest: /etc/vpnc/vpnc.conf
+      mode: 0600
       owner: root
       group: root
-      mode: '0600'
     tags: vpnc
+
 
 #backup-script
   - name: copy backup script
-      copy:
-         src: backup-script_client.sh
-         dest: /usr/local/sbin/backup-script_client.sh
-         mode: 755
-      tags: script
-    - name: cron erstellen # https://docs.ansible.com/ansible/latest/modules/cron_module.html?highlight=cron
-      cron:
-        name: "run-remote-backup"
-        minute: "10"
-        hour: "2"
-        weekday: "2"
-        cron_file: remote-backup
-        user: root
-        job: /usr/local/sbin/backup-script_client.sh
+    copy:
+      src: backup-script_client.sh
+      dest: /usr/local/sbin/backup-script_client.sh
+      mode: 755
+    tags: script
+  - name: cron erstellen # https://docs.ansible.com/ansible/latest/modules/cron_module.html?highlight=cron
+    cron:
+      name: "run-remote-backup"
+      minute: "10"
+      hour: "2"
+      weekday: "2"
+      cron_file: remote-backup
+      user: root
+      job: /usr/local/sbin/backup-script_client.sh
 
