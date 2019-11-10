@@ -2,7 +2,4 @@
 .DS_Store
 .project
 
-adfc-secrets/*.sec
-adfc-secrets/*.sec.yml
-
 
