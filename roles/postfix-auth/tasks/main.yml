@@ -18,14 +18,19 @@
     dest: /etc/postfix/sender_canonical
     mode: 0640
 
-- name: Check that smtp_auth file exists
-  stat:
-    path: /etc/postfix/smtp_auth
-  register: smtp_auth
+- name: Get Client Auth from Matser
+  slurp:
+    src: /etc/ansible/secrets/smtp_client_auth
+  delegate_to: ucs-master.gst.hamburg.adfc.de
+  register: SMTP_AUTH
 
-- fail:
-    msg: "smtp_auth does not exist"
-  when: smtp_auth.stat.exists == False
+- name: Create SMTP Client Auth
+  copy:
+    content: "{{ SMTP_AUTH.content |b64decode }}"
+    dest: /etc/postfix/smtp_auth
+    mode: 0600
+    owner: root
+    group: root
 
 - name: Do postmap on smtp_auth
   command: /usr/sbin/postmap /etc/postfix/smtp_auth
