@@ -1,4 +1,3 @@
-#postfix_host_email: moved to adfc-hh-contacts
 firefox_extensions:
   - {name: "https_everywhere.xpi", id: "https-everywhere@eff.org.xpi", url: "https://addons.mozilla.org/firefox/downloads/file/3060290/https_everywhere.xpi"}
   - {name: "i_dont_care_about_cookies.xpi", id: "jid1-KKzOGWgsW3Ao4Q@jetpack.xpi", url: "https://addons.mozilla.org/firefox/downloads/file/3397453/i_dont_care_about_cookies.xpi"}
@@ -10,7 +9,6 @@ hibiscus_archive_url: https://www.willuhn.de/products/hibiscus/releases/nightly/
 unattended_origins_patterns:
   - 'origin=Ubuntu,archive=${distro_codename}-security'
   - 'origin=Ubuntu,archive=${distro_codename}-updates'
-#unattended_mail_only_on_error: moved to adfc-hh-contacts
 unattended_install_on_shutdown: false
 unattended_random_sleep: 1800
 unattended_automatic_reboot_time: 03:00
