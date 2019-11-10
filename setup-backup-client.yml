@@ -1,4 +1,4 @@
-- hosts: backup_stations
+- hosts: backup_clients
   roles:
   - ssh-keys
   - ubuntu-basic
@@ -14,22 +14,30 @@
       - borgbackup
 
 
-#vpnc-Konfiguration
+# vpnc-Konfiguration
 
-  - name: Get vpnc.conf from master
+  - name: Get vpnc.conf shared secret from master
     slurp:
-      src: "{{ '/etc/ansible/secrets/vpnc/' + ansible_hostname + '_vpnc.conf' }}"
-    delegate_to: ucs-master.gst.hamburg.adfc.de
-    register: VPNC_CONF
+      src: "{{ adfc_vpnc_folder + ansible_hostname + '_vpnc_shared_secret' }}"
+    delegate_to: "{{ adfc_vpnc_source }}"
+    register: VPNC_SHARED_SECRET
     tags: vpnc
 
-  - name: Create vpnc.conf 
-    copy:
-      content: "{{ VPNC_CONF.content | b64decode }}"
+  - name: Get vpnc.conf password from master
+    slurp:
+      src: "{{ adfc_vpnc_folder + ansible_hostname + '_vpnc_password' }}"
+    delegate_to: "{{ adfc_vpnc_source }}"
+    register: VPNC_PASSWORD
+    tags: vpnc
+
+#vpnc-Konfiguration
+  - name: Erstelle /etc/vpnc/vpnc.conf
+    template:
+      src: vpnc.conf
       dest: /etc/vpnc/vpnc.conf
-      mode: 0600
       owner: root
       group: root
+      mode: '0600'
     tags: vpnc
 
 
