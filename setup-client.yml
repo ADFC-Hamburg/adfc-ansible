@@ -1,6 +1,7 @@
 - hosts: arbeitsplatz
   roles:
   - ssh-keys
+  - unburden-home-dir
   - postfix-auth
   - firefox-client
   - jnv.unattended-upgrades
