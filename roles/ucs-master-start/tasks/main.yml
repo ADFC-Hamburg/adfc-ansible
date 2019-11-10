@@ -14,12 +14,12 @@
   fail:
    msg: "UCS is reachable"
   when: not ping_result.unreachable
-- name: "stop ucs-master"
+- name: "stop ucs-master" # noqa 301
   command: "qm stop 100"
 - name: "wait"
   pause:
     seconds: 5
-- name: "start ucs-master"
+- name: "start ucs-master" # noqa 301
   command: "qm start 100"
 - name: "wait"
   pause:
@@ -29,7 +29,7 @@
   vars:
     char: "{{ item }}"
   with_items: "{{ get_password.content |b64decode |list }}"
-- name: send return
+- name: send return # noqa 301
   command: "qm sendkey 100 kp_enter"
 - name: "wait"
   pause:
