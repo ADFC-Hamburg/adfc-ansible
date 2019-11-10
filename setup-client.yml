@@ -1,5 +1,6 @@
 - hosts: arbeitsplatz
   roles:
+  - load-contacts
   - ssh-keys
   - ubuntu-basic
   - postfix-auth
@@ -8,8 +9,6 @@
 
   tasks:
 
-  - name: include adfc-secrets/adfc-hh-contacts.sec.yml
-    include_vars: adfc-secrets/adfc-hh-contacts.sec.yml
 
 # spezielle Repositories hinzufügen
   - name: ucs domain join repository

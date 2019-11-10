@@ -1,5 +1,6 @@
 - hosts: backup_clients
   roles:
+  - load-contacts
   - ssh-keys
   - ubuntu-basic
   tasks:
@@ -13,19 +14,18 @@
       - vpnc
       - borgbackup
 
-
 # vpnc-Konfiguration
 
   - name: Get vpnc.conf shared secret from master
     slurp:
-      src: "{{ adfc_vpnc_folder + ansible_hostname + '_vpnc_shared_secret' }}"
+      src: "{{ adfc_secret_folder + 'vpnc/' + ansible_hostname + '_vpnc_shared_secret' }}"
     delegate_to: "{{ adfc_vpnc_source }}"
     register: VPNC_SHARED_SECRET
     tags: vpnc
 
   - name: Get vpnc.conf password from master
     slurp:
-      src: "{{ adfc_vpnc_folder + ansible_hostname + '_vpnc_password' }}"
+      src: "{{ adfc_secret_folder + 'vpnc/' + ansible_hostname + '_vpnc_password' }}"
     delegate_to: "{{ adfc_vpnc_source }}"
     register: VPNC_PASSWORD
     tags: vpnc
