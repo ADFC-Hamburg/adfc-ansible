@@ -7,16 +7,26 @@
     state: present
 
 - name: copy postfix configuration file
-  template: 
+  template:
     src: postfix-main.cf
     dest: /etc/postfix/main.cf
     mode: 0644
 
-- name: copy sender_canonical 
+- name: copy sender_canonical
   template:
     src: sender-canonical
     dest: /etc/postfix/sender_canonical
     mode: 0640
+
+- name: Check that smtp_auth file exists
+  stat:
+    path: /etc/postfix/smtp_auth
+  register: smtp_auth
+
+- name: fail is smpt_auth does not exists
+  fail:
+    msg: "smtp_auth does not exist"
+  when: not smtp_auth.stat.exists
 
 - name: Get Client Auth from Matser
   slurp:
@@ -46,10 +56,10 @@
 
 - name: Do newaliases
   command: /usr/bin/newaliases
-  when: aliases_changed.changed == True
+  when: aliases_changed.changed
 
 - name: reload postfix
   service:
     name: postfix
     state: restarted
-  when: (postmap['changed'] == True or aliases_changed['changed'] == True)
+  when: (postmap['changed'] or aliases_changed['changed'])

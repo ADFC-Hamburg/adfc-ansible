@@ -154,22 +154,22 @@
        prompt: "Enter UCS-Master Administrator password"
     register: UCSAdminPassword
     no_log: true
-    when: stat_ucs_mkhomedir.stat.exists == False
+    when: not stat_ucs_mkhomedir.stat.exists
   - name: create password file
     copy:
       content: "{{ UCSAdminPassword.user_input }}"
       dest: "/root/ucs-admin-pw.secret"
-    when: stat_ucs_mkhomedir.stat.exists == False
+    when: not stat_ucs_mkhomedir.stat.exists
   - name: Do univention domain join
     command: "/usr/sbin/univention-domain-join-cli --username Administrator --master-ip ucs-master --password-file /root/ucs-admin-pw.secret"
-    when: stat_ucs_mkhomedir.stat.exists == False
+    when: not stat_ucs_mkhomedir.stat.exists
   - name: delete password file
     file:
       state: absent
       path: "/root/ucs-admin-pw.secret"
   - name: Reboot after domain join
     reboot:
-    when: stat_ucs_mkhomedir.stat.exists == False
+    when: not stat_ucs_mkhomedir.stat.exists
 
 # mount NFS shares
   - name: Mount NFS /adfc

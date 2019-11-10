@@ -9,7 +9,7 @@
       copy:
          src: ucs-master-sync-babelfish.sh
          dest: /usr/local/sbin/ucs-master-sync-babelfish.sh
-         mode: 755
+         mode: 0755
       tags: rsync
     - name: Immer um x:12 Uhr rsync anwerfen
       cron:
@@ -32,7 +32,7 @@
       register: stat_homedir_listener
     - name: install module for autocreation of home dirs
       command: univention-install univention-homedir-autocreate
-      when: stat_homedir_listener.stat.exists == False
+      when: not stat_homedir_listener.stat.exists
       tags: cool_solutions
 
     - name: install postfix sender_canonical
@@ -68,4 +68,4 @@
       register: stat_borgbackup
     - name: install borgbackup
       command: univention-install borgbackup borgbackup-doc
-      when: stat_borgbackup.stat.exists == False
+      when: not stat_borgbackup.stat.exists
