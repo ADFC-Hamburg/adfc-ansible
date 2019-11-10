@@ -28,6 +28,20 @@
     msg: "smtp_auth does not exist"
   when: not smtp_auth.stat.exists
 
+- name: Get Client Auth from Matser
+  slurp:
+    src: /etc/ansible/secrets/smtp_client_auth
+  delegate_to: ucs-master.gst.hamburg.adfc.de
+  register: SMTP_AUTH
+
+- name: Create SMTP Client Auth
+  copy:
+    content: "{{ SMTP_AUTH.content |b64decode }}"
+    dest: /etc/postfix/smtp_auth
+    mode: 0600
+    owner: root
+    group: root
+
 - name: Do postmap on smtp_auth
   command: /usr/sbin/postmap /etc/postfix/smtp_auth
   args:

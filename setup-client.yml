@@ -39,6 +39,7 @@
       - vlc
       - thunderbird
       - thunderbird-locale-de
+      - xul-ext-lightning
       - language-pack-de-base
       - gnupg2
       - gimp
