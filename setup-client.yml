@@ -23,7 +23,7 @@
     apt_repository:
       repo: 'deb https://repo.skype.com/deb stable main'
 
-      # benötigte Programme installieren
+# benötigte Programme installieren
   - name: Installiere Packete
     apt:
       name: "{{ packages }}"
