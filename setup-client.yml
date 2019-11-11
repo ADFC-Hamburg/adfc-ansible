@@ -11,7 +11,13 @@
   - name: ucs domain join repository
     apt_repository:
       repo: 'ppa:univention-dev/ppa'
-  - name: ppa fuer hibiskus hinzu
+
+  - name: keepassxc ppa
+    apt_repository:
+      repo: 'ppa:phoerious/keepassxc'
+    tags: software
+    
+  - name: ppa fuer hibiskus entfernen
     apt_repository:
       repo: 'ppa:marko-preuss/hibiscus'
       state: absent
@@ -55,6 +61,7 @@
       - krdc
       - pdfmod
       - pdfsam
+      - keepassxc
     tags: software
 
   - name: uninstall hibiscus-ppa
