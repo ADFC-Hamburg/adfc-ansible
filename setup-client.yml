@@ -16,7 +16,7 @@
     apt_repository:
       repo: 'ppa:phoerious/keepassxc'
     tags: software
-    
+
   - name: ppa fuer hibiskus entfernen
     apt_repository:
       repo: 'ppa:marko-preuss/hibiscus'
