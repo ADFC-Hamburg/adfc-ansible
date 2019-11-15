@@ -13,3 +13,4 @@ all:
     backup_clients:
       hosts:
         adfc-hh-bak-1: 
+        fakebackup-vm:

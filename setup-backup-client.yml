@@ -13,6 +13,7 @@
       packages:
       - vpnc
       - borgbackup
+      - mailutils
 
 # vpnc-Konfiguration
 
@@ -42,12 +43,15 @@
 
 
 #backup-script
-  - name: copy backup script
-    copy:
+  - name: create backup script from template
+    template:
       src: backup-script_client.sh
       dest: /usr/local/sbin/backup-script_client.sh
-      mode: 755
+      owner: root
+      group: root
+      mode: '0755'
     tags: script
+  
   - name: cron erstellen # https://docs.ansible.com/ansible/latest/modules/cron_module.html?highlight=cron
     cron:
       name: "run-remote-backup"
