@@ -11,10 +11,16 @@
   - name: ucs domain join repository
     apt_repository:
       repo: 'ppa:univention-dev/ppa'
+    tags: software
   - name: ppa fuer hibiskus hinzu
     apt_repository:
       repo: 'ppa:marko-preuss/hibiscus'
       state: absent
+    tags: software
+  - name: ppa für Nextcloud hinzufügen
+    apt_repository:
+      repo: 'ppa:nextcloud-devs/client'
+    tags: software
 
 # benötigte Programme installieren
   - name: Installiere Packete
@@ -55,6 +61,8 @@
       - krdc
       - pdfmod
       - pdfsam
+      - nextcloud-client
+      - nextcloud-client-dolphin
     tags: software
 
   - name: uninstall hibiscus-ppa
