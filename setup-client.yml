@@ -11,10 +11,12 @@
   - name: ucs domain join repository
     apt_repository:
       repo: 'ppa:univention-dev/ppa'
+    tags: software
   - name: ppa fuer hibiskus hinzu
     apt_repository:
       repo: 'ppa:marko-preuss/hibiscus'
       state: absent
+
   - name: Skype-Repo und GPG-Key hinzu
     apt_key:
       url: https://repo.skype.com/data/SKYPE-GPG-KEY
@@ -29,6 +31,11 @@
   - name: Installiere apt-transport-https
     apt:
       name: apt-transport-https
+    tags: software
+
+  - name: ppa für Nextcloud hinzufügen
+    apt_repository:
+      repo: 'ppa:nextcloud-devs/client'
     tags: software
 
   - name: apt-get update
@@ -74,6 +81,8 @@
       - pdfmod
       - pdfsam
       - skypeforlinux
+      - nextcloud-client
+      - nextcloud-client-dolphin
     tags: software
 
   - name: uninstall hibiscus-ppa
