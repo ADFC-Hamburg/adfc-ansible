@@ -51,7 +51,7 @@
       group: root
       mode: '0755'
     tags: script
-  
+
   - name: cron erstellen # https://docs.ansible.com/ansible/latest/modules/cron_module.html?highlight=cron
     cron:
       name: "run-remote-backup"

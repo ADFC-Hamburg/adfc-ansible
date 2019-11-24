@@ -170,7 +170,7 @@
   - name: Reboot on network interfaces changes
     reboot:
     when: interfaces_create.changed
-    
+
   - name: Check if join is alread done
     stat:
       path: /usr/share/pam-configs/ucs_mkhomedir

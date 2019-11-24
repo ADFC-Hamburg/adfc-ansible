@@ -12,5 +12,5 @@ all:
         kubuntu-vm.gst.hamburg.adfc.de:
     backup_clients:
       hosts:
-        adfc-hh-bak-1: 
+        adfc-hh-bak-1:
         fakebackup-vm:
