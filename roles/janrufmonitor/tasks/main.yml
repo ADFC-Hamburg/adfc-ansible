@@ -1,0 +1,40 @@
+---
+
+- name: Erstelle Directory
+  file:
+    path: "{{ janrufmon_dest_dir }}"
+    state: directory
+
+- name: Test if downloaded
+  slurp:
+      src: "{{ janrufmon_dest_dir }}/sha256sum-ansible.txt"
+  ignore_errors: yes
+  register: jsha256sum
+
+- name: Include if sha256sum is not okay
+  include_tasks: download.yml
+  when: (jsha256sum.content |default('') |b64decode ) != janrufmon_sha256sum
+
+- name: Copy desktop file
+  copy:
+    src: janrufmonitor.desktop
+    dest: /usr/share/applications/
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Copy Command
+  copy:
+    src: janrufmonitor.sh
+    dest: /usr/local/bin
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Erstelle Directory wie /tmp d.H jeder darf schreiben, aber nur der der es angelegt hat, wieder loeschen
+  file:
+    path: "{{ janrufmon_dest_dir }}/users"
+    state: directory
+    mode: 01777
+# Nicht abgefangen ist der Fall, dass jemand eine Config für jemanden anders unterschiebt
+
