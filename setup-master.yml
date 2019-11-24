@@ -65,13 +65,13 @@
       with_items:
         - thomasn
 #
-    - name: add ssh keys of the admins
-      authorized_key:
-        user: root
-        comment: "ADFC-Backup-Knocker"
-        key: "{{ lookup('file', 'ssh-key-knocker/backup_clients_knocker.pub') }}"
-        key_options: 'restrict, command="touch /bakcl_vpn_online/$SSH_ORIGINAL_COMMAND"'
-        state: present
+#    - name: add ssh keys of the admins
+#      authorized_key:
+#        user: root
+#        comment: "ADFC-Backup-Knocker"
+#        key: "{{ lookup('file', 'ssh-key-knocker/backup_clients_knocker.pub') }}"
+#        key_options: 'restrict, command="touch /bakcl_vpn_online/$SSH_ORIGINAL_COMMAND"'
+#        state: present
         
     - name: enable unmaintained
       ucr:
