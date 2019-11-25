@@ -1,3 +1,9 @@
+- name: Download janrufmonitor
+  get_url:
+      dest: /usr/src/janrufmon.tgz
+      url: "{{ janrufmon_url }}"
+      mode: 0644
+      checksum: "sha256:{{ janrufmon_sha256sum }}"
 
 - name: Unpack
   unarchive:
@@ -40,7 +46,7 @@
 
 - name: Set Permission of the jam.sh File
   file:
-    path: "{{ janrufmon_dest_dir}}/jam.sh"
+    path: "{{ janrufmon_dest_dir }}/jam.sh"
     mode: 0755
     owner: root
     group: root
