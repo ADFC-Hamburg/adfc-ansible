@@ -53,7 +53,7 @@
 
 - name: Set Markerfile that everything is okay
   copy:
-    content: "{{ janrufmon_sha256sum}}"
+    content: "{{ janrufmon_sha256sum }}"
     dest: "{{ janrufmon_dest_dir }}/sha256sum-ansible.txt"
     mode: 0644
     owner: root
