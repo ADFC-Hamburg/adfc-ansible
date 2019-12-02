@@ -11,8 +11,14 @@
   - name: ucs domain join repository
     apt_repository:
       repo: 'ppa:univention-dev/ppa'
+
+  - name: keepassxc ppa
+    apt_repository:
+      repo: 'ppa:phoerious/keepassxc'
     tags: software
-  - name: ppa fuer hibiskus hinzu
+
+  - name: ppa fuer hibiskus entfernen
+    tags: software
     apt_repository:
       repo: 'ppa:marko-preuss/hibiscus'
       state: absent
@@ -80,6 +86,7 @@
       - krdc
       - pdfmod
       - pdfsam
+      - keepassxc
       - skypeforlinux
       - nextcloud-client
       - nextcloud-client-dolphin
