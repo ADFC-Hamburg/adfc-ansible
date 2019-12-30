@@ -10,3 +10,8 @@ all:
       hosts:
         adfc-testclient.gst.hamburg.adfc.de:
         kubuntu-vm.gst.hamburg.adfc.de:
+        bob.gst.hamburg.adfc.de:
+        ford.gst.hamburg.adfc.de:
+        marvin.gst.hamburg.adfc.de:
+        trillian.gst.hamburg.adfc.de:
+        zaphod.gst.hamburg.adfc.de:
