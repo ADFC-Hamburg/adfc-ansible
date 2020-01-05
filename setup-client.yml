@@ -3,9 +3,18 @@
   - ssh-keys
   - postfix-auth
   - firefox-client
-  - jnv.unattended-upgrades
 
   tasks:
+  - name: Getnotfication-Emailaddress
+    slurp:
+      src: /etc/ansible/secrets/mailingliste.txt
+    delegate_to: ucs-master.gst.hamburg.adfc.de
+    register: MAILINGLISTE
+  - name: Unattended-upgrades
+    include_role:
+      name: jnv.unattended-upgrades
+    vars:
+      unattended_mail_only_on_error: "{{ MAILINGLISTE.content |b64decode  |replace('\n', '') }}"
 
 # spezielle Repositories hinzufügen
   - name: ucs domain join repository

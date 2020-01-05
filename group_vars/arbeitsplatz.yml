@@ -10,8 +10,6 @@ hibiscus_archive_url: https://www.willuhn.de/products/hibiscus/releases/nightly/
 unattended_origins_patterns:
   - 'origin=Ubuntu,archive=${distro_codename}-security'
   - 'origin=Ubuntu,archive=${distro_codename}-updates'
-unattended_mail_only_on_error: "{{ lookup('csvfile', 'adfc_notification_email file=adfc-secrets/adfc-hh-contacts.sec delimiter=,') }}"
 unattended_install_on_shutdown: false
 unattended_random_sleep: 1800
 unattended_automatic_reboot_time: 03:00
-
