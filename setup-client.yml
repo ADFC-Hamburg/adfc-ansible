@@ -50,6 +50,7 @@
     tags: software
 
 # benötigte Programme installieren
+# pdfshuffler muss bei Wechsel auf Kubuntu >=19 in pdfarranger geändert werden
   - name: Installiere Packete
     apt:
       name:
@@ -86,6 +87,7 @@
       - krdc
       - pdfmod
       - pdfsam
+      - pdfshuffler
       - keepassxc
       - skypeforlinux
       - nextcloud-client
