@@ -8,12 +8,24 @@
 
   tasks:
 
+  - name: Setup Cups client.conf
+    copy:
+      content: "ServerName ucs-master.gst.hamburg.adfc.de"
+      dest: /etc/cups/client.conf
+      mode: 0644
+
 # spezielle Repositories hinzufügen
   - name: ucs domain join repository
     apt_repository:
       repo: 'ppa:univention-dev/ppa'
+
+  - name: keepassxc ppa
+    apt_repository:
+      repo: 'ppa:phoerious/keepassxc'
     tags: software
-  - name: ppa fuer hibiskus hinzu
+
+  - name: ppa fuer hibiskus entfernen
+    tags: software
     apt_repository:
       repo: 'ppa:marko-preuss/hibiscus'
       state: absent
@@ -45,6 +57,7 @@
     tags: software
 
 # benötigte Programme installieren
+# pdfshuffler muss bei Wechsel auf Kubuntu >=19 in pdfarranger geändert werden
   - name: Installiere Packete
     apt:
       name:
@@ -81,6 +94,8 @@
       - krdc
       - pdfmod
       - pdfsam
+      - pdfshuffler
+      - keepassxc
       - skypeforlinux
       - nextcloud-client
       - nextcloud-client-dolphin
