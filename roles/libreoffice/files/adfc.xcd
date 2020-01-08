@@ -23,7 +23,7 @@ sowie
 <oor:component-data oor:name="UserProfile" oor:package="org.openoffice">
 <node oor:name="Data">
 <prop oor:name="street" oor:finalized="true"><value>Koppel 34-36</value></prop>
-<prop oor:name="postalcode"><value>2222</value></prop>
+<prop oor:name="postalcode"><value>20099</value></prop>
 <prop oor:name="o"><value>ADFC Landesverband Hamburg e.V.</value></prop>
 <prop oor:name="l"><value>Hamburg</value></prop>
 <prop oor:name="c"><value>Deutschland</value></prop>

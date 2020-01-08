@@ -10,5 +10,5 @@
 - name: Copy settings
   copy:
     src: adfc.xcd
-    dst: /usr/lib/libreoffice/share/registry/adfc.xcd
+    dest: /usr/lib/libreoffice/share/registry/adfc.xcd
     mode: 0644
