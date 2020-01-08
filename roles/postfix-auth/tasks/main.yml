@@ -7,12 +7,12 @@
     state: present
 
 - name: copy postfix configuration file
-  template: 
+  template:
     src: postfix-main.cf
     dest: /etc/postfix/main.cf
     mode: 0644
 
-- name: copy sender_canonical 
+- name: copy sender_canonical
   template:
     src: sender-canonical
     dest: /etc/postfix/sender_canonical
@@ -23,9 +23,24 @@
     path: /etc/postfix/smtp_auth
   register: smtp_auth
 
-- fail:
+- name: fail is smpt_auth does not exists
+  fail:
     msg: "smtp_auth does not exist"
-  when: smtp_auth.stat.exists == False
+  when: not smtp_auth.stat.exists
+
+- name: Get Client Auth from Matser
+  slurp:
+    src: /etc/ansible/secrets/smtp_client_auth
+  delegate_to: ucs-master.gst.hamburg.adfc.de
+  register: SMTP_AUTH
+
+- name: Create SMTP Client Auth
+  copy:
+    content: "{{ SMTP_AUTH.content |b64decode }}"
+    dest: /etc/postfix/smtp_auth
+    mode: 0600
+    owner: root
+    group: root
 
 - name: Do postmap on smtp_auth
   command: /usr/sbin/postmap /etc/postfix/smtp_auth
@@ -33,18 +48,25 @@
     creates: /etc/postfix/smtp_auth.db
   register: postmap
 
+- name: Getnotfication-Emailaddress
+  slurp:
+    src: /etc/ansible/secrets/mailingliste.txt
+  delegate_to: ucs-master.gst.hamburg.adfc.de
+  register: MAILINGLISTE
+
 - name: Make sure mail for root is redirected
   lineinfile:
     path: /etc/aliases
-    line: "root: {{ lookup('csvfile', 'adfc_notification_email file=adfc-secrets/adfc-hh-contacts.sec delimiter=,') }}"
+    regexp: '^root:'
+    line: "root: {{ MAILINGLISTE.content |b64decode  |replace('\n', '') }}"
   register: aliases_changed
 
 - name: Do newaliases
   command: /usr/bin/newaliases
-  when: aliases_changed.changed == True
+  when: aliases_changed.changed
 
 - name: reload postfix
   service:
     name: postfix
     state: restarted
-  when: (postmap['changed'] == True or aliases_changed['changed'] == True)
+  when: (postmap['changed'] or aliases_changed['changed'])

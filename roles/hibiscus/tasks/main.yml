@@ -1,5 +1,6 @@
 ---
-- unarchive:
+- name: unpack hibiscus
+  unarchive:
     src: "{{ hibiscus_archive_url }}"
     remote_src: yes
     dest: /opt/jameica/plugins

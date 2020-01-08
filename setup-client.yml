@@ -8,21 +8,59 @@
 
   tasks:
 
+  - name: Setup Cups client.conf
+    copy:
+      content: "ServerName ucs-master.gst.hamburg.adfc.de"
+      dest: /etc/cups/client.conf
+      mode: 0644
+
 # spezielle Repositories hinzufügen
   - name: ucs domain join repository
     apt_repository:
       repo: 'ppa:univention-dev/ppa'
-  - name: ppa fuer hibiskus hinzu
+
+  - name: keepassxc ppa
+    apt_repository:
+      repo: 'ppa:phoerious/keepassxc'
+    tags: software
+
+  - name: ppa fuer hibiskus entfernen
+    tags: software
     apt_repository:
       repo: 'ppa:marko-preuss/hibiscus'
       state: absent
 
+  - name: Skype-Repo und GPG-Key hinzu
+    apt_key:
+      url: https://repo.skype.com/data/SKYPE-GPG-KEY
+      state: present
+    tags: software
+
+  - name: skype repository
+    apt_repository:
+      repo: 'deb https://repo.skype.com/deb stable main'
+    tags: software
+
+  - name: Installiere apt-transport-https
+    apt:
+      name: apt-transport-https
+    tags: software
+
+  - name: ppa für Nextcloud hinzufügen
+    apt_repository:
+      repo: 'ppa:nextcloud-devs/client'
+    tags: software
+
+  - name: apt-get update
+    apt:
+      update_cache: yes
+    tags: software
+
 # benötigte Programme installieren
+# pdfshuffler muss bei Wechsel auf Kubuntu >=19 in pdfarranger geändert werden
   - name: Installiere Packete
     apt:
-      name: "{{ packages }}"
-    vars:
-      packages:
+      name:
       - emacs
       - ncdu
       - git
@@ -38,6 +76,7 @@
       - vlc
       - thunderbird
       - thunderbird-locale-de
+      - xul-ext-lightning
       - language-pack-de-base
       - gnupg2
       - gimp
@@ -51,6 +90,13 @@
       - gnucash-docs
       - bsd-mailx
       - krdc
+      - pdfmod
+      - pdfsam
+      - pdfshuffler
+      - keepassxc
+      - skypeforlinux
+      - nextcloud-client
+      - nextcloud-client-dolphin
     tags: software
 
   - name: uninstall hibiscus-ppa
@@ -152,22 +198,22 @@
        prompt: "Enter UCS-Master Administrator password"
     register: UCSAdminPassword
     no_log: true
-    when: stat_ucs_mkhomedir.stat.exists == False
+    when: not stat_ucs_mkhomedir.stat.exists
   - name: create password file
     copy:
       content: "{{ UCSAdminPassword.user_input }}"
       dest: "/root/ucs-admin-pw.secret"
-    when: stat_ucs_mkhomedir.stat.exists == False
+    when: not stat_ucs_mkhomedir.stat.exists
   - name: Do univention domain join
     command: "/usr/sbin/univention-domain-join-cli --username Administrator --master-ip ucs-master --password-file /root/ucs-admin-pw.secret"
-    when: stat_ucs_mkhomedir.stat.exists == False
+    when: not stat_ucs_mkhomedir.stat.exists
   - name: delete password file
     file:
       state: absent
       path: "/root/ucs-admin-pw.secret"
   - name: Reboot after domain join
     reboot:
-    when: stat_ucs_mkhomedir.stat.exists == False
+    when: not stat_ucs_mkhomedir.stat.exists
 
 # mount NFS shares
   - name: Mount NFS /adfc
