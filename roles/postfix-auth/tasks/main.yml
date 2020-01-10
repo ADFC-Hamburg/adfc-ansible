@@ -48,10 +48,17 @@
     creates: /etc/postfix/smtp_auth.db
   register: postmap
 
+- name: Getnotfication-Emailaddress
+  slurp:
+    src: /etc/ansible/secrets/mailingliste.txt
+  delegate_to: ucs-master.gst.hamburg.adfc.de
+  register: MAILINGLISTE
+
 - name: Make sure mail for root is redirected
   lineinfile:
     path: /etc/aliases
-    line: "{{ adfc_notification_email }}"
+    regexp: '^root:'
+    line: "root: {{ MAILINGLISTE.content |b64decode  |replace('\n', '') }}"
   register: aliases_changed
 
 - name: Do newaliases
