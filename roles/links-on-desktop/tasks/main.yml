@@ -1,0 +1,17 @@
+---
+# Playbook to configure Postfix on a server to be able to send emails to admins
+
+- name: create links folder on UCS-Master 
+  file:
+    path: /adfc/links/
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  delegate_to: ucs-master.gst.hamburg.adfc.de 
+
+- name: copy all users autostart to client
+  copy:
+    src: forallusers.desktop
+    dest: /etc/xdg/autostart/forallusers.desktop
+    mode: 0644

@@ -4,6 +4,7 @@
   - postfix-auth
   - firefox-client
   - jnv.unattended-upgrades
+  - links-on-desktop
 
   tasks:
 
