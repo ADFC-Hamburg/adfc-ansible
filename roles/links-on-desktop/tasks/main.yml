@@ -1,7 +1,7 @@
 ---
 # Playbook to configure Postfix on a server to be able to send emails to admins
 
-- name: create links folder on UCS-Master 
+- name: create links folder on UCS-Master
   file:
     path: /adfc/links/
     state: directory
