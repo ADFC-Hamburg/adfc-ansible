@@ -1,6 +1,8 @@
 - hosts: arbeitsplatz
   roles:
+  - load-contacts
   - ssh-keys
+  - ubuntu-basic
   - postfix-auth
   - firefox-client
   - jnv.unattended-upgrades
@@ -57,7 +59,7 @@
 
 # benötigte Programme installieren
 # pdfshuffler muss bei Wechsel auf Kubuntu >=19 in pdfarranger geändert werden
-  - name: Installiere Packete
+  - name: Installiere Pakete
     apt:
       name:
       - emacs
@@ -68,7 +70,6 @@
       - univention-domain-join
       - univention-domain-join-cli
       - gdm3
-      - vim
       - nfs-common
       - openjdk-11-jre
       - flameshot
@@ -84,8 +85,6 @@
       - language-pack-gnome-de
       - gimp-help-de
       - glabels
-      - htop
-      - mc
       - openshot-qt
       - gnucash
       - gnucash-docs
@@ -113,11 +112,6 @@
     include_role:
       name: hibiscus
 
-  - name: Downloadverzeichnis für deb-Pakete erstellen
-    file:
-      path: /usr/local/share/ansible_downloads/
-      state: directory
-      mode: 0755
 
   - name: Kein KDE Update Icon mehr anzeigen
     apt:
@@ -190,6 +184,7 @@
   - name: Reboot on network interfaces changes
     reboot:
     when: interfaces_create.changed
+
   - name: Check if join is alread done
     stat:
       path: /usr/share/pam-configs/ucs_mkhomedir
