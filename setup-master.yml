@@ -59,6 +59,21 @@
         src: nagios-otrs.cfg
         dest: /etc/nagios/conf.local.d/check_otrs.cfg
 
+    - name: Menueeintrag fuer Access benutzerabhaengig erstellen
+      template:
+        src: access_2013.desktop
+        dest: /home/{{ item }}/.local/share/applications/access_2013.desktop
+      with_items:
+        - thomasn
+#
+#    - name: add ssh keys of the admins
+#      authorized_key:
+#        user: root
+#        comment: "ADFC-Backup-Knocker"
+#        key: "{{ lookup('file', 'ssh-key-knocker/backup_clients_knocker.pub') }}"
+#        key_options: 'restrict, command="touch /bakcl_vpn_online/$SSH_ORIGINAL_COMMAND"'
+#        state: present
+
     - name: enable unmaintained
       ucr:
         values:
