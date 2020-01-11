@@ -35,4 +35,3 @@
     dest: /etc/xdg/autostart/forallusers.desktop
     mode: 0644
   when: "'arbeitsplatz' in group_names"
-  
