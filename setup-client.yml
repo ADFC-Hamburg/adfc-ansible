@@ -2,6 +2,7 @@
   roles:
   - load-contacts
   - ssh-keys
+  - unburden-home-dir
   - ubuntu-basic
   - postfix-auth
   - firefox-client
