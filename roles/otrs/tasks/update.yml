@@ -1,14 +1,14 @@
 ---
 - name: get OTRS
   get_url:
-    url: https://ftp.otrs.org/pub/otrs/otrs-{{ otrs_version }}.tar.bz2
-    dest: /tmp/otrs.tar.bz2
+    url: https://ftp.otrs.org/pub/otrs/otrs-{{ otrs_version }}.tar.gz
+    dest: /tmp/otrs.tar.gz
     mode: 0400
-    checksum: md5:{{ otrs_md5sum_tar_bz2 }}
+    checksum: md5:{{ otrs_md5sum_tar_gz }}
 
 - name: 'Unpack OTRS archive'
   unarchive:
-    src: /tmp/otrs.tar.bz2
+    src: /tmp/otrs.tar.gz
     dest: /opt
     remote_src: yes
 
