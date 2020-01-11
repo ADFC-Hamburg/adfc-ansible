@@ -2,9 +2,12 @@
   roles:
   - load-contacts
   - ssh-keys
+  - fonts
+  - unburden-home-dir
   - ubuntu-basic
   - postfix-auth
   - firefox-client
+  - libreoffice
   - jnv.unattended-upgrades
 
   tasks:
@@ -63,8 +66,6 @@
     apt:
       name:
       - emacs
-      - libreoffice
-      - libreoffice-l10n-de
       - ncdu
       - git
       - univention-domain-join
