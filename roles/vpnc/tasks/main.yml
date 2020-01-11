@@ -1,0 +1,44 @@
+# vpnc-Konfiguration
+- name: Installiere VPNC
+  apt:
+    name: vpnc
+
+- name: Get vpnc.conf shared secret from master
+  slurp:
+    src: "{{ adfc_secret_folder + 'vpnc/' + ansible_hostname + '_vpnc_shared_secret' }}"
+  delegate_to: "{{ adfc_vpnc_source }}"
+  register: VPNC_SHARED_SECRET
+  tags: vpnc
+
+- name: Get vpnc.conf password from master
+  slurp:
+    src: "{{ adfc_secret_folder + 'vpnc/' + ansible_hostname + '_vpnc_password' }}"
+  delegate_to: "{{ adfc_vpnc_source }}"
+  register: VPNC_PASSWORD
+  tags: vpnc
+
+- name: Erstelle /etc/vpnc/adfc-gst.conf
+  template:
+    src: vpnc-adfc-gst.conf
+    dest: /etc/vpnc/adfc-gst.conf
+    owner: root
+    group: root
+    mode: '0600'
+  tags: vpnc
+
+- name: Erstelle /etc/systemd/system/vpnc@.service
+  copy:
+    src: vpnc@.service
+    dest: /etc/systemd/system/vpnc@.service
+    owner: root
+    group: root
+    mode: '0644'
+  tags: vpnc
+
+- name: start vpnc dameon
+  systemd:
+    state: started
+    enabled: yes
+    daemon_reload: yes
+    name: vpnc@adfc-gst
+  tags: vpnc

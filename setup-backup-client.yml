@@ -3,6 +3,7 @@
   - load-contacts
   - ssh-keys
   - ubuntu-basic
+  - vpnc
   tasks:
 
 # benötigte Programme installieren
@@ -11,35 +12,8 @@
       name: "{{ packages }}"
     vars:
       packages:
-      - vpnc
       - borgbackup
       - mailutils
-
-# vpnc-Konfiguration
-
-  - name: Get vpnc.conf shared secret from master
-    slurp:
-      src: "{{ adfc_secret_folder + 'vpnc/' + ansible_hostname + '_vpnc_shared_secret' }}"
-    delegate_to: "{{ adfc_vpnc_source }}"
-    register: VPNC_SHARED_SECRET
-    tags: vpnc
-
-  - name: Get vpnc.conf password from master
-    slurp:
-      src: "{{ adfc_secret_folder + 'vpnc/' + ansible_hostname + '_vpnc_password' }}"
-    delegate_to: "{{ adfc_vpnc_source }}"
-    register: VPNC_PASSWORD
-    tags: vpnc
-
-#vpnc-Konfiguration
-  - name: Erstelle /etc/vpnc/vpnc.conf
-    template:
-      src: vpnc.conf
-      dest: /etc/vpnc/vpnc.conf
-      owner: root
-      group: root
-      mode: '0600'
-    tags: vpnc
 
 
 #backup-script
@@ -61,4 +35,3 @@
       cron_file: remote-backup
       user: root
       job: /usr/local/sbin/backup-script_client.sh
-
