@@ -9,7 +9,7 @@
 - name: show results
   debug:
     msg: "Path {{ adfc_link_path }} exists"
-  when: stat_result.stat.exists == True
+  when: stat_result.stat.exists
 
 - name: create links folder on UCS-Master
   file:
@@ -19,7 +19,7 @@
     group: root
     mode: 0755
   delegate_to: ucs-master.gst.hamburg.adfc.de
-  when: stat_result.stat.exists == False
+  when: not stat_result.stat.exists
 
 - name: copy all users autostart to client
   copy:
