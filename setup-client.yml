@@ -9,6 +9,7 @@
   - firefox-client
   - libreoffice
   - jnv.unattended-upgrades
+  - links-on-desktop
   - client-apt-remove
 
   tasks:

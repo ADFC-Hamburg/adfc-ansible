@@ -3,6 +3,7 @@
   roles:
     - ssh-keys
     - systemd-max-memory
+    - links-on-desktop
   tasks:
     # SSH Key /root/.ssh/rsync-key ist nicht hier eingecheckt und wird nicht deployed, wegen security
     - name: copy rsync script
