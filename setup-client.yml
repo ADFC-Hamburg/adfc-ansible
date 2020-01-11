@@ -1,37 +1,75 @@
 - hosts: arbeitsplatz
   roles:
+  - load-contacts
   - ssh-keys
   - unburden-home-dir
+  - ubuntu-basic
   - postfix-auth
   - firefox-client
+  - libreoffice
   - jnv.unattended-upgrades
 
   tasks:
+
+  - name: Setup Cups client.conf
+    copy:
+      content: "ServerName ucs-master.gst.hamburg.adfc.de"
+      dest: /etc/cups/client.conf
+      mode: 0644
 
 # spezielle Repositories hinzufügen
   - name: ucs domain join repository
     apt_repository:
       repo: 'ppa:univention-dev/ppa'
-  - name: ppa fuer hibiskus hinzu
+
+  - name: keepassxc ppa
+    apt_repository:
+      repo: 'ppa:phoerious/keepassxc'
+    tags: software
+
+  - name: ppa fuer hibiskus entfernen
+    tags: software
     apt_repository:
       repo: 'ppa:marko-preuss/hibiscus'
       state: absent
 
-# benötigte Programme installieren
-  - name: Installiere Packete
+  - name: Skype-Repo und GPG-Key hinzu
+    apt_key:
+      url: https://repo.skype.com/data/SKYPE-GPG-KEY
+      state: present
+    tags: software
+
+  - name: skype repository
+    apt_repository:
+      repo: 'deb https://repo.skype.com/deb stable main'
+    tags: software
+
+  - name: Installiere apt-transport-https
     apt:
-      name: "{{ packages }}"
-    vars:
-      packages:
+      name: apt-transport-https
+    tags: software
+
+  - name: ppa für Nextcloud hinzufügen
+    apt_repository:
+      repo: 'ppa:nextcloud-devs/client'
+    tags: software
+
+  - name: apt-get update
+    apt:
+      update_cache: yes
+    tags: software
+
+# benötigte Programme installieren
+# pdfshuffler muss bei Wechsel auf Kubuntu >=19 in pdfarranger geändert werden
+  - name: Installiere Pakete
+    apt:
+      name:
       - emacs
-      - libreoffice
-      - libreoffice-l10n-de
       - ncdu
       - git
       - univention-domain-join
       - univention-domain-join-cli
       - gdm3
-      - vim
       - nfs-common
       - openjdk-11-jre
       - flameshot
@@ -47,13 +85,18 @@
       - language-pack-gnome-de
       - gimp-help-de
       - glabels
-      - htop
-      - mc
       - openshot-qt
       - gnucash
       - gnucash-docs
       - bsd-mailx
       - krdc
+      - pdfmod
+      - pdfsam
+      - pdfshuffler
+      - keepassxc
+      - skypeforlinux
+      - nextcloud-client
+      - nextcloud-client-dolphin
     tags: software
 
   - name: uninstall hibiscus-ppa
@@ -69,11 +112,6 @@
     include_role:
       name: hibiscus
 
-  - name: Downloadverzeichnis für deb-Pakete erstellen
-    file:
-      path: /usr/local/share/ansible_downloads/
-      state: directory
-      mode: 0755
 
   - name: Kein KDE Update Icon mehr anzeigen
     apt:
@@ -146,6 +184,7 @@
   - name: Reboot on network interfaces changes
     reboot:
     when: interfaces_create.changed
+
   - name: Check if join is alread done
     stat:
       path: /usr/share/pam-configs/ucs_mkhomedir
