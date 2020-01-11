@@ -15,3 +15,7 @@ all:
         marvin.gst.hamburg.adfc.de:
         trillian.gst.hamburg.adfc.de:
         zaphod.gst.hamburg.adfc.de:
+    backup_clients:
+      hosts:
+        adfc-hh-bak-1:
+        fakebackup-vm:

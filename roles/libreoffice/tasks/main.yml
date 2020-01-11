@@ -1,0 +1,14 @@
+---
+- name: Installiere Packete
+  apt:
+    name: "{{ packages }}"
+  vars:
+    packages:
+    - libreoffice
+    - libreoffice-l10n-de
+
+- name: Copy settings
+  copy:
+    src: adfc.xcd
+    dest: /usr/lib/libreoffice/share/registry/adfc.xcd
+    mode: 0644
