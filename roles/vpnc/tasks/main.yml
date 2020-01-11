@@ -42,3 +42,10 @@
     daemon_reload: yes
     name: vpnc@adfc-gst
   tags: vpnc
+
+- name: Generate Directory /etc/vpnc/post-connect.d/
+  file:
+    path: /etc/vpnc/post-connect.d/
+    state: directory
+    mode: '0755'
+  tags: vpnc
