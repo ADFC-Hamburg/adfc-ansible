@@ -53,7 +53,7 @@
       comment: "ADFC-Ansible Knock {{ ansible_host }}"
       key: "{{ knock_ssh_pub.content | b64decode }}"
       state: present
-      key_options: "restrict,command=\"echo $SSH_CLIENT |cut -d ' '  -f1 >/var/run/client-{{ ansible_hostname}}.up\""
+      key_options: "restrict,command=\"echo $SSH_CLIENT |cut -d ' '  -f1 >/var/run/client-{{ ansible_hostname }}.up\""
     delegate_to: ucs-master.gst.hamburg.adfc.de
     tags: knock
 
