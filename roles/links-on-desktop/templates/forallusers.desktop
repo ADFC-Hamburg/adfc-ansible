@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=Application
 Encoding=UTF-8
-Exec=bash -c 'ln -s /adfc/links/ $(xdg-user-dir DESKTOP)/Links' 
+Exec=bash -c 'ln -s {{ adfc_link_path }}/ $(xdg-user-dir DESKTOP)/Links' 
 Name=Links for all
 # KDE bug 190522: KDE does not autostart items with NoDisplay=true...
 # NoDisplay=true
