@@ -62,3 +62,44 @@
       user: root
       job: /usr/local/sbin/backup-script_client.sh
 
+  - name: Create borgbackup user
+    user:
+      name: borguser
+      comment: Borg Backup User
+      system: yes
+      password: '*'
+
+  - name: Generate SSH Keys for borgbackup
+    include_role:
+      name: ssh-keys
+    vars:
+      authorized_key_user: borguser
+
+  - name: Get Borgbackup key
+    slurp:
+       src: /root/.ssh/borgbackup-server.pub
+    delegate_to: ucs-master.gst.hamburg.adfc.de
+    register: borgbackupkey
+
+  - name: Create Authorized_keys for borguser append
+    authorized_key:
+      user: borguser
+      key: "{{ borgbackupkey.content |b64decode }}"
+      state: present
+      key_options: 'no-pty,no-agent-forwarding,no-port-forwarding,no-X11-forwarding,no-user-rc,from="192.168.123.32",command="borg serve --append-only --restrict-to-path /home/borguser/adfc-ucs-master/"'
+
+  - name: Create Directory /home/borguser/adfc-ucs-master/
+    file:
+      path: /home/borguser/adfc-ucs-master/
+      state: directory
+      mode: 0700
+      owner: borguser
+      group: borguser
+
+  - name: Mount Disk to /home/borguser/adfc-ucs-master/
+    mount:
+      path: /home/borguser/adfc-ucs-master/
+      src: "{{ backup_disk_src }}"
+      fstype: ext4
+      state: mounted
+      opts: noatime

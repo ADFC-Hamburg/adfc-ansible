@@ -2,3 +2,5 @@ ansible_user: root
 vpnc_user: backup1
 local_borg_repo: /srv/borgbackup
 ansible_host: adfc-hh-bak-1.netz.anders-hamburg.de
+
+backup_disk_src: "UUID=d35aa939-f326-418b-9fbd-f65dcfcfca65"
