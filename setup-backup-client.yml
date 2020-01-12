@@ -15,25 +15,6 @@
       - borgbackup
       - mailutils
 
-#backup-script
-  - name: create backup script from template
-    template:
-      src: backup-script_client.sh
-      dest: /usr/local/sbin/backup-script_client.sh
-      owner: root
-      group: root
-      mode: '0755'
-    tags: script
-
-  - name: cron erstellen # https://docs.ansible.com/ansible/latest/modules/cron_module.html?highlight=cron
-    cron:
-      name: "run-remote-backup"
-      minute: "10"
-      hour: "2"
-      weekday: "2"
-      cron_file: remote-backup
-      user: root
-      job: /usr/local/sbin/backup-script_client.sh
 
 ########################### KNOCK ###########################################
 
@@ -55,7 +36,7 @@
       comment: "ADFC-Ansible Knock {{ ansible_host }}"
       key: "{{ knock_ssh_pub.content | b64decode }}"
       state: present
-      key_options: "restrict,command=\"echo $SSH_CLIENT |cut -d ' '  -f1 >/var/run/client-{{ ansible_hostname }}.up\""
+      key_options: "restrict,command=\"echo $SSH_CLIENT |cut -d ' '  -f1 >/var/run/client-{{ inventory_hostname }}.up\""
     delegate_to: ucs-master.gst.hamburg.adfc.de
     tags: knock
 
