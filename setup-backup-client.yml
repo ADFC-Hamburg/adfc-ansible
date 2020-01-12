@@ -3,6 +3,7 @@
   - load-contacts
   - ssh-keys
   - ubuntu-basic
+  - vpnc
   tasks:
 
 # benötigte Programme installieren
@@ -11,36 +12,8 @@
       name: "{{ packages }}"
     vars:
       packages:
-      - vpnc
       - borgbackup
       - mailutils
-
-# vpnc-Konfiguration
-
-  - name: Get vpnc.conf shared secret from master
-    slurp:
-      src: "{{ adfc_secret_folder + 'vpnc/' + ansible_hostname + '_vpnc_shared_secret' }}"
-    delegate_to: "{{ adfc_vpnc_source }}"
-    register: VPNC_SHARED_SECRET
-    tags: vpnc
-
-  - name: Get vpnc.conf password from master
-    slurp:
-      src: "{{ adfc_secret_folder + 'vpnc/' + ansible_hostname + '_vpnc_password' }}"
-    delegate_to: "{{ adfc_vpnc_source }}"
-    register: VPNC_PASSWORD
-    tags: vpnc
-
-#vpnc-Konfiguration
-  - name: Erstelle /etc/vpnc/vpnc.conf
-    template:
-      src: vpnc.conf
-      dest: /etc/vpnc/vpnc.conf
-      owner: root
-      group: root
-      mode: '0600'
-    tags: vpnc
-
 
 #backup-script
   - name: create backup script from template
@@ -62,6 +35,46 @@
       user: root
       job: /usr/local/sbin/backup-script_client.sh
 
+########################### KNOCK ###########################################
+
+  - name: "Knock: Create ssh knocking-key"
+    command: ssh-keygen -t rsa -b 4096 -f /root/.ssh/knocking-key -N '' -C 'knocking key {{ ansible_host }}'
+    args:
+      creates: /root/.ssh/knocking-key
+    tags: knock
+
+  - name: "Knock: Get Public Key"
+    slurp:
+      src: /root/.ssh/knocking-key.pub
+    register: knock_ssh_pub
+    tags: knock
+
+  - name: "Knock: Set Knocking key to master"
+    authorized_key:
+      user: root
+      comment: "ADFC-Ansible Knock {{ ansible_host }}"
+      key: "{{ knock_ssh_pub.content | b64decode }}"
+      state: present
+      key_options: "restrict,command=\"echo $SSH_CLIENT |cut -d ' '  -f1 >/var/run/client-{{ ansible_hostname }}.up\""
+    delegate_to: ucs-master.gst.hamburg.adfc.de
+    tags: knock
+
+  - name: "Copy knocking script"
+    copy:
+      src: knock-ssh.sh
+      dest: /usr/local/sbin/adfc-knock
+      mode: "0755"
+    tags: knock
+
+  - name: cron erstellen
+    cron:
+      name: "adfc-knock"
+      minute: "*"
+      cron_file: adfc-knock
+      user: root
+      job: /usr/local/sbin/adfc-knock
+
+############################## BackupUser ######################################
   - name: Create borgbackup user
     user:
       name: borguser
