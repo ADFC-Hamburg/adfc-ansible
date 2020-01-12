@@ -11,10 +11,12 @@ PRUNE_YEARS="2"      # Anzahl der vorzuhaltenden Jahressicherungen
 
 LOG="/var/log/adfc-borgbackup.log"
 
-BORG_CREATE_PARAMS="--info --exclude-caches --show_rc --stats --numeric-owner --noatime -e /var/cache -e /run -e /dev -e /sys -e /proc -e /tmp"
-BORG_SAVE_PATH="/"
+BORG_CREATE_PARAMS="-C lz4 --info --exclude-caches --show-rc --stats --numeric-owner --noatime -e /var/cache -e /run -e /dev -e /sys -e /proc -e /tmp"
+BORG_SAVE_PATH="/home/svena"
 
 BORG_INIT_PARAMS="--encryption keyfile"
+
+export BORG_PASSPHRASE=""
 
 borg_last_connect() {
     RECHNER="$1"
@@ -109,7 +111,8 @@ borg_cron() {
                 borg_create_ssh_option_file "${RECHNER}"
                 borg_lock $RECHNER
                 touch "${STATUS_DIR}/tried/${RECHNER}"
-                BORG_RSH="ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf  -i /root/borgbackup-server" borg create $BORG_CREATE_PARAMS $(borg_repo "${RECHNER}")::'{hostname}-{now:%Y-%m-%d_%H%M%S}'  |tee $LOG 2>&1
+                echo BORG_RSH=\"ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf  -i /root/.ssh/borgbackup-server\" borg create $BORG_CREATE_PARAMS $(borg_repo "${RECHNER}")::'{hostname}-{now:%Y-%m-%d_%H%M%S}' $BORG_SAVE_PATH
+                BORG_RSH="ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf  -i /root/.ssh/borgbackup-server" borg create $BORG_CREATE_PARAMS $(borg_repo "${RECHNER}")::'{hostname}-{now:%Y-%m-%d_%H%M%S}' $BORG_SAVE_PATH |tee $LOG 2>&1
                 STATUS=$?
                 borg_unlock $RECHNER
                 if [ $STATUS -eq 0 ]; then
