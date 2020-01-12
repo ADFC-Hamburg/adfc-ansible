@@ -86,7 +86,10 @@
       user: borguser
       key: "{{ borgbackupkey.content |b64decode }}"
       state: present
-      key_options: 'no-pty,no-agent-forwarding,no-port-forwarding,no-X11-forwarding,no-user-rc,from="192.168.123.32",command="borg serve --append-only --restrict-to-path /home/borguser/adfc-ucs-master/"'
+      key_options: >
+        no-pty,no-agent-forwarding,no-port-forwarding,no-X11-forwarding,no-user-rc,
+        from="192.168.123.32",
+        command="borg serve --append-only --restrict-to-path /home/borguser/adfc-ucs-master/"
 
   - name: Create Directory /home/borguser/adfc-ucs-master/
     file:
