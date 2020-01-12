@@ -11,8 +11,8 @@ PRUNE_YEARS="2"      # Anzahl der vorzuhaltenden Jahressicherungen
 
 LOG="/var/log/adfc-borgbackup.log"
 
-BORG_CREATE_PARAMS="-C lz4 --info --exclude-caches --show-rc --stats --numeric-owner --noatime -e /var/cache -e /run -e /dev -e /sys -e /proc -e /tmp"
-BORG_SAVE_PATH="/home/svena"
+BORG_CREATE_PARAMS="-C lz4 --info --exclude-caches --show-rc --stats --numeric-owner --noatime -e /var/cache -e /run -e /dev -e /sys -e /proc -e /tmp -e /usr/share/ppd -e /home.old"
+BORG_SAVE_PATH="/"
 
 BORG_INIT_PARAMS="--encryption keyfile"
 
@@ -33,6 +33,7 @@ borg_lock() {
     RECHNER="$1"
     LOCK="${STATUS_DIR}/lock/${RECHNER}"
     exec 200> $LOCK || ( echo  "Ein Backup läuft" ; exit 3)
+    flock -n 200 || ( echo  "Ein Backup läuft" ; exit 3)
 }
 
 borg_unlock() {
@@ -109,10 +110,10 @@ borg_cron() {
         if [ ! -f "${STATUS_DIR}/disabled/${RECHNER}" ] ; then
             if [ "$(borg_is_active $RECHNER )" == "1" ] ; then
                 borg_create_ssh_option_file "${RECHNER}"
-                borg_lock $RECHNER
+                borg_lock $RECHNER || exit $?
                 touch "${STATUS_DIR}/tried/${RECHNER}"
                 echo BORG_RSH=\"ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf  -i /root/.ssh/borgbackup-server\" borg create $BORG_CREATE_PARAMS $(borg_repo "${RECHNER}")::'{hostname}-{now:%Y-%m-%d_%H%M%S}' $BORG_SAVE_PATH
-                BORG_RSH="ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf  -i /root/.ssh/borgbackup-server" borg create $BORG_CREATE_PARAMS $(borg_repo "${RECHNER}")::'{hostname}-{now:%Y-%m-%d_%H%M%S}' $BORG_SAVE_PATH |tee $LOG 2>&1
+                BORG_RSH="ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf  -i /root/.ssh/borgbackup-server" borg create $BORG_CREATE_PARAMS $(borg_repo "${RECHNER}")::'{hostname}-{now:%Y-%m-%d_%H%M%S}' $BORG_SAVE_PATH 2>&1 |tee -a $LOG
                 STATUS=$?
                 borg_unlock $RECHNER
                 if [ $STATUS -eq 0 ]; then
@@ -160,8 +161,10 @@ borg_status() {
 borg_prune() {
     RECHNER="$1"
     if [ ! -f "${STATUS_DIR}/disabled/${RECHNER}" ] ; then
-        borg_lock "${RECHNER}"
-        echo FIXME borg prune $(borg_repo "${RECHNER}") --stats --list --keep-within=1d --keep-daily=$PRUNE_DAYS --keep-weekly=$PRUNE_WEEKS --keep-monthly=$PRUNE_MONTHS --keep-yearly=$PRUNE_YEARS  |tee $LOG 2>&1
+        borg_lock "${RECHNER}" || exit $lock
+        borg_create_ssh_option_file "${RECHNER}"
+        echo borg prune $(borg_repo "${RECHNER}") --stats --list --keep-within=1d --keep-daily=$PRUNE_DAYS --keep-weekly=$PRUNE_WEEKS --keep-monthly=$PRUNE_MONTHS --keep-yearly=$PRUNE_YEARS  2>&1 |tee -a $LOG
+        BORG_RSH="ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf" borg prune $(borg_repo "${RECHNER}") --stats --list --keep-within=1d --keep-daily=$PRUNE_DAYS --keep-weekly=$PRUNE_WEEKS --keep-monthly=$PRUNE_MONTHS --keep-yearly=$PRUNE_YEARS  2>&1 |tee -a $LOG
         borg_unlock "${RECHNER}"
     else
         echo "Rechner $RECHNER wurde deaktiviert"
