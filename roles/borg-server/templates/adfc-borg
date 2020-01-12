@@ -42,8 +42,7 @@ borg_unlock() {
 
 borg_repo() {
     RECHNER="$1"
-
-    echo "ssh://${BORG_USER}@${IP}/${REPO_PATH}"
+    echo "ssh://${RECHNER}/${REPO_PATH}"
 }
 
 borg_create_ssh_option_file() {
