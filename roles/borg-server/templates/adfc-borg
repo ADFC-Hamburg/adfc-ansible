@@ -1,0 +1,234 @@
+#!/bin/bash
+
+STATUS_DIR="/usr/local/share/adfc-borg"
+VPN_KNOCK_TIMEOUT="65"
+BORG_USER="borguser" # Benutzerkonto auf Backup-Client / FIX! NICHT ÄNDERN
+REPO_PATH="~/adfc-ucs-master/"
+PRUNE_DAYS="7"       # Anzahl der vorzuhaltenden Tagessicherungen
+PRUNE_WEEKS="4"      # Anzahl der vorzuhaltenden Wochensicherungen
+PRUNE_MONTHS="12"    # Anzahl der vorzuhaltenden Monatssicherungen
+PRUNE_YEARS="2"      # Anzahl der vorzuhaltenden Jahressicherungen
+
+LOG="/var/log/adfc-borgbackup.log"
+
+BORG_CREATE_PARAMS="--info --exclude-caches --show_rc --stats --numeric-owner --noatime -e /var/cache -e /run -e /dev -e /sys -e /proc -e /tmp"
+BORG_SAVE_PATH="/"
+
+BORG_INIT_PARAMS="--encryption keyfile"
+
+borg_last_connect() {
+    RECHNER="$1"
+    echo "$(( $( date +%s) - $(stat -c "%Y" /run/client-${RECHNER}.up )))"
+}
+
+borg_is_active() {
+    RECHNER="$1"
+    LAST=$(borg_last_connect $RECHNER)
+    echo "$(( $LAST < $VPN_KNOCK_TIMEOUT ))"
+}
+
+borg_lock() {
+    RECHNER="$1"
+    LOCK="${STATUS_DIR}/lock/${RECHNER}"
+    exec 200> $LOCK || ( echo  "Ein Backup läuft" ; exit 3)
+}
+
+borg_unlock() {
+    RECHNER="$1"
+    LOCK="${STATUS_DIR}/lock/${RECHNER}"
+    flock -u 200
+    rm $LOCK
+}
+
+borg_repo() {
+    RECHNER="$1"
+
+    echo "ssh://${BORG_USER}@${IP}/${REPO_PATH}"
+}
+
+borg_create_ssh_option_file() {
+    RECHNER="$1"
+    IP_FILE="/run/client-${RECHNER}.up"
+    IP=$(cat $IP_FILE)
+    KNOWN_HOSTS="${STATUS_DIR}/ssh_conf/${RECHNER}.pub"
+    if [ -f $KNOWN_HOSTS ] ; then
+        STRICT="yes"
+    else
+        STRICT="no"
+    fi
+    cat > "${STATUS_DIR}/ssh_conf/${RECHNER}.conf" <<EOF
+Host ${RECHNER}
+    HostName ${IP}
+    User ${BORG_USER}
+    HostKeyAlias ${RECHNER}
+    UserKnownHostsFile ${KNOWN_HOSTS}
+    StrictHostKeyChecking ${STRICT}
+EOF
+}
+borg_init() {
+    RECHNER="$1"
+    if [ -z "${RECHNER}" ] ; then
+        echo Bitte Rechner angeben
+        exit 1
+    fi
+    mkdir -p "${STATUS_DIR}" "${STATUS_DIR}/clients" "${STATUS_DIR}/lock" "${STATUS_DIR}/disabled" "${STATUS_DIR}/success"  "${STATUS_DIR}/tried" "${STATUS_DIR}/lastlog" "${STATUS_DIR}/ssh_conf"
+    if [ -f "${STATUS_DIR}/clients/${RECHNER}" ] ; then
+        echo existiert schon
+        exit 1
+    fi
+    borg_create_ssh_option_file "${RECHNER}"
+    echo BORG_RSH=\"ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf\" borg init $BORG_INIT_PARAMS $(borg_repo ${RECHNER})
+    BORG_RSH="ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf" borg init $BORG_INIT_PARAMS $(borg_repo ${RECHNER})
+    if [ $? -ne 0 ]; then
+        echo Fehler beim borg init
+        exit 1
+    fi
+    touch "${STATUS_DIR}/clients/${RECHNER}"
+    # Damit
+    touch "${STATUS_DIR}/tried/${RECHNER}"
+    exit 0
+}
+
+borg_for() {
+    ACTION="$1"
+    RECHNER="$2"
+    if [ -n "$RECHNER" ] ; then
+        "${ACTION}" "${RECHNER}"
+    else
+        for FILE in ${STATUS_DIR}/clients/* ; do
+            RECHNER=$(basename $FILE)
+            "${ACTION}" "${RECHNER}"
+        done
+    fi
+    exit 0
+}
+borg_cron() {
+    for FILE in $(ls -tr ${STATUS_DIR}/tried/* ) ; do
+        RECHNER=$(basename $FILE)
+        if [ ! -f "${STATUS_DIR}/disabled/${RECHNER}" ] ; then
+            if [ "$(borg_is_active $RECHNER )" == "1" ] ; then
+                borg_create_ssh_option_file "${RECHNER}"
+                borg_lock $RECHNER
+                touch "${STATUS_DIR}/tried/${RECHNER}"
+                BORG_RSH="ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf  -i /root/borgbackup-server" borg create $BORG_CREATE_PARAMS $(borg_repo "${RECHNER}")::'{hostname}-{now:%Y-%m-%d_%H%M%S}'  |tee $LOG 2>&1
+                STATUS=$?
+                borg_unlock $RECHNER
+                if [ $STATUS -eq 0 ]; then
+                    # Wenn eine Sicherung erfolgreich ist, anhalten
+                    touch "${STATUS_DIR}/success/${RECHNER}"
+                    exit 0
+                fi
+            fi
+            # Sonst in der Schleife den nächsten nehmen
+        fi
+    done
+}
+
+borg_status() {
+    RECHNER="$1"
+    echo "== Status für Rechner $RECHNER =="
+    if [ -f "${STATUS_DIR}/disabled/${RECHNER}" ] ; then
+        echo "  Der Rechner wurde vom Backup ausgenommen"
+        echo "  Bitte:"
+        echo "    adfc-borg start $RECHNER"
+        echo "  eingeben um ihn wieder hinzuzufügen"
+    else
+        echo "  Der Rechner wird zum sichern verwendet"
+    fi
+    if [ -f "${STATUS_DIR}/success/${RECHNER}" ] ; then
+        stat  -c "  Letzte erfolgreiche Sicherung: %y" "${STATUS_DIR}/success/${RECHNER}"
+    else
+        echo "  Auf dem Rechner wurde noch nie eine Sicherung erfolgreich gesichert"
+    fi
+    IP_FILE="/run/client-${RECHNER}.up"
+    if [ -f $IP_FILE ] ; then
+        stat  -c "  Letzte erfolgreiche VPN Verbindung: %y" "/run/client-${RECHNER}.up"
+        if [ "$(borg_is_active $RECHNER )" == "1" ] ; then
+            echo "  Der Client ist aktiv verbunden."
+            echo "  Aktive IPv4 Addresse: $(cat $IP_FILE)"
+        else
+            echo "  Der Client ist NICHT verbunden."
+            echo "  Letzte IPv4 Addresse: $(cat $IP_FILE)"
+        fi
+    else
+        echo "  Es gab noch keine VPN Connection mit diesen Rechner"
+    fi
+}
+
+borg_prune() {
+    RECHNER="$1"
+    if [ ! -f "${STATUS_DIR}/disabled/${RECHNER}" ] ; then
+        borg_lock "${RECHNER}"
+        echo FIXME borg prune $(borg_repo "${RECHNER}") --stats --list --keep-within=1d --keep-daily=$PRUNE_DAYS --keep-weekly=$PRUNE_WEEKS --keep-monthly=$PRUNE_MONTHS --keep-yearly=$PRUNE_YEARS  |tee $LOG 2>&1
+        borg_unlock "${RECHNER}"
+    else
+        echo "Rechner $RECHNER wurde deaktiviert"
+    fi
+}
+
+borg_start() {
+    RECHNER="$1"
+    if [ -f "${STATUS_DIR}/disabled/${RECHNER}" ] ; then
+        rm "${STATUS_DIR}/disabled/${RECHNER}"
+    fi
+}
+
+borg_stop() {
+    RECHNER="$1"
+    touch "${STATUS_DIR}/disabled/${RECHNER}"
+}
+
+borg_help() {
+    cat <<EOF
+
+AUFRUF
+ adfc-borg <aktion>
+
+aktion kann folgendes sein:
+
+
+help                 - Diese Hilfeseite
+
+init <rechnername>  - Rechner erstmalig initalisieren
+
+cron                - Eine Sicherung durchführen, der nächste freie Rechner wird gesichert
+
+status <rechnername> - Status anzeigen
+
+prune <rechnername> - Alte Sicherungen entfernen
+
+stop <rechnername>  - Sicherung verhindern
+                      z.B weil man eine Rücksicherung vornehmen will.
+
+start <rechnername> - Sicherung wieder aufnemen
+
+Der Rechnername kann außer bei init  werggelassen werden, dann gilt es für alle.
+
+EOF
+}
+
+
+case "$1" in
+    init)
+        borg_init "$2"
+    ;;
+    cron)
+        borg_cron
+    ;;
+    status)
+        borg_for borg_status "$2"
+    ;;
+    prune)
+        borg_for borg_prune "$2"
+    ;;
+    stop)
+        borg_for borg_stop "$2"
+    ;;
+    start)
+        borg_for borg_start "$2"
+    ;;
+    *)
+        borg_help
+    ;;
+esac
+exit 0
