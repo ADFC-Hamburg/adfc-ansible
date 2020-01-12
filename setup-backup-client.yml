@@ -60,6 +60,14 @@
   - name: "Copy knocking script"
     copy:
       src: knock-ssh.sh
-      dest: /etc/vpnc/post-connect.d/knock-ssh.sh
+      dest: /usr/local/sbin/adfc-knock
       mode: "0755"
     tags: knock
+
+  - name: cron erstellen
+    cron:
+      name: "adfc-knock"
+      minute: "*"
+      cron_file: adfc-knock
+      user: root
+      job: /usr/local/sbin/adfc-knock

@@ -17,6 +17,14 @@
   register: VPNC_PASSWORD
   tags: vpnc
 
+- name: Entferne altes vpnc file
+  file:
+    path: /etc/vpnc/vpnc.conf
+    state: absent
+  tags:
+    - vpnc
+    - cleanup
+
 - name: Erstelle /etc/vpnc/adfc-gst.conf
   template:
     src: vpnc-adfc-gst.conf
@@ -24,6 +32,15 @@
     owner: root
     group: root
     mode: '0600'
+  tags: vpnc
+
+- name: Erstelle /etc/vpnc/vpnc-adfc-gst-custom-script
+  copy:
+    src: vpnc-adfc-gst-custom-script
+    dest: /etc/vpnc/vpnc-adfc-gst-custom-script
+    owner: root
+    group: root
+    mode: '0755'
   tags: vpnc
 
 - name: Erstelle /etc/systemd/system/vpnc@.service
