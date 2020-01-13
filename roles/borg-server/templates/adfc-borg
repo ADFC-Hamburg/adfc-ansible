@@ -133,12 +133,13 @@ borg_cron() {
                 STATUS=${PIPESTATUS[0]}
                 borg_unlock $RECHNER
                 if [ $STATUS$STATUS -eq 0 ]; then
-                    # Wenn eine Sicherung erfolgreich ist, anhalten
                     touch "${STATUS_DIR}/success/${RECHNER}"
+                    touch "${STATUS_DIR}/success/any"
+                    # Wenn eine Sicherung erfolgreich ist, anhalten
                     exit 0
                 fi
+                # Sonst in der Schleife den nächsten nehmen
             fi
-            # Sonst in der Schleife den nächsten nehmen
         fi
     done
 }
