@@ -1,7 +1,11 @@
 # vpnc-Konfiguration
-- name: Installiere VPNC
+- name: Installiere VPNC und Jq
   apt:
-    name: vpnc
+    name:
+     - vpnc
+     - jq
+  tags: vpnc, vpnc-mon
+# jq wird für das Monitor Skript gebraucht.
 
 - name: Get vpnc.conf shared secret from master
   slurp:
@@ -66,3 +70,19 @@
     state: directory
     mode: '0755'
   tags: vpnc
+
+- name: Create VPNC-Monitor Skript
+  copy:
+    src: vpnc-monitor.sh
+    dest: /usr/local/sbin/vpnc-monitor
+    mode: "0755"
+  tags: vpnc, vpnc-mon
+
+- name: Call VPNC Monitor every minute
+  cron:
+    user: root
+    cron_file: ansible-vpnc
+    name: "vpnc-monitor"
+    minute: "*"
+    job: "/usr/local/sbin/vpnc-monitor vpnc@adfc-gst 192.168.123.1"
+  tags: vpnc, vpnc-mon
