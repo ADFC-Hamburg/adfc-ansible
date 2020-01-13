@@ -1,7 +1,13 @@
 #!/bin/bash
 
 STATUS_DIR="/usr/local/share/adfc-borg"
+
+# Wie alt darf das VPN_KONCK File sein, bevor davon ausgegangen wird, dass die Verbindung nicht mehr existiert
 VPN_KNOCK_TIMEOUT="65"
+
+# Wie lange sollte das letzte erfolgreiche Backup höchstens her sein 60*60*24
+SUCCESS_TIMEOUT="86400"
+
 BORG_USER="borguser" # Benutzerkonto auf Backup-Client / FIX! NICHT ÄNDERN
 REPO_PATH="~/adfc-ucs-master/"
 PRUNE_DAYS="7"       # Anzahl der vorzuhaltenden Tagessicherungen
@@ -11,7 +17,7 @@ PRUNE_YEARS="2"      # Anzahl der vorzuhaltenden Jahressicherungen
 
 LOG="/var/log/adfc-borgbackup.log"
 
-BORG_CREATE_PARAMS="-C lz4 --info --exclude-caches --show-rc --stats --numeric-owner --noatime -e /var/cache -e /run -e /dev -e /sys -e /proc -e /tmp -e /usr/share/ppd -e /home.old"
+BORG_CREATE_PARAMS="-C lz4 --info --exclude-caches --show-rc --stats --numeric-owner --noatime -e /var/cache -e /run -e /dev -e /sys -e /proc -e /tmp -e /usr/share/ppd -e /home.old -e ImapMail -e .npm -e .cache"
 BORG_SAVE_PATH="/"
 
 BORG_INIT_PARAMS="--encryption keyfile"
@@ -29,6 +35,16 @@ borg_is_active() {
     echo "$(( $LAST < $VPN_KNOCK_TIMEOUT ))"
 }
 
+borg_last_successfull_backup() {
+    RECHNER="$1"
+    SUCC="${STATUS_DIR}/success/${RECHNER}"
+    if [ ! -f $SUCC ] ; then
+        echo 0
+        exit
+    fi
+    LAST="$(( $( date +%s) - $(stat -c "%Y" $SUCC )))"
+    echo "$(( $LAST < $SUCCESS_TIMEOUT ))"
+}
 borg_lock() {
     RECHNER="$1"
     LOCK="${STATUS_DIR}/lock/${RECHNER}"
@@ -114,9 +130,9 @@ borg_cron() {
                 touch "${STATUS_DIR}/tried/${RECHNER}"
                 echo BORG_RSH=\"ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf  -i /root/.ssh/borgbackup-server\" borg create $BORG_CREATE_PARAMS $(borg_repo "${RECHNER}")::'{hostname}-{now:%Y-%m-%d_%H%M%S}' $BORG_SAVE_PATH
                 BORG_RSH="ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf  -i /root/.ssh/borgbackup-server" borg create $BORG_CREATE_PARAMS $(borg_repo "${RECHNER}")::'{hostname}-{now:%Y-%m-%d_%H%M%S}' $BORG_SAVE_PATH 2>&1 |tee -a $LOG
-                STATUS=$?
+                STATUS=${PIPESTATUS[0]}
                 borg_unlock $RECHNER
-                if [ $STATUS -eq 0 ]; then
+                if [ $STATUS$STATUS -eq 0 ]; then
                     # Wenn eine Sicherung erfolgreich ist, anhalten
                     touch "${STATUS_DIR}/success/${RECHNER}"
                     exit 0
@@ -129,33 +145,54 @@ borg_cron() {
 
 borg_status() {
     RECHNER="$1"
+    RED='\033[0;31m'
+    GREEN='\033[0;32m'
+    # NC = NO COLOR
+    NC='\033[0m'
+
     echo "== Status für Rechner $RECHNER =="
     if [ -f "${STATUS_DIR}/disabled/${RECHNER}" ] ; then
-        echo "  Der Rechner wurde vom Backup ausgenommen"
+        echo -e "  ${RED}Der Rechner wurde vom Backup ausgenommen${NC}"
         echo "  Bitte:"
         echo "    adfc-borg start $RECHNER"
         echo "  eingeben um ihn wieder hinzuzufügen"
     else
-        echo "  Der Rechner wird zum sichern verwendet"
+        echo -e "  ${GREEN}Der Rechner wird zum sichern verwendet${NC}"
     fi
     if [ -f "${STATUS_DIR}/success/${RECHNER}" ] ; then
+        SUC=$(borg_last_successfull_backup $RECHNER)
+        if [ "$SUC" == "1" ] ; then
+            echo -ne "${GREEN}"
+        else
+            echo -ne "${RED}"
+        fi
         stat  -c "  Letzte erfolgreiche Sicherung: %y" "${STATUS_DIR}/success/${RECHNER}"
+        echo -ne "${NC}"
     else
-        echo "  Auf dem Rechner wurde noch nie eine Sicherung erfolgreich gesichert"
+        echo -e "  ${RED}Auf dem Rechner wurde noch nie eine Sicherung erfolgreich gesichert${NC}"
     fi
     IP_FILE="/run/client-${RECHNER}.up"
     if [ -f $IP_FILE ] ; then
-        stat  -c "  Letzte erfolgreiche VPN Verbindung: %y" "/run/client-${RECHNER}.up"
         if [ "$(borg_is_active $RECHNER )" == "1" ] ; then
-            echo "  Der Client ist aktiv verbunden."
+            echo -e "  ${GREEN}Der Client ist aktiv verbunden.${NC}"
             echo "  Aktive IPv4 Addresse: $(cat $IP_FILE)"
         else
-            echo "  Der Client ist NICHT verbunden."
+            echo -e "  ${RED}Der Client ist NICHT verbunden.${NC}"
+            stat  -c "  Letzte erfolgreiche VPN Verbindung: %y" "/run/client-${RECHNER}.up"
             echo "  Letzte IPv4 Addresse: $(cat $IP_FILE)"
         fi
     else
-        echo "  Es gab noch keine VPN Connection mit diesen Rechner"
+        echo -e "  ${RED}Es gab noch keine VPN Connection mit diesen Rechner${NC}"
     fi
+    LOCK="${STATUS_DIR}/lock/${RECHNER}"
+    if [ -f $LOCK ] ; then
+        echo -ne "${GREEN}"
+        stat -c "  Prozess aktiv seit: %y" $LOCK
+        echo -ne "${NC}"
+    else
+        echo "  Kein Backup aktiv"
+    fi
+    echo ""
 }
 
 borg_prune() {
