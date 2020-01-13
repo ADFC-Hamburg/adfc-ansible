@@ -14,7 +14,9 @@
       packages:
       - borgbackup
       - mailutils
-
+      - monitoring-plugins-basic
+      - nagios-nrpe-server
+    tags: monitoring
 
 ########################### KNOCK ###########################################
 
@@ -74,17 +76,19 @@
        src: /root/.ssh/borgbackup-server.pub
     delegate_to: ucs-master.gst.hamburg.adfc.de
     register: borgbackupkey
+    tags: borgsshauth
 
   - name: Create Authorized_keys for borguser append
     authorized_key:
       user: borguser
       key: "{{ borgbackupkey.content |b64decode }}"
       state: present
-      key_options: >
-        no-pty,no-agent-forwarding,no-port-forwarding,no-X11-forwarding,no-user-rc,
-        from="192.168.123.32",
-        command="borg serve --append-only --restrict-to-path /home/borguser/adfc-ucs-master/"
-
+      key_options: "{{ krest }},{{ kcmd }},{{ kfrom }}"
+    vars:
+      krest: no-pty,no-agent-forwarding,no-port-forwarding,no-X11-forwarding,no-user-rc
+      kcmd: 'command="borg serve --append-only --restrict-to-path /home/borguser/adfc-ucs-master/"'
+      kfrom: from="192.168.123.32"
+    tags: borgsshauth
   - name: Create Directory /home/borguser/adfc-ucs-master/
     file:
       path: /home/borguser/adfc-ucs-master/
@@ -100,3 +104,54 @@
       fstype: ext4
       state: mounted
       opts: noatime
+
+################################ Monitoring ####################
+
+  - name: Create Local NRPE Config
+    template:
+      src: nrpe_local.cfg
+      dest: /etc/nagios/nrpe_local.cfg
+      mode: "0644"
+    tags: monitoring
+    notify: Restart Nrpe
+
+  - name: Create Command Config on ucs-master
+    template:
+      src: nagios-commands.cfg
+      dest: /etc/nagios/conf.local.d/0_ansible-nagios-commands.cfg
+      mode: "0644"
+    delegate_to: ucs-master.gst.hamburg.adfc.de
+    tags: monitoring
+    notify: Restart Nagios Server
+
+  - name: Create Check Cmds on ucs-master
+    copy:
+      src: "{{ item }}"
+      dest: /usr/lib/nagios/plugins/
+      mode: "0755"
+    delegate_to: ucs-master.gst.hamburg.adfc.de
+    with_items:
+      - check_backup_cli
+      - check_backup_host_alive
+    tags: monitoring
+
+  - name: Setup Check Commands
+    template:
+      src: nagios-backup.cfg
+      dest: /etc/nagios/conf.local.d/ansible-{{ inventory_hostname }}.cfg
+      mode: "0644"
+    delegate_to: ucs-master.gst.hamburg.adfc.de
+    tags: monitoring
+    notify: Restart Nagios Server
+
+
+  handlers:
+  - name: Restart Nrpe
+    systemd:
+      name: nagios-nrpe-server
+      state: restarted
+  - name: Restart Nagios Server
+    systemd:
+       name: nagios
+       state: restarted
+    delegate_to: ucs-master.gst.hamburg.adfc.de
