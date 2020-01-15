@@ -17,7 +17,7 @@ PRUNE_YEARS="2"      # Anzahl der vorzuhaltenden Jahressicherungen
 
 LOG="/var/log/adfc-borgbackup.log"
 
-BORG_CREATE_PARAMS="-C lz4 --info --exclude-caches --show-rc --stats --numeric-owner --noatime -e /var/cache -e /run -e /dev -e /sys -e /proc -e /tmp -e /usr/share/ppd -e /home.old -e ImapMail -e .npm -e .cache"
+BORG_CREATE_PARAMS="-C lz4 --info --exclude-caches --show-rc --stats --numeric-owner --noatime -e /var/cache -e /run -e /dev -e /sys -e /proc -e /tmp -e /usr/share/ppd -e /home.old -e 'sh:**/ImapMail/**' -e '/home/*/.npm' -e 'sh:**/.cache/**'"
 BORG_SAVE_PATH="/"
 
 BORG_INIT_PARAMS="--encryption keyfile"
