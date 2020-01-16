@@ -79,6 +79,8 @@ Host ${RECHNER}
     HostKeyAlias ${RECHNER}
     UserKnownHostsFile ${KNOWN_HOSTS}
     StrictHostKeyChecking ${STRICT}
+    ServerAliveInterval 10
+    ServerAliveCountMax 30
 EOF
 }
 borg_init() {
