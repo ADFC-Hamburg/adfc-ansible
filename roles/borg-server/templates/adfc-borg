@@ -15,7 +15,7 @@ PRUNE_WEEKS="4"      # Anzahl der vorzuhaltenden Wochensicherungen
 PRUNE_MONTHS="12"    # Anzahl der vorzuhaltenden Monatssicherungen
 PRUNE_YEARS="2"      # Anzahl der vorzuhaltenden Jahressicherungen
 
-BORG_CREATE_PARAMS="-C lz4 --info --exclude-caches --show-rc --stats --numeric-owner --noatime -e /var/cache -e /run -e /dev -e /sys -e /proc -e /tmp -e /usr/share/ppd -e /home.old -e '*/ImapMail' -e '/home/*/.npm' -e '*/.cache'"
+BORG_CREATE_PARAMS="-C lz4 --info --exclude-caches --show-rc --stats --numeric-owner --noatime -e /var/cache -e /run -e /dev -e /sys -e /proc -e /tmp -e /usr/share/ppd -e /home.old -e '*/ImapMail' -e '/home/*/.npm' -e '*/.cache' -e /adfc/software"
 BORG_SAVE_PATH="/"
 
 BORG_INIT_PARAMS="--encryption keyfile"
@@ -128,7 +128,7 @@ borg_cron() {
                 borg_lock $RECHNER || exit $?
                 touch "${STATUS_DIR}/tried/${RECHNER}"
                 echo BORG_RSH=\"ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf  -i /root/.ssh/borgbackup-server\" borg create $BORG_CREATE_PARAMS $(borg_repo "${RECHNER}")::'{hostname}-{now:%Y-%m-%d_%H%M%S}' $BORG_SAVE_PATH
-                BORG_RSH="ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf  -i /root/.ssh/borgbackup-server" borg create $BORG_CREATE_PARAMS $(borg_repo "${RECHNER}")::'{hostname}-{now:%Y-%m-%d_%H%M%S}' $BORG_SAVE_PATH 2>&1 |tee -a $LOG
+                SSH_AUTH_SOCK="" BORG_RSH="ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf  -i /root/.ssh/borgbackup-server" borg create $BORG_CREATE_PARAMS $(borg_repo "${RECHNER}")::'{hostname}-{now:%Y-%m-%d_%H%M%S}' $BORG_SAVE_PATH 2>&1 |tee -a $LOG
                 STATUS=${PIPESTATUS[0]}
                 borg_unlock $RECHNER
                 if [ $STATUS -eq 0 ]; then
