@@ -131,7 +131,7 @@ borg_cron() {
                 BORG_RSH="ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf  -i /root/.ssh/borgbackup-server" borg create $BORG_CREATE_PARAMS $(borg_repo "${RECHNER}")::'{hostname}-{now:%Y-%m-%d_%H%M%S}' $BORG_SAVE_PATH 2>&1 |tee -a $LOG
                 STATUS=${PIPESTATUS[0]}
                 borg_unlock $RECHNER
-                if [ $STATUS$STATUS -eq 0 ]; then
+                if [ $STATUS -eq 0 ]; then
                     touch "${STATUS_DIR}/success/${RECHNER}"
                     touch "${STATUS_DIR}/success/any"
                     # Wenn eine Sicherung erfolgreich ist, anhalten
