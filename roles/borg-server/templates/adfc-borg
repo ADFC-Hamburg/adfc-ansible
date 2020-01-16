@@ -15,9 +15,7 @@ PRUNE_WEEKS="4"      # Anzahl der vorzuhaltenden Wochensicherungen
 PRUNE_MONTHS="12"    # Anzahl der vorzuhaltenden Monatssicherungen
 PRUNE_YEARS="2"      # Anzahl der vorzuhaltenden Jahressicherungen
 
-LOG="/var/log/adfc-borgbackup.log"
-
-BORG_CREATE_PARAMS="-C lz4 --info --exclude-caches --show-rc --stats --numeric-owner --noatime -e /var/cache -e /run -e /dev -e /sys -e /proc -e /tmp -e /usr/share/ppd -e /home.old -e 'sh:**/ImapMail/**' -e '/home/*/.npm' -e 'sh:**/.cache/**'"
+BORG_CREATE_PARAMS="-C lz4 --info --exclude-caches --show-rc --stats --numeric-owner --noatime -e /var/cache -e /run -e /dev -e /sys -e /proc -e /tmp -e /usr/share/ppd -e /home.old -e '*/ImapMail' -e '/home/*/.npm' -e '*/.cache'"
 BORG_SAVE_PATH="/"
 
 BORG_INIT_PARAMS="--encryption keyfile"
@@ -123,6 +121,7 @@ borg_for() {
 borg_cron() {
     for FILE in $(ls -tr ${STATUS_DIR}/tried/* ) ; do
         RECHNER=$(basename $FILE)
+        LOG="/var/log/adfc-borg-${RECHNER}.log"
         if [ ! -f "${STATUS_DIR}/disabled/${RECHNER}" ] ; then
             if [ "$(borg_is_active $RECHNER )" == "1" ] ; then
                 borg_create_ssh_option_file "${RECHNER}"
@@ -198,6 +197,7 @@ borg_status() {
 
 borg_prune() {
     RECHNER="$1"
+    LOG="/var/log/adfc-borg-${RECHNER}.log"
     if [ ! -f "${STATUS_DIR}/disabled/${RECHNER}" ] ; then
         borg_lock "${RECHNER}" || exit $lock
         borg_create_ssh_option_file "${RECHNER}"
