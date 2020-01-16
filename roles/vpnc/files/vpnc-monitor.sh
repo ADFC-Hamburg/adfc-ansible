@@ -6,13 +6,19 @@ PING_ADDR=$2
 JSON=$(journalctl -u $UNIT -n 1 -o json)
 MESSAGE=$(echo $JSON |jq -r .MESSAGE)
 
+function restart_vpn
+{
+    killall -u borguser
+    systemctl restart $UNIT
+}
+
 case "${MESSAGE}" in
     "vpnc: recvfrom: No route to host")
-        systemctl restart $UNIT
+        restart_vpn
         exit 0
     ;;
     "vpnc: HMAC mismatch in ESP mode")
-        systemctl restart $UNIT
+        restart_vpn
         exit 0
         ;;
     *)
@@ -20,3 +26,8 @@ case "${MESSAGE}" in
         ;;
 
 esac
+ping -c 1 $PING_ADDR 2>&1> /dev/null
+
+if [ $? -ne 0 ]; then
+    restart_vpn
+fi
