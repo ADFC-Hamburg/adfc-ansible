@@ -32,7 +32,7 @@
   cron:
     name: adfc-borg
     minute: "*/5"
-    hour: 6-23
+#    hour: 6-23
     user: root
     job: /usr/local/sbin/adfc-borg cron >/dev/null
     cron_file: ansible_adfc-borg
