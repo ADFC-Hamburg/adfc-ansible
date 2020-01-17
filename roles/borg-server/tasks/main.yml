@@ -26,4 +26,14 @@
     src: adfc-borg
     dest: /usr/local/sbin/adfc-borg
     mode: "0755"
+  tags: borg-server,adfc-borg
+
+- name: Setup Cronjob
+  cron:
+    name: adfc-borg
+    minute: "*/5"
+    hour: 6-23
+    user: root
+    job: /usr/local/sbin/adfc-borg cron >/dev/null
+    cron_file: ansible_adfc-borg
   tags: borg-server
