@@ -2,6 +2,7 @@
   roles:
   - load-contacts
   - ssh-keys
+  - postfix-auth
   - ubuntu-basic
   - vpnc
   tasks:
