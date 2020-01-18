@@ -21,10 +21,6 @@ case "${MESSAGE}" in
         restart_vpn
         exit 0
         ;;
-    *)
-        exit 0
-        ;;
-
 esac
 ping -c 1 $PING_ADDR 2>&1> /dev/null
 
