@@ -1,0 +1,9 @@
+/var/log/adfc-borg*.log {
+        daily
+        missingok
+        rotate 14
+        compress
+        copytruncate
+        delaycompress
+        notifempty
+}

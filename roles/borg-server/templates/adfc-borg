@@ -15,7 +15,7 @@ PRUNE_WEEKS="4"      # Anzahl der vorzuhaltenden Wochensicherungen
 PRUNE_MONTHS="12"    # Anzahl der vorzuhaltenden Monatssicherungen
 PRUNE_YEARS="2"      # Anzahl der vorzuhaltenden Jahressicherungen
 
-BORG_CREATE_PARAMS="-C lz4 --info --exclude-caches --show-rc --stats --numeric-owner --noatime -e /mnt -e /var/cache -e /run -e /dev -e /sys -e /proc -e /tmp -e /usr/share/ppd -e /home.old -e '*/ImapMail' -e '/home/*/.npm' -e '*/.cache' -e /adfc/software"
+BORG_CREATE_PARAMS="-C lz4 --info --exclude-caches --show-rc --stats --numeric-owner --noatime -e /mnt -e /var/cache -e /run -e /dev -e /sys -e /proc -e /tmp -e /usr/share/ppd -e /home.old -e '*/ImapMail' -e '/home/*/.npm' -e '*/.cache' -e /adfc/software --list --filter=AMEx"
 BORG_SAVE_PATH="/"
 
 BORG_INIT_PARAMS="--encryption keyfile"
@@ -191,6 +191,11 @@ borg_status() {
         echo -ne "${GREEN}"
         stat -c "  Prozess aktiv seit: %y" $LOCK
         echo -ne "${NC}"
+        BORG_PID=$(pgrep -f "/usr/bin/python3 /usr/bin/borg create.*$(borg_repo "${RECHNER}")::")
+        if [ "$BORG_PID" != "" ] ; then
+            OPENFILE=$(lsof -p $BORG_PID |tail -6 |grep -v pipe |cut -b 55- |head -1)
+            echo "  Pid: $BORG_PID Open file: $OPENFILE"
+        fi
     else
         echo "  Kein Backup aktiv"
     fi
