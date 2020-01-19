@@ -31,9 +31,16 @@
 - name: Setup Cronjob
   cron:
     name: adfc-borg
-    minute: "*/5"
+    minute: "*/60"
 #    hour: 6-23
     user: root
     job: /usr/local/sbin/adfc-borg cron >/dev/null
     cron_file: ansible_adfc-borg
+  tags: borg-server
+
+- name: install logrotate script
+  template:
+    src: logrotate
+    dest: /etc/logrotate.d/adfc-borg
+    mode: "0644"
   tags: borg-server
