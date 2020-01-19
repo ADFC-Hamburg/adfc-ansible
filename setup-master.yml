@@ -20,6 +20,7 @@
         cron_file: sync-babelfish
         user: root
         job: /usr/local/sbin/ucs-master-sync-babelfish.sh
+        state: absent
 
     - name: enable cool solutions
       ucr:
