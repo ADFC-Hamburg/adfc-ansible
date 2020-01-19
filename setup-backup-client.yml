@@ -8,6 +8,11 @@
   tasks:
 
 # benötigte Programme installieren
+  - name: Borgbackup ppa
+    apt_repository:
+      repo: 'ppa:costamagnagianfranco/borgbackup/'
+    tags: software
+
   - name: Installiere Pakete
     apt:
       name: "{{ packages }}"
@@ -17,7 +22,7 @@
       - mailutils
       - monitoring-plugins-basic
       - nagios-nrpe-server
-    tags: monitoring
+    tags: monitoring, software
 
 ########################### KNOCK ###########################################
 
@@ -57,6 +62,7 @@
       cron_file: adfc-knock
       user: root
       job: /usr/local/sbin/adfc-knock
+
 
 ############################## BackupUser ######################################
   - name: Create borgbackup user
@@ -145,6 +151,14 @@
     tags: monitoring
     notify: Restart Nagios Server
 
+  - name: Check if Borg Repo is initialized,
+    stat:
+      path: /home/borguser/adfc-ucs-master/config
+    register: borg_config
+
+  - name: Initialize Repo
+    command: "/usr/local/sbin/adfc-borg init {{ inventory_hostname }}"
+    when: not borg_config.stat.isreg
 
   handlers:
   - name: Restart Nrpe
