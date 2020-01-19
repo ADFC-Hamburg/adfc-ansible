@@ -1,0 +1,6 @@
+#!/bin/bash
+
+NAME=$1
+IP=$(cat /run/client-${NAME}.up)
+
+exec /usr/lib/nagios/plugins/check_ping -H $IP -w 50,20% -c 100,40%

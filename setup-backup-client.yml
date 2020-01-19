@@ -2,11 +2,17 @@
   roles:
   - load-contacts
   - ssh-keys
+  - postfix-auth
   - ubuntu-basic
   - vpnc
   tasks:
 
 # benötigte Programme installieren
+  - name: Borgbackup ppa
+    apt_repository:
+      repo: 'ppa:costamagnagianfranco/borgbackup/'
+    tags: software
+
   - name: Installiere Pakete
     apt:
       name: "{{ packages }}"
@@ -14,26 +20,11 @@
       packages:
       - borgbackup
       - mailutils
+      - monitoring-plugins-basic
+      - nagios-nrpe-server
+    tags: monitoring, software
 
-#backup-script
-  - name: create backup script from template
-    template:
-      src: backup-script_client.sh
-      dest: /usr/local/sbin/backup-script_client.sh
-      owner: root
-      group: root
-      mode: '0755'
-    tags: script
-
-  - name: cron erstellen # https://docs.ansible.com/ansible/latest/modules/cron_module.html?highlight=cron
-    cron:
-      name: "run-remote-backup"
-      minute: "10"
-      hour: "2"
-      weekday: "2"
-      cron_file: remote-backup
-      user: root
-      job: /usr/local/sbin/backup-script_client.sh
+########################### KNOCK ###########################################
 
   - name: "Knock: Create ssh knocking-key"
     command: ssh-keygen -t rsa -b 4096 -f /root/.ssh/knocking-key -N '' -C 'knocking key {{ ansible_host }}'
@@ -53,7 +44,7 @@
       comment: "ADFC-Ansible Knock {{ ansible_host }}"
       key: "{{ knock_ssh_pub.content | b64decode }}"
       state: present
-      key_options: "restrict,command=\"echo $SSH_CLIENT |cut -d ' '  -f1 >/var/run/client-{{ ansible_hostname }}.up\""
+      key_options: "restrict,command=\"echo $SSH_CLIENT |cut -d ' '  -f1 >/var/run/client-{{ inventory_hostname }}.up\""
     delegate_to: ucs-master.gst.hamburg.adfc.de
     tags: knock
 
@@ -71,3 +62,111 @@
       cron_file: adfc-knock
       user: root
       job: /usr/local/sbin/adfc-knock
+
+
+############################## BackupUser ######################################
+  - name: Create borgbackup user
+    user:
+      name: borguser
+      comment: Borg Backup User
+      system: yes
+      password: '*'
+
+  - name: Generate SSH Keys for borgbackup
+    include_role:
+      name: ssh-keys
+    vars:
+      authorized_key_user: borguser
+
+  - name: Get Borgbackup key
+    slurp:
+       src: /root/.ssh/borgbackup-server.pub
+    delegate_to: ucs-master.gst.hamburg.adfc.de
+    register: borgbackupkey
+    tags: borgsshauth
+
+  - name: Create Authorized_keys for borguser append
+    authorized_key:
+      user: borguser
+      key: "{{ borgbackupkey.content |b64decode }}"
+      state: present
+      key_options: "{{ krest }},{{ kcmd }},{{ kfrom }}"
+    vars:
+      krest: no-pty,no-agent-forwarding,no-port-forwarding,no-X11-forwarding,no-user-rc
+      kcmd: 'command="borg serve --append-only --restrict-to-path /home/borguser/adfc-ucs-master/"'
+      kfrom: from="192.168.123.32"
+    tags: borgsshauth
+  - name: Create Directory /home/borguser/adfc-ucs-master/
+    file:
+      path: /home/borguser/adfc-ucs-master/
+      state: directory
+      mode: 0700
+      owner: borguser
+      group: borguser
+
+  - name: Mount Disk to /home/borguser/adfc-ucs-master/
+    mount:
+      path: /home/borguser/adfc-ucs-master/
+      src: "{{ backup_disk_src }}"
+      fstype: ext4
+      state: mounted
+      opts: noatime
+
+################################ Monitoring ####################
+
+  - name: Create Local NRPE Config
+    template:
+      src: nrpe_local.cfg
+      dest: /etc/nagios/nrpe_local.cfg
+      mode: "0644"
+    tags: monitoring
+    notify: Restart Nrpe
+
+  - name: Create Command Config on ucs-master
+    template:
+      src: nagios-commands.cfg
+      dest: /etc/nagios/conf.local.d/0_ansible-nagios-commands.cfg
+      mode: "0644"
+    delegate_to: ucs-master.gst.hamburg.adfc.de
+    tags: monitoring
+    notify: Restart Nagios Server
+
+  - name: Create Check Cmds on ucs-master
+    copy:
+      src: "{{ item }}"
+      dest: /usr/lib/nagios/plugins/
+      mode: "0755"
+    delegate_to: ucs-master.gst.hamburg.adfc.de
+    with_items:
+      - check_backup_cli
+      - check_backup_host_alive
+    tags: monitoring
+
+  - name: Setup Check Commands
+    template:
+      src: nagios-backup.cfg
+      dest: /etc/nagios/conf.local.d/ansible-{{ inventory_hostname }}.cfg
+      mode: "0644"
+    delegate_to: ucs-master.gst.hamburg.adfc.de
+    tags: monitoring
+    notify: Restart Nagios Server
+
+  - name: Check if Borg Repo is initialized,
+    stat:
+      path: /home/borguser/adfc-ucs-master/config
+    register: borg_config
+
+  - name: Initialize Repo
+    command: "/usr/local/sbin/adfc-borg init {{ inventory_hostname }}"
+    when: not borg_config.stat.isreg
+
+  handlers:
+  - name: Restart Nrpe
+    systemd:
+      name: nagios-nrpe-server
+      state: restarted
+  - name: Restart Nagios Server
+    systemd:
+       name: nagios
+       state: restarted
+    delegate_to: ucs-master.gst.hamburg.adfc.de
