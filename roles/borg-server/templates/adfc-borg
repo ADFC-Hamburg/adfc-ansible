@@ -233,6 +233,8 @@ borg_key_export() {
     BORG_RSH="ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf" borg key export $(borg_repo "${RECHNER}") /dev/stdout
     echo "Papier-Version:"
     BORG_RSH="ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf" borg key export --paper $(borg_repo "${RECHNER}") /dev/stdout
+    echo "QR-Code: /tmp/borg-key-${RECHNER}.html"
+    BORG_RSH="ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf" borg key export --qr-html $(borg_repo "${RECHNER}") /tmp/borg-key-${RECHNER}.html
     echo "============================================================================"
 
 }
