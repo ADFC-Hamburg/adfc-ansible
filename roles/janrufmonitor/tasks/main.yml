@@ -41,7 +41,7 @@
     path: "{{ janrufmon_dest_dir }}/users"
     state: directory
     mode: "1777"
-  tags: janrufmonitor 
+  tags: janrufmonitor
 # Nicht abgefangen ist der Fall, dass jemand eine Config für jemanden anders unterschiebt
 
 - name: Erstelle sha256file
