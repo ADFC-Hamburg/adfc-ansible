@@ -30,6 +30,11 @@
       repo: 'ppa:phoerious/keepassxc'
     tags: software
 
+  - name: ubuntu-moziala-security-ppa
+    apt_repository:
+      repo: 'ppa:ubuntu-mozilla-security/ppa'
+    tags: software
+
   - name: ppa fuer hibiskus entfernen
     tags: software
     apt_repository:
