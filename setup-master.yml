@@ -60,10 +60,3 @@
       copy:
         src: nagios-otrs.cfg
         dest: /etc/nagios/conf.local.d/check_otrs.cfg
-
-#    - name: Menueeintrag fuer Access benutzerabhaengig erstellen
-#      template:
-#        src: access_2013.desktop
-#        dest: /home/{{ item }}/.local/share/applications/access_2013.desktop
-#      with_items:
-#        - thomasn
