@@ -1,0 +1,3 @@
+janrufmon_url: "https://downloads.janrufmonitor.de/released/5.0/jam50-linux64-fritzbox.tar.gz"
+janrufmon_sha256sum: 38faba93f3d6124ee0f02ca3d6a2c6759f3a194dd6649c240d782d792e47e9ad
+janrufmon_dest_dir: /opt/janrufmonitor

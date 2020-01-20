@@ -1,0 +1,60 @@
+- name: Download janrufmonitor
+  get_url:
+      dest: /usr/src/janrufmon.tgz
+      url: "{{ janrufmon_url }}"
+      mode: 0644
+      checksum: "sha256:{{ janrufmon_sha256sum }}"
+  tags: janrufmonitor
+
+- name: Unpack
+  unarchive:
+    src: /usr/src/janrufmon.tgz
+    dest: "{{ janrufmon_dest_dir }}"
+    owner: root
+    group: root
+    remote_src: yes
+  tags: janrufmonitor
+
+- name: Search all files
+  find:
+    paths: "{{ janrufmon_dest_dir }}"
+    file_type: file
+    recurse: yes
+    excludes: "jam.sh"
+  register: all_files
+  tags: janrufmonitor
+
+- name: Search all Dirs
+  find:
+    paths: "{{ janrufmon_dest_dir }}"
+    file_type: directory
+    recurse: yes
+  register: all_dirs
+  tags: janrufmonitor
+
+- name: Set Permission for files
+  file:
+    path: "{{ item.path }}"
+    mode: 0644
+    owner: root
+    group: root
+  with_items: "{{ all_files.files }}"
+  tags: janrufmonitor
+
+- name: Set Permission for directories
+  file:
+    path: "{{ item.path }}"
+    mode: 0755
+    owner: root
+    group: root
+  with_items: "{{ all_dirs.files }}"
+  tags: janrufmonitor
+
+- name: Set Permission of the jam.sh File
+  file:
+    path: "{{ janrufmon_dest_dir }}/jam.sh"
+    mode: 0755
+    owner: root
+    group: root
+  tags: janrufmonitor
+
