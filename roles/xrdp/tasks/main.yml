@@ -1,0 +1,12 @@
+- name: Installiere xrdp
+  apt:
+    name: xrdp
+
+- name: copy xrdp.ini
+  copy:
+    src: xrdp.ini
+    dest: /etc/xrdp/xrdp.ini
+    mode: "0644"
+    owner: "root"
+    group: "root"
+  notify: Restart xrdp
