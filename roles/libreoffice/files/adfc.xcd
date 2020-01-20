@@ -45,6 +45,17 @@ sowie
          </prop>
        </node>
      </node>
-   </oor:component-data>
-
+</oor:component-data>
+<oor:component-data oor:name="DataAccess" oor:package="org.openoffice.Office">
+  <node oor:name="RegisteredNames">
+    <node oor:name="ADFC Kundenbetreuung" oor:op="replace">
+      <prop oor:name="Name">
+        <value>ADFC Kundenbetreuung</value>
+      </prop>
+      <prop oor:name="Location">
+        <value>file:///adfc/Mitgliederbetreuung/Datenbank-Hamburg/Datenbank%20f%C3%BCr%20Serienbriefe%20-%20Finger%20weg/ADFC%20Kundenbetreuung%20frontend.odb</value>
+      </prop>
+    </node>
+  </node>
+</oor:component-data>
 </oor:data>
