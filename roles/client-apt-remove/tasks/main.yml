@@ -1,0 +1,27 @@
+---
+# Remove specified packages. "with_items"-method depreciated. Warning: "This feature will be removed in version 2.11"
+
+- name: Remove unwanted packages
+  apt:
+    pkg: "{{ unwanted_packages }}"
+    state: absent
+    purge: yes
+  tags: software
+
+- name: Remove useless packages from the cache
+  apt:
+    autoclean: yes
+  tags: software
+
+- name: Remove dependencies that are no longer required
+  apt:
+    autoremove: yes
+  tags: software
+
+
+# Remove specified repository from sources list. Example for future use.
+# - apt_repository:
+#     repo: deb http://archive.canonical.com/ubuntu hardy partner
+#     state: absent
+#   tags: software
+

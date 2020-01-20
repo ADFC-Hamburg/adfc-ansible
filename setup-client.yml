@@ -1,10 +1,17 @@
 - hosts: arbeitsplatz
   roles:
+  - load-contacts
   - ssh-keys
+  - fonts
+  - unburden-home-dir
+  - ubuntu-basic
   - postfix-auth
   - firefox-client
+  - libreoffice
   - jnv.unattended-upgrades
   - janrufmonitor
+  - links-on-desktop
+  - client-apt-remove
 
   tasks:
 
@@ -22,6 +29,11 @@
   - name: keepassxc ppa
     apt_repository:
       repo: 'ppa:phoerious/keepassxc'
+    tags: software
+
+  - name: ubuntu-moziala-security-ppa
+    apt_repository:
+      repo: 'ppa:ubuntu-mozilla-security/ppa'
     tags: software
 
   - name: ppa fuer hibiskus entfernen
@@ -58,18 +70,15 @@
 
 # benötigte Programme installieren
 # pdfshuffler muss bei Wechsel auf Kubuntu >=19 in pdfarranger geändert werden
-  - name: Installiere Packete
+  - name: Installiere Pakete
     apt:
       name:
       - emacs
-      - libreoffice
-      - libreoffice-l10n-de
       - ncdu
       - git
       - univention-domain-join
       - univention-domain-join-cli
       - gdm3
-      - vim
       - nfs-common
       - openjdk-11-jre
       - flameshot
@@ -85,8 +94,6 @@
       - language-pack-gnome-de
       - gimp-help-de
       - glabels
-      - htop
-      - mc
       - openshot-qt
       - gnucash
       - gnucash-docs
@@ -114,11 +121,6 @@
     include_role:
       name: hibiscus
 
-  - name: Downloadverzeichnis für deb-Pakete erstellen
-    file:
-      path: /usr/local/share/ansible_downloads/
-      state: directory
-      mode: 0755
 
   - name: Kein KDE Update Icon mehr anzeigen
     apt:
@@ -191,6 +193,7 @@
   - name: Reboot on network interfaces changes
     reboot:
     when: interfaces_create.changed
+
   - name: Check if join is alread done
     stat:
       path: /usr/share/pam-configs/ucs_mkhomedir

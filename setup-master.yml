@@ -1,8 +1,10 @@
 - hosts: ucs-master.gst.hamburg.adfc.de
-  gather_facts: no
+  gather_facts: yes
   roles:
     - ssh-keys
     - systemd-max-memory
+    - links-on-desktop
+    - borg-server
   tasks:
     # SSH Key /root/.ssh/rsync-key ist nicht hier eingecheckt und wird nicht deployed, wegen security
     - name: copy rsync script
@@ -18,6 +20,7 @@
         cron_file: sync-babelfish
         user: root
         job: /usr/local/sbin/ucs-master-sync-babelfish.sh
+        state: absent
 
     - name: enable cool solutions
       ucr:
@@ -58,14 +61,9 @@
         src: nagios-otrs.cfg
         dest: /etc/nagios/conf.local.d/check_otrs.cfg
 
-    - name: enable unmaintained
-      ucr:
-        values:
-          repository/online/unmaintained: True
-    - name: check if borgbackup installed
-      stat:
-        path: /usr/bin/borgbackup
-      register: stat_borgbackup
-    - name: install borgbackup
-      command: univention-install borgbackup borgbackup-doc
-      when: not stat_borgbackup.stat.exists
+#    - name: Menueeintrag fuer Access benutzerabhaengig erstellen
+#      template:
+#        src: access_2013.desktop
+#        dest: /home/{{ item }}/.local/share/applications/access_2013.desktop
+#      with_items:
+#        - thomasn
