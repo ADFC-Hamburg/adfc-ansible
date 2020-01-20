@@ -1,14 +1,3 @@
-- name: Accecpt mscorefonts-eula
-  debconf:
-    name: ttf-mscorefonts-installer
-    question: msttcorefonts/accepted-mscorefonts-eula
-    value: "true"
-    vtype: select # boolean waere besser fuehrt aber immer zu changes, Sven 5.1.2020
-
-- name: Get Debian ttf-mscorefonts-installer package
-  apt:
-    deb: "http://ftp.de.debian.org/debian/pool/contrib/m/msttcorefonts/ttf-mscorefonts-installer_3.6_all.deb"
-
 - name: Install Font Packages
   apt:
     name:
@@ -18,3 +7,19 @@
       - fonts-larabie-deco
       - fonts-larabie-straight
       - fonts-larabie-uncommon
+
+- name: Teste TTF
+  stat:
+    path: /usr/share/fonts/truetype/msttcorefonts/Arial.ttf
+  register: mssfont
+- name: Accecpt mscorefonts-eula
+  debconf:
+    name: ttf-mscorefonts-installer
+    question: msttcorefonts/accepted-mscorefonts-eula
+    value: "true"
+    vtype: select # boolean waere besser fuehrt aber immer zu changes, Sven 5.1.2020
+  when: not mssfont.stat.exists
+- name: Get Debian ttf-mscorefonts-installer package
+  apt:
+    deb: "http://ftp.de.debian.org/debian/pool/contrib/m/msttcorefonts/ttf-mscorefonts-installer_3.6_all.deb"
+  when: not mssfont.stat.exists
