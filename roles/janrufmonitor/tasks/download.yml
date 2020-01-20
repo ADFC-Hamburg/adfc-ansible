@@ -4,6 +4,7 @@
       url: "{{ janrufmon_url }}"
       mode: 0644
       checksum: "sha256:{{ janrufmon_sha256sum }}"
+  tags: janrufmonitor
 
 - name: Unpack
   unarchive:
@@ -12,6 +13,7 @@
     owner: root
     group: root
     remote_src: yes
+  tags: janrufmonitor
 
 - name: Search all files
   find:
@@ -20,6 +22,7 @@
     recurse: yes
     excludes: "jam.sh"
   register: all_files
+  tags: janrufmonitor
 
 - name: Search all Dirs
   find:
@@ -27,6 +30,7 @@
     file_type: directory
     recurse: yes
   register: all_dirs
+  tags: janrufmonitor
 
 - name: Set Permission for files
   file:
@@ -35,6 +39,7 @@
     owner: root
     group: root
   with_items: "{{ all_files.files }}"
+  tags: janrufmonitor
 
 - name: Set Permission for directories
   file:
@@ -43,6 +48,7 @@
     owner: root
     group: root
   with_items: "{{ all_dirs.files }}"
+  tags: janrufmonitor
 
 - name: Set Permission of the jam.sh File
   file:
@@ -50,11 +56,5 @@
     mode: 0755
     owner: root
     group: root
+  tags: janrufmonitor
 
-- name: Set Markerfile that everything is okay
-  copy:
-    content: "{{ janrufmon_sha256sum }}"
-    dest: "{{ janrufmon_dest_dir }}/sha256sum-ansible.txt"
-    mode: 0644
-    owner: root
-    group: root

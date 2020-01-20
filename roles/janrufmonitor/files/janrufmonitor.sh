@@ -33,6 +33,9 @@ function replaceDirs {
         # lösche das neue directory
         rm -rf "$JUSERDIR"
         ln -s "$JHOMEDIR" "$JUSERDIR"
+    elif [ "${JUSER}${JHOME}" == "LJ" ] ; then
+	# Normalbetrieb
+        /bin/sed -i -e "s/\/opt\/janrufmonitor\/users\/$USER\//\/home\/$USER\/.config\/janrufmonitor\//" $JHOMEDIR/.paths
     fi
     # Bei NN starten wir Jam damit das Verzeichnis angelegt wird, im Anschluss haben wir DN
     # Bei LJ ist Normalbetrieb wir brauchen nichts zu tun
