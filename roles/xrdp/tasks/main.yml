@@ -1,6 +1,21 @@
+# See: https://www.hiroom2.com/2018/04/29/ubuntu-1804-xrdp-gnome-en/
+#
 - name: Installiere xrdp
   apt:
     name: xrdp
+
+- name: Use KDE for xrdp
+  alternatives:
+    name: x-session-manager
+    path: /usr/bin/startkde
+
+- name: copy logo
+  copy:
+    src: ADFC-HH-rgb-300px.bmp
+    dest: /usr/local/share/xrdp-adfc-logo.bmp
+    mode: "0644"
+    owner: "root"
+    group: "root"
 
 - name: copy xrdp.ini
   copy:
@@ -10,3 +25,12 @@
     owner: "root"
     group: "root"
   notify: Restart xrdp
+
+- name: create polkit
+  copy:
+    src: xrdp-color-manager.pkla
+    dest: /etc/polkit-1/localauthority/50-local.d/xrdp-color-manager.pkla
+    mode: "0644"
+    owner: "root"
+    group: "root"
+  notify: Restart polkit

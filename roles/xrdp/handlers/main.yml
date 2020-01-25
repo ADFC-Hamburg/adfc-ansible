@@ -2,3 +2,8 @@
   systemd:
     name: xrdp
     state: restarted
+
+- name: Restart polkit
+  systemd:
+    name: polkit
+    state: restarted

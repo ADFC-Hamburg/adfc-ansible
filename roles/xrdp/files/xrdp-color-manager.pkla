@@ -1,0 +1,7 @@
+[Netowrkmanager]
+Identity=unix-user:*
+Action=org.freedesktop.color-manager.create-device
+ResultAny=no
+ResultInactive=no
+ResultActive=yes
+EOF
