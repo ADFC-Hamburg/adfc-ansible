@@ -15,7 +15,7 @@ PRUNE_WEEKS="4"      # Anzahl der vorzuhaltenden Wochensicherungen
 PRUNE_MONTHS="12"    # Anzahl der vorzuhaltenden Monatssicherungen
 PRUNE_YEARS="2"      # Anzahl der vorzuhaltenden Jahressicherungen
 
-BORG_CREATE_PARAMS="-C lz4 --info --exclude-caches --show-rc --stats --numeric-owner --noatime -e /mnt -e /var/cache -e /run -e /dev -e /sys -e /proc -e /tmp -e /usr/share/ppd -e /home.old -e */ImapMail -e */.npm -e */.cache --list --filter=AMEx"
+BORG_CREATE_PARAMS="-C lz4 --info --exclude-caches --show-rc --stats --numeric-owner --noatime -e /mnt -e /var/cache -e /run -e /dev -e /sys -e /proc -e /tmp -e /usr/share/ppd -e /home.old -e */ImapMail -e */.npm -e */.cache -e /adfc/software --list --filter=AMEx"
 BORG_SAVE_PATH="/"
 
 BORG_INIT_PARAMS="--encryption keyfile"
