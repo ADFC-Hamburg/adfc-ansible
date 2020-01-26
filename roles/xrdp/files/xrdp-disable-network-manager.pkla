@@ -1,0 +1,6 @@
+[Disable network-manager]
+Identity=unix-user:*
+Action=org.freedesktop.NetworkManager.network-control
+ResultAny=no
+ResultInactive=no
+ResultActive=no

@@ -1,0 +1,34 @@
+- name: copy Apache sites
+  copy:
+    src: "{{ item }}"
+    dest: "/etc/apache2/sites-available/{{ item }}"
+    mode: "0644"
+  with_items: "{{ apache_sites }}"
+  notify: restart apache2
+  tags: external-https
+
+- name: enable Apache Site
+  command: "a2enable {{ item }}"
+  args:
+    creates: "/etc/apache2/sites-enabled/{{ item }}"
+  with_items: "{{ apache_sites }}"
+  notify: restart apache2
+  tags: external-https
+
+- name: Set UCR Variable
+  ucr:
+     values:
+       security/packetfilter/package/univention-apache/tcp/8443/all: ACCEPT
+       security/packetfilter/package/univention-apache/tcp/8080/all: ACCEPT
+  notify: restart univention-firewall
+  tags: external-https
+
+# TODO:
+# ucr set security/packetfilter/package/univention-apache/tcp/8080/all=ACCEPT
+# Datei /etc/apache2/sites-available/adfc-lets-encrypt-8080.conf
+# a2ensite adfc-lets-encrypt-8080.conf
+# systemctl restart apache2
+# emacs -nw adfc-external-ssl-8443.conf
+# ucr set
+# systemctl restart apache2
+# systemctl restart univention-firewall.service
