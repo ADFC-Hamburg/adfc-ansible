@@ -22,13 +22,3 @@
        security/packetfilter/package/univention-apache/tcp/8080/all: ACCEPT
   notify: restart univention-firewall
   tags: external-https
-
-# TODO:
-# ucr set security/packetfilter/package/univention-apache/tcp/8080/all=ACCEPT
-# Datei /etc/apache2/sites-available/adfc-lets-encrypt-8080.conf
-# a2ensite adfc-lets-encrypt-8080.conf
-# systemctl restart apache2
-# emacs -nw adfc-external-ssl-8443.conf
-# ucr set
-# systemctl restart apache2
-# systemctl restart univention-firewall.service
