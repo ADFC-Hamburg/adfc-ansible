@@ -2,6 +2,7 @@
   roles:
   - load-contacts
   - ssh-keys
+  - skype
   - fonts
   - unburden-home-dir
   - ubuntu-basic
@@ -42,16 +43,6 @@
       repo: 'ppa:marko-preuss/hibiscus'
       state: absent
 
-  - name: Skype-Repo und GPG-Key hinzu
-    apt_key:
-      url: https://repo.skype.com/data/SKYPE-GPG-KEY
-      state: present
-    tags: software
-
-  - name: skype repository
-    apt_repository:
-      repo: 'deb https://repo.skype.com/deb stable main'
-    tags: software
 
   - name: Installiere apt-transport-https
     apt:
@@ -103,7 +94,6 @@
       - pdfsam
       - pdfshuffler
       - keepassxc
-      - skypeforlinux
       - nextcloud-client
       - nextcloud-client-dolphin
     tags: software
