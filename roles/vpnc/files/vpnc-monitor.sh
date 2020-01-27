@@ -28,15 +28,11 @@ case "${MESSAGE}" in
         restart_vpn
         exit 0
     ;;
-    "vpnc: HMAC mismatch in ESP mode")
-        restart_vpn
-        exit 0
-        ;;
 esac
 ping -c 2 $PING_ADDR 2>&1> /dev/null
 
 if [ $? -ne 0 ]; then
-    restart_vpn
+    no_ping
 else
     if [ -f $STATUSFILE ] ; then
         rm $STATUSFILE
