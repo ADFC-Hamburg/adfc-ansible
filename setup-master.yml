@@ -60,3 +60,10 @@
       copy:
         src: nagios-otrs.cfg
         dest: /etc/nagios/conf.local.d/check_otrs.cfg
+
+    - name: Create adfc-who
+      template:
+        src: adfc-who.sh
+        dest: /usr/local/sbin/adfc-who
+        mode: "0755"
+      tags: adfc-who
