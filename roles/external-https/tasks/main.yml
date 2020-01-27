@@ -8,7 +8,7 @@
   tags: external-https
 
 - name: enable Apache Site
-  command: "a2enable {{ item }}"
+  command: "a2ensite {{ item }}"
   args:
     creates: "/etc/apache2/sites-enabled/{{ item }}"
   with_items: "{{ apache_sites }}"
