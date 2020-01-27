@@ -17,7 +17,7 @@ for PC in $ARBEITSPLATZ ; do
         echo ''
         ssh root@$PC cat /proc/cpuinfo |grep "model name" |cut -d ':' -f 2 |head -1
         echo ''
-        PC_USER=$(ssh root@adfc-testclient who -u |grep -v 'root '|cut -d ' ' -f1 |head -1)
+        PC_USER=$(ssh root@$PC who -u |grep -v 'root '|cut -d ' ' -f1 |head -1)
         echo ''
         univention-ldapsearch -LLL uid=${PC_USER} telephoneNumber givenName sn mailPrimaryAddress
     else
