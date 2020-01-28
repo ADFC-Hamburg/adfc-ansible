@@ -8,6 +8,7 @@
   - ubuntu-basic
   - postfix-auth
   - firefox-client
+  - thunderbird
   - libreoffice
   - jnv.unattended-upgrades
   - janrufmonitor
@@ -76,9 +77,6 @@
       - gstreamer1.0-plugins-base
       - kdenlive
       - vlc
-      - thunderbird
-      - thunderbird-locale-de
-      - xul-ext-lightning
       - language-pack-de-base
       - gnupg2
       - gimp
