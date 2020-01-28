@@ -12,3 +12,11 @@ systemd_max_memory:
     memory_high: 400M
     memory_max: 600M
     restart: on-failure
+
+apache_sites:
+  - adfc-lets-encrypt-8080.conf
+  - adfc-external-ssl-8443.conf
+
+apache_ports:
+  - "8080"
+  - "8443"
