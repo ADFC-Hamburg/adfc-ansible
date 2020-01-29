@@ -34,8 +34,8 @@ ANSIBLE_USER=$(echo $JSON |$JQ -r '.ansible_user // "root"' )
 ANSIBLE_ARGS=$(echo $JSON |$JQ -r '.ansible_ssh_common_args // ""')
 
 echo '= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ='
-echo ssh -p $ANSIBLE_PORT -l $ANSIBLE_USER $ANSIBLE_ARGS $ANSIBLE_HOST
+echo ssh -A -p $ANSIBLE_PORT -l $ANSIBLE_USER $ANSIBLE_ARGS $ANSIBLE_HOST
 echo scp -P $ANSIBLE_PORT -l $ANSIBLE_USER $ANSIBLE_ARGS $ANSIBLE_HOST:/some/file myfile
 echo '= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ='
 
-eval "ssh -p $ANSIBLE_PORT -l $ANSIBLE_USER $ANSIBLE_ARGS $ANSIBLE_HOST"
+eval "ssh -A -p $ANSIBLE_PORT -l $ANSIBLE_USER $ANSIBLE_ARGS $ANSIBLE_HOST"
