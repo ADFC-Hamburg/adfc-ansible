@@ -1,0 +1,14 @@
+- name: Install Thunderbid + Lighting
+  apt:
+    name:
+      - thunderbird
+      - thunderbird-locale-de
+      - xul-ext-lightning
+  tags: software, thunderbird
+
+- name: Setup Thunderbid Settings
+  copy:
+    src:  sysprefs.js
+    dest: /etc/thunderbird/syspref.js
+    mode: "0644"
+  tags: software, thunderbird
