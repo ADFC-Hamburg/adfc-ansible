@@ -1,16 +1,16 @@
 - hosts: arbeitsplatz
   roles:
-  - load-contacts
+  - ubuntu-basic
   - ssh-keys
+  - jnv.unattended-upgrades
+  - load-contacts
+  - postfix-auth
   - skype
   - fonts
   - unburden-home-dir
-  - ubuntu-basic
-  - postfix-auth
   - firefox-client
   - thunderbird
   - libreoffice
-  - jnv.unattended-upgrades
   - janrufmonitor
   - links-on-desktop
   - client-apt-remove
