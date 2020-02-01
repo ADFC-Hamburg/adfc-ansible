@@ -67,6 +67,7 @@
         src: copy-zertifikat.sh
         dest: /usr/lib/univention-ssl-usercert/copy-zertifikat.sh
         mode: "0755"
+
     - name: Create adfc-who
       template:
         src: adfc-who.sh
@@ -74,3 +75,11 @@
         mode: "0755"
       tags: adfc-who
 
+    - name: Cron delete proxmox Datensicherung
+      cron:
+        name: "ansible-delete-proxmox-datensicherung"
+        minute: "19"
+        cron_file: ansible-delete-proxmox-datensicherung
+        user: root
+        job: /usr/bin/find /adfc/Computer/Datensicherung/Proxmox/ -type f -ctime 1 -delete
+      tags: proxmox-backup
