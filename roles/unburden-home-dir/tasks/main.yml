@@ -1,6 +1,7 @@
 - name: Install Package
   apt:
     name: unburden-home-dir
+  tags: unburden
 
 - name: Copy Config Files
   copy:
@@ -12,9 +13,12 @@
   with_items:
     - unburden-home-dir
     - unburden-home-dir.list
+  tags: unburden
 
 - name: Enable unburden
   lineinfile:
     path: /etc/default/unburden-home-dir
     regexp: UNBURDEN_HOME
     line: "UNBURDEN_HOME=true"
+    insertafter: EOF
+  tags: unburden
