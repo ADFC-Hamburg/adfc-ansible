@@ -1,0 +1,20 @@
+# see https://www.univention.de/blog-de/2015/11/self-services-fuer-passwort-reset-in-ucs-4-1/
+---
+- name: Copy sipgate-sms.py
+  copy:
+    src: sipgate-sms.py
+    dest: /usr/local/sbin
+    mode: 0750
+- name: Enable SMS sending
+  ucr:
+    values:
+      umc/self-service/passwordreset/sms/command: /usr/local/sbin/sipgate_sms.py
+      umc/self-service/passwordreset/sms/country_code: 49
+      umc/self-service/passwordreset/sms/enabled: yes
+      umc/self-service/passwordreset/sms/password_file: /etc/sipgate.secret
+- name: Set Permission for sipgate.secret
+  file:
+    path: /etc/sipgate.secret
+    mode: 0600
+    owner: root
+    group: root
