@@ -65,7 +65,7 @@
     - name: Copy copy-zertifikat.sh
       copy:
         src: copy-zertifikat.sh
-        dest: /usr/lib/univention-ssl-usercert/copy-zertifikat.sh
+        dest: /usr/lib/univention-ssl-usercert/copy-zertifikat
         mode: "0755"
     - name: Create adfc-who
       template:
@@ -73,4 +73,3 @@
         dest: /usr/local/sbin/adfc-who
         mode: "0755"
       tags: adfc-who
-
