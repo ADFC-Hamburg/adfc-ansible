@@ -22,3 +22,9 @@
       template:
         src: hosts
         dest: /etc/hosts
+    - name: Lade UCS 4.4 herunter
+      get_url:
+        url: "https://download.software-univention.de/download/ucs-cds/ucs4.4-4/UCS_4.4-4-amd64.iso"
+        dest: "/var/lib/vz/images/UCS_4.4-4-amd64.iso"
+        checksum: "md5:https://download.software-univention.de/download/ucs-cds/ucs4.4-4/UCS_4.4-4-amd64.iso.md5"
+      tags: ucs
