@@ -1,0 +1,24 @@
+- hosts: proxmox01.adfc-intern.de
+  gather_facts: yes
+  roles:
+    - ssh-keys
+    - postfix-auth
+  tasks:
+    - name: Nutze Proxmox Community Repo
+      apt_repository:
+        repo: "deb http://download.proxmox.com/debian/pve {{ ansible_distribution_release }} pve-no-subscription"
+        filename: "proxmox"
+        state: present
+
+    - name: Sicherstellen das bsd-mailx installiert ist
+      apt:
+        name: bsd-mailx
+    - name: Setze Hostname
+      copy:
+        content: "{{ inventory_hostname | regex_replace('\\..*$','') }}"
+        dest: "/etc/hostname"
+        mode: "0644"
+    - name: Setze /etc/hosts
+      template:
+        src: hosts
+        dest: /etc/hosts

@@ -1,0 +1,4 @@
+ssh_users_admins:
+  - svena
+  - georgs
+postfix_host_email: admin@adfc-intern.de
