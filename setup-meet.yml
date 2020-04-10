@@ -1,0 +1,49 @@
+- hosts: meet.adfc-intern.de
+  gather_facts: no
+  tasks:
+   - name: Download Debian Image
+     command: "/usr/bin/pveam download local {{ proxmox_template }}"
+     args:
+       creates: "/var/lib/vz/template/cache/{{ proxmox_template }}"
+     tags: pveam
+     delegate_to: proxmox01.adfc-intern.de
+     # entfernen mit pveam remove local:vztmpl/debian-10.0-standard_10.0-1_amd64.tar.gz
+   - name: Get Password
+     slurp:
+       src: /root/root.secret
+     register: root_secret
+     delegate_to: "{{ proxmox_host }}"
+   - name: Get SSH-Keys
+     command: "/usr/bin/ssh-add -L"
+     register: ssh_keys
+     delegate_to: "localhost"
+   - debug:
+       msg: "{{ inventory_hostname }}"
+     delegate_to: "{{ proxmox_host }}"
+   - name: Setup LXC Container
+     proxmox:
+       vmid: "{{ proxmox_id }}"
+       node: "{{ proxmox_host |regex_replace('\\..*$','') }}"
+       api_user: root@pam
+       api_password: "{{ root_secret.content |b64decode |trim }}"
+       api_host: "{{ proxmox_host }}"
+       password: "{{ root_secret.content |b64decode |trim }}"
+       hostname: "{{ inventory_hostname }}"
+       memory: "{{ proxmox_ramsize_in_mb }}"
+       ostemplate: "local:vztmpl/{{ proxmox_template }}"
+       netif:
+         net0: "{% for key in proxmox_net.net0 %}{{ key }}={{ proxmox_net.net0[key] }},{% endfor %}"
+       pubkey: "{{ ssh_keys.stdout_lines[0] }}"
+     delegate_to: "{{ proxmox_host }}"
+   - name: Start LXC Containter
+     proxmox:
+       vmid: "{{ proxmox_id }}"
+       node: proxmox01
+       api_user: root@pam
+       api_password: "{{ root_secret.content |b64decode |trim }}"
+       api_host: "{{ proxmox_host }}"
+       state: started
+     delegate_to: "{{ proxmox_host }}"
+   - name: Set Public Keys
+     include_role:
+       name: ssh-keys

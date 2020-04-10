@@ -1,0 +1,15 @@
+proxmox_id: "100"
+proxmox_template: debian-10.0-standard_10.0-1_amd64.tar.gz
+proxmox_host: "proxmox01.adfc-intern.de"
+proxmox_net:
+  net0:
+    name: eth0
+    gw: 88.198.32.30
+    ip: 88.192.32.212/32
+    ip6: 2a01:4f8:a0:32b9::4/64
+    gw6: 2a01:4f8:a0:32b9::3
+    bridge: vmbr0
+proxmox_ramsize_in_mb: 1024
+ssh_users_admins:
+  - svena
+  - georgs
