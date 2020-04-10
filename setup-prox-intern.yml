@@ -2,14 +2,12 @@
   gather_facts: yes
   roles:
     - ssh-keys
-    - postfix-auth
   tasks:
     - name: Nutze Proxmox Community Repo
       apt_repository:
         repo: "deb http://download.proxmox.com/debian/pve {{ ansible_distribution_release }} pve-no-subscription"
         filename: "proxmox"
         state: present
-
     - name: Sicherstellen das bsd-mailx installiert ist
       apt:
         name: bsd-mailx
@@ -22,6 +20,18 @@
       template:
         src: hosts
         dest: /etc/hosts
+    - name: Lade interfaces
+      template:
+        src: hetzner-interfaces.j2
+        dest: /etc/network/interfaces
+      tags: interface
+    - name: Enable IPv6 Forwarding
+      copy:
+        content: |
+          net.ipv6.conf.all.forwarding=1
+        dest: /etc/sysctl.d/ansible_ipv6_forward.conf
+        mode: 0644
+      tags: interface
     - name: Lade UCS 4.4 herunter
       get_url:
         url: "https://download.software-univention.de/download/ucs-cds/ucs4.4-4/UCS_4.4-4-amd64.iso"
