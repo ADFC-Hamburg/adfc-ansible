@@ -1,6 +1,10 @@
-# Rollen importieren 
+# Rollen importieren
 # ansible-galaxy install -r requirements.yml
 
 # from galaxy
 - src: jnv.unattended-upgrades
   version: v1.7.0
+- src: geerlingguy.certbot
+  version: v3.0.3
+- src: udelarinterior.jitsi_meet
+  version: v2.0.0
