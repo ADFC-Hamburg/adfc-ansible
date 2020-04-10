@@ -5,7 +5,7 @@ proxmox_net:
   net0:
     name: eth0
     gw: 88.198.32.30
-    ip: 88.192.32.212/32
+    ip: 88.198.32.212/32
     ip6: 2a01:4f8:a0:32b9::4/64
     gw6: 2a01:4f8:a0:32b9::3
     bridge: vmbr0
