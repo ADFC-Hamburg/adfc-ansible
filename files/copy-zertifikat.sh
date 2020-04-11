@@ -1,10 +1,10 @@
 #!/bin/bash
 Z_AKTION=$1
-Z_UID=$2
-Z_DN=$3
+Z_DN=$2
+Z_UID=$3
 Z_CERTPATH=$4
 FROMMAIL=it-support@hamburg.adfc.de
-PW_FILE="${Z_CERTPATH}/${Z_UID}/${Z_UID}-p12-password.txt" 
+PW_FILE="${Z_CERTPATH}/${Z_UID}/${Z_UID}-p12-password.txt"
 function copy_zert {
     EMAIL=$(univention-ldapsearch -LLL uid=$Z_UID mailPrimaryAddress |grep mailPrimaryAddress | cut -d ' ' -f 2)
     Z_HOME="/home/${Z_UID}/adfc-zertifikate"
