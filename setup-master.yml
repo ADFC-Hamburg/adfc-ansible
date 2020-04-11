@@ -76,6 +76,23 @@
         mode: "0755"
       tags: adfc-who
 
+    - name: Copy backup-windows.sh
+      copy:
+        src: backup-windows.sh
+        dest: /usr/local/sbin/adfc-backup-win7pro
+        mode: "0755"
+      tags: backup-windows
+
+    - name: Cronjob fuer backup-windows
+      cron:
+        name: "adfc-backup-win7pro"
+        hour: 10,14,17
+        minute: "11"
+        cron_file: ansible_backup_win
+        user: root
+        job: /usr/local/sbin/adfc-backup-win7pro
+      tags: backup-windows
+
     - name: Cron delete proxmox Datensicherung
       cron:
         name: "ansible-delete-proxmox-datensicherung"
@@ -84,3 +101,4 @@
         user: root
         job: /usr/bin/find /adfc/Computer/Datensicherung/Proxmox/ -type f -ctime 5 -delete
       tags: proxmox-backup
+
