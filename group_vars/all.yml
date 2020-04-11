@@ -19,6 +19,7 @@ ssh_users_admins:
   - tobiasd
   - volkerk
   - martinw
+  - georgs
 
 # Paketverwaltung
 deb_name_master_pdf_editor: master-pdf-editor-5.3.22_qt5.amd64.deb
