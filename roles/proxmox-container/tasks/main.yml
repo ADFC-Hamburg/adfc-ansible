@@ -27,6 +27,7 @@
     password: "{{ root_secret.content |b64decode |trim }}"
     hostname: "{{ inventory_hostname }}"
     memory: "{{ proxmox_ramsize_in_mb }}"
+    cores: "{{ proxmox_cores }}"
     ostemplate: "local:vztmpl/{{ proxmox_template }}"
     netif:
       net0: "{% for key in proxmox_net.net0 %}{{ key }}={{ proxmox_net.net0[key] }},{% endfor %}"

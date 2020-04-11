@@ -9,7 +9,8 @@ proxmox_net:
     ip6: 2a01:4f8:a0:32b9::4/64
     gw6: 2a01:4f8:a0:32b9::3
     bridge: vmbr0
-proxmox_ramsize_in_mb: 1024
+proxmox_ramsize_in_mb: 10240
+proxmox_cores: 9
 ssh_users_admins:
   - svena
   - georgs
