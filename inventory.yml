@@ -4,11 +4,9 @@ all:
       hosts:
         proxmox01.gst.hamburg.adfc.de:
         ucs-master.gst.hamburg.adfc.de:
-        babelfish.gst.hamburg.adfc.de:
         tools.adfc-hamburg.de:
     arbeitsplatz:
       hosts:
-        adfc-testclient.gst.hamburg.adfc.de:
         kubuntu-vm.gst.hamburg.adfc.de:
         bob.gst.hamburg.adfc.de:
         ford.gst.hamburg.adfc.de:
