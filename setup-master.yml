@@ -2,6 +2,7 @@
   gather_facts: yes
   roles:
     - ssh-keys
+    - gray-print
     - systemd-max-memory
     - links-on-desktop
     - borg-server
@@ -101,4 +102,3 @@
         user: root
         job: /usr/bin/find /adfc/Computer/Datensicherung/Proxmox/ -type f -ctime 5 -delete
       tags: proxmox-backup
-
