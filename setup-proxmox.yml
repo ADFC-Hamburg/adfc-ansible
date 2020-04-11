@@ -3,7 +3,7 @@
   roles:
     - ssh-keys
     - postfix-auth
-
+    - proxmox-backup
   tasks:
     - name: Erstellen eine Unix User fuer Tools-Server Backup
       user:
