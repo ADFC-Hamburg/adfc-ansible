@@ -1,8 +1,12 @@
-Dear user {username},
+Hallo {username},
 
-we have received a request to change your account recovery
-email from {old_email} to {new_email}.
+deine E-Mailadresse wurde von {old_email} in {new_email} geändert.
 
-If you did not request this change please
-contact your system administrator.
+Wenn du diese Änderung NICHT beaufragt hast, kontaktiere uns bitte unter:
 
+admin@adfc-intern.de
+
+
+Viele Grüße
+
+Dein ADFC-Intern-Admin-Team

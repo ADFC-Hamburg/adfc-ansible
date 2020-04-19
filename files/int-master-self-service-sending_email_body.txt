@@ -1,18 +1,24 @@
-Dear user {username},
+Hallo {username},
 
-we have received a password reset request for your account. If you did not
-wish to change your password, you can safely ignore this message.
+jemand hat uns beauftragt Dein Passwort zu ändern.
+Wenn Du das nicht warst, kannst du diese E-Mail einfach ignorieren.
 
-To change your password please follow this link:
+
+Um Dein Passwort zu ändern rufe bitte den folgenden Link auf:
 
 {tokenlink}
 
-If the link does not work, you can go to
+Wenn der Link nicht funktionieren sollte kannst du auch manuell auf:
 
 {link}
 
-and enter the following token manually:
+den folgennden Token:
 
 {token}
 
-Greetings from your password self service system.
+eingeben.
+
+
+Viele Grüße
+
+Dein ADFC-Intern-Admin-Team

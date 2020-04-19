@@ -1,15 +1,23 @@
-Dear user {username},
+Hallo  {username},
 
-we have received your email verification request. To verify
-your email address, please follow this link:
+wir haben einen Anfrage erhalten. Bitte validiere deine Adresse
+
+
+Um Deine E-Mail zu bestätigen rufe bitte den folgenden Link auf:
 
 {tokenlink}
 
-If the link does not work, you can go to 
+Wenn der Link nicht funktionieren sollte kannst du auch manuell auf:
 
 {link}
 
-and enter the following token manually:
+den folgennden Token:
 
 {token}
 
+eingeben.
+
+
+Viele Grüße
+
+Dein ADFC-Intern-Admin-Team
