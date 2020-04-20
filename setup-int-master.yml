@@ -1,0 +1,83 @@
+- hosts: int-master.adfc-intern.de
+  gather_facts: yes
+  roles:
+    - ssh-keys
+  tasks:
+    - name: unlink runme.sh
+      file:
+        path: "{{ item }}"
+        state: absent
+      with_items:
+        - /root/runme.sh
+        - /root/profile
+        - /root/ansible_proxmox_helperscript.sh
+        - /root/univention-docker-dev_0.1.0-105A~4.4.0.202003272017_all.deb
+    - name: Installiere das Portal
+      apt:
+        name: univention-portal
+    - name: teste ob univention-letsencrypt installiert ist
+      stat:
+        path: /usr/share/doc/univention-letsencrypt/copyright
+      register: ucs_letsencrypt
+    - name: Installiere univention-letsencrypt
+      command: /usr/bin/univention-app install letsencrypt
+      when: not ucs_letsencrypt.stat.exists
+    - name: teste ob univention-self-service installiert ist
+      stat:
+        path: /usr/share/doc/univention-self-service/copyright
+      register: ucs_self_service
+    - name: Installiere univention-self-service
+      command: /usr/bin/univention-app install self-service
+      when: not ucs_self_service.stat.exists
+    # Siehe: https://help.univention.com/t/configure-saml-single-sign-on-as-single-server-solution/6681
+    - name: UCR Enable User Registration and auth
+      ucr:
+       values:
+         umc/self-service/account-registration/frontend/enabled: "true"
+         umc/self-service/account-registration/backend/enabled: "true"
+         umc/web/piwik: "false"
+         ucs/server/sso/autoregistraton: no
+         umc/saml/entityID: https://auth.adfc-intern.de/simplesamlphp/saml2/idp/metadata.php
+         saml/idp/certificate/privatekey: "/etc/simplesamlphp/auth.adfc-intern.de-idp-certificate.key"
+         saml/idp/certificate/certificate: "/etc/simplesamlphp/auth.adfc-intern.de-idp-certificate.crt"
+         ucs/server/sso/fqdn: auth.adfc-intern.de
+         ucs/server/sso/virtualhost: "true"
+         letsencrypt/domains: "int-master.adfc-intern.de auth.adfc-intern.de portal.adfc-intern.de"
+         letsencrypt/services/apache2: "false"
+         letsencrypt/services/postfix: "true"
+    - name: Run SSO-Scripts
+      shell: |
+        univention-run-join-scripts --force --run-scripts 91univention-saml.inst
+        ucr set umc/saml/idp-server=https://auth.adfc-intern.de/simplesamlphp/saml2/idp/metadata.php
+        univention-run-join-scripts --force --run-scripts 92univention-management-console-web-server.inst
+      when: reload_sso is defined and reload_sso
+    - name: Verzeichnisse erstellen
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: "0755"
+      with_items:
+        - "/etc/adfc"
+        - "/etc/adfc/self-service"
+      tags: self-service
+    - name: Kopiere E-mail Texte
+      copy:
+        src: "int-master-self-service-{{ item }}"
+        dest: "/etc/adfc/self-service/{{ item }}"
+        mode: "0644"
+      with_items:
+        - sending_email_body.txt
+        - sending_verification_email_body.txt
+        - change_notification_email_body.txt
+      tags: self-service
+    - name: Self-Serivice Setze UCR Variablen
+      ucr:
+        values:
+          umc/self-service/passwordreset/email/text_file: "/etc/adfc/self-service/sending_email_body.txt"
+          umc/self-service/account-verification/email/text_file:  "/etc/adfc/self-service/sending_verification_email_body.txt"
+          umc/self-service/email-change-notification/email/text_file: "/etc/adfc/self-service/change_notification_email_body.txt"
+          umc/self-service/account-verification/next-steps/de: |
+            Du erh&auml;lst eine E-Mail wenn wir deinen Account freigeschaltet haben. Weiter zum <a href='/univention/portal'>Univention Portal</a>.
+          umc/self-service/account-verification/next-steps: |
+            We will send you an E-Mail when your account is ready, continue to the <a href='/univention/portal'>Univention Portal</a>.
+      tags: self-service

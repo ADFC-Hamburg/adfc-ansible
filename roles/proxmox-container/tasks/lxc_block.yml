@@ -1,0 +1,18 @@
+#  /etc/pve is a non-posix compliant filesystem
+# https://pve.proxmox.com/wiki/Proxmox_Cluster_File_System_(pmxcfs)
+# https://groups.google.com/forum/#!topic/ansible-project/5cA-FLlTQv4
+- name: copy to tmp
+  copy:
+    dest: "/tmp/ansible_adfc{{ proxmox_id }}.conf"
+    src: "/etc/pve/lxc/{{ proxmox_id }}.conf"
+    remote_src: yes
+  delegate_to: "{{ proxmox_host }}"
+- name: Test if we need to append lines in LXC-Conf
+  blockinfile:
+    marker: '# ADFC ANSIBLE {mark}'
+    path: "/tmp/ansible_adfc{{ proxmox_id }}.conf"
+    block: "{{ proxmox_lxc_conf }}"
+  delegate_to: "{{ proxmox_host }}"
+- name: copy from tmp
+  command: "cp /tmp/ansible_adfc{{ proxmox_id }}.conf /etc/pve/lxc/{{ proxmox_id }}.conf"
+  delegate_to: "{{ proxmox_host }}"

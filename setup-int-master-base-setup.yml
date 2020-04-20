@@ -1,0 +1,46 @@
+- hosts: int-master.adfc-intern.de
+  gather_facts: no
+  roles:
+    - proxmox-container
+  tasks:
+    - name: Achtung, dieses Skript soll nur einmal ausgeführt werden, danach ist der Master gejoint
+      pause:
+    - name: Check if modify script has the right md5sum
+      command: "pct exec {{ proxmox_id }} /usr/bin/md5sum /root/ansible_proxmox_helperscript.sh"
+      register: modify_md5sum
+      ignore_errors: yes
+      delegate_to: "{{ proxmox_host }}"
+      tags: pct_run
+    - name: Create modify script in /tmp
+      copy:
+        content: "{{ proxmox_helperscript }}"
+        dest: /tmp/ansible_proxmox_helperscript{{ proxmox_id }}.sh
+        mode: 0644
+      delegate_to: "{{ proxmox_host }}"
+      when: "modify_md5sum.stdout is not search(proxmox_helperscript |hash('md5'))"
+      tags: pct_run
+    - name: Copy script to conatiner
+      command: "pct push {{ proxmox_id }} /tmp/ansible_proxmox_helperscript{{ proxmox_id }}.sh /root/ansible_proxmox_helperscript.sh -perms 0755"
+      delegate_to: "{{ proxmox_host }}"
+      when: "modify_md5sum.stdout is not search(proxmox_helperscript |hash('md5'))"
+      tags: pct_run
+    - name: Run script in container
+      command: "pct exec {{ proxmox_id }} /root/ansible_proxmox_helperscript.sh"
+      ignore_errors: yes
+      when: "modify_md5sum.stdout is not search(proxmox_helperscript |hash('md5'))"
+      delegate_to: "{{ proxmox_host }}"
+    - name: Wait until container stops
+      pause:
+        seconds: 12
+      when: "modify_md5sum.stdout is not search(proxmox_helperscript |hash('md5'))"
+    - name: Start LXC Containter
+      proxmox:
+        vmid: "{{ proxmox_id }}"
+        node: "{{ proxmox_host |regex_replace('\\..*$','') }}"
+        api_user: root@pam
+        api_password: "{{ root_secret.content |b64decode |trim }}"
+        api_host: "{{ proxmox_host }}"
+        state: started
+      delegate_to: "{{ proxmox_host }}"
+    - name: Bitte als root auf proxmox einloggen und ./runme.sh ausführen
+      pause:
