@@ -1,4 +1,4 @@
-- hosts: meet.adfc-intern.de
+- hosts: meet
   gather_facts: no
   roles:
     - proxmox-container
@@ -8,9 +8,57 @@
         name:
           - python-apt
           - htop
-- hosts: meet.adfc-intern.de
-  gather_facts: no
+- hosts: meet
+  gather_facts: yes
   roles:
     - ssh-keys
+    - update-os
     - geerlingguy.certbot
     - udelarinterior.jitsi_meet
+  tasks:
+    - name: Installiere coturn
+      apt:
+        name:
+         - coturn
+      tags: coturn
+    - name: Zertifikats copy für coturn
+      copy:
+        content: |
+          #!/bin/bash
+          mkdir /etc/coturn
+          cp /etc/letsencrypt/live/{{ inventory_hostname }}/fullchain.pem /etc/coturn/cert.pem
+          cp /etc/letsencrypt/live/{{ inventory_hostname }}/privkey.pem /etc/coturn/
+          chmod 644 /etc/coturn/cert.pem
+          chmod 600 /etc/coturn/privkey.pem
+          chown turnserver /etc/coturn/privkey.pem
+        dest: /etc/cron.daily/coturn-cert.sh
+        mode: 0755
+      register: coturn_cert_cron
+      tags: coturn
+    - name: Rufe Zertcopy auf
+      command: /etc/cron.daily/coturn-cert.sh
+      when: coturn_cert_cron.changed
+      tags: coturn
+    - name: Replace Zertifikatszeile
+      lineinfile:
+        path: /etc/turnserver.conf
+        regex: "cert="
+        line: cert=/etc/coturn/cert.pem
+      tags: coturn
+    - name: Replace Keyzeile
+      lineinfile:
+        path: /etc/turnserver.conf
+        regex: "pkey="
+        line: pkey=/etc/coturn/privkey.pem
+      tags: coturn
+    - name: Create DH File
+      openssl_dhparam:
+        path: /etc/coturn/dhparams.pem
+        size: 2066
+      tags: coturn
+    - name: Replace Keyzeile
+      lineinfile:
+        path: /etc/turnserver.conf
+        regex: "dh-file="
+        line: dh-file=/etc/coturn/dhparams.pem
+      tags: coturn

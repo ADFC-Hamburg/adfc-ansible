@@ -7,7 +7,11 @@ all:
         babelfish.gst.hamburg.adfc.de:
         tools.adfc-hamburg.de:
         proxmox01.adfc-intern.de:
-        meet.adfc-intern.de:
+      children:
+        meet:
+          hosts:
+            meet.adfc-intern.de:
+            test.adfc-intern.de:
     arbeitsplatz:
       hosts:
         adfc-testclient.gst.hamburg.adfc.de:
