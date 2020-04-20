@@ -1,5 +1,6 @@
 - hosts:
    - backup_clients
    - arbeitsplatz
+   - proxmox01.adfc-intern.de
   roles:
    - update-os

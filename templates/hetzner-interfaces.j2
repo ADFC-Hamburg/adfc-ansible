@@ -1,0 +1,46 @@
+### {{ ansible_managed }}
+
+source /etc/network/interfaces.d/*
+
+auto lo
+iface lo inet loopback
+iface lo inet6 loopback
+
+auto {{ ansible_default_ipv4.interface }}
+iface {{ ansible_default_ipv4.interface }} inet static
+  address {{ ansible_default_ipv4.address }}
+  netmask {{ ipv4_netmask }}
+  gateway {{ ansible_default_ipv4.gateway }}
+  # route 88.198.32.0/27 via 88.198.32.1
+
+  pre-up /usr/bin/echo 0 > /proc/sys/net/ipv6/conf/{{ ansible_default_ipv4.interface }}/accept_dad
+  up route add -net {{ipv4_network }} netmask {{ ipv4_netmask }} gw {{ ansible_default_ipv4.gateway }} dev eno1
+
+iface {{ ansible_default_ipv4.interface }} inet6 static
+  address {{ ipv6_address }}
+  netmask 64
+  gateway fe80::1
+  up /usr/sbin/sysctl -p
+
+
+# Routing, siehe https://community.hetzner.com/tutorials/install-and-configure-proxmox_ve/de?title=Proxmox_VE
+# fuer Einzel-IPs
+auto vmbr0
+iface vmbr0 inet static
+  address {{ ansible_default_ipv4.address }}
+  netmask 255.255.255.255
+  bridge_ports none
+  bridge_stp off
+  bridge_fd 0
+{% for add_ip in additional_ips %}
+  up /sbin/ip route add {{ add_ip }}/32 dev vmbr0
+{% endfor %}
+{% for add_ip in additional_ips %}
+  down /sbin/ip route del {{ add_ip }}/32 dev vmbr0
+{% endfor %}
+
+iface vmbr0 inet6 static
+  address {{ ipv6_address | ipmath(1) }}
+  netmask 64
+  up /sbin/ip -6 route add {{ ipv6_address | ipsubnet(64) }} dev vmbr0
+  down /sbin/ip -6 route del {{ ipv6_address | ipsubnet(64) }} dev vmbr0

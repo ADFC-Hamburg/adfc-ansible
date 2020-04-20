@@ -1,0 +1,10 @@
+ssh_users_admins:
+  - svena
+  - georgs
+postfix_host_email: admin@adfc-intern.de
+ipv4_netmask: 255.255.255.224
+ipv4_network: 88.198.32.0
+ipv6_address: 2a01:4f8:a0:32b9::2
+additional_ips:
+  - 88.198.32.212
+  - 88.198.32.217

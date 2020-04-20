@@ -1,0 +1,57 @@
+- hosts: proxmox01.adfc-intern.de
+  gather_facts: yes
+  roles:
+    - ssh-keys
+  tasks:
+    - name: Nutze Proxmox Community Repo
+      apt_repository:
+        repo: "deb http://download.proxmox.com/debian/pve {{ ansible_distribution_release }} pve-no-subscription"
+        filename: "proxmox"
+        state: present
+    - name: Sicherstellen das div. Pakete installiert sind
+      apt:
+        name:
+          - bsd-mailx
+          - python-pip
+          - tcpdump
+          - screen
+          - traceroute
+          - python-nacl
+          - python-enum34
+          - python-cryptography
+          - python-cffi-backend
+          - python-ipaddress
+          - python-bcrypt
+          - python-paramiko
+          - python-pyasn1
+          - python-asn1crypto
+    - name: Installiere proxmoxer
+      pip:
+        name: proxmoxer
+    - name: Setze Hostname
+      copy:
+        content: "{{ inventory_hostname | regex_replace('\\..*$','') }}"
+        dest: "/etc/hostname"
+        mode: "0644"
+    - name: Setze /etc/hosts
+      template:
+        src: hosts
+        dest: /etc/hosts
+    - name: Lade interfaces
+      template:
+        src: hetzner-interfaces.j2
+        dest: /etc/network/interfaces
+      tags: interface
+    - name: Enable IPv6 Forwarding
+      copy:
+        content: |
+          net.ipv6.conf.all.forwarding=1
+        dest: /etc/sysctl.d/ansible_ipv6_forward.conf
+        mode: 0644
+      tags: interface
+    - name: Lade UCS 4.4 herunter
+      get_url:
+        url: "https://download.software-univention.de/download/ucs-cds/ucs4.4-4/UCS_4.4-4-amd64.iso"
+        dest: "/var/lib/vz/images/UCS_4.4-4-amd64.iso"
+        checksum: "md5:https://download.software-univention.de/download/ucs-cds/ucs4.4-4/UCS_4.4-4-amd64.iso.md5"
+      tags: ucs

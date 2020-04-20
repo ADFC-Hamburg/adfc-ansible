@@ -1,0 +1,16 @@
+- hosts: meet.adfc-intern.de
+  gather_facts: no
+  roles:
+    - proxmox-container
+  tasks:
+    - name: Installiere Pakete
+      apt:
+        name:
+          - python-apt
+          - htop
+- hosts: meet.adfc-intern.de
+  gather_facts: no
+  roles:
+    - ssh-keys
+    - geerlingguy.certbot
+    - udelarinterior.jitsi_meet
