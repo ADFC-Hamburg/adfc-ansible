@@ -76,6 +76,6 @@
           umc/self-service/passwordreset/email/text_file: "/etc/adfc/self-service/sending_email_body.txt"
           umc/self-service/account-verification/email/text_file:  "/etc/adfc/self-service/sending_verification_email_body.txt"
           umc/self-service/email-change-notification/email/text_file: "/etc/adfc/self-service/change_notification_email_body.txt"
-          umc/self-service/account-verification/next-steps/de: "Du erhälst eine E-Mail wenn wir deinen Account freigeschaltet haben. Weiter zum <a href='/univention/portal'>Univention Portal</a>."
+          umc/self-service/account-verification/next-steps/de: "Du erh&auml;lst eine E-Mail wenn wir deinen Account freigeschaltet haben. Weiter zum <a href='/univention/portal'>Univention Portal</a>."
           umc/self-service/account-verification/next-steps: "We will send you an E-Mail when your account is ready, continue to the <a href='/univention/portal'>Univention Portal</a>."
       tags: self-service
