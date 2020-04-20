@@ -1,0 +1,24 @@
+Hallo {username},
+
+jemand hat uns beauftragt Dein Passwort zu ändern.
+Wenn Du das nicht warst, kannst du diese E-Mail einfach ignorieren.
+
+
+Um Dein Passwort zu ändern rufe bitte den folgenden Link auf:
+
+{tokenlink}
+
+Wenn der Link nicht funktionieren sollte kannst du auch manuell auf:
+
+{link}
+
+den folgennden Token:
+
+{token}
+
+eingeben.
+
+
+Viele Grüße
+
+Dein ADFC-Intern-Admin-Team

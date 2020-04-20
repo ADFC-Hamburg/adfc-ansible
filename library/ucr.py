@@ -91,10 +91,12 @@ def get_value(ucr, key):
 
 def set_value(ucr, key, value):
     ''' Set value for key '''
+    univention.config_registry.handler_set([('%s=%s' % (key,value))])
     ucr[key]=value
 
 def unset(ucr, key):
     ''' Unset ucr for key '''
+    univention.config_registry.handler_unset([key])
     del ucr[key]
 
 def handle_item(module, ucr, key, value):
@@ -137,8 +139,6 @@ def main():
         if rtn[key]['changed']:
             num_changed= num_changed+1
             glob_changed=True
-    if not module.check_mode:
-        ucr.save()
     return module.exit_json(
         changed = glob_changed,
         values = rtn,

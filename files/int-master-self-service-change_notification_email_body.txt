@@ -1,0 +1,12 @@
+Hallo {username},
+
+deine E-Mailadresse wurde von {old_email} in {new_email} geändert.
+
+Wenn du diese Änderung NICHT beaufragt hast, kontaktiere uns bitte unter:
+
+admin@adfc-intern.de
+
+
+Viele Grüße
+
+Dein ADFC-Intern-Admin-Team

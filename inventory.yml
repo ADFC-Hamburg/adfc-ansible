@@ -8,6 +8,7 @@ all:
         tools.adfc-hamburg.de:
         proxmox01.adfc-intern.de:
         meet.adfc-intern.de:
+        int-master.adfc-intern.de:
     arbeitsplatz:
       hosts:
         adfc-testclient.gst.hamburg.adfc.de:

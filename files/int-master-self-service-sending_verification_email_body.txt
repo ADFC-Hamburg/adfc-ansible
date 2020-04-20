@@ -1,0 +1,23 @@
+Hallo  {username},
+
+wir haben einen Anfrage erhalten. Bitte validiere deine Adresse
+
+
+Um Deine E-Mail zu bestätigen rufe bitte den folgenden Link auf:
+
+{tokenlink}
+
+Wenn der Link nicht funktionieren sollte kannst du auch manuell auf:
+
+{link}
+
+den folgennden Token:
+
+{token}
+
+eingeben.
+
+
+Viele Grüße
+
+Dein ADFC-Intern-Admin-Team

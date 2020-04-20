@@ -1,0 +1,74 @@
+proxmox_id: "109"
+proxmox_template: ucs-generic-amd64-4.4-4.tar.gz
+proxmox_host: "proxmox01.adfc-intern.de"
+proxmox_net:
+  net0:
+    name: eth0
+    gw: 88.198.32.30
+    ip: 88.198.32.217/32
+    ip6: 2a01:4f8:a0:32b9::5/64
+    gw6: 2a01:4f8:a0:32b9::3
+    bridge: vmbr0
+proxmox_ramsize_in_mb: 10240
+proxmox_cores: 4
+proxmox_lxc_conf_change: yes
+proxmox_lxc_conf: |
+  lxc.environment: domainname=adfc-intern.de
+  lxc.environment: hostname=int-master
+  lxc.environment: nameserver1=213.133.98.98
+  lxc.environment: appcenter/docker=false
+proxmox_throw_away: yes
+proxmox_helperscript: |
+  #!/bin/bash
+  touch /etc/.pve-ignore.hosts /etc/network/.pve-ignore.interfaces /etc/.pve-ignore.resolv.conf
+  ucr set interfaces/eth0/address={{ proxmox_net.net0.ip | ipaddr('address') }} \
+          interfaces/eth0/broadcast={{ proxmox_net.net0.ip | ipaddr('broadcast') }} \
+          interfaces/eth0/netmask={{ proxmox_net.net0.ip | ipaddr('netmask') }} \
+          interfaces/eth0/type=static \
+          interfaces/primary={{ proxmox_net.net0.name }} \
+          gateway={{ proxmox_net.net0.gw }} \
+          interfaces/eth0/ipv6/acceptRA=false \
+          interfaces/eth0/ipv6/default/address={{ proxmox_net.net0.ip6 | ipaddr('address') }} \
+          interfaces/eth0/ipv6/default/prefix=64 \
+          dns/forwarder1=213.133.98.98 \
+          ipv6/gateway={{ proxmox_net.net0.gw6 }} \
+          system/setup/boot/fields/blacklist="network password"
+  if [ ! -f /sbin/init.save ] ; then
+    cp /sbin/init /sbin/init.save
+    cp /sbin/init.debian /sbin/init
+    echo "Hallo"
+  fi
+  cat >/root/profile <<EOF
+  windows/domain="ADFC-INTERN"
+  ssl/locality="DE"
+  locale/default="de_DE.UTF-8:UTF-8"
+  server/role="domaincontroller_master"
+  locale="de_DE.UTF-8:UTF-8 en_US.UTF-8:UTF-8"
+  ldap/base="dc=adfc-intern,dc=de"
+  nameserver1="213.133.98.98"
+  hostname="int-master"
+  ssl/state="DE"
+  ssl/organization="ADFC"
+  ad/member="False"
+  xorg/keyboard/options/XkbLayout="de"
+  domainname="adfc-intern.de"
+  update/system/after/setup="False"
+  components=""
+  organization="ADFC"
+  timezone="Europe/Berlin"
+  ssl/email="ssl@adfc-intern.de"
+  email_address="adfc2020@sven.anders.hamburg"
+  ssl/organizationalunit="Allgemeiner deutscher Fahrradclub"
+  EOF
+  cat >/root/runme.sh <<EOF
+  cp /root/profile /var/cache/univention-system-setup/profile
+  /usr/lib/univention-system-setup/scripts/setup-join.sh
+  rm /root/profile
+  univention-admin users/user create --position cn=users,$ldap_base --set username=Administrator --set lastname=Administrator --set password=univention --set groups="cn=Domain Admins,cn=groups,$ldap_base" --policy-reference cn=default-admins,cn=admin-settings,cn=users,cn=policies,$ldap_base
+  shutdown -r now
+  EOF
+  chmod 755 runme.sh
+
+ssh_users_admins:
+  - svena
+  - georgs
