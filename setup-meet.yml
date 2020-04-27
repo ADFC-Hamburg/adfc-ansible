@@ -14,5 +14,7 @@
     - ssh-keys
     - update-os
     - geerlingguy.certbot
+    - ucs-ip-managed-client
+    - saslauthd
     - adfc-hamburg.jitsi_meet
     - meet-coturn

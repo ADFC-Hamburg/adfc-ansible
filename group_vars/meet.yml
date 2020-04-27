@@ -8,6 +8,15 @@ ssh_users_admins:
   - svena
   - georgs
 
+ucs_master: int-master.adfc-intern.de
+ucs_network: "cn=default,cn=networks,dc=adfc-intern,dc=de"
+ucs_computer_position: "cn=computers,dc=adfc-intern,dc=de"
+
+saslauthd_ldap_search_base: "cn=users,dc=adfc-intern,dc=de"
+saslauthd_ldap_filter: "(uid=%u)"
+saslauthd_ldap_tls_key: "/etc/letsencrypt/live/test.adfc-intern.de/privkey.pem"
+saslauthd_ldap_tls_cert: "/etc/letsencrypt/live/test.adfc-intern.de/fullchain.pem"
+
 jitsi_meet_server_name: "{{ inventory_hostname }}"
 
 certbot_create_if_missing: true
