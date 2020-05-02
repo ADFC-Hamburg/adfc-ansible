@@ -19,5 +19,7 @@ jobs:
        pip install ansible-lint ansible
     - name: Checkout
       uses: actions/checkout@v2
+    - name: Fetch Roles Ansible-Galaxy
+      run: ansible-galaxy install -r requirements.yml
     - name: lint files
       run: ~/.local/bin/ansible-lint -x '503,504,301,701' *.yml
