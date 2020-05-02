@@ -16,5 +16,5 @@
     - geerlingguy.certbot
     - ucs-ip-managed-client
     - saslauthd
-    - adfc-hamburg.jitsi_meet
+    - udelarinterior.jitsi_meet
     - meet-coturn
