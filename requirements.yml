@@ -6,7 +6,5 @@
   version: v1.7.0
 - src: geerlingguy.certbot
   version: 3.0.3
-- src:  git@github.com:ADFC-Hamburg/ansible-role-jitsi-meet.git
-  version: adfc
-  scm: git
-  name: adfc-hamburg.jitsi_meet
+- src: udelarinterior.jitsi_meet
+  version: v3.0.0
