@@ -37,15 +37,6 @@
     mode: "0755"
   tags: saslauthd
 
-- name: Set permissions for /var/run/saslauthd to saslauthd
-  file:
-    path: /var/run/saslauthd
-    owner: saslauthd
-    group: sasl
-    mode: "0755"
-  notify: Restart saslauthd
-  tags: saslauthd
-
 - name: read machine secret
   slurp:
     path: "/etc/machine.secret"
@@ -81,12 +72,9 @@
 
 - name: Create systemd user config
   copy:
+    src: systemd-user.conf
     dest: /etc/systemd/system/saslauthd.service.d/user.conf
     mode: "0644"
-    content: |
-      [Service]
-      User=saslauthd
-      Group=sasl
   notify: Restart saslauthd
   tags: saslauthd
 
