@@ -17,7 +17,8 @@ jobs:
       run: |
        pip install --upgrade setuptools wheel
        pip install ansible-lint
-    - uses: actions/checkout@v2
+    - name: Checkout
+      uses: actions/checkout@v2
     - name: Fetch Roles
       uses: actions/checkout@v2
       run: ansible-galaxy install -r requirements.yml
