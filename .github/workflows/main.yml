@@ -17,10 +17,9 @@ jobs:
       run: |
        pip install --upgrade setuptools wheel
        pip install ansible-lint
-    - name: install ansible
-      run: pip install ansible
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - name: Fetch Roles
+      uses: actions/checkout@v2
       run: ansible-galaxy install -r requirements.yml
     - name: lint files
       run: ~/.local/bin/ansible-lint -x '503,504,301,701' *.yml
