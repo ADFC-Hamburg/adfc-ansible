@@ -80,11 +80,11 @@
 
 - name: Add Debian Backports
   apt_repository:
-    repo: "deb http://http.debian.net/debian {{ansible_distribution_release}}-backports main contrib non-free"
+    repo: "deb http://http.debian.net/debian {{ ansible_distribution_release }}-backports main contrib non-free"
     state: present
     update_cache: yes
 
 - name: Install lua-cyrussasl
   apt:
     name: lua-cyrussasl
-    default_release: "{{ansible_distribution_release}}-backports"
+    default_release: "{{ ansible_distribution_release }}-backports"
