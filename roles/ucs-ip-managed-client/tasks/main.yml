@@ -18,13 +18,23 @@
   register: computer_ldapsearch
   delegate_to: "{{ ucs_master }}"
 - name: generate client
-  command: >
-    "udm computers/ubuntu create --ignore_exists --position \"{{ ucs_computer_position }}\"
-    --set name=\"{{ inventory_hostname.split('.')[0] |lower  }}\"
-    --append ip=\"{{ ansible_default_ipv4.address }}\"
-    --append ip=\"{{ ansible_default_ipv6.address }}\"
-    --set password=\"{{ machine_secret.content |b64decode }}\" "
-  when: computer_ldapsearch.stdout | length > 0
+  command:
+    argv:
+      - udm
+      - computers/ubuntu
+      - create
+      - --ignore_exists
+      - --position
+      - "{{ ucs_computer_position }}"
+      - --set
+      - "name={{ inventory_hostname.split('.')[0] |lower  }}"
+      - --append
+      - "ip={{ ansible_default_ipv4.address }}"
+      - --append
+      - "ip={{ ansible_default_ipv6.address }}"
+      - --set
+      - "password={{ machine_secret.content |b64decode }}"
+  when: computer_ldapsearch.stdout | length == 0
   delegate_to: "{{ ucs_master }}"
 - name: read UCS CA Cert
   slurp:

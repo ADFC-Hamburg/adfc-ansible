@@ -18,6 +18,7 @@ saslauthd_ldap_tls_key: "/etc/letsencrypt/live/test.adfc-intern.de/privkey.pem"
 saslauthd_ldap_tls_cert: "/etc/letsencrypt/live/test.adfc-intern.de/fullchain.pem"
 
 jitsi_meet_server_name: "{{ inventory_hostname }}"
+jitsi_meet_install_recommends: no
 
 certbot_create_if_missing: true
 certbot_admin_email: "webmaster@{{ jitsi_meet_server_name }}"

@@ -22,6 +22,14 @@
   notify: Restart saslauthd
   tags: saslauthd
 
+- name: Create /etc/sasl/prosody.conf
+  copy:
+    content: |
+      pwcheck_method: saslauthd
+      mech_list: PLAIN
+    dest: /etc/sasl/prosody.conf
+    mode: 0644
+
 - name: Create saslauthd user
   user:
     name: saslauthd
