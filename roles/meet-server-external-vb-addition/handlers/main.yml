@@ -1,0 +1,4 @@
+- name: restart prosody
+  service:
+    name: prosody
+    state: restarted

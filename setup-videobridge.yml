@@ -1,0 +1,20 @@
+- name: Setup Videobridge
+  hosts: meet_vb
+  gather_facts: no
+  roles:
+    - proxmox-container
+  tasks:
+    - name: Installiere Pakete
+      apt:
+        name:
+          - python-apt
+          - htop
+- name: Setup Videobridge
+  hosts: meet_vb
+  gather_facts: yes
+  roles:
+    - ssh-keys
+    - update-os
+    - geerlingguy.certbot
+    - ucs-ip-managed-client
+    - jitsi-videobridge

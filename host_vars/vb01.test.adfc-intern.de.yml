@@ -1,0 +1,48 @@
+proxmox_id: "113"
+proxmox_net:
+  net0:
+    name: eth0
+    gw: 88.198.32.30
+    ip: 88.198.32.220/32
+    ip6: 2a01:4f8:a0:32b9::7/64
+    gw6: 2a01:4f8:a0:32b9::3
+    bridge: vmbr0
+proxmox_ramsize_in_mb: 1024
+proxmox_cores: 1
+proxmox_template: debian-10.0-standard_10.0-1_amd64.tar.gz
+proxmox_host: "proxmox01.adfc-intern.de"
+proxmox_lxc_conf_change: true
+proxmox_lxc_conf: |
+  lxc.apparmor.profile: lxc-adfc-meet
+
+ssh_users_admins:
+  - svena
+  - georgs
+
+ucs_master: int-master.adfc-intern.de
+ucs_network: "cn=default,cn=networks,dc=adfc-intern,dc=de"
+ucs_computer_position: "cn=computers,dc=adfc-intern,dc=de"
+
+certbot_create_if_missing: true
+certbot_admin_email: "webmaster@adfc-intern.de"
+certbot_certs:
+  - domains:
+     - "{{ inventory_hostname }}"
+certbot_create_standalone_stop_services: []
+
+# see https://ffmuc.net/wiki/doku.php?id=knb:meet-server
+jitsi_meet_server: test.adfc-intern.de
+
+jitsi_meet_jvb_cfg_hostname: "{{ jitsi_meet_server }}"
+jitsi_meet_jvb_cfg_host: "{{ jitsi_meet_server }}"
+jitsi_meet_jvb_cfg_java_jvb_props:
+   - "--subdomain=vb01"
+   - "--apis=rest,xmpp"
+
+jitsi_meet_jvb_sipcfg_enable_statistics: true
+
+jitsi_meet_jvb_sipcfg_pubsub_service: "{{ jitsi_meet_server }}"
+jitsi_meet_jvb_sipcfg_pubsub_node: "sharedStatsNode"
+jitsi_meet_jvb_cfg_java_sys_props_addition:
+  - "--add-opens jdk.management/com.sun.management.internal=ALL-UNNAMED"
+jitsi_meet_jvb_sipcfg_authorized_source_regexp: "focus@auth.test.adfc-intern.de/.*"
