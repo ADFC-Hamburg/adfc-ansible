@@ -2,5 +2,7 @@
    - backup_clients
    - arbeitsplatz
    - proxmox01.adfc-intern.de
+   - meet
+   - tools.adfc-hamburg.de
   roles:
    - update-os
