@@ -1,0 +1,49 @@
+- name: Import InfluxDB GPG signing key
+  apt_key:
+    url: https://repos.influxdata.com/influxdb.key
+    state: present
+
+- name: Add InfluxDB repository
+  apt_repository:
+    repo: 'deb https://repos.influxdata.com/debian buster stable'
+    state: present
+
+- name: Install Telegraf packages
+  apt:
+    name:
+      - telegraf
+
+- name: Read Password
+  slurp:
+    src: "{{ influx_admin_password_file }}"
+  register: influx_password_file_slurp
+  delegate_to: "{{ influxdb_host }}"
+
+- name: Disable defautl output.influxdb entry in /etc/telegraf.conf
+  lineinfile:
+    path: /etc/telegraf/telegraf.conf
+    regexp: '^.*\[\[outputs.influxdb\]\]'
+    line: '# [[outputs.influxdb]]'
+  notify: restart telegraf
+
+- name: Create output info
+  template:
+    src: output-influx.conf.j2
+    dest: /etc/telegraf/telegraf.d/output-influx.conf
+  vars:
+    influxdb_password: "{{ influx_password_file_slurp.content | b64decode }}"
+  notify: restart telegraf
+
+- name: Create jitsi stat
+  template:
+    src: input-jitsi-stats.yml
+    dest: /etc/telegraf/telegraf.d/input-jitsi-stats.conf
+  when: telegraf_jitsi
+  notify: restart telegraf
+
+- name: Remove jtisi stat
+  file:
+    path: /etc/telegraf/telegraf.d/input-jitsi-stats.conf
+    state: absent
+  when: not telegraf_jitsi
+  notify: restart telegraf
