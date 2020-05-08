@@ -18,6 +18,7 @@ proxmox_lxc_conf: |
 ssh_users_admins:
   - svena
   - georgs
+  - janb
 
 ucs_master: int-master.adfc-intern.de
 ucs_network: "cn=default,cn=networks,dc=adfc-intern,dc=de"

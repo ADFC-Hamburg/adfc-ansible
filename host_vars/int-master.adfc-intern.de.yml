@@ -72,3 +72,4 @@ proxmox_helperscript: |
 ssh_users_admins:
   - svena
   - georgs
+  - janb
