@@ -1,0 +1,92 @@
+- name: Import InfluxDB GPG signing key
+  apt_key:
+    url: https://repos.influxdata.com/influxdb.key
+    state: present
+
+- name: Add InfluxDB repository
+  apt_repository:
+    repo: 'deb https://repos.influxdata.com/debian buster stable'
+    state: present
+
+- name: Install InfluxDB packages
+  apt:
+    name:
+      - influxdb
+      - python-influxdb
+      - ufw
+    state: present
+
+- name: stat password file
+  stat:
+    path: "{{ influx_admin_password_file }}"
+  register: passwd_file_stat
+
+- name: Generate Password if not set
+  copy:
+    content: "{{  lookup('password', '/dev/null length=16 chars=ascii_letters,digits') }}"
+    dest: "{{ influx_admin_password_file }}"
+    mode: 0600
+  when: not passwd_file_stat.stat.exists
+
+- name: Read Password
+  slurp:
+    src: "{{ influx_admin_password_file }}"
+  register: password_file_slurp
+
+- name: Create influx config
+  template:
+    src: influxdb.conf.j2
+    dest: /etc/influxdb/influxdb.conf
+  notify: restart influxdb
+
+
+- name: Create a user on localhost using default login credentials
+  influxdb_user:
+    user_name: admin
+    admin: yes
+    user_password: "{{ password_file_slurp.content | b64decode }}"
+  when: influxdb_install
+
+- name: Create telegraf influxdb
+  influxdb_database:
+      database_name: "telegraf"
+  when: influxdb_install
+
+- name: Create proxmox influxdb
+  influxdb_database:
+      database_name: "proxmox"
+  when: influxdb_install
+
+- name: Empty list
+  set_fact:
+    firewall_in: []
+
+- name: find all telegraf server
+  set_fact:
+    firewall_in: "{{ firewall_in + [ lookup('dig', tele_host + '.', 'qtype=A') ] + [ lookup('dig', tele_host + '.', 'qtype=AAAA') ]  }}"
+  when: "'influxdb_host' in hostvars[tele_host] and hostvars[tele_host]['influxdb_host'] == inventory_hostname"
+  loop_control:
+    loop_var: tele_host
+  loop: "{{ groups['all'] }}"
+
+- name: out
+  debug:
+    var: firewall_in
+
+- name: set firewall tcp
+  ufw:
+    rule: allow
+    src: '{{ item }}'
+    port: "8086"
+    proto: tcp
+  with_items:
+    "{{ firewall_in }}"
+
+- name: set firewall udp
+  ufw:
+    rule: allow
+    src: '{{ item }}'
+    port: "8089"
+    proto: udp
+  with_items:
+    "{{ firewall_in }}"

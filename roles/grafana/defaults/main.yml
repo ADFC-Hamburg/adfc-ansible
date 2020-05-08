@@ -1,0 +1,4 @@
+
+grafana_auth_anonymous_enabled: "false"
+grafana_auth_anonymous_org_name: "Main Org."
+grafana_auth_anonymous_org_role: "Viewer"

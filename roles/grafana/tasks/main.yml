@@ -1,0 +1,30 @@
+- name: Import GPG signing key
+  apt_key:
+    url: https://packages.grafana.com/gpg.key
+    state: present
+
+- name: Add repository
+  apt_repository:
+    repo: 'deb https://packages.grafana.com/oss/deb stable main'
+    state: present
+
+- name: Install Grafana packages
+  apt:
+    name:
+      - grafana
+    state: present
+
+- name: Setup Grafana Ini File
+  template:
+    src: grafana.ini.j2
+    dest: /etc/grafana/grafana.ini
+    mode: "0640"
+    owner: root
+    group: grafana
+  notify: restart grafana
+
+- name: Enable grafana
+  systemd:
+    name: grafana-server
+    state: started
+    enabled: true

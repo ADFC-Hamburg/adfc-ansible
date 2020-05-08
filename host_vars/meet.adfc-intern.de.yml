@@ -49,3 +49,9 @@ jitsi_meet_watermark_file: "logo_allgemeiner_deutscher_fahrrad-club.png"
 
 #jitsi_meet_jigasi_jicofo_sip_template: jicofo_sip-communicator.properties.j2
 #jitsi_meet_jigasi_videobridge_sip_template: videobridge_sip-communicator.properties.j2
+
+influxdb_host: "proxmox01.adfc-intern.de"
+influx_admin_password_file: /etc/influx.secrect
+
+telegraf_jitsi: true
+jitsi_meet_videobridge_opts: "--apis=rest,xmpp"

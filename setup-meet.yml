@@ -8,9 +8,5 @@
         name:
           - python-apt
           - htop
-- hosts: meet.adfc-intern.de
-  gather_facts: no
-  roles:
-    - ssh-keys
-    - geerlingguy.certbot
-    - udelarinterior.jitsi_meet
+    - name: Setup Meet Only
+      include_tasks: setup-meet-only.yml

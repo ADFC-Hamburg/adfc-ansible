@@ -2,6 +2,11 @@
   gather_facts: yes
   roles:
     - ssh-keys
+    - geerlingguy.certbot
+    - nginxinc.nginx
+    - influxdb
+    - telegraf
+    - grafana
   tasks:
     - name: Nutze Proxmox Community Repo
       apt_repository:
@@ -55,3 +60,13 @@
         dest: "/var/lib/vz/images/UCS_4.4-4-amd64.iso"
         checksum: "md5:https://download.software-univention.de/download/ucs-cds/ucs4.4-4/UCS_4.4-4-amd64.iso.md5"
       tags: ucs
+    - name: Generate data from proxmox
+      copy:
+        content: |
+          influxdb: proxmox01
+             server proxmox01.adfc-intern.de
+             port 8089
+        dest: /etc/pve-status.cfg
+        mode: "0644"
+    - name: Copy to pve
+      command: cp /etc/pve-status.cfg /etc/pve/status.cfg

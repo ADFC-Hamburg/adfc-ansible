@@ -1,0 +1,42 @@
+[meta]
+  dir = "/var/lib/influxdb/meta"
+
+[data]
+  dir = "/var/lib/influxdb/data"
+  wal-dir = "/var/lib/influxdb/wal"
+  series-id-set-cache-size = 100
+
+[coordinator]
+
+[retention]
+
+[shard-precreation]
+
+[monitor]
+
+[http]
+  enabled = true
+  bind-address = ":8086"
+  auth-enabled = true
+
+
+[logging]
+
+[subscriber]
+
+[[graphite]]
+
+[[collectd]]
+
+[[opentsdb]]
+
+[[udp]]
+   enabled = true
+   bind-address = ":8089"
+   database = "proxmox"
+   batch-size = 1000
+   batch-timeout = "1s"
+
+[continuous_queries]
+
+[tls]
