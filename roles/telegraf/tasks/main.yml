@@ -34,9 +34,22 @@
     influxdb_password: "{{ influx_password_file_slurp.content | b64decode }}"
   notify: restart telegraf
 
+- name: Create network stat
+  template:
+    src: inputs-net.conf.j2
+    dest: /etc/telegraf/telegraf.d/inputs-net.conf
+  when: telegraf_net
+  notify: restart telegraf
+
+- name: Remove jtisi stat
+  file:
+    path: /etc/telegraf/telegraf.d/inputs-net.conf
+    state: absent
+  when: not telegraf_net
+
 - name: Create jitsi stat
   template:
-    src: input-jitsi-stats.yml
+    src: input-jitsi-stats.conf.j2
     dest: /etc/telegraf/telegraf.d/input-jitsi-stats.conf
   when: telegraf_jitsi
   notify: restart telegraf

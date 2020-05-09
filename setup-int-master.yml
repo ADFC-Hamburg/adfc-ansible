@@ -2,6 +2,7 @@
   gather_facts: yes
   roles:
     - ssh-keys
+    - telegraf
   tasks:
     - name: unlink runme.sh
       file:
