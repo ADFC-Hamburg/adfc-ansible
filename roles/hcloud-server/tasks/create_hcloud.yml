@@ -8,12 +8,6 @@
   with_items: "{{ ssh_users_admins }}"
   register: add_keys_files
 
-
-- name: test
-  debug:
-    msg: "{{ item }}"
-  with_items: "{{ add_keys_files  |json_query('results[*].files[*].path') }}"
-
 - name: add_key
   hcloud_ssh_key:
     api_token: "{{ hcloud_api_token }}"
@@ -24,26 +18,117 @@
   delegate_to: localhost
   register: ssh_hcloud_add_key
 
-- name: calculate_keys
-  debug:
-    msg: "{{ ssh_hcloud_add_key | json_query('results[*].hcloud_ssh_key.name') }}"
-
 - name: Create_host
   hcloud_server:
     api_token: "{{ hcloud_api_token }}"
     name: "{{ inventory_hostname }}"
-    server_type: cx11
-    image: debian-10
+    server_type: "{{ hcloud_server_type }}"
+    image: "{{ hcloud_image }}"
     state: started
     ssh_keys: "{{ ssh_hcloud_add_key | json_query('results[*].hcloud_ssh_key.name') }}"
-    location: fsn1
+    location: "{{ hcloud_server_location }}"
     # fsn1: falkenstein
     # nbg1: nürnberg
-
   delegate_to: localhost
-  ignore_errors: true
   register: hcloud_host
 
-- name: out
-  debug:
-    msg: "{{ hcloud_host }}"
+- name: test floating_ips
+  hcloud_floating_ip_info:
+    api_token: "{{ hcloud_api_token }}"
+  register: hcloud_floating_ip_info
+  delegate_to: localhost
+
+- name: Set Floating Ip fact
+  set_fact:
+    hc_ipv4_floating_ip: "{{ hcloud_floating_ip_info.hcloud_floating_ip_info | selectattr('ip', 'match', lookup('dig', inventory_hostname, 'qtype=A') ) | list |first  }}"
+    hc_ipv6_floating_ip: "{{ hcloud_floating_ip_info.hcloud_floating_ip_info |selectattr('ip', 'match', lookup('dig', inventory_hostname, 'qtype=AAAA') | regex_replace('::1$','::/64') ) |list |first  }}"
+
+- name: Assign floating IPv4 to a server
+  hcloud_floating_ip:
+    api_token: "{{ hcloud_api_token }}"
+    id: "{{ hc_ipv4_floating_ip.id }}"
+    server: "{{ inventory_hostname }}"
+    state: present
+  when: hc_ipv4_floating_ip.server != inventory_hostname
+  delegate_to: localhost
+
+- name: Assign floating IPv6 to a server
+  hcloud_floating_ip:
+    api_token: "{{ hcloud_api_token }}"
+    id: "{{ hc_ipv6_floating_ip.id }}"
+    server: "{{ inventory_hostname }}"
+    state: present
+  when: hc_ipv6_floating_ip.server != inventory_hostname
+  delegate_to: localhost
+
+- name: create floating_ip config
+  template:
+    src: floating_ip.cfg.j2
+    dest: /etc/network/interfaces.d/60-my-floating-ip.cfg
+    mode: "0644"
+  vars:
+    ansible_host: "{{ hcloud_host.hcloud_server.ipv4_address }}"
+    ansible_ssh_extra_args: "-o StrictHostKeyChecking=no"
+
+- name: restart network
+  systemd:
+    name: networking
+    state: restarted
+  vars:
+    ansible_host: "{{ hcloud_host.hcloud_server.ipv4_address }}"
+    ansible_ssh_extra_args: "-o StrictHostKeyChecking=no"
+
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  delegate_to: proxmox01.adfc-intern.de
+  with_items:
+    - "/etc/adfc"
+    - "/etc/adfc/hcloud"
+    - "/etc/adfc/hcloud/ssh-host-keys"
+    - "/etc/adfc/hcloud/ssh-host-keys/{{ inventory_hostname }}"
+
+- name: create ssh_key files
+  openssh_keypair:
+    path: "/etc/adfc/hcloud/ssh-host-keys/{{ inventory_hostname }}/ssh_host_{{ item }}_key"
+    type: "{{ item }}"
+  delegate_to: proxmox01.adfc-intern.de
+  with_items:
+    - dsa
+    - ecdsa
+    - ed25519
+    - rsa
+
+- name: Read ssh_keys
+  command: "tar cf /dev/stdout ."
+  args:
+    chdir: "/etc/adfc/hcloud/ssh-host-keys/{{ inventory_hostname }}"
+  delegate_to: proxmox01.adfc-intern.de
+  register: hcloud_ssh_keys
+  no_log: True
+
+- name: copy keys
+  copy:
+    content: "{{ hcloud_ssh_keys.stdout }}"
+    dest: "/etc/adfc_ssh_keys.tar"
+  vars:
+    ansible_host: "{{ hcloud_host.hcloud_server.ipv4_address }}"
+    ansible_ssh_extra_args: "-o StrictHostKeyChecking=no"
+
+- name: extract keys
+  unarchive:
+    src: "/etc/adfc_ssh_keys.tar"
+    remote_src: yes
+    dest: /etc/ssh
+  vars:
+    ansible_host: "{{ hcloud_host.hcloud_server.ipv4_address }}"
+    ansible_ssh_extra_args: "-o StrictHostKeyChecking=no"
+
+- name: restart ssh
+  systemd:
+    name: ssh
+    state: restarted
+  vars:
+    ansible_host: "{{ hcloud_host.hcloud_server.ipv4_address }}"
+    ansible_ssh_extra_args: "-o StrictHostKeyChecking=no"

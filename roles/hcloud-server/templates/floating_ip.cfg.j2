@@ -1,0 +1,11 @@
+# {{ ansible_managed }}
+#
+auto eth0:1
+iface eth0:1 inet static
+   address {{ lookup('dig', inventory_hostname, 'qtype=A') }}
+   netmask 32
+
+auto eth0:1
+iface eth0:1 inet6 static
+   address {{ lookup('dig', inventory_hostname, 'qtype=AAAA') }}
+   netmask 64

@@ -1,13 +1,19 @@
 ---
+- name: Get hcloud API Token
+  slurp:
+    path: /root/hetzner-cloud.key
+  register: hcloud_key_slurp
+  delegate_to: proxmox01.adfc-intern.de
+
+- name: Setze hcloud_api_token
+  set_fact:
+    hcloud_api_token: "{{ hcloud_key_slurp.content | b64decode |trim }}"
+
 - name: Gather hcloud server infos
   hcloud_server_info:
     api_token: "{{ hcloud_api_token }}"
   register: output
   delegate_to: localhost
-
-- name: Print the gathered infos
-  debug:
-    msg: "{{ output.hcloud_server_info | selectattr('name', 'match', inventory_hostname ) | list | length }}"
 
 - name: Setup new host
   include_tasks: create_hcloud.yml
