@@ -2,6 +2,11 @@
   gather_facts: yes
   roles:
     - ssh-keys
+    - geerlingguy.certbot
+    - nginxinc.nginx
+    - influxdb
+    - telegraf
+    - grafana
   tasks:
     - name: Nutze Proxmox Community Repo
       apt_repository:
@@ -49,6 +54,16 @@
         dest: /etc/sysctl.d/ansible_ipv6_forward.conf
         mode: 0644
       tags: interface
+    - name: Generate data from proxmox
+      copy:
+        content: |
+          influxdb: proxmox01
+             server proxmox01.adfc-intern.de
+             port 8089
+        dest: /etc/pve-status.cfg
+        mode: "0644"
+    - name: Copy to pve
+      command: cp /etc/pve-status.cfg /etc/pve/status.cfg
     - name: Setze Videobridge Network Settings
       copy:
         content: |

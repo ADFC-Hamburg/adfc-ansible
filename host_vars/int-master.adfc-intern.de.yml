@@ -69,6 +69,7 @@ proxmox_helperscript: |
   EOF
   chmod 755 runme.sh
 
+influxdb_host: proxmox01.adfc-intern.de
 ssh_users_admins:
   - svena
   - georgs

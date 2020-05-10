@@ -8,3 +8,5 @@
   version: 3.0.3
 - src: udelarinterior.jitsi_meet
   version: v3.0.0
+- src: nginxinc.nginx
+  version: 0.14.0

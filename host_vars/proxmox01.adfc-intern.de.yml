@@ -11,3 +11,110 @@ additional_ips:
   - 88.198.32.212
   - 88.198.32.217
   - 88.198.32.220
+
+
+influxdb_host: proxmox01.adfc-intern.de
+
+
+
+grafana_auth_anonymous_enabled: "true"
+grafana_auth_anonymous_org_name: "ADFC Public"
+grafana_auth_anonymous_org_role: "Viewer"
+
+# Reverse Proxy
+grafana_server_http_addr: "127.0.0.1"
+grafana_server_domain: "stats.adfc-intern.de"
+grafana_server_root_url: "https://stats.adfc-intern.de/"
+grafana_server_serve_from_sub_path: true
+
+influxdb_install: no
+
+telegraf_net: yes
+
+certbot_create_if_missing: true
+certbot_admin_email: "admin@adfc-intern.de"
+certbot_certs:
+  - domains:
+      - proxmox01.adfc-intern.de
+      - stats.adfc-intern.de
+certbot_create_standalone_stop_services:
+  - nginx
+
+nginx_http_template_enable: true
+nginx_http_template:
+  default:
+    template_file: http/default.conf.j2
+    conf_file_name: default.conf
+    conf_file_location: /etc/nginx/conf.d/
+    servers:
+      stats-https:
+        listen:
+          listen_localhost:
+            ip: "[::]"
+            port: 443
+            ssl: true
+        server_name: "stats.adfc-intern.de"
+        access_log:
+          - name: main
+            location: /var/log/nginx/access-stats.log
+        error_log:
+          location: /var/log/nginx/error-stats.log
+          level: warn
+        add_headers:
+          strict_transport_security:
+            name: Strict-Transport-Security
+            value: max-age=15768000
+            always: true
+        ssl:
+          cert: "/etc/letsencrypt/live/proxmox01.adfc-intern.de/fullchain.pem"
+          key: "/etc/letsencrypt/live/proxmox01.adfc-intern.de/privkey.pem"
+#          dhparam: /etc/ssl/dh_param.pem
+          protocols: TLSv1 TLSv1.1 TLSv1.2
+          ciphers: HIGH:!aNULL:!MD5
+          prefer_server_ciphers: true
+          session_cache: none
+          session_timeout: 5m
+          disable_session_tickets: false
+          stapling: true
+          stapling_verify: true
+        reverse_proxy:
+          locations:
+            backend:
+              location: /
+              add_headers:
+                strict_transport_security:
+                  name: Strict-Transport-Security
+                  value: max-age=15768000
+                  always: true
+              proxy_connect_timeout: null
+              proxy_pass: http://127.0.0.1:3000
+              proxy_set_header:
+                header_host:
+                  name: Host
+                  value: $host
+                header_x_real_ip:
+                  name: X-Real-IP
+                  value: $remote_addr
+                header_x_forwarded_for:
+                  name: X-Forwarded-For
+                  value: $proxy_add_x_forwarded_for
+                header_x_forwarded_proto:
+                  name: X-Forwarded-Proto
+                  value: $scheme
+      stats-hhtp:
+        listen:
+          listen_localhost:
+            ip: "[::]"
+            port: 80
+        server_name: "stats.adfc-intern.de"
+        access_log:
+          - name: main
+            location: /var/log/nginx/access-stats-http.log
+        error_log:
+          location: /var/log/nginx/error-stats-http.log
+          level: warn
+        returns:
+          return301:
+            location: /
+            code: 301
+            value: https://$host$request_uri
