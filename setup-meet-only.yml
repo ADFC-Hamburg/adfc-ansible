@@ -10,3 +10,7 @@
     - meet-coturn
     - meet-server-external-vb-addition
     - telegraf
+  tasks:
+    - name: test
+      debug:
+        msg: "Hello world"
