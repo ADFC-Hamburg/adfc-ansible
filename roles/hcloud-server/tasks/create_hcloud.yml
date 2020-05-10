@@ -1,0 +1,49 @@
+- name: search for included files
+  local_action:
+     module: find
+     paths: "{{ inventory_dir + '/' + key_path + item  }}"
+     recurse: yes
+     file_type: file
+     excludes: "{{ ssh_users_admins |join(',') }}"
+  with_items: "{{ ssh_users_admins }}"
+  register: add_keys_files
+
+
+- name: test
+  debug:
+    msg: "{{ item }}"
+  with_items: "{{ add_keys_files  |json_query('results[*].files[*].path') }}"
+
+- name: add_key
+  hcloud_ssh_key:
+    api_token: "{{ hcloud_api_token }}"
+    name: "adfc-ansible-{{ item | relpath(inventory_dir + '/' + key_path) }}"
+    public_key: "{{ lookup('file', item) }}"
+    state: present
+  with_items: "{{ add_keys_files  |json_query('results[*].files[*].path') }}"
+  delegate_to: localhost
+  register: ssh_hcloud_add_key
+
+- name: calculate_keys
+  debug:
+    msg: "{{ ssh_hcloud_add_key | json_query('results[*].hcloud_ssh_key.name') }}"
+
+- name: Create_host
+  hcloud_server:
+    api_token: "{{ hcloud_api_token }}"
+    name: "{{ inventory_hostname }}"
+    server_type: cx11
+    image: debian-10
+    state: started
+    ssh_keys: "{{ ssh_hcloud_add_key | json_query('results[*].hcloud_ssh_key.name') }}"
+    location: fsn1
+    # fsn1: falkenstein
+    # nbg1: nürnberg
+
+  delegate_to: localhost
+  ignore_errors: true
+  register: hcloud_host
+
+- name: out
+  debug:
+    msg: "{{ hcloud_host }}"
