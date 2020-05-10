@@ -1,0 +1,66 @@
+- name: Installiere coturn
+  apt:
+    name:
+      - coturn
+  tags: coturn
+- name: Check if Password file exists
+  stat:
+    path: /etc/coturn.secret
+  register: coturn_secret_stat
+- name: Generate Password file
+  copy:
+    content: "{{ lookup('password', '/dev/null length=15 chars=ascii_letters') }}"
+    dest: /etc/coturn.secret
+  when: not coturn_secret_stat.stat.exists
+- name: Generate Password file
+  slurp:
+    src: /etc/coturn.secret
+  register: coturn_secret
+- name: Zertifikats copy für coturn
+  copy:
+    content: |
+          #!/bin/bash
+          mkdir /etc/coturn
+          cp /etc/letsencrypt/live/{{ inventory_hostname }}/fullchain.pem /etc/coturn/cert.pem
+          cp /etc/letsencrypt/live/{{ inventory_hostname }}/privkey.pem /etc/coturn/
+          chmod 644 /etc/coturn/cert.pem
+          chmod 600 /etc/coturn/privkey.pem
+          chown turnserver /etc/coturn/privkey.pem
+    dest: /etc/cron.daily/coturn-cert.sh
+    mode: 0755
+  register: coturn_cert_cron
+  tags: coturn
+- name: Rufe Zertcopy auf
+  command: /etc/cron.daily/coturn-cert.sh
+  when: coturn_cert_cron.changed
+  tags: coturn
+- name: Create DH File
+  openssl_dhparam:
+    path: /etc/coturn/dhparams.pem
+    size: 2066
+  tags: coturn
+- name: Erstelle trunserver.conf
+  template:
+    src: "turnserver.conf.j2"
+    dest: "/etc/turnserver.conf"
+    mode: "0644"
+  vars:
+    turn_secret: "{{  coturn_secret.content |b64decode }}"
+  register: tunserver_conf
+  tags: coturn
+- name: Restart turnserver
+  systemd:
+    name: coturn
+    state: restarted
+  when: tunserver_conf.changed
+  tags: coturn
+- name: Allow Turn Server
+  ufw:
+    rule: allow
+    port: "4446"
+    proto: udp
+- name: Allow TLS Turn Server
+  ufw:
+    rule: allow
+    port: "4445"
+    proto: udp

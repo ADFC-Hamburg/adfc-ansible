@@ -1,0 +1,21 @@
+# {{ ansible_managed }}
+
+# Jitsi Videobridge settings
+
+# sets the XMPP domain (default: none)
+JVB_HOSTNAME={{ jitsi_meet_jvb_cfg_hostname }}
+
+# sets the hostname of the XMPP server (default: domain if set, localhost otherwise)
+JVB_HOST={{ jitsi_meet_jvb_cfg_host }}
+
+# sets the port of the XMPP server (default: 5275)
+JVB_PORT={{ jitsi_meet_jvb_cfg_port }}
+
+# sets the shared secret used to authenticate to the XMPP server
+JVB_SECRET="{{ jitsi_meet_jvb_cfg_password }}"
+
+# extra options to pass to the JVB daemon
+JVB_OPTS="{{ jitsi_meet_jvb_cfg_java_jvb_props | join(' ') }}"
+
+# adds java system props that are passed to jvb (default are for home and logging config file)
+JAVA_SYS_PROPS="{{ jitsi_meet_jvb_cfg_java_sys_props | join(' ') }} {{ jitsi_meet_jvb_cfg_java_sys_props_addition | join(' ') }}"

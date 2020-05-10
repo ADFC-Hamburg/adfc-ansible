@@ -1,0 +1,6 @@
+---
+
+- name: restart jitsi-videobridge
+  service:
+    name: jitsi-videobridge
+    state: restarted

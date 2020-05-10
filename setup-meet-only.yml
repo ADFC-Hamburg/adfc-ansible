@@ -1,0 +1,12 @@
+- hosts: meet.adfc-intern.de
+  gather_facts: yes
+  roles:
+    - ssh-keys
+    - update-os
+    - ucs-ip-managed-client
+    - geerlingguy.certbot
+    - saslauthd
+    - udelarinterior.jitsi_meet
+    - meet-coturn
+    - meet-server-external-vb-addition
+    - telegraf

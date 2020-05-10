@@ -1,25 +1,32 @@
-proxmox_id: "100"
-proxmox_net:
-  net0:
-    name: eth0
-    gw: 88.198.32.30
-    ip: 88.198.32.212/32
-    ip6: 2a01:4f8:a0:32b9::4/64
-    gw6: 2a01:4f8:a0:32b9::3
-    bridge: vmbr0
-proxmox_ramsize_in_mb: 10240
-proxmox_cores: 9
+proxmox_template: debian-10.0-standard_10.0-1_amd64.tar.gz
+proxmox_host: "proxmox01.adfc-intern.de"
+proxmox_lxc_conf_change: true
+proxmox_lxc_conf: |
+  lxc.apparmor.profile: lxc-adfc-meet
 
 ssh_users_admins:
   - svena
   - georgs
+
+ucs_master: int-master.adfc-intern.de
+ucs_network: "cn=default,cn=networks,dc=adfc-intern,dc=de"
+ucs_computer_position: "cn=computers,dc=adfc-intern,dc=de"
+
+saslauthd_ldap_search_base: "cn=users,dc=adfc-intern,dc=de"
+saslauthd_ldap_filter: "(uid=%u)"
+saslauthd_ldap_tls_key: "/etc/letsencrypt/live/test.adfc-intern.de/privkey.pem"
+saslauthd_ldap_tls_cert: "/etc/letsencrypt/live/test.adfc-intern.de/fullchain.pem"
+
 jitsi_meet_server_name: "{{ inventory_hostname }}"
+jitsi_meet_install_recommends: no
+
 certbot_create_if_missing: true
 certbot_admin_email: "webmaster@{{ jitsi_meet_server_name }}"
 certbot_certs:
   - domains:
      - "{{ jitsi_meet_server_name }}"
 certbot_create_standalone_stop_services: []
+
 jitsi_meet_ssl_cert_path: "/etc/letsencrypt/live/{{ jitsi_meet_server_name }}/fullchain.pem"
 jitsi_meet_ssl_key_path: "/etc/letsencrypt/live/{{ jitsi_meet_server_name }}/privkey.pem"
 jitsi_meet_ipv6_enable: true
@@ -45,12 +52,16 @@ jitsi_meet_jigasi_account: sipnumber@sip-provider.name
 jitsi_meet_jigasi_password: fdi49fndKjhe3
 jitsi_meet_logo_file: "logo_allgemeiner_deutscher_fahrrad-club.png"
 jitsi_meet_watermark_file: "logo_allgemeiner_deutscher_fahrrad-club.png"
-
+jitsi_meet_use_stun_turn: "true"
+jitsi_meet_stun_servers:
+  - "{{ inventory_hostname }}:4446"
 #jitsi_meet_jigasi_jicofo_sip_template: jicofo_sip-communicator.properties.j2
 #jitsi_meet_jigasi_videobridge_sip_template: videobridge_sip-communicator.properties.j2
-
-influxdb_host: "proxmox01.adfc-intern.de"
-influx_admin_password_file: /etc/influx.secrect
-
-telegraf_jitsi: true
-jitsi_meet_videobridge_opts: "--apis=rest,xmpp"
+jitsi_meet_disable_third_party_requests: false
+jitsi_meet_firewall_ports_allow:
+  tcp:
+    - "22"
+    - "80"
+    - "443"
+  udp:
+    - "10000"
