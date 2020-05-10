@@ -7,6 +7,7 @@ proxmox_lxc_conf: |
 ssh_users_admins:
   - svena
   - georgs
+  - janb
 
 ucs_master: int-master.adfc-intern.de
 ucs_network: "cn=default,cn=networks,dc=adfc-intern,dc=de"
@@ -17,8 +18,7 @@ saslauthd_ldap_filter: "(uid=%u)"
 saslauthd_ldap_tls_key: "/etc/letsencrypt/live/test.adfc-intern.de/privkey.pem"
 saslauthd_ldap_tls_cert: "/etc/letsencrypt/live/test.adfc-intern.de/fullchain.pem"
 
-jitsi_meet_server_name: "{{ inventory_hostname }}"
-jitsi_meet_install_recommends: no
+# Certbot
 
 certbot_create_if_missing: true
 certbot_admin_email: "webmaster@{{ jitsi_meet_server_name }}"
@@ -26,6 +26,10 @@ certbot_certs:
   - domains:
      - "{{ jitsi_meet_server_name }}"
 certbot_create_standalone_stop_services: []
+
+# Jitsit
+jitsi_meet_server_name: "{{ inventory_hostname }}"
+jitsi_meet_install_recommends: no
 
 jitsi_meet_ssl_cert_path: "/etc/letsencrypt/live/{{ jitsi_meet_server_name }}/fullchain.pem"
 jitsi_meet_ssl_key_path: "/etc/letsencrypt/live/{{ jitsi_meet_server_name }}/privkey.pem"
@@ -58,6 +62,7 @@ jitsi_meet_stun_servers:
 #jitsi_meet_jigasi_jicofo_sip_template: jicofo_sip-communicator.properties.j2
 #jitsi_meet_jigasi_videobridge_sip_template: videobridge_sip-communicator.properties.j2
 jitsi_meet_disable_third_party_requests: false
+jitsi_meet_videobridge_opts: "--apis=rest,xmpp"
 jitsi_meet_firewall_ports_allow:
   tcp:
     - "22"
@@ -65,3 +70,9 @@ jitsi_meet_firewall_ports_allow:
     - "443"
   udp:
     - "10000"
+
+# Statistics
+influxdb_host: "proxmox01.adfc-intern.de"
+influx_admin_password_file: /etc/influx.secrect
+
+telegraf_jitsi: true
