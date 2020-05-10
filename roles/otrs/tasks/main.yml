@@ -10,6 +10,5 @@
     msg: "{{ release.content | b64decode | regex_replace('\n',':') | regex_replace('.*:VERSION = ([0123456789.]*):.*', '\\1')  }}"
 
 - name: update OTRS
-  include_tasks:
-     file: update.yml
+  include_tasks: update.yml
   when: release.content | b64decode is not search('VERSION = '+otrs_version)

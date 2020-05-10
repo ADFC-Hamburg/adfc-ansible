@@ -49,9 +49,22 @@
         dest: /etc/sysctl.d/ansible_ipv6_forward.conf
         mode: 0644
       tags: interface
-    - name: Lade UCS 4.4 herunter
-      get_url:
-        url: "https://download.software-univention.de/download/ucs-cds/ucs4.4-4/UCS_4.4-4-amd64.iso"
-        dest: "/var/lib/vz/images/UCS_4.4-4-amd64.iso"
-        checksum: "md5:https://download.software-univention.de/download/ucs-cds/ucs4.4-4/UCS_4.4-4-amd64.iso.md5"
-      tags: ucs
+    - name: Setze Videobridge Network Settings
+      copy:
+        content: |
+          # this sets the max, so that we can bump the Jitsi JVB UDP single port buffer size.
+          net.core.rmem_max=10485760
+          net.core.netdev_max_backlog=100000
+        dest: /etc/sysctl.d/ansible_vb.conf
+        mode: 0644
+      tags: sysctl_jvb
+    - name: Erstelle /etc/apparmor.d/lxc/lxc-adfc-meet
+      copy:
+        src: lxc-adfc-meet
+        dest: /etc/apparmor.d/lxc/lxc-adfc-meet
+      register: lxc_adfc_meet
+      tags: lxc-apparmor
+    - name: Parse Appamor Profiles
+      command: apparmor_parser -r /etc/apparmor.d/lxc-containers
+      when: lxc_adfc_meet.changed
+      tags: lxc-apparmor

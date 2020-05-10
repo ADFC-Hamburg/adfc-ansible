@@ -1,0 +1,98 @@
+- name: Install saslauthd
+  apt:
+    name:
+      - sasl2-bin
+      - libsasl2-modules-ldap
+      - lua-cyrussasl
+  tags: saslauthd
+
+- name: Enable saslauthd
+  lineinfile:
+    path: /etc/default/saslauthd
+    regexp: '^START='
+    line: START=yes
+  notify: Restart saslauthd
+  tags: saslauthd
+
+- name: Set Ldap Mechanism
+  lineinfile:
+    path: /etc/default/saslauthd
+    regexp: '^MECHANISMS='
+    line: "MECHANISMS=\"ldap\""
+  notify: Restart saslauthd
+  tags: saslauthd
+
+- name: Create /etc/sasl/prosody.conf
+  copy:
+    content: |
+      pwcheck_method: saslauthd
+      mech_list: PLAIN
+    dest: /etc/sasl/prosody.conf
+    mode: 0644
+
+- name: Create saslauthd user
+  user:
+    name: saslauthd
+    comment: Saslauthd
+    system: yes
+    group: sasl
+  tags: saslauthd
+
+- name: Create systemd config dir
+  file:
+    path: /etc/systemd/system/saslauthd.service.d
+    state: directory
+    mode: "0755"
+  tags: saslauthd
+
+- name: read machine secret
+  slurp:
+    path: "/etc/machine.secret"
+  register: machine_secret
+
+- name: Create config file
+  template:
+    src: saslauthd.conf.j2
+    dest: /etc/saslauthd.conf
+    mode: 0644
+    owner: root
+  vars:
+    saslauthd_bind_dn: "cn={{ inventory_hostname.split('.')[0] |lower  }},{{ ucs_computer_position }}"
+    saslauthd_bind_pw: "{{ machine_secret.content |b64decode }}"
+    saslauthd_tls_cacert_file: "/etc/ssl/ucsCAcert.pem"
+  notify: Restart saslauthd
+  tags: saslauthd
+
+- name: Copy Letsencrpyt privkey
+  copy:
+    src:  "{{ saslauthd_ldap_tls_key }}"
+    dest: /etc/ssl/saslauth-privkey.pem
+    mode: "0600"
+    owner: saslauthd
+    remote_src: yes
+- name: Copy Letsencrpyt cert
+  copy:
+    src:  "{{ saslauthd_ldap_tls_cert }}"
+    dest: /etc/ssl/saslauth-cert.pem
+    mode: "0644"
+    owner: saslauthd
+    remote_src: yes
+
+- name: Create systemd user config
+  copy:
+    src: systemd-user.conf
+    dest: /etc/systemd/system/saslauthd.service.d/user.conf
+    mode: "0644"
+  notify: Restart saslauthd
+  tags: saslauthd
+
+- name: Add Debian Backports
+  apt_repository:
+    repo: "deb http://http.debian.net/debian {{ ansible_distribution_release }}-backports main contrib non-free"
+    state: present
+    update_cache: yes
+
+- name: Install lua-cyrussasl
+  apt:
+    name: lua-cyrussasl
+    default_release: "{{ ansible_distribution_release }}-backports"

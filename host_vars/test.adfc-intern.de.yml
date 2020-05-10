@@ -1,0 +1,16 @@
+proxmox_id: "112"
+proxmox_net:
+  net0:
+    name: eth0
+    gw: 88.198.32.30
+    ip: 88.198.32.22/32
+    ip6: 2a01:4f8:a0:32b9::6/64
+    gw6: 2a01:4f8:a0:32b9::3
+    bridge: vmbr0
+proxmox_ramsize_in_mb: 1024
+proxmox_cores: 1
+jitsi_meet_authentication: cyrus
+ssh_users_admins:
+  - svena
+  - georgs
+  - janb
