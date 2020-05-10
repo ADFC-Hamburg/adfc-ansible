@@ -1,4 +1,5 @@
-- hosts: meet
+- name: Setup Videobridge
+  hosts: meet_vb
   gather_facts: no
   roles:
     - proxmox-container
@@ -8,15 +9,12 @@
         name:
           - python-apt
           - htop
-- hosts: meet
+- name: Setup Videobridge
+  hosts: meet_vb
   gather_facts: yes
   roles:
     - ssh-keys
     - update-os
-    - ucs-ip-managed-client
     - geerlingguy.certbot
-    - saslauthd
-    - udelarinterior.jitsi_meet
-    - meet-coturn
-    - meet-server-external-vb-addition
-    - telegraf
+    - ucs-ip-managed-client
+    - jitsi-videobridge

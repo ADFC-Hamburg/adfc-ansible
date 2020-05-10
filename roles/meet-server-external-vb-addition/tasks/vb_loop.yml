@@ -1,0 +1,26 @@
+- name: read password from client
+  slurp:
+    path: "/etc/jitsi_jvb.secret"
+  register: vb_secret
+  delegate_to: "{{ vb_host }}"
+- name: find all vb server
+  set_fact:
+    videobridges: "{{ videobridges + [ vb_host ] }}"
+    vb_comp: |
+      {{ vb_comp }}
+      Component "{{ vb_host }}"
+         component_secret = "{{ vb_secret.content | b64decode }}"
+
+# Videobridge is connecting via ipv4 only
+#- name: Setup jitsi main server firewall for ipv6
+#  ufw:
+#    rule: allow
+#    port: "5347"
+#    from: "{{ lookup('dig', vb_host + '.', 'qtype=AAAA') }}"
+#    proto: tcp
+- name: Setup jitsi main server firewall for ipv4
+  ufw:
+    rule: allow
+    port: "5347"
+    from: "{{ lookup('dig', vb_host + '.', 'qtype=A') }}"
+    proto: tcp

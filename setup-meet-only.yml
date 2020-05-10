@@ -1,14 +1,4 @@
-- hosts: meet
-  gather_facts: no
-  roles:
-    - proxmox-container
-  tasks:
-    - name: Installiere Pakete
-      apt:
-        name:
-          - python-apt
-          - htop
-- hosts: meet
+- hosts: meet.adfc-intern.de
   gather_facts: yes
   roles:
     - ssh-keys
@@ -20,3 +10,7 @@
     - meet-coturn
     - meet-server-external-vb-addition
     - telegraf
+  tasks:
+    - name: test
+      debug:
+        msg: "Hello world"
