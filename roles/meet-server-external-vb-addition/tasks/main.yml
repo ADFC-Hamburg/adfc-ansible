@@ -27,5 +27,9 @@
       network_backend = "epoll"
       component_interface = "0.0.0.0";
       {{ vb_comp }}
+
+      Component "jitsi-videobridge.{{ jitsi_meet_server_name }}"
+        component_secret = "{{ jitsi_meet_videobridge_secret }}"
+
     dest: "/etc/prosody/conf.d/00-ansible-listen-for-vb.cfg.lua"
   notify: restart prosody
