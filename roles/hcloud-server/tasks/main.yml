@@ -17,7 +17,7 @@
 
 - name: Setup new host
   include_tasks: create_hcloud.yml
-  when: ( output.hcloud_server_info | selectattr('name', 'match', inventory_hostname ) | list | length) == 0
+#  when: ( output.hcloud_server_info | selectattr('name', 'match', inventory_hostname ) | list | length) == 0
 
 - name: Print IPv4
   debug:
