@@ -1,0 +1,30 @@
+- name: Remove Videobridge
+  hosts: vbh01.meet.adfc-intern.de
+  gather_facts: yes
+  roles:
+    - backup-hcloud-letsencrypt
+  tasks:
+    - name: "stop videobride"
+      systemd:
+        name: jitsi-videobridge
+        state: stopped
+    - name: Get hcloud API Token
+      slurp:
+        path: /root/hetzner-cloud.key
+      register: hcloud_key_slurp
+      delegate_to: proxmox01.adfc-intern.de
+
+    - name: Setze hcloud_api_token
+      set_fact:
+        hcloud_api_token: "{{ hcloud_key_slurp.content | b64decode |trim }}"
+
+    - name: Pause
+      pause:
+        seconds: 5
+
+    - name: delete_host
+      hcloud_server:
+        api_token: "{{ hcloud_api_token }}"
+        name: "{{ inventory_hostname }}"
+        state: absent
+      delegate_to: localhost
