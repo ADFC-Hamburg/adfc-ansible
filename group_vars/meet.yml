@@ -61,7 +61,7 @@ jitsi_meet_stun_servers:
   - "{{ inventory_hostname }}:4446"
 #jitsi_meet_jigasi_jicofo_sip_template: jicofo_sip-communicator.properties.j2
 #jitsi_meet_jigasi_videobridge_sip_template: videobridge_sip-communicator.properties.j2
-jitsi_meet_disable_third_party_requests: false
+jitsi_meet_enable_third_party_requests: false
 jitsi_meet_videobridge_opts: "--apis=rest,xmpp"
 jitsi_meet_firewall_ports_allow:
   tcp:
@@ -70,13 +70,15 @@ jitsi_meet_firewall_ports_allow:
     - "443"
   udp:
     - "10000"
-
+jitsi_meet_videobridge_statistics_enable: true
+jitsi_meet_videobridge_statistics_interval: 5000
 
 # Performance Optimierungen, siehe: https://www.kuketz-blog.de/jitsi-meet-optimierung-der-performance/
 jitsi_meet_channel_last_n: 3
 jitsi_meet_enable_layer_suspension: true
 jitsi_meet_start_audio_only: false
-jitsi_meet_disable_audio_levels: false
+jitsi_meet_show_audio_levels: true
+
 jitsi_meet_audio_levels_interval: 200
 
 jitsi_meet_resolution: 480
