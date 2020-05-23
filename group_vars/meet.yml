@@ -71,7 +71,8 @@ jitsi_meet_firewall_ports_allow:
   udp:
     - "10000"
 jitsi_meet_videobridge_statistics_enable: true
-jitsi_meet_videobridge_statistics_interval: 5000
+jitsi_meet_videobridge_statistics_interval: 1000
+jitsi_meet_videobridge_statistics_transport:  "muc,colibri,pubsub"
 
 # Performance Optimierungen, siehe: https://www.kuketz-blog.de/jitsi-meet-optimierung-der-performance/
 jitsi_meet_channel_last_n: 3

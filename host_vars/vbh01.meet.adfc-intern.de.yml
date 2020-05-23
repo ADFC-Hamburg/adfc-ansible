@@ -31,4 +31,4 @@ jitsi_meet_jvb_sipcfg_pubsub_node: "sharedStatsNode"
 
 jitsi_meet_jvb_cfg_java_sys_props_addition:
   - "--add-opens jdk.management/com.sun.management.internal=ALL-UNNAMED"
-jitsi_meet_jvb_sipcfg_authorized_source_regexp: "focus@auth.test.adfc-intern.de/.*"
+jitsi_meet_jvb_sipcfg_authorized_source_regexp: "focus@auth.meet.adfc-intern.de/.*"
