@@ -50,6 +50,9 @@ nginx_http_template:
       stats-https:
         listen:
           listen_localhost:
+            port: 443
+            ssl: true
+          listen_localhost_v6:
             ip: "[::]"
             port: 443
             ssl: true
@@ -104,6 +107,8 @@ nginx_http_template:
       stats-hhtp:
         listen:
           listen_localhost:
+            port: 80
+          listen_localhost_v6:
             ip: "[::]"
             port: 80
         server_name: "stats.adfc-intern.de"
