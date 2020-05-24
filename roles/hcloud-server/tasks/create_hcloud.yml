@@ -1,10 +1,10 @@
 - name: search for included files
-  local_action:
-     module: find
+  find:
      paths: "{{ inventory_dir + '/' + key_path + item  }}"
      recurse: yes
      file_type: file
      excludes: "{{ ssh_users_admins |join(',') }}"
+  delegate_to: localhost
   with_items: "{{ ssh_users_admins }}"
   register: add_keys_files
 
@@ -17,6 +17,7 @@
   with_items: "{{ add_keys_files  |json_query('results[*].files[*].path') }}"
   delegate_to: localhost
   register: ssh_hcloud_add_key
+
 
 - name: Create_host
   hcloud_server:

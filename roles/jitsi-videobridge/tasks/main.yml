@@ -29,7 +29,7 @@
 - name: Install Debian Pakackage
   apt:
     name:
-      - jitsi-videobridge
+      - jitsi-videobridge2
 
 - name: get password
   include_tasks: "vb_password.yml"

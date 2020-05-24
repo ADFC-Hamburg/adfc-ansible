@@ -6,7 +6,7 @@
   tasks:
     - name: "stop videobride"
       systemd:
-        name: jitsi-videobridge
+        name: jitsi-videobridge2
         state: stopped
     - name: Get hcloud API Token
       slurp:
