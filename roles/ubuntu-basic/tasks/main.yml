@@ -10,6 +10,7 @@
       - htop
       - mc
       - ncdu
+      - snapd
 
   - name: Downloadverzeichnis für deb-Pakete erstellen
     file:

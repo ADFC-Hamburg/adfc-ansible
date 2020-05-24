@@ -1,0 +1,7 @@
+# slack role
+
+# snap requires ansible 2.8 or later
+- name: Installiere Pakete via snap
+  snap:
+    name: slack
+    classic: yes
