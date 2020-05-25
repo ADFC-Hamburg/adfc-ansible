@@ -1,5 +1,7 @@
 hcloud_image: debian-10
-hcloud_server_type: cx11
+# cx11 kleinster Server mit einer CPU für Tests
+# ccx31 8 Dedicierte VCPUs 32 GB RAM
+hcloud_server_type: ccx31
 hcloud_server_location: nbg1
 hcloud_floating_ips:
   - vhb01.meet-ipv4
