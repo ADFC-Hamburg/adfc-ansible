@@ -1,4 +1,4 @@
-- hosts: meet.adfc-intern.de
+- hosts: meet
   gather_facts: yes
   roles:
     - ssh-keys

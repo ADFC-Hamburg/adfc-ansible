@@ -15,6 +15,7 @@
   roles:
     - ssh-keys
     - update-os
+    - lxc-logrotate
     - geerlingguy.certbot
     - ucs-ip-managed-client
     - jitsi-videobridge

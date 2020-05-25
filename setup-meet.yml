@@ -12,6 +12,7 @@
   gather_facts: yes
   roles:
     - ssh-keys
+    - lxc-logrotate
     - update-os
     - ucs-ip-managed-client
     - geerlingguy.certbot
