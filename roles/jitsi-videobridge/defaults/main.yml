@@ -33,7 +33,7 @@ jitsi_meet_jvb_cfg_java_sys_props_addition: []
 
 jitsi_meet_jvb_sipcfg_authorized_source_regexp: "focus@auth.localhost/.*"
 
-jitsi_meet_jvb_sipcfg_enable_statistics: false
+jitsi_meet_videobridge_statistics_enable: false
 jitsi_meet_jvb_sipcfg_statistics_interval: 1000
 jitsi_meet_jvb_sipcfg_statistics_transport: "muc,colibri,pubsub"
 

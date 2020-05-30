@@ -1,0 +1,3 @@
+jitsi_meet_videobridge_certifcate_check: false
+jitsi_meet_use_stun_turn: false
+jitsi_meet_jvb_sipcfg_authorized_source_regexp: ""

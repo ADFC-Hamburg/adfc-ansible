@@ -1,4 +1,4 @@
-- hosts: meet
+- hosts: meet_server
   gather_facts: no
   roles:
     - proxmox-container

@@ -9,8 +9,5 @@ proxmox_net:
     bridge: vmbr0
 proxmox_ramsize_in_mb: 1024
 proxmox_cores: 1
+
 jitsi_meet_authentication: cyrus
-ssh_users_admins:
-  - svena
-  - georgs
-  - janb

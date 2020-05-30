@@ -1,0 +1,45 @@
+org.ice4j.ice.harvest.DISABLE_AWS_HARVESTER=true
+{% if (jitsi_meet_use_stun_turn | bool) %}
+org.ice4j.ice.harvest.STUN_MAPPING_HARVESTER_ADDRESSES={{ jitsi_meet_stun_servers | join(',') }}
+{% endif %}
+{% if (jitsi_meet_behind_nat_firewall) -%}
+org.ice4j.ice.harvest.NAT_HARVESTER_LOCAL_ADDRESS={{ jitsi_meet_nat_private_ip }}
+org.ice4j.ice.harvest.NAT_HARVESTER_PUBLIC_ADDRESS={{ jitsi_meet_nat_public_ip }}
+{%- endif %}
+
+org.jitsi.videobridge.ENABLE_STATISTICS={{ jitsi_meet_videobridge_statistics_enable | bool | lower }}
+{% if (jitsi_meet_videobridge_statistics_enable | bool) %}
+org.jitsi.videobridge.STATISTICS_INTERVAL={{ jitsi_meet_videobridge_statistics_interval }}
+org.jitsi.videobridge.STATISTICS_TRANSPORT={{ jitsi_meet_videobridge_statistics_transport }}
+{% endif %}
+
+
+org.jitsi.videobridge.xmpp.user.shard.HOSTNAME={{  jitsi_meet_server_name }}
+org.jitsi.videobridge.xmpp.user.shard.DOMAIN=auth.{{ jitsi_meet_server_name }}
+org.jitsi.videobridge.xmpp.user.shard.USERNAME=jvb
+org.jitsi.videobridge.xmpp.user.shard.PASSWORD={{ jitsi_meet_videobridge_secret }}
+org.jitsi.videobridge.xmpp.user.shard.MUC_JIDS=JvbBrewery@internal.auth.{{ jitsi_meet_server_name }}
+org.jitsi.videobridge.xmpp.user.shard.MUC_NICKNAME={{ inventory_hostname }}
+{% if not jitsi_meet_videobridge_certifcate_check %}
+org.jitsi.videobridge.xmpp.user.shard.DISABLE_CERTIFICATE_VERIFICATION=true
+{% endif %}
+
+{% if (jitsi_meet_jvb_sipcfg_authorized_source_regexp | default("")) != "" %}
+# No AUTHORIZED_SOURCE_REGEXP anymore 2020-05-30
+# org.jitsi.videobridge.AUTHORIZED_SOURCE_REGEXP={{ jitsi_meet_jvb_sipcfg_authorized_source_regexp }}
+{% endif %}
+
+{% if jitsi_meet_jvb_sipcfg_pubsub_service != "" -%}
+org.jitsi.videobridge.PUBSUB_SERVICE={{ jitsi_meet_jvb_sipcfg_pubsub_service }}
+{%- endif %}
+
+{% if jitsi_meet_jvb_sipcfg_pubsub_node != "" -%}
+org.jitsi.videobridge.PUBSUB_NODE={{  jitsi_meet_jvb_sipcfg_pubsub_node }}
+{%- endif %}
+
+{% for xmpp_server in jitsi_meet_videobridge_other_xmpp_servers.keys() %}
+{% for conf in jitsi_meet_videobridge_other_xmpp_servers[xmpp_server] %}
+org.jitsi.videobridge.xmpp.user.{{ xmpp_server }}.{{ conf | upper }}={{ jitsi_meet_videobridge_other_xmpp_servers[xmpp_server][conf] }}
+{% endfor %}
+{% endfor %}
+

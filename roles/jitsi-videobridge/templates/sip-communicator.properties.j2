@@ -1,6 +1,6 @@
 # {{ ansible_managed }}
 org.jitsi.videobridge.AUTHORIZED_SOURCE_REGEXP={{ jitsi_meet_jvb_sipcfg_authorized_source_regexp }}
-{% if jitsi_meet_jvb_sipcfg_enable_statistics -%}
+{% if jitsi_meet_videobridge_statistics_enable -%}
 org.jitsi.videobridge.ENABLE_STATISTICS=true
 org.jitsi.videobridge.STATISTICS_INTERVAL=1000
 org.jitsi.videobridge.STATISTICS_TRANSPORT=muc,colibri,pubsub
@@ -13,3 +13,4 @@ org.jitsi.videobridge.PUBSUB_SERVICE={{ jitsi_meet_jvb_sipcfg_pubsub_service }}
 {% if jitsi_meet_jvb_sipcfg_pubsub_node != "" -%}
 org.jitsi.videobridge.PUBSUB_NODE={{  jitsi_meet_jvb_sipcfg_pubsub_node }}
 {%- endif %}
+Huhu

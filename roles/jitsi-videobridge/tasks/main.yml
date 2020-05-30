@@ -48,7 +48,7 @@
 
 - name: Create sip-communicator.properties config
   template:
-    src: sip-communicator.properties.j2
+    src: "{{ jitsi_meet_videobridge_sip_template }}"
     dest: /etc/jitsi/videobridge/sip-communicator.properties
     owner: root
     group: root
@@ -63,11 +63,11 @@
     port: "{{ jitsi_meet_jvb_cfg_port |string }}"
     from: "{{ ansible_default_ipv6.address }}"
     proto: tcp
-  delegate_to: "{{ jitsi_meet_server }}"
+  delegate_to: "{{ jitsi_meet_server_name }}"
 - name: Setup jitsi main server firewall for ipv4
   ufw:
     rule: allow
     port: "{{ jitsi_meet_jvb_cfg_port | string }}"
     from: "{{ ansible_default_ipv4.address }}"
     proto: tcp
-  delegate_to: "{{ jitsi_meet_server }}"
+  delegate_to: "{{ jitsi_meet_server_name }}"

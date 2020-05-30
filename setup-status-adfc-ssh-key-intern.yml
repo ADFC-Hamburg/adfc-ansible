@@ -1,0 +1,26 @@
+- name: Status Webpage
+  hosts: status.adfc-intern.de
+  gather_facts: no
+  tasks:
+    - name: Get authoriezed Keys file from proxmox
+      slurp:
+        src: /root/.ssh/authorized_keys
+      register: auth_keys
+      delegate_to: proxmox01.adfc-intern.de
+    - name: Create local tmp
+      command: mktemp -d ansible-adfcXXX
+      register: mktempdir
+      delegate_to: localhost
+    - name: Write authorized_keys to temp
+      copy:
+        content: "{{ auth_keys.content |b64decode }}"
+        dest: "{{ mktempdir.stdout }}/authorized_keys"
+      delegate_to: localhost
+    - name: Key Copy to status
+      command: "echo put {{ mktempdir.stdout }}/authorized_keys .ssh/authorized_keys |sftp  283920-adfc-intern@{{ inventory_hostname }}:.ssh/authorized_keys"
+      delegate_to: localhost
+    - name: delete tmp dir
+      file:
+        path: "{{ mktempdir.stdout }}"
+        state: absent
+      delegate_to: localhost

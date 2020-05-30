@@ -15,35 +15,16 @@ proxmox_lxc_conf_change: true
 proxmox_lxc_conf: |
   lxc.apparmor.profile: lxc-adfc-meet
 
-ssh_users_admins:
-  - svena
-  - georgs
-  - janb
 
 ucs_master: int-master.adfc-intern.de
 ucs_network: "cn=default,cn=networks,dc=adfc-intern,dc=de"
 ucs_computer_position: "cn=computers,dc=adfc-intern,dc=de"
 
-certbot_create_if_missing: true
-certbot_admin_email: "webmaster@adfc-intern.de"
-certbot_certs:
-  - domains:
-     - "{{ inventory_hostname }}"
-certbot_create_standalone_stop_services: []
 
-# see https://ffmuc.net/wiki/doku.php?id=knb:meet-server
-jitsi_meet_server: test.adfc-intern.de
 
-jitsi_meet_jvb_cfg_hostname: "{{ jitsi_meet_server }}"
-jitsi_meet_jvb_cfg_host: "{{ jitsi_meet_server }}"
 jitsi_meet_jvb_cfg_java_jvb_props:
    - "--subdomain=vb01"
-   - "--apis=rest,xmpp"
+   - "--apis=rest"
 
-jitsi_meet_jvb_sipcfg_enable_statistics: true
 
-jitsi_meet_jvb_sipcfg_pubsub_service: "{{ jitsi_meet_server }}"
-jitsi_meet_jvb_sipcfg_pubsub_node: "sharedStatsNode"
-jitsi_meet_jvb_cfg_java_sys_props_addition:
-  - "--add-opens jdk.management/com.sun.management.internal=ALL-UNNAMED"
-jitsi_meet_jvb_sipcfg_authorized_source_regexp: "focus@auth.test.adfc-intern.de/.*"
+#jitsi_meet_jvb_sipcfg_authorized_source_regexp: "focus@auth.test.adfc-intern.de/.*"

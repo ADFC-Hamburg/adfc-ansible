@@ -10,6 +10,7 @@
       {{ vb_comp }}
       Component "{{ vb_host }}"
          component_secret = "{{  jitsi_meet_jvb_cfg_password }}"
+  when: vb_host != inventory_hostname
 
 # Videobridge is connecting via ipv4 only
 #- name: Setup jitsi main server firewall for ipv6
@@ -23,4 +24,11 @@
     rule: allow
     port: "5347"
     from: "{{ lookup('dig', vb_host + '.', 'qtype=A') }}"
+    proto: tcp
+
+- name: Setup jitsi main server firewall for ipv6
+  ufw:
+    rule: allow
+    port: "5347"
+    from: "{{ lookup('dig', vb_host + '.', 'qtype=AAAA') }}"
     proto: tcp

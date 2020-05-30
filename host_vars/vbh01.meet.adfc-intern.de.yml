@@ -1,41 +1,17 @@
 hcloud_image: debian-10
 # cx11 kleinster Server mit einer CPU für Tests
 # ccx31 8 Dedicierte VCPUs 32 GB RAM
-hcloud_server_type: ccx31
+hcloud_server_type: "{{ 'cx11' if hcloud_test else 'ccx31' }}"
 hcloud_server_location: nbg1
 hcloud_floating_ips:
   - vhb01.meet-ipv4
   - vhb01.meet-ipv6
 
-ssh_users_admins:
-  - svena
-  - georgs
-  - janb
-
-certbot_create_if_missing: true
-certbot_admin_email: "webmaster@adfc-intern.de"
-certbot_certs:
-  - domains:
-     - "{{ inventory_hostname }}"
-certbot_create_standalone_stop_services: []
-
-jitsi_meet_server: meet.adfc-intern.de
-
-jitsi_meet_jvb_cfg_hostname: "{{ jitsi_meet_server }}"
-jitsi_meet_jvb_cfg_host: "{{ jitsi_meet_server }}"
 jitsi_meet_jvb_cfg_java_jvb_props:
    - "--subdomain=vbh01"
-   - "--apis=rest,xmpp"
+   - "--apis=rest"
 
-jitsi_meet_jvb_sipcfg_enable_statistics: true
-jitsi_meet_jvb_sipcfg_pubsub_service: "{{ jitsi_meet_server }}"
-jitsi_meet_jvb_sipcfg_pubsub_node: "sharedStatsNode"
-
-jitsi_meet_jvb_cfg_java_sys_props_addition:
-  - "--add-opens jdk.management/com.sun.management.internal=ALL-UNNAMED"
 jitsi_meet_jvb_sipcfg_authorized_source_regexp: "focus@auth.meet.adfc-intern.de/.*"
 
-telegraf_jitsi: yes
-telegraf_net: yes
 
-influxdb_host: "proxmox01.adfc-intern.de"
+
