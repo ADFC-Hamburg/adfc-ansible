@@ -1,15 +1,15 @@
-- name: read password from client
-  slurp:
-    path: "/etc/jitsi_jvb.secret"
-  register: vb_secret
-  delegate_to: "{{ vb_host }}"
+- name: read password
+  include_tasks: "../../jitsi-videobridge/tasks/vb_password.yml"
+  vars:
+    jitsi_meet_vb_password_file: "/etc/jitsi_jvb{{ vb_host }}.secret"
+    jitsi_meet_server: "{{ jitsi_meet_server_name }}"
 - name: find all vb server
   set_fact:
     videobridges: "{{ videobridges + [ vb_host ] }}"
     vb_comp: |
       {{ vb_comp }}
       Component "{{ vb_host }}"
-         component_secret = "{{ vb_secret.content | b64decode }}"
+         component_secret = "{{  jitsi_meet_jvb_cfg_password }}"
 
 # Videobridge is connecting via ipv4 only
 #- name: Setup jitsi main server firewall for ipv6

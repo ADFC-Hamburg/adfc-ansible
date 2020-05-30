@@ -1,0 +1,15 @@
+- name: Setup Hetzner Server
+  hosts: vbh01.meet.adfc-intern.de
+  gather_facts: no
+  roles:
+    - hcloud-server
+- name: Setup Videobridge
+  hosts: vbh01.meet.adfc-intern.de
+  gather_facts: yes
+  roles:
+    - ssh-keys
+    - update-os
+    - restore-hcloud-letsenrypt
+    - geerlingguy.certbot
+    - jitsi-videobridge
+    - telegraf

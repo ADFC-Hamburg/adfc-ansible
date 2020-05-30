@@ -1,0 +1,14 @@
+- name: "read /etc/letsencrypt"
+  command: "tar cf /dev/stdout ."
+  args:
+    chdir: "/etc/letsencrypt"
+  register: hcloud_lenc
+  no_log: True
+  tags:
+    - skip_ansible_lint
+
+- name: "write to /etc/adfc/hcloud/letsencrypt/inventory_hostname.tar"
+  copy:
+    content: "{{ hcloud_lenc.stdout }}"
+    dest: "/etc/adfc/hcloud/letsencrypt/{{ inventory_hostname }}.tar"
+  delegate_to: proxmox01.adfc-intern.de

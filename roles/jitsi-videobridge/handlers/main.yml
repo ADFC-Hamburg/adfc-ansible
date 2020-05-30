@@ -2,5 +2,5 @@
 
 - name: restart jitsi-videobridge
   service:
-    name: jitsi-videobridge
+    name: jitsi-videobridge2
     state: restarted

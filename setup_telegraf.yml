@@ -1,0 +1,7 @@
+- hosts:
+    - meet.adfc-intern.de
+    - int-master.adfc-intern.de
+    - proxmox01.adfc-intern.de
+  gather_facts: yes
+  roles:
+    - telegraf

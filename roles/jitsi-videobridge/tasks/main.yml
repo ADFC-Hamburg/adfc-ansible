@@ -29,24 +29,12 @@
 - name: Install Debian Pakackage
   apt:
     name:
-      - jitsi-videobridge
+      - jitsi-videobridge2
 
-- name: stat password file
-  stat:
-    path: "{{ jitsi_meet_vb_password_file }}"
+- name: get password
+  include_tasks: "vb_password.yml"
   register: vb_passwd_file_stat
 
-- name: Generate Jvb Password if not set
-  copy:
-    content: "{{  lookup('password', '/dev/null length=16 chars=ascii_letters,digits') }}"
-    dest: "{{ jitsi_meet_vb_password_file }}"
-    mode: 0600
-  when: not vb_passwd_file_stat.stat.exists
-
-- name: Read Jvb Password
-  slurp:
-    src: "{{ jitsi_meet_vb_password_file }}"
-  register: vb_password_file_slurp
 
 - name: Create config
   template:
@@ -55,8 +43,6 @@
     owner: root
     group: root
     mode: "0644"
-  vars:
-    jitsi_meet_jvb_cfg_password: "{{ vb_password_file_slurp.content | b64decode }}"
   notify: restart jitsi-videobridge
 
 

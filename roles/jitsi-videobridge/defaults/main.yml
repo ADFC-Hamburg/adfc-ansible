@@ -13,7 +13,7 @@ jitsi_meet_apt_key_url: 'https://download.jitsi.org/jitsi-key.gpg.key'
 jitsi_meet_apt_key_id: '66A9CD0595D6AFA247290D3BEF8B479E2DC1389C'
 jitsi_meet_use_nightly_apt_repo: false
 
-jitsi_meet_vb_password_file: "/etc/jitsi_jvb.secret"
+jitsi_meet_vb_password_file: "/etc/jitsi_jvb{{ inventory_hostname }}.secret"
 
 jitsi_meet_jvb_cfg_hostname: "localhost"
 
