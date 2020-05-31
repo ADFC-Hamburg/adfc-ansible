@@ -1,0 +1,55 @@
+- name: dynamic-jitsi-scaler | install dependencies
+  apt:
+    name:
+      - jq
+      - curl
+- name: ssh keygen
+  openssh_keypair:
+    path: /root/.ssh/batch
+
+- name: dynamic-jitsi-scaler | install lib
+  copy:
+    src: "dynamic-jitsi-scaler-lib.sh"
+    dest: "/usr/local/bin/dynamic-jitsi-scaler-lib.sh"
+    mode: 0644
+
+- name: dynamic-jitsi-scaler | install test lib
+  copy:
+    src: "dynamic-jitsi-scaler-lib-test.sh"
+    dest: "/usr/local/bin/dynamic-jitsi-scaler-lib-test.sh"
+    mode: 0644
+
+- name: dynamic-jitsi-scaler | install script
+  template:
+    src: dynamic-jitsi-scaler.sh.j2
+    dest: "/usr/local/bin/dynamic-jitsi-scaler"
+    mode: "0755"
+  vars:
+    dynamic_lib: "/usr/local/bin/dynamic-jitsi-scaler-lib.sh"
+    dynamic_admin_mail: "{{ admin_mail }}"
+
+- name: dynamic-jitsi-scaler | install script test
+  template:
+    src: dynamic-jitsi-scaler.sh.j2
+    dest: "/usr/local/bin/dynamic-jitsi-scaler-test"
+    mode: "0755"
+  vars:
+    dynamic_lib: "/usr/local/bin/dynamic-jitsi-scaler-lib-test.sh"
+    dynamic_admin_mail: "{{ test_admin_mail }}"
+- name: delete test files
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - /tmp/dyn_jitsi_playbook-setup-vbh01.yml
+    - /tmp/dyn_jitsi_playbook-delete-vbh01.yml
+
+- name: dynamic-jitsi-sclaer | test
+  include_tasks: "{{ item }}"
+  when: dynamic_jitis_run_test | default(False)
+  with_items:
+    - test-no-action.yml
+    - test-switch-on.yml
+    - test-switch-off-but-not-modulo.yml
+    - test-switch-off.yml
+    - test-leave-on.yml
