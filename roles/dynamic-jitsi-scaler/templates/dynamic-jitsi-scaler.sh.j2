@@ -42,7 +42,6 @@ function prep_and_run_ansible_playbook() {
     git clone $ANSIBLE_REPO $ANSIBLE_DIR
     if [ -d "${ANSIBLE_DIR}"  ] ; then
         cd $ANSIBLE_DIR
-        ansible-galaxy install --force -r requirements.yml
         run_ansible_playbook $ANSIBLE_PLAYBOOK
         echo "RTN: $?"  >> playbook.log
         clear_cache
@@ -72,7 +71,7 @@ else
     PARTICIPANTS=$((PARTICIPANTS_MEET + PARTICIPANTS_VBH01))
 fi
 
-HETZNER_JSON=$(query_hetzner_server |jq -r '.[] | select(.name == "vbh01")')
+HETZNER_JSON=$(query_hetzner_server |jq -r '.[] | select(.name == "vbh01.meet.adfc-intern.de")')
 if [ "${HETZNER_JSON}" = "" ] ; then
     IS_SERVER_ON=0
 else
