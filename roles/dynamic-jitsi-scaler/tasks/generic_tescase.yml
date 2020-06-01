@@ -1,0 +1,32 @@
+- name: "dynamic-jitsi-sclaer |  test {{ testcase.name }} | set meet participants"
+  copy:
+    dest: /tmp/dyn_jitsi_query_participants-meet.txt
+    content: "{{ testcase.participants.meet }}"
+
+- name: "dynamic-jitsi-sclaer |  test {{ testcase.name }} | set vbh participants"
+  copy:
+    dest: /tmp/dyn_jitsi_query_participants-vbh01.txt
+    content: "{{ testcase.participants.vbh01 }}"
+
+- name: "dynamic-jitsi-sclaer |  test {{ testcase.name }} | set hetzner result"
+  copy:
+    dest: /tmp/dyn_jitsi_query_hetzner_server.txt
+    content: "{{ testcase.hcloud_api }}"
+
+- name: "dynamic-jitsi-sclaer |  test {{ testcase.name }} | run"
+  command: /usr/local/bin/dynamic-jitsi-scaler-test
+
+- name: "dynamic-jitsi-sclaer |  test {{ testcase.name }} | check setup playbook is {{ testcase.result.playbook_setup }}"
+  stat:
+    path: /tmp/dyn_jitsi_playbook-setup-vbh01.yml
+  register: mystat
+  failed_when: mystat.stat.exists != testcase.result.playbook_setup
+
+- name: "dynamic-jitsi-sclaer |  test {{ testcase.name }} | check delete playbook is {{ testcase.result.playbook_delete }}"
+  stat:
+    path: /tmp/dyn_jitsi_playbook-delete-vbh01.yml
+  register: mystat
+  failed_when: mystat.stat.exists != testcase.result.playbook_delete
+
+- name: "dynamic-jitsi-sclaer |  test {{ testcase.name }} | clean"
+  include_tasks: "clean_test.yml"

@@ -3,6 +3,25 @@
     name:
       - jq
       - curl
+      - python-jinja2
+      - python-yaml
+      - python-paramiko
+      - python-httplib2
+      - python-six
+      - python-crypto
+      - python-setuptools
+      - sshpass
+      - python-cryptography
+      - python-pip
+      - python-jmespath
+      - python-dnspython
+
+- name: install ansible
+  pip:
+    name:
+     - "ansible==2.9.9"
+     - "hcloud"
+
 - name: ssh keygen
   openssh_keypair:
     path: /root/.ssh/batch
@@ -18,15 +37,7 @@
     src: "dynamic-jitsi-scaler-lib-test.sh"
     dest: "/usr/local/bin/dynamic-jitsi-scaler-lib-test.sh"
     mode: 0644
-
-- name: dynamic-jitsi-scaler | install script
-  template:
-    src: dynamic-jitsi-scaler.sh.j2
-    dest: "/usr/local/bin/dynamic-jitsi-scaler"
-    mode: "0755"
-  vars:
-    dynamic_lib: "/usr/local/bin/dynamic-jitsi-scaler-lib.sh"
-    dynamic_admin_mail: "{{ admin_mail }}"
+  when: dynamic_jitis_run_test | default(False)
 
 - name: dynamic-jitsi-scaler | install script test
   template:
@@ -36,20 +47,33 @@
   vars:
     dynamic_lib: "/usr/local/bin/dynamic-jitsi-scaler-lib-test.sh"
     dynamic_admin_mail: "{{ test_admin_mail }}"
-- name: delete test files
-  file:
-    path: "{{ item }}"
-    state: absent
-  with_items:
-    - /tmp/dyn_jitsi_playbook-setup-vbh01.yml
-    - /tmp/dyn_jitsi_playbook-delete-vbh01.yml
-
-- name: dynamic-jitsi-sclaer | test
-  include_tasks: "{{ item }}"
   when: dynamic_jitis_run_test | default(False)
+
+- name: dynamic-jitsi-sclaer | clean test reult
+  include_tasks: "clean_test.yml"
+
+- name: dynamic-jitsi-sclaer | generic_test
+  include_tasks: "generic_tescase.yml"
+  loop: "{{ dynamic_jitsi_scaler_testcases }}"
+  loop_control:
+    loop_var: "testcase"
+  when: dynamic_jitis_run_test | default(False)
+
+- name:  dynamic-jitsi-scaler |install script
+  template:
+    src: dynamic-jitsi-scaler.sh.j2
+    dest: "/usr/local/bin/dynamic-jitsi-scaler"
+    mode: "0755"
+  vars:
+    dynamic_lib: "/usr/local/bin/dynamic-jitsi-scaler-lib.sh"
+    dynamic_admin_mail: "{{ admin_mail }}"
+
+- name: dynamic-jitsi-scaler | Create system timer and service
+  template:
+    src: "systemd-{{ item }}.j2"
+    dest: "/lib/systemd/system/{{ item }}"
+    mode: "0644"
+  notify: reload systemd
   with_items:
-    - test-no-action.yml
-    - test-switch-on.yml
-    - test-switch-off-but-not-modulo.yml
-    - test-switch-off.yml
-    - test-leave-on.yml
+    - djs.service
+    - djs.timer

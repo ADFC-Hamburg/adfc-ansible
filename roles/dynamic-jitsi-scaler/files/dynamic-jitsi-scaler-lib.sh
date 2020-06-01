@@ -7,7 +7,7 @@ function run_ansible_playbook() {
 
 function query_participants() {
     SERVER="$1"
-    INFLUX_QUERY="SELECT mean(\"participants\") FROM \"jitsi_stats\" WHERE (time > now()-${TIMERANGE}) and (\"host\" ='${SERVER}')"
+    INFLUX_QUERY="SELECT round(mean(\"participants\")) FROM \"jitsi_stats\" WHERE (time > now()-${TIMERANGE}) and (\"host\" ='${SERVER}')"
     JSON=$(/usr/bin/influx -username admin -password "${INFLUX_PW}" -database "${INFLUX_DB}" \
             -format json -execute "${INFLUX_QUERY}")
     echo $JSON |jq -r ".results[0].series[0].values[0][1]"

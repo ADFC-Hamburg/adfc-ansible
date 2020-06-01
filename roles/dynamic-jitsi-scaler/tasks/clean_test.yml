@@ -1,0 +1,8 @@
+
+- name: "dynamic-jitsi-scaler |cleanup"
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - /tmp/dyn_jitsi_playbook-setup-vbh01.yml
+    - /tmp/dyn_jitsi_playbook-delete-vbh01.yml

@@ -42,6 +42,7 @@ function prep_and_run_ansible_playbook() {
     git clone $ANSIBLE_REPO $ANSIBLE_DIR
     if [ -d "${ANSIBLE_DIR}"  ] ; then
         cd $ANSIBLE_DIR
+        ansible-galaxy install --force -r requirements.yml
         run_ansible_playbook $ANSIBLE_PLAYBOOK
         echo "RTN: $?"  >> playbook.log
         clear_cache
@@ -49,6 +50,7 @@ function prep_and_run_ansible_playbook() {
         cd ..
         rm -rf "${ANSIBLE_DIR}"
     fi
+    ssh-agent -k
 }
 
 function turn_server_on() {
