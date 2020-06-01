@@ -3,6 +3,9 @@
   gather_facts: no
   roles:
     - hcloud-server
+  vars:
+    hcloud_test: false
+
 - name: Setup Videobridge
   hosts: vbh01.meet.adfc-intern.de
   gather_facts: yes
