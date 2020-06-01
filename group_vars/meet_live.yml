@@ -1,1 +1,6 @@
 jitsi_meet_server_name: meet.adfc-intern.de
+ssh_users_admins:
+  - svena
+  - georgs
+  - janb
+  - adfc_intern_batch
