@@ -1,0 +1,5 @@
+- hosts: proxmox01.adfc-intern.de
+  roles:
+    - dynamic-jitsi-scaler
+  vars:
+    dynamic_jitis_run_test: yes

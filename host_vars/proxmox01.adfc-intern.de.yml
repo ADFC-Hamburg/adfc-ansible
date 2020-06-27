@@ -17,7 +17,8 @@ additional_ips:
 
 influxdb_host: proxmox01.adfc-intern.de
 
-
+admin_mail: sven@anders-hamburg.de
+test_admin_mail: sven@anders-hamburg.de
 
 grafana_auth_anonymous_enabled: "true"
 grafana_auth_anonymous_org_name: "ADFC Public"
