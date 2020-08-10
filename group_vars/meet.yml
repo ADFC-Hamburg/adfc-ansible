@@ -8,6 +8,7 @@ ssh_users_admins:
   - svena
   - georgs
   - janb
+  - ansgarh
 
 ucs_master: int-master.adfc-intern.de
 ucs_network: "cn=default,cn=networks,dc=adfc-intern,dc=de"
