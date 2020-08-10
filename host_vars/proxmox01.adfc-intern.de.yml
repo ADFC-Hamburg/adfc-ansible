@@ -3,6 +3,7 @@ ssh_users_admins:
   - georgs
   - janb
   - adfc_intern_batch
+  - ansgarh
 
 postfix_host_email: admin@adfc-intern.de
 ipv4_netmask: 255.255.255.224
