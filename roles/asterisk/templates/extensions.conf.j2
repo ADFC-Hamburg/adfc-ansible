@@ -1,0 +1,17 @@
+{% set engine="PJSIP" %}
+
+[default]
+
+exten => s,1,Hangout()
+
+{% for sipgate in asterisk_cfg.sipgate %}
+[sipgate-in-{{ sipgate.number }}]
+exten => _X.,1,Noop(Processing an incoming call)
+same => n, Answer()
+same => n, Wait(1)
+same => n, playback(demo-echotest)
+same => n, echo
+; same => n,Dial(PJSIP/6002) # Extension 6002 represents the Extension you want to call
+same => n,Hangup()
+
+{% endfor %}

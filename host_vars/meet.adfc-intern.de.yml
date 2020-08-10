@@ -9,3 +9,18 @@ proxmox_net:
     bridge: vmbr0
 proxmox_ramsize_in_mb: 10240
 proxmox_cores: 9
+
+asterisk_ip: 88.198.32.212
+asterisk_cfg:
+  sipgate:
+    - number: "{{ sipgate_adfc_hh_number }}"
+      password: "{{ sipgate_adfc_hh_password }}"
+  extensions:
+    - phone: jigasy
+      number: 201
+      secret: geheim
+# https://basicsupport.sipgate.de/hc/de/articles/207426705-IP-Port-Bereiche-von-sipgate
+asterisk_sip_ips:
+  - 217.10.64.0/20
+  - 217.116.112.0/20
+  - 212.9.32.0/19

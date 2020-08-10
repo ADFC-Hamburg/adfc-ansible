@@ -1,0 +1,75 @@
+[global]
+type = global
+user_agent = Asterisk PBX
+endpoint_identifier_order = ip,username
+;default_from_user=021156215202
+
+[transport-udp]
+type = transport
+protocol = udp
+bind = {{ asterisk_ip }}:5061
+local_net = 192.168.0.0/255.255.0.0
+
+[transport-tls]
+type = transport
+protocol = tls
+bind = {{ asterisk_ip }}
+local_net = 192.168.0.0/255.255.0.0
+cert_file = /etc/asterisk/cert/fullchain.pem
+priv_key_file = /etc/asterisk/cert/privkey.pem
+method = sslv23
+
+
+; -------------------------------------- INCOMMING -------------------------------------
+
+{% for sipgate in asterisk_cfg.sipgate %}
+
+; see https://app.sipgatebasic.de/konfiguration/219/asterisk-pbx#Asterisk%20basic/team
+[reg_sipgate_{{ sipgate.number }}]
+type = registration
+retry_interval = 20
+max_retries = 10
+contact_user = {{ sipgate.number }}
+expiration = 120
+transport = transport-udp
+outbound_auth = auth_reg_sipgate_{{ sipgate.number }}
+client_uri = sip:{{ sipgate.number }}@sipgate.de:5060
+server_uri = sip:sipgate.de:5060
+
+[auth_reg_sipgate_{{ sipgate.number }}]
+type = auth
+username = {{ sipgate.number }}
+password = {{ sipgate.password }}
+
+
+[sipgate_aor_{{ sipgate.number }}]
+type = aor
+contact = sip:{{ sipgate.number }}@sipgate.de
+
+[sipgate_identity_{{ sipgate.number }}]
+type = identify
+endpoint = sipgate_{{ sipgate.number }}
+match = sipgate.de
+
+[sipgate_auth_{{ sipgate.number }}]
+type = auth
+username = {{ sipgate.number }}
+password = {{ sipgate.password }}
+
+[sipgate_{{ sipgate.number }}]
+type = endpoint
+context = sipgate-in-{{ sipgate.number }}
+dtmf_mode = rfc4733
+disallow = all
+allow = alaw
+rtp_symmetric = yes
+force_rport = yes
+rewrite_contact = yes
+timers = yes
+from_user = {{ sipgate.number }}
+from_domain = sipgate.de
+language = en
+outbound_auth = sipgate_auth_{{ sipgate.number }}
+aors = sipgate_aor_{{ sipgate.number }}
+
+{% endfor %}

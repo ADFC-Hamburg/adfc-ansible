@@ -1,0 +1,59 @@
+- name: Install asterisk
+  apt:
+    name: asterisk
+
+- name: get sipgate secret and SIP-Id
+  slurp:
+    src: /root/sipgate.secret
+  register: sipgate_secret_b64
+  delegate_to: proxmox01.adfc-intern.de
+
+- name: set sipgate fact
+  set_fact:
+    sipgate_secret: "{{ sipgate_secret_b64.content | b64decode }}"
+
+- name: set facts
+  set_fact:
+    sipgate_adfc_hh_number: "2086851"
+    sipgate_adfc_hh_password: "{{ sipgate_secret.split(' ')[4] }}"
+
+- name: create extension.conf
+  template:
+    src: extensions.conf.j2
+    dest: /etc/asterisk/extensions.conf
+    mode: 0644
+  notify: asterisk extensions reload
+
+- name: Create pjsip.conf
+  template:
+    src: pjsip.conf.j2
+    dest: /etc/asterisk/pjsip.conf
+    mode: 0644
+  notify: asterisk pjsip reload
+  tags: pjsip_conf
+
+
+- name: Noload chan_sip
+  blockinfile:
+    path: /etc/asterisk/modules.conf
+    marker: ";  ANSIBLE MANAGED BLOCK {mark}"
+    insertafter: "noload => chan_modem_i4l.so"
+    block: |
+      noload => chan_sip.so
+  notify: asterisk restart
+
+- name: Allow firewall for ipv4 sip
+  ufw:
+    rule: allow
+    port: "5601"
+    proto: udp
+    src: '{{ item }}'
+  loop: "{{ asterisk_sip_ips }}"
+
+- name: Allow firewall for ipv4 rtp
+  ufw:
+    rule: allow
+    port: 10000:20000
+    proto: udp
+    src: '{{ item }}'
+  loop: "{{ asterisk_sip_ips }}"
