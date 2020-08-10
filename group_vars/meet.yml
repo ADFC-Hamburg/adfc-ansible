@@ -101,7 +101,7 @@ jitsi_meet_jvb_sipcfg_pubsub_service: "{{ jitsi_meet_server_name }}"
 jitsi_meet_jvb_sipcfg_pubsub_node: "sharedStatsNode"
 jitsi_meet_jvb_cfg_java_sys_props_addition:
   - "--add-opens jdk.management/com.sun.management.internal=ALL-UNNAMED"
-
+jitsi_meet_interface_config_js_template: "adfc_jitsi_meet_interface_config.js.j2"
 # Statistics
 influxdb_host: "proxmox01.adfc-intern.de"
 influx_admin_password_file: /etc/influx.secrect
