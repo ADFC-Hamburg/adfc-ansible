@@ -31,3 +31,16 @@ jitsi_meet_configure_sip_gateway: true
 jitsi_meet_jigasi_account: jigasi@meet.adfc-intern.de
 jitsi_meet_jigasi_password: fdi49fndKjhe3
 jitsi_meet_jigasi_port: 5061
+
+asterisk_rooms:
+  1042:
+    name: admin
+  1043:
+    name: admin
+    pin: yes
+  1001:
+    name: adfc-berlin
+  1002:
+    name: adfc-bezie
+  1003:
+    name: adfc_hamburg_akgps_team

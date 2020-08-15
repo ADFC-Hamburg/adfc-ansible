@@ -7,33 +7,47 @@ exten => s,1,Hangout()
 {% for sipgate in asterisk_cfg.sipgate %}
 [sipgate-in-{{ sipgate.number }}]
 exten => _X.,1,Noop(Processing an incoming call)
-;   same => n,Dial(PJSIP/jigasi)
+   same => n,Answer(500)
+   same => n,Playback(adfc/welcome-adfc)
    same => n,Goto(adfc-menu,s,1)
 {% endfor %}
 
 
 [adfc-menu]
-exten => s,1,Answer(500)
-   same => n(loop),Background(/var/lib/asterisk/sounds/adfc/welcome)
+exten => s,1,NoOp(Main adfc-menu)
+   same => n(loop),Background(adfc/conf-pin-oder-1111-fuer-datenschutz)
    same => n,WaitExten()
    same => n,Goto(s,loop)
 
-exten => 1,1,Playback(you-entered)
+exten => 1111,1,NoOp(Datenschutz)
+   same => n,Playback(adfc/datenschutz)
+   same => n,Goto(s,loop)
+
+exten => 1113,1,Playback(you-entered)
    same => n,SayNumber(1)
    same => n,Record(recordings/adfc-test.gsm)
    same => n,Wait(1)
    same => n,Playback(recordings/adfc-test.gsm)
    same => n,Goto(s,loop)
 
-exten => 2,1,Playback(you-entered)
-   same => n,SayNumber(2)
-   same => n,Playback(conf-placeintoconf)
-   same => n,Dial(PJSIP/jigasi)
-   same => n,NoOp( Dial Status ${DIALSTATUS})
-   same => n,Goto(s,loop)
 
-exten => 42,1,Playback(you-entered)
-   same => n,SayNumber(42)
+{% for room in (asterisk_rooms | dictsort) %}
+exten => {{ room.0 }}, 1, NoOp( Room {{ room.0 }} {{ room.1.name }})
+{% if room.1.pin | default(false) |bool %}
+   same => n,Playback(confbridge-pin)
+   same => n,Read(PIN,beep,12)
+   same => n,Verbose(Result is: ${PIN})
+   same => n,Playback(conf-placeintoconf)
+   same => n,Dial(PJSIP/jigasi,,b(sub-headers^caller_handler^1({{ room.1.name }},${PIN})))
+{% else %}
+   same => n,Playback(conf-placeintoconf)
+   same => n,Dial(PJSIP/jigasi,,b(sub-headers^caller_handler^1({{ room.1.name }},)))
+{% endif %}
+   same => n,Goto(s,loop)
+{% endfor %}
+
+exten => 4242,1,Playback(you-entered)
+   same => n,SayNumber(4242)
    same => n,Goto(s,loop)
 
 ; Extension nicht gefunden
@@ -41,3 +55,12 @@ exten => i,1,Playback(conf-invalid)
    same => n,Goto(s,loop)
 
 
+[sub-headers]
+exten => caller_handler,1,NoOp(Set Header Jitsi-Conference-Room: ${ARG1} -Pass: ${ARG2})
+same => n,GotoIf($[${LEN(${ARG1})} == 0]? 5)
+same => n,Set(PJSIP_HEADER(add,Jitsi-Conference-Room)=${ARG1})
+same => n,Set(PJSIP_HEADER(add,X-Room-Name)=${ARG1})
+same => 5,GotoIf($[${LEN(${ARG2})} != 0]? 10)
+same => n,Return()
+same => 10,Set(PJSIP_HEADER(add,Jitsi-Conference-Room-Pass)=${ARG2})
+same => n,Return()

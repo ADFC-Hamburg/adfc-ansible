@@ -68,7 +68,7 @@ rewrite_contact = yes
 timers = yes
 from_user = {{ sipgate.number }}
 from_domain = sipgate.de
-language = en
+language = de
 outbound_auth = sipgate_auth_{{ sipgate.number }}
 aors = sipgate_aor_{{ sipgate.number }}
 
@@ -94,5 +94,6 @@ disallow = all
 allow = g722
 allow = speex
 allow = gsm
+language = de
 auth = jigasi_auth
 aors = jigasi

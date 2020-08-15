@@ -1,21 +1,47 @@
 - name: Install asterisk
   apt:
-    name: asterisk
+    name:
+      - asterisk
+      - unzip
 
+- name: Test German Sounds
+  stat:
+    path: /usr/share/asterisk/sounds/de/confbridge-pin.sln16
+  register: test_german_sounds
+
+- name: Install German Sounds
+  include_tasks: german_sounds.yml
+  when: not test_german_sounds.stat.exists
+
+- name: create adfc sounds dir
+  file:
+    path: "{{ asterisk_sounds_dir }}/adfc"
+    state: directory
+    mode: '0755'
+
+- name: copy custom sound files
+  copy:
+    src: "{{ item }}"
+    dest: "{{ asterisk_sounds_dir }}/adfc/"
+    mode: '0644'
+  loop: "{{ install_asterisk_sounds }}"
 - name: get sipgate secret and SIP-Id
   slurp:
     src: /root/sipgate.secret
   register: sipgate_secret_b64
   delegate_to: proxmox01.adfc-intern.de
+  tags: asterisk-extension
 
 - name: set sipgate fact
   set_fact:
     sipgate_secret: "{{ sipgate_secret_b64.content | b64decode }}"
+  tags: asterisk-extension
 
 - name: set facts
   set_fact:
     sipgate_adfc_hh_number: "2086851"
     sipgate_adfc_hh_password: "{{ sipgate_secret.split(' ')[4] }}"
+  tags: asterisk-extension
 
 - name: check if password file is there
   stat:
@@ -41,6 +67,7 @@
     dest: /etc/asterisk/extensions.conf
     mode: 0644
   notify: asterisk extensions reload
+  tags: asterisk-extension
 
 - name: Create pjsip.conf
   template:
