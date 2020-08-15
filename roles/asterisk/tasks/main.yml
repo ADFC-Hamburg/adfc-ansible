@@ -17,6 +17,24 @@
     sipgate_adfc_hh_number: "2086851"
     sipgate_adfc_hh_password: "{{ sipgate_secret.split(' ')[4] }}"
 
+- name: check if password file is there
+  stat:
+    path: "/etc/jigasi-sip.secret"
+  register: jigasi_sip_secret_stat
+
+- name: Create Password file if empty
+  copy:
+    content: "{{ lookup('password', '/dev/null length=16') }}"
+    dest: "/etc/jigasi-sip.secret"
+    mode: "0600"
+    owner: root
+  when: not jigasi_sip_secret_stat.stat.exists
+
+- name: read jigasi_sip secret
+  slurp:
+    path: "/etc/jigasi-sip.secret"
+  register: jigasi_sip_secret
+
 - name: create extension.conf
   template:
     src: extensions.conf.j2
@@ -45,7 +63,7 @@
 - name: Allow firewall for ipv4 sip
   ufw:
     rule: allow
-    port: "5601"
+    port: "5061"
     proto: udp
     src: '{{ item }}'
   loop: "{{ asterisk_sip_ips }}"

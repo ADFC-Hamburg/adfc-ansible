@@ -1,3 +1,4 @@
 - hosts: meet.adfc-intern.de
   roles:
    - asterisk
+   - jigasi

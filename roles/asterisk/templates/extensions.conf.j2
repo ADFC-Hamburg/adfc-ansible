@@ -7,11 +7,36 @@ exten => s,1,Hangout()
 {% for sipgate in asterisk_cfg.sipgate %}
 [sipgate-in-{{ sipgate.number }}]
 exten => _X.,1,Noop(Processing an incoming call)
-same => n, Answer()
-same => n, Wait(1)
-same => n, playback(demo-echotest)
-same => n, echo
-; same => n,Dial(PJSIP/6002) # Extension 6002 represents the Extension you want to call
-same => n,Hangup()
-
+;   same => n,Dial(PJSIP/jigasi)
+   same => n,Goto(adfc-menu,s,1)
 {% endfor %}
+
+
+[adfc-menu]
+exten => s,1,Answer(500)
+   same => n(loop),Background(/var/lib/asterisk/sounds/adfc/welcome)
+   same => n,WaitExten()
+   same => n,Goto(s,loop)
+
+exten => 1,1,Playback(you-entered)
+   same => n,SayNumber(1)
+   same => n,Record(recordings/adfc-test.gsm)
+   same => n,Wait(1)
+   same => n,Playback(recordings/adfc-test.gsm)
+   same => n,Goto(s,loop)
+
+exten => 2,1,Playback(you-entered)
+   same => n,SayNumber(2)
+   same => n,Playback(conf-placeintoconf)
+   same => n,Dial(PJSIP/jigasi)
+   same => n,Goto(s,loop)
+
+exten => 42,1,Playback(you-entered)
+   same => n,SayNumber(42)
+   same => n,Goto(s,loop)
+
+; Extension nicht gefunden
+exten => i,1,Playback(conf-invalid)
+   same => n,Goto(s,loop)
+
+

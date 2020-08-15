@@ -73,3 +73,26 @@ outbound_auth = sipgate_auth_{{ sipgate.number }}
 aors = sipgate_aor_{{ sipgate.number }}
 
 {% endfor %}
+
+[jigasi_auth]
+type = auth
+auth_type = userpass
+password = {{ jigasi_sip_secret.content |b64decode }}
+username = jigasi
+
+[jigasi]
+type = aor
+max_contacts = 1
+remove_existing = yes
+
+[jigasi]
+type = endpoint
+transport = transport-udp
+context = jigasi-in
+direct_media = no
+disallow = all
+allow = g722
+allow = speex
+allow = gsm
+auth = jigasi_auth
+aors = jigasi
