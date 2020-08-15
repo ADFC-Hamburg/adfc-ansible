@@ -29,6 +29,7 @@ exten => 2,1,Playback(you-entered)
    same => n,SayNumber(2)
    same => n,Playback(conf-placeintoconf)
    same => n,Dial(PJSIP/jigasi)
+   same => n,NoOp( Dial Status ${DIALSTATUS})
    same => n,Goto(s,loop)
 
 exten => 42,1,Playback(you-entered)
