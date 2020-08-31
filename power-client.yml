@@ -1,0 +1,75 @@
+- hosts: arbeitsplatz
+  gather_facts: no
+
+  vars_prompt:
+    - name: command
+      prompt: "Befehl eingeben: (status, poweroff, poweron)"
+      default: "status"
+
+  tasks:
+  - name: Check ob Client eingeschaltet
+    #    delegate_to: ucs-master.gst.hamburg.adfc.de
+    wait_for_connection:
+      timeout: 10
+    register: connect_result
+    ignore_errors: yes
+    when:  
+      - ansible_wireless_ps_host is defined
+
+  - name: Dem User sagen ob der client läuft  
+    debug:
+      var: connect_result
+    when: ansible_wireless_ps_host is defined
+
+  - name: Einschalten
+    delegate_to: ucs-master.gst.hamburg.adfc.de
+    uri:
+      url: http://{{ ansible_wireless_ps_host }}/cm?cmnd=Power+ON
+    when:
+      - ansible_wireless_ps_host is defined
+      - connect_result is failed
+      - command == "poweron"
+
+  - name: Warten bis Rechner gestartet ist
+    wait_for_connection:
+      delay: 30
+      timeout: 300
+    register: after_start_connect_result
+    when:
+      - ansible_wireless_ps_host is defined
+      - connect_result is failed
+      - command == "poweron"
+      - ansible_wireless_ps_host is defined
+
+  - name: Fakten einlesen
+    setup:
+    when:
+      - connect_result is not failed or (after_start_connect_result is not failed and after_start_connect_result is not skipped)
+      - ansible_wireless_ps_host is defined
+
+  - name: Ausschalten
+    command: shutdown -h now
+    async: 1
+    poll: 0
+    ignore_errors: true
+    when:
+      - connect_result is not failed
+      - ansible_wireless_ps_host is defined
+      - command == "poweroff"
+
+  - name: Warten auf ausgeschaltet
+    delegate_to: localhost
+    wait_for: host={{ ansible_host }} port=22 state=stopped
+    when:
+      - connect_result is not failed
+      - ansible_wireless_ps_host is defined
+      - command == "poweroff"
+
+  - name: Steckdose ausschalten
+    delegate_to: ucs-master.gst.hamburg.adfc.de
+    uri:
+      url: http://{{ ansible_wireless_ps_host }}/cm?cmnd=Power+OFF
+    when:
+      - ansible_wireless_ps_host is defined
+      - connect_result is failed or command == "poweroff"
+      - command != "poweron" and command != "status"
