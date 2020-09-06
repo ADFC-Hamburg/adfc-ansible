@@ -9,3 +9,44 @@ proxmox_net:
     bridge: vmbr0
 proxmox_ramsize_in_mb: 10240
 proxmox_cores: 9
+
+firewall:
+  - name: Apache http
+    port: 80
+    proto: tcp
+  - name: Apache https
+    port: 443
+    proto: tcp
+  - name: Jitsi-Videobridge TCP
+    port: 4443
+    proto: tcp
+  - name: Jitsi-Videobridge UDP
+    port: 10000
+    proto: udp
+  - name: STUN TLS
+    proto: udp
+    port: 4445
+  - name: STUN
+    proto: udp
+    port: 4446
+  - name: XMPP
+    port: 5347
+    proto: tcp
+  - name: prosody
+    port: 5222
+    proto: tcp
+  - name: Asterisk
+    port: 5061
+    proto: udp
+    src:
+      - 217.10.64.0/20
+      - 217.116.112.0/20
+      - 212.9.32.0/19
+  - name: Asterisk RTP
+    port_range:
+      start: 10000
+      end: 20000
+    proto: udp
+    src:
+      - 217.116.112.0/20
+      - 217.10.64.0/20

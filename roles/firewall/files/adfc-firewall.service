@@ -1,0 +1,15 @@
+# ANSIBLE MANAGED
+#
+[Unit]
+Description = ADFC Firewall
+Before=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/adfc-firewall
+RemainAfterExit=true
+ExecStop=/usr/local/sbin/adfc-firewall stop
+
+
+[Install]
+WantedBy=multi-user.target

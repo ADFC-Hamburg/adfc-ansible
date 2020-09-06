@@ -1,0 +1,210 @@
+#!/bin/bash
+# {{ ansible_managed }}
+TIMESTAMP=$(date +%s)
+echo Firewall $TIMESTAMP
+
+{% if firewall_test | default(False) |bool %}
+{% set DROP = "ACCEPT" %}
+echo TESTMODE=ON
+{% else %}
+{% set DROP = "DROP" %}
+{% endif %}
+
+{{ iptables_bin }} -F
+{{ iptables_bin }} -X
+{{ iptables_bin }} -t nat -F
+{{ iptables_bin }} -t mangle -F
+
+{{ iptables_bin }} -P OUTPUT ACCEPT
+
+{{ ip6tables_bin }} -F
+{{ ip6tables_bin }} -X
+{{ ip6tables_bin }} -t nat -F
+{{ ip6tables_bin }} -t mangle -F
+{{ ip6tables_bin }} -P OUTPUT ACCEPT
+
+if [ "$1" = "stop" ] ; then
+    {{ iptables_bin }} -P INPUT ACCEPT
+    {{ iptables_bin }} -P FORWARD ACCEPT
+    {{ ip6tables_bin }} -P INPUT ACCEPT
+    {{ ip6tables_bin }} -P FORWARD ACCEPT
+    echo Firewall stopped
+    exit
+fi
+
+{{ iptables_bin }} -P INPUT {{ DROP }}
+{{ iptables_bin }} -P FORWARD {{ DROP }}
+{{ iptables_bin }} -A INPUT -i lo -j ACCEPT
+{{ iptables_bin }} -A FORWARD -i lo -j ACCEPT
+{{ iptables_bin }} -A FORWARD -i vmbr0 -j ACCEPT
+
+
+{{ iptables_bin }} -N LOGANDDROP
+{{ iptables_bin }} -A LOGANDDROP -m limit --limit 5/min -j LOG --log-prefix " ip4-drop-${TIMESTAMP} " --log-level 7
+{{ iptables_bin }} -A LOGANDDROP -j {{ DROP }}
+
+
+{{ iptables_bin }} -A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+{{ iptables_bin }} -A INPUT -m conntrack --ctstate INVALID -j LOGANDDROP
+{{ iptables_bin }} -A INPUT -p icmp -m icmp --icmp-type 3 -j ACCEPT
+{{ iptables_bin }} -A INPUT -p icmp -m icmp --icmp-type 11 -j ACCEPT
+{{ iptables_bin }} -A INPUT -p icmp -m icmp --icmp-type 12 -j ACCEPT
+{{ iptables_bin }} -A INPUT -p icmp -m icmp --icmp-type 8 -j ACCEPT
+
+{{ iptables_bin }} -A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+{{ iptables_bin }} -A FORWARD -m conntrack --ctstate INVALID -j LOGANDDROP
+{{ iptables_bin }} -A FORWARD -p icmp -m icmp --icmp-type 3 -j ACCEPT
+{{ iptables_bin }} -A FORWARD -p icmp -m icmp --icmp-type 11 -j ACCEPT
+{{ iptables_bin }} -A FORWARD -p icmp -m icmp --icmp-type 12 -j ACCEPT
+{{ iptables_bin }} -A FORWARD -p icmp -m icmp --icmp-type 8 -j ACCEPT
+
+{{ ip6tables_bin }} -P INPUT {{ DROP }}
+{{ ip6tables_bin }} -P FORWARD {{ DROP }}
+
+
+{{ ip6tables_bin }} -N LOGANDDROP
+{{ ip6tables_bin }} -A LOGANDDROP -m limit --limit 5/min -j LOG --log-prefix " ip6-drop-${TIMESTAMP} " --log-level 7
+{{ ip6tables_bin }} -A LOGANDDROP -j {{ DROP }}
+
+{{ ip6tables_bin }} -A INPUT -i lo -j ACCEPT
+{{ ip6tables_bin }} -A INPUT -m rt --rt-type 0 -j LOGANDDROP
+{{ ip6tables_bin }} -A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+{{ ip6tables_bin }} -A INPUT -p ipv6-icmp -m icmp6 --icmpv6-type 129 -j ACCEPT
+{{ ip6tables_bin }} -A INPUT -m conntrack --ctstate INVALID -j LOGANDDROP
+{{ ip6tables_bin }} -A INPUT -p ipv6-icmp -m icmp6 --icmpv6-type 1 -j ACCEPT
+{{ ip6tables_bin }} -A INPUT -p ipv6-icmp -m icmp6 --icmpv6-type 2 -j ACCEPT
+{{ ip6tables_bin }} -A INPUT -p ipv6-icmp -m icmp6 --icmpv6-type 3 -j ACCEPT
+{{ ip6tables_bin }} -A INPUT -p ipv6-icmp -m icmp6 --icmpv6-type 4 -j ACCEPT
+{{ ip6tables_bin }} -A INPUT -p ipv6-icmp -m icmp6 --icmpv6-type 128 -j ACCEPT
+{{ ip6tables_bin }} -A INPUT -p ipv6-icmp -m icmp6 --icmpv6-type 133 -m hl --hl-eq 255 -j ACCEPT
+{{ ip6tables_bin }} -A INPUT -p ipv6-icmp -m icmp6 --icmpv6-type 134 -m hl --hl-eq 255 -j ACCEPT
+{{ ip6tables_bin }} -A INPUT -p ipv6-icmp -m icmp6 --icmpv6-type 135 -m hl --hl-eq 255 -j ACCEPT
+{{ ip6tables_bin }} -A INPUT -p ipv6-icmp -m icmp6 --icmpv6-type 136 -m hl --hl-eq 255 -j ACCEPT
+{{ ip6tables_bin }} -A INPUT -p ipv6-icmp -m icmp6 --icmpv6-type 141 -m hl --hl-eq 255 -j ACCEPT
+{{ ip6tables_bin }} -A INPUT -p ipv6-icmp -m icmp6 --icmpv6-type 142 -m hl --hl-eq 255 -j ACCEPT
+{{ ip6tables_bin }} -A INPUT -s fe80::/10 -p ipv6-icmp -m icmp6 --icmpv6-type 130 -j ACCEPT
+{{ ip6tables_bin }} -A INPUT -s fe80::/10 -p ipv6-icmp -m icmp6 --icmpv6-type 131 -j ACCEPT
+{{ ip6tables_bin }} -A INPUT -s fe80::/10 -p ipv6-icmp -m icmp6 --icmpv6-type 132 -j ACCEPT
+{{ ip6tables_bin }} -A INPUT -s fe80::/10 -p ipv6-icmp -m icmp6 --icmpv6-type 143 -j ACCEPT
+{{ ip6tables_bin }} -A INPUT -p ipv6-icmp -m icmp6 --icmpv6-type 148 -m hl --hl-eq 255 -j ACCEPT
+{{ ip6tables_bin }} -A INPUT -p ipv6-icmp -m icmp6 --icmpv6-type 149 -m hl --hl-eq 255 -j ACCEPT
+{{ ip6tables_bin }} -A INPUT -s fe80::/10 -p ipv6-icmp -m icmp6 --icmpv6-type 151 -m hl --hl-eq 1 -j ACCEPT
+{{ ip6tables_bin }} -A INPUT -s fe80::/10 -p ipv6-icmp -m icmp6 --icmpv6-type 152 -m hl --hl-eq 1 -j ACCEPT
+{{ ip6tables_bin }} -A INPUT -s fe80::/10 -p ipv6-icmp -m icmp6 --icmpv6-type 153 -m hl --hl-eq 1 -j ACCEPT
+{{ ip6tables_bin }} -A INPUT -p ipv6-icmp -m icmp6 --icmpv6-type 144 -j ACCEPT
+{{ ip6tables_bin }} -A INPUT -p ipv6-icmp -m icmp6 --icmpv6-type 145 -j ACCEPT
+{{ ip6tables_bin }} -A INPUT -p ipv6-icmp -m icmp6 --icmpv6-type 146 -j ACCEPT
+{{ ip6tables_bin }} -A INPUT -p ipv6-icmp -m icmp6 --icmpv6-type 147 -j ACCEPT
+{{ ip6tables_bin }} -A INPUT -s fe80::/10 -d fe80::/10 -p udp -m udp --sport 547 --dport 546 -j ACCEPT
+{{ ip6tables_bin }} -A INPUT -d ff02::fb/128 -p udp -m udp --dport 5353 -j ACCEPT
+{{ ip6tables_bin }} -A INPUT -d ff02::f/128 -p udp -m udp --dport 1900 -j ACCEPT
+
+{{ ip6tables_bin }} -A FORWARD -i lo -j ACCEPT
+{{ ip6tables_bin }} -A FORWARD -i vmbr0 -j ACCEPT
+{{ ip6tables_bin }} -A FORWARD -m rt --rt-type 0 -j LOGANDDROP
+{{ ip6tables_bin }} -A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+{{ ip6tables_bin }} -A FORWARD -p ipv6-icmp -m icmp6 --icmpv6-type 1 -j ACCEPT
+{{ ip6tables_bin }} -A FORWARD -p ipv6-icmp -m icmp6 --icmpv6-type 2 -j ACCEPT
+{{ ip6tables_bin }} -A FORWARD -p ipv6-icmp -m icmp6 --icmpv6-type 3 -j ACCEPT
+{{ ip6tables_bin }} -A FORWARD -p ipv6-icmp -m icmp6 --icmpv6-type 4 -j ACCEPT
+{{ ip6tables_bin }} -A FORWARD -p ipv6-icmp -m icmp6 --icmpv6-type 128 -j ACCEPT
+{{ ip6tables_bin }} -A FORWARD -p ipv6-icmp -m icmp6 --icmpv6-type 129 -j ACCEPT
+
+{% for inv_host in groups['all'] %}
+{% set fw_do_rules = false %}
+{% set fw_ipv4s = [] %}
+{% set fw_ipv6s = [] %}
+{% if 'proxmox_host' in hostvars[inv_host] %}
+{% if hostvars[inv_host]['proxmox_host'] == inventory_hostname %}
+{% set fw_chain = 'FORWARD' %}
+{% set fw_do_rules = true %}
+{% for fw_net in hostvars[inv_host]['proxmox_net'] |default([]) %}
+{{ fw_ipv4s.append(hostvars[inv_host]['proxmox_net'][fw_net]['ip'].replace('/32','')) }}
+{{ fw_ipv6s.append(hostvars[inv_host]['proxmox_net'][fw_net]['ip6'].replace('/64','')) }}
+{% endfor %}
+{% endif %}
+{% endif %}
+{% if inv_host == inventory_hostname %}
+{% set fw_chain = 'INPUT' %}
+{% set fw_do_rules = true %}
+{% for fw_ip in ansible_all_ipv4_addresses %}
+{% if fw_ip not in fw_ipv4s %}
+{{ fw_ipv4s.append(fw_ip) }}
+{% endif %}
+{% endfor %}
+{% for fw_ip in ansible_all_ipv6_addresses %}
+{% if fw_ip not in fw_ipv6s and fw_ip[0:4] != 'fe80' %}
+{{ fw_ipv6s.append(fw_ip) }}
+{% endif %}
+{% endfor %}
+{% endif %}
+{% if fw_do_rules |default(false) == true %}
+
+################################################################################
+# Regeln für {{ inv_host }} {{ fw_chain }} {{ fw_ipv4s }} {{ fw_ipv6s }}
+################################################################################
+
+# zur Sicherheit immer SSH erlauben
+{% for fw_ip in fw_ipv4s %}
+{{ iptables_bin }} -A {{ fw_chain}} -d {{ fw_ip }} -p tcp -m tcp --dport 22 -j ACCEPT
+{% endfor %}
+{% for fw_ip in fw_ipv6s %}
+{{ ip6tables_bin }} -A {{ fw_chain}} -d {{ fw_ip }} -p tcp -m tcp --dport 22 -j ACCEPT
+{% endfor %}
+
+
+
+{% if 'firewall' in hostvars[inv_host] %}
+{% for rules in hostvars[inv_host]['firewall'] %}
+
+# {{ rules.name}}
+{% if rules.proto == 'tcp' %}
+{% set proto_part = '-p tcp -m tcp' %}
+{% elif rules.proto == 'udp' %}
+{% set proto_part = '-p udp -m udp' %}
+{% else %}
+echo unbekanntes proto
+{% endif %}
+{% if 'port' in rules %}
+{% set port_part = '--dport ' + (rules.port |string ) %}
+{% elif 'port_range' in rules %}
+{% set port_part = '--dport ' + (rules.port_range.start |string) + ':' + ( rules.port_range.end | string) %}
+{% else %}
+echo keine Portangabe
+{% endif %}
+{% set src_parts = [''] %}
+{% if 'src' in rules %}
+{% set src_parts = rules.src %}
+{% endif %}
+{% for src_part in src_parts %}
+{% for fw_ip in fw_ipv4s %}
+{% set src_part_option = '' %}
+{% if (src_part != '')  %}
+{% set src_part_option = '-s ' %}
+{% endif %}
+{% if (src_part == '') or (src_part |ipv4 ) %}
+{{ iptables_bin }} -A {{ fw_chain}} {{ src_part_option |default('') }}{{ src_part }} -d {{ fw_ip }} {{proto_part}} {{ port_part }} -j ACCEPT
+{% endif %}
+{% endfor %}
+{% for fw_ip in fw_ipv6s %}
+{% if (src_part == '') or (src_part |ipv6) %}
+{{ ip6tables_bin }} -A {{ fw_chain}} {{ src_part_option |default('') }}{{ src_part }} -d {{ fw_ip }}  {{proto_part}} {{ port_part }} -j ACCEPT
+{% endif %}
+{% endfor %}
+{% endfor %}
+{% endfor %}
+
+{% endif %}
+
+# Rest verbieten
+{% for fw_ip in fw_ipv4s %}
+{{ iptables_bin }} -A {{ fw_chain}} -d {{ fw_ip }} -p tcp -m tcp -j LOGANDDROP
+{{ iptables_bin }} -A {{ fw_chain}} -d {{ fw_ip }} -p tcp -m tcp -j {{ DROP }}
+{% endfor %}
+{% for fw_ip in fw_ipv6s %}
+{{ ip6tables_bin }} -A {{ fw_chain}} -d {{ fw_ip }} -p tcp -m tcp -j LOGANDDROP
+{{ ip6tables_bin }} -A {{ fw_chain}} -d {{ fw_ip }} -p tcp -m tcp -j {{ DROP }}
+{% endfor %}
+{% endif %}
+{% endfor %}
+echo Firewall started $TIMESTAMP
