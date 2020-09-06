@@ -10,6 +10,7 @@
       - htop
       - mc
       - ncdu
+      - chromium-browser
 
   - name: Downloadverzeichnis für deb-Pakete erstellen
     file:
