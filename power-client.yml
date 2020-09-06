@@ -13,10 +13,10 @@
       timeout: 10
     register: connect_result
     ignore_errors: yes
-    when:  
+    when:
       - ansible_wireless_ps_host is defined
 
-  - name: Dem User sagen ob der client läuft  
+  - name: Dem User sagen ob der client laeuft
     debug:
       var: connect_result
     when: ansible_wireless_ps_host is defined
