@@ -1,0 +1,38 @@
+- name: ucs-domain-join | ucs domain join repository
+  apt_repository:
+    repo: 'ppa:univention-dev/ppa'
+
+- name: ucs-domain-join | apt-get update
+  apt:
+    update_cache: yes
+  tags: software
+
+- name: ucs-domain-join | Installiere Pakete
+  apt:
+    name:
+      - univention-domain-join
+      - univention-domain-join-cli
+      - gdm3
+
+- name: ucs-domain-join | Prompt for Admin Password
+  pause:
+    prompt: "Enter UCS-Master Administrator password"
+  register: UCSAdminPassword
+  no_log: true
+
+- name: ucs-domain-join | create password file
+  copy:
+    content: "{{ UCSAdminPassword.user_input }}"
+    dest: "/root/ucs-admin-pw.secret"
+
+- name: ucs-domain-join | Do univention domain join
+  command: "/usr/sbin/univention-domain-join-cli --username Administrator --master-ip ucs-master --password-file /root/ucs-admin-pw.secret"
+
+- name: ucs-domain-join | delete password file
+  file:
+    state: absent
+    path: "/root/ucs-admin-pw.secret"
+
+- name: ucs-domain-join | Reboot after domain join
+  reboot:
+

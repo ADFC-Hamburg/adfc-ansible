@@ -1,0 +1,8 @@
+- name: ucs-domain-join | Check if join is alread done
+  stat:
+    path: /usr/share/pam-configs/ucs_mkhomedir
+  register: stat_ucs_mkhomedir
+
+- name: ucs-domain-join | Include ucs_domain_join.yml
+  include_tasks: ucs_domain_join.yml
+  when: not stat_ucs_mkhomedir.stat.exists
