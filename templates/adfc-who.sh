@@ -25,3 +25,27 @@ for PC in $ARBEITSPLATZ ; do
     fi
     echo ''
 done
+
+if [ "$1" == "--map" ] ; then
+    cat <<EOF
+
++++++++++++++++++++++++++++++++++++++++
+|  iMac           |     :             |
+|          Küche  |     |     WCs     |
+|                 |     ;             |
++++++++++++++ +++++     +++++++++++++++
+:   Kopierer                          :
+| - - - - - - - -                     |
+| Zaphod               Bob     ++++++++
+| Marvin               Kwaltz  | pro- |
+|                              | xmox |
+|                              :      |
+| - - - - - - - - - - - - - - +++++++++
+| Switch                              |
+| Fritzbox               Testclient   |
+|                        Trillian     |
+|                                     |
+|                                     |
++++++++++++++++++++++++++++++++++++++++
+EOF
+fi
