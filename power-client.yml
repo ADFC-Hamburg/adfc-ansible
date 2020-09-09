@@ -21,6 +21,23 @@
       var: connect_result
     when: ansible_wireless_ps_host is defined
 
+  - name: Steckdose ausschalten, falls diese noch an sein sollte
+    delegate_to: ucs-master.gst.hamburg.adfc.de
+    uri:
+      url: http://{{ ansible_wireless_ps_host }}/cm?cmnd=Power+OFF
+    when:
+      - ansible_wireless_ps_host is defined
+      - connect_result is failed
+      - command == "poweron"
+
+  - name: Warten bis Reststrom verbraucht
+    pause: 
+      seconds: 60
+    when:
+      - ansible_wireless_ps_host is defined
+      - connect_result is failed
+      - command == "poweron"
+
   - name: Einschalten
     delegate_to: ucs-master.gst.hamburg.adfc.de
     uri:
