@@ -39,7 +39,6 @@
       - ansible_wireless_ps_host is defined
       - connect_result is failed
       - command == "poweron"
-      - ansible_wireless_ps_host is defined
 
   - name: Fakten einlesen
     setup:
