@@ -1,0 +1,101 @@
+#!/bin/bash
+# {{ ansible_managed }}
+# This Script is called by cron every minute
+
+INFLUX_PW=$(cat /etc/influx.secrect)
+INFLUX_DB="telegraf"
+VB_HOST="meet"
+HCLOUD_API_HEADER="Authorization: Bearer $(cat /root/hetzner-cloud.key)"
+HCLOUD_API_SERVERS='https://api.hetzner.cloud/v1/servers'
+TIMERANGE="5m"
+
+PARTICIPANTS_TURN_ON_LIMIT="10"
+PARTICIPANTS_TURN_OFF_LIMIT="4"
+
+# Da wir immer für einen volle Stunde bezahlen, macht es macht keinen Sinn einen Server auzuschalten
+# wenn dieser z.B 62 Minuten gelaufen ist, weil wir ihn dann in den nächsten 58 Minuten ggf. wieder
+# einschalten weil es doch wieder zu voll wird
+# Auf der anderen Seite macht es auch keinen Sinn, erst in letzter Minute den Server auszuschalten, weil
+# wir noch dinge wie keys kopieren machen und dass je nachdem mal länger oder kürzer dauern kann
+#
+# Das Minute_Modulo_limit sagt wieviele Minuten verbraucht sein müssen
+MINUTE_MODULO_LIMIT="45"
+
+HCLOUD_CACHE_VALID="20" # in minutes
+CACHE_DIR="/var/cache/dynamic-jitsi-scaler/"
+
+SSH_KEY="/root/.ssh/batch"
+ANSIBLE_REPO="git://github.com/ADFC-Hamburg/adfc-ansible.git"
+ANSIBLE_DIR="/usr/local/share/adfc-ansible"
+
+ADMIN_MAIL={{ dynamic_admin_mail }}
+
+source {{ dynamic_lib }}
+
+function prep_and_run_ansible_playbook() {
+    ANSIBLE_PLAYBOOK="$1"
+    eval $(ssh-agent -t 600)
+    ssh-add -q $SSH_KEY
+    if [ -d "${ANSIBLE_DIR}"  ] ; then
+        rm -f ${ANSIBLE_DIR}
+    fi
+    git clone $ANSIBLE_REPO $ANSIBLE_DIR
+    if [ -d "${ANSIBLE_DIR}"  ] ; then
+        cd $ANSIBLE_DIR
+        run_ansible_playbook $ANSIBLE_PLAYBOOK
+        echo "RTN: $?"  >> playbook.log
+        clear_cache
+        cat playbook.log | mailx $ADMIN_MAIL -s "[adfc-jitsi] vbh01 Playbook ${ANSIBLE_PLAYBOOK} result"
+        cd ..
+        rm -rf "${ANSIBLE_DIR}"
+    fi
+    ssh-agent -k
+}
+
+function turn_server_on() {
+    prep_and_run_ansible_playbook "setup-vbh01.yml"
+}
+
+function turn_server_off() {
+    prep_and_run_ansible_playbook "delete-vbh01.yml"
+}
+
+
+mkdir -p "${CACHE_DIR}"
+
+PARTICIPANTS_MEET=$(query_participants meet)
+PARTICIPANTS_VBH01=$(query_participants vbh01)
+if [ "${PARTICIPANTS_VBH01}" == "null" ] ; then
+    PARTICIPANTS=${PARTICIPANTS_MEET}
+else
+    PARTICIPANTS=$((PARTICIPANTS_MEET + PARTICIPANTS_VBH01))
+fi
+
+HETZNER_JSON=$(query_hetzner_server |jq -r '.[] | select(.name == "vbh01.meet.adfc-intern.de")')
+if [ "${HETZNER_JSON}" = "" ] ; then
+    IS_SERVER_ON=0
+else
+    IS_SERVER_ON=1
+    CREATED=$(echo ${HETZNER_JSON} |jq -r '.created')
+    echo CRE $CREATED
+    CREATED_SEC=$(date -d "${CREATED}" +%s)
+    echo CRE_SEC $CREATED_SEC
+    NOW_SEC=$(date +%s)
+    echo NOW $(date +%s)
+    MINUTE_MODULO=$(( ((NOW_SEC - CREATED_SEC) % 3600) / 60))
+    echo Minute Modulo: $MINUTE_MODULO
+fi
+
+if [ "${IS_SERVER_ON}" == "0" ] ; then
+    if [ $PARTICIPANTS -ge $PARTICIPANTS_TURN_ON_LIMIT ] ; then
+        turn_server_on vbh01
+    fi
+else
+    if [ $PARTICIPANTS -le $PARTICIPANTS_TURN_OFF_LIMIT ] ; then
+        if [ $MINUTE_MODULO -ge $MINUTE_MODULO_LIMIT ] ; then
+            turn_server_off vbh01
+        fi
+    fi
+fi
+
+

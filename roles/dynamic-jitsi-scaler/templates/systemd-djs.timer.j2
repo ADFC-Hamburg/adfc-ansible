@@ -1,0 +1,14 @@
+# /lib/systemd/system/dyn-jitsi-scaler.timer
+[Unit]
+Description=Run Jitsi Scalter Timer
+
+[Timer]
+# Starte das ersmal 10 Minuten nach dem Booten
+OnBootSec=600
+
+# Und dann alle 90 Sekunden nachdem der Job durch ist
+OnUnitInactiveSec=90
+Persistent=false
+
+[Install]
+WantedBy=timers.target

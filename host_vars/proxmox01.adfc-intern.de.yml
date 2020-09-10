@@ -3,6 +3,7 @@ ssh_users_admins:
   - georgs
   - janb
   - adfc_intern_batch
+  - ansgarh
 
 postfix_host_email: admin@adfc-intern.de
 ipv4_netmask: 255.255.255.224
@@ -17,7 +18,8 @@ additional_ips:
 
 influxdb_host: proxmox01.adfc-intern.de
 
-
+admin_mail: sven@anders-hamburg.de
+test_admin_mail: sven@anders-hamburg.de
 
 grafana_auth_anonymous_enabled: "true"
 grafana_auth_anonymous_org_name: "ADFC Public"
