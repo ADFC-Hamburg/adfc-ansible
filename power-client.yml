@@ -21,6 +21,28 @@
       var: connect_result
     when: ansible_wireless_ps_host is defined
 
+  - name: Angemeldete User ueberpruefen
+    command: who
+    register: who_var
+    when:
+      - ansible_wireless_ps_host is defined
+      - connect_result is not failed
+
+  - name: Den Output parsen
+    set_fact:
+      users: '{{ who_var.stdout_lines | reject("match", "^root ") | list }}'
+    when:
+      - ansible_wireless_ps_host is defined
+      - connect_result is not failed
+
+  - name: Die angemeldeten Nutzer melden
+    debug:
+      var: users
+    when:
+      - ansible_wireless_ps_host is defined
+      - connect_result is not failed
+      - (users is defined) and (users | length > 0)
+
   - name: Steckdose ausschalten, falls diese noch an sein sollte
     delegate_to: ucs-master.gst.hamburg.adfc.de
     uri:
@@ -72,6 +94,8 @@
       - connect_result is not failed
       - ansible_wireless_ps_host is defined
       - command == "poweroff"
+      - (users is defined) and (users | length == 0)
+
 
   - name: Warten auf ausgeschaltet
     delegate_to: localhost
@@ -80,6 +104,7 @@
       - connect_result is not failed
       - ansible_wireless_ps_host is defined
       - command == "poweroff"
+      - (users is defined) and (users | length == 0)
 
   - name: Steckdose ausschalten
     delegate_to: ucs-master.gst.hamburg.adfc.de
@@ -89,3 +114,4 @@
       - ansible_wireless_ps_host is defined
       - connect_result is failed or command == "poweroff"
       - command != "poweron" and command != "status"
+      - (users is defined) and (users | length == 0)
