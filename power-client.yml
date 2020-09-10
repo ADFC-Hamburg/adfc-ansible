@@ -53,7 +53,7 @@
       - command == "poweron"
 
   - name: Warten bis Reststrom verbraucht
-    pause: 
+    pause:
       seconds: 60
     when:
       - ansible_wireless_ps_host is defined
