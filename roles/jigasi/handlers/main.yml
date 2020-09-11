@@ -1,0 +1,4 @@
+- name: restart jigasi
+  systemd:
+    name: jigasi
+    state: restarted

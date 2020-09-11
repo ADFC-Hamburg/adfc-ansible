@@ -54,7 +54,6 @@ jitsi_meet_default_remote_display_name: 'Mit dem Fahrrad da'
 
 jitsi_meet_configure_sip_gateway: false
 jitsi_meet_jigasi_account: sipnumber@sip-provider.name
-jitsi_meet_jigasi_password: fdi49fndKjhe3
 jitsi_meet_logo_file: "logo_allgemeiner_deutscher_fahrrad-club.png"
 jitsi_meet_watermark_file: "logo_allgemeiner_deutscher_fahrrad-club.png"
 jitsi_meet_use_stun_turn: "true"
