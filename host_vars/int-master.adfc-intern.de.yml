@@ -75,3 +75,11 @@ ssh_users_admins:
   - georgs
   - janb
   - ansgarh
+
+firewall:
+  - name: Apache https
+    port: 443
+    proto: tcp
+  - name: Apache http
+    port: 80
+    proto: tcp

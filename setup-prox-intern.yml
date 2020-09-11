@@ -7,6 +7,7 @@
     - influxdb
     - telegraf
     - grafana
+    - firewall
   tasks:
     - name: Nutze Proxmox Community Repo
       apt_repository:

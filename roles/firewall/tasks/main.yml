@@ -1,0 +1,24 @@
+- name: Create Systemd Target
+  copy:
+    src: adfc-firewall.service
+    dest: /etc/systemd/system/
+    mode: 0644
+  register: adfc_firewall_service
+
+- name: Create ADFC Firewall
+  template:
+    src: adfc-firewall.sh.j2
+    dest: /usr/local/sbin/adfc-firewall
+    mode: 0755
+  vars:
+    iptables_bin: /usr/sbin/iptables
+    ip6tables_bin: /usr/sbin/ip6tables
+  notify: restart adfc firewall
+
+- name: systemd enable
+  systemd:
+    name: adfc-firewall
+    daemon_reload: "{{ adfc_firewall_service.changed }}"
+    enabled: yes
+    state: started
+

@@ -1,3 +1,13 @@
+proxmox_id: 142
+proxmox_host: "proxmox01.adfc-intern.de"
+proxmox_net:
+  net0:
+    name: eth0
+    gw: 88.198.32.30
+    ip: 88.198.32.220/32
+    ip6: 2a01:4f8:a0:32b9::42/64
+    gw6: 2a01:4f8:a0:32b9::3
+    bridge: vmbr0
 otrs_version: 6.0.25
 # https://community.otrs.com/de/download/
 otrs_md5sum_tar_gz: 3b78844bc3cd1459ec0d7328518f7ccf
@@ -8,3 +18,14 @@ ssh_users_admins:
   - volkerk
   - martinw
   - georgs
+
+firewall:
+  - name: Apache http
+    port: 80
+    proto: tcp
+  - name: Apache https
+    port: 443
+    proto: tcp
+  - name: smtp postfix
+    port: 25
+    proto: tcp

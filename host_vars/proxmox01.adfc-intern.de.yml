@@ -15,6 +15,14 @@ additional_ips:
   - 88.198.32.217
   - 88.198.32.220
 
+firewall:
+  - name: Nginx https
+    port: 443
+    proto: tcp
+  - name: Nginx http
+    port: 80
+    proto: tcp
+firewall_test: no
 
 influxdb_host: proxmox01.adfc-intern.de
 
