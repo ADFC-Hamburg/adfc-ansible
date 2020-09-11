@@ -1,0 +1,18 @@
+- name: create german sounds dir mkdir
+  file:
+    path: "{{ asterisk_sounds_dir }}/de"
+    state: directory
+    mode: '0755'
+
+- name: unarchive base sounds
+  unarchive:
+    src: https://www.asterisksounds.org/de/download/asterisk-sounds-core-de-sln16.zip
+    dest: "{{ asterisk_sounds_dir }}/de"
+    remote_src: yes
+
+- name: unarchive extra sounds
+  unarchive:
+    src: https://www.asterisksounds.org/de/download/asterisk-sounds-extra-de-sln16.zip
+    dest: "{{ asterisk_sounds_dir }}/de"
+    remote_src: yes
+
