@@ -13,42 +13,35 @@
       timeout: 10
     register: connect_result
     ignore_errors: yes
-    when:
-      - ansible_wireless_ps_host is defined
 
   - name: Dem User sagen ob der client laeuft
     debug:
       var: connect_result
-    when: ansible_wireless_ps_host is defined
 
   - name: Angemeldete User ueberpruefen
     command: who
     register: who_var
     when:
-      - ansible_wireless_ps_host is defined
       - connect_result is not failed
 
   - name: Den Output parsen
     set_fact:
       users: '{{ who_var.stdout_lines | reject("match", "^root ") | list }}'
     when:
-      - ansible_wireless_ps_host is defined
       - connect_result is not failed
 
   - name: Die angemeldeten Nutzer melden
     debug:
       var: users
     when:
-      - ansible_wireless_ps_host is defined
       - connect_result is not failed
       - (users is defined) and (users | length > 0)
 
   - name: Steckdose ausschalten, falls diese noch an sein sollte
     delegate_to: ucs-master.gst.hamburg.adfc.de
     uri:
-      url: http://{{ ansible_wireless_ps_host }}/cm?cmnd=Power+OFF
+      url: http://{{ tasmota_wireless_ip }}/cm?cmnd=Power+OFF
     when:
-      - ansible_wireless_ps_host is defined
       - connect_result is failed
       - command == "poweron"
 
@@ -56,16 +49,14 @@
     pause:
       seconds: 60
     when:
-      - ansible_wireless_ps_host is defined
       - connect_result is failed
       - command == "poweron"
 
   - name: Einschalten
     delegate_to: ucs-master.gst.hamburg.adfc.de
     uri:
-      url: http://{{ ansible_wireless_ps_host }}/cm?cmnd=Power+ON
+      url: http://{{ tasmota_wireless_ip }}/cm?cmnd=Power+ON
     when:
-      - ansible_wireless_ps_host is defined
       - connect_result is failed
       - command == "poweron"
 
@@ -75,7 +66,6 @@
       timeout: 300
     register: after_start_connect_result
     when:
-      - ansible_wireless_ps_host is defined
       - connect_result is failed
       - command == "poweron"
 
@@ -83,7 +73,6 @@
     setup:
     when:
       - connect_result is not failed or (after_start_connect_result is not failed and after_start_connect_result is not skipped)
-      - ansible_wireless_ps_host is defined
 
   - name: Ausschalten
     command: shutdown -h now
@@ -92,7 +81,6 @@
     ignore_errors: true
     when:
       - connect_result is not failed
-      - ansible_wireless_ps_host is defined
       - command == "poweroff"
       - (users is defined) and (users | length == 0)
 
@@ -102,16 +90,14 @@
     wait_for: host={{ ansible_host }} port=22 state=stopped
     when:
       - connect_result is not failed
-      - ansible_wireless_ps_host is defined
       - command == "poweroff"
       - (users is defined) and (users | length == 0)
 
   - name: Steckdose ausschalten
     delegate_to: ucs-master.gst.hamburg.adfc.de
     uri:
-      url: http://{{ ansible_wireless_ps_host }}/cm?cmnd=Power+OFF
+      url: http://{{ tasmota_wireless_ip }}/cm?cmnd=Power+OFF
     when:
-      - ansible_wireless_ps_host is defined
       - connect_result is failed or command == "poweroff"
       - command != "poweron" and command != "status"
       - (users is defined) and (users | length == 0)
