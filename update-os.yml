@@ -7,7 +7,7 @@
   gather_facts: no
   roles:
    - update-os
- 
+
   pre_tasks:
     - name: Power on clients
       include_role:
