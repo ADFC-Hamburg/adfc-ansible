@@ -6,9 +6,9 @@
   register: connect_result
   ignore_errors: yes
 
-- name: Dem User sagen ob der client laeuft
-  debug:
-    var: connect_result
+  #  - name: Dem User sagen ob der client laeuft
+  #  debug:
+  #    var: connect_result
 
 - name: Angemeldete User ueberpruefen
   command: who
