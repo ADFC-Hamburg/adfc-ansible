@@ -16,8 +16,6 @@
 - name: check logged on users
   command: who
   register: who_var
-  when:
-    - connect_result is not failed
 
 - name: parse output
   set_fact:
