@@ -1,0 +1,4 @@
+- hosts: tasmota
+  roles:
+   - tasmota-setup
+  gather_facts: no

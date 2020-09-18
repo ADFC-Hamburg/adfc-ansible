@@ -1,0 +1,4 @@
+---
+- name: Execute tasmota fw setup script
+  shell: tasmota_fw-update.sh {{ ansible_host }}
+  delegate_to: ucs-master.gst.hamburg.adfc.de

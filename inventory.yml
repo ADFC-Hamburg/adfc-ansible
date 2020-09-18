@@ -45,3 +45,13 @@ all:
     domain_factory:
       hosts:
         status.adfc-intern.de:
+    tasmota:
+      hosts:
+        tasmota-0673:
+        tasmota-3562:
+        tasmota-3675:
+        tasmota-3720:
+        tasmota-4790:
+        tasmota-5634:
+        tasmota-6340:
+        tasmota-6745:
