@@ -8,6 +8,17 @@
     - borg-server
     - external-https
     - self-service-sms
+
+  handlers:
+    - name: ucr commit postifx main.cf
+      command: "ucr commit /etc/postfix/main.cf"
+      notify: restart postfix
+
+    - name: restart postfix
+      systemd:
+        name: postfix
+        state: restarted
+
   tasks:
     # SSH Key /root/.ssh/rsync-key ist nicht hier eingecheckt und wird nicht deployed, wegen security
     - name: copy rsync script
@@ -45,19 +56,14 @@
       template:
         src: ucs-master-sender_canonical
         dest: /etc/postfix/sender_caonical
+      tags: postfix
+
     - name: install postfix main.cf
       template:
         src: ucs-master-postfix-main.cf.local
         dest: /etc/postfix/main.cf.local
-      register: postfix_maincf
-    - name: commit postfix main.cf change
-      command: "ucr commit /etc/postfix/main.cf"
-      when: postfix_maincf.changed
-    - name: restart postfix service
-      systemd:
-        name: postfix
-        state: restarted
-      when: postfix_maincf.changed
+      notify: ucr commit postifx main.cf
+      tags: postfix
 
     - name: Copy OTRS Nagios Check
       copy:
