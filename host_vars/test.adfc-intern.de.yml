@@ -11,3 +11,29 @@ proxmox_ramsize_in_mb: 1024
 proxmox_cores: 1
 
 jitsi_meet_authentication: cyrus
+
+firewall:
+  - name: Apache http
+    port: 80
+    proto: tcp
+  - name: Apache https
+    port: 443
+    proto: tcp
+  - name: Jitsi-Videobridge TCP
+    port: 4443
+    proto: tcp
+  - name: Jitsi-Videobridge UDP
+    port: 10000
+    proto: udp
+  - name: STUN TLS
+    proto: udp
+    port: 4445
+  - name: STUN
+    proto: udp
+    port: 4446
+  - name: XMPP
+    port: 5347
+    proto: tcp
+  - name: prosody
+    port: 5222
+    proto: tcp

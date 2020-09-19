@@ -1,0 +1,5 @@
+asterisk_sounds_dir: /usr/share/asterisk/sounds
+install_asterisk_sounds:
+    - "conf-pin-oder-1111-fuer-datenschutz.alaw"
+    - "datenschutz.alaw"
+    - "welcome-adfc.alaw"

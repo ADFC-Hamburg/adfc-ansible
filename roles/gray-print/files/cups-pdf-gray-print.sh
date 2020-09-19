@@ -6,5 +6,5 @@
 #echo $@ >>/tmp/pdfprint
 #export >>/tmp/pdfprint
 
-lp -d bizhub_C220 $1
+lp -o InputSlot=Tray1  -d bizhub_C220 $1 >/tmp/pdfprint 2>&1
 rm $1

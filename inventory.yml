@@ -17,7 +17,6 @@ all:
                 test.adfc-intern.de:
             meet_vb:
               hosts:
-                vb01.test.adfc-intern.de:
                 vbh01.meet.adfc-intern.de:
             meet_test:
               hosts:

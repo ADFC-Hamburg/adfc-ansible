@@ -1,0 +1,10 @@
+# Jigasi settings
+JIGASI_SIPUSER=
+JIGASI_SIPPWD=
+JIGASI_SECRET=KrS37yrT
+JIGASI_OPTS="--nocomponent=true "
+JIGASI_HOSTNAME={{ inventory_hostname }}
+JIGASI_HOST=localhost
+
+# adds java system props that are passed to jigasi (default are for logging config file)
+JAVA_SYS_PROPS="-Djava.util.logging.config.file=/etc/jitsi/jigasi/logging.properties"

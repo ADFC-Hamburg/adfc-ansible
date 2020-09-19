@@ -9,3 +9,81 @@ proxmox_net:
     bridge: vmbr0
 proxmox_ramsize_in_mb: 10240
 proxmox_cores: 9
+
+firewall:
+  - name: Apache http
+    port: 80
+    proto: tcp
+  - name: Apache https
+    port: 443
+    proto: tcp
+  - name: Jitsi-Videobridge TCP
+    port: 4443
+    proto: tcp
+  - name: Jitsi-Videobridge UDP
+    port: 10000
+    proto: udp
+  - name: STUN TLS
+    proto: udp
+    port: 4445
+  - name: STUN
+    proto: udp
+    port: 4446
+  - name: XMPP
+    port: 5347
+    proto: tcp
+  - name: prosody
+    port: 5222
+    proto: tcp
+  - name: Asterisk
+    port: 5061
+    proto: udp
+    src:
+      - 217.10.64.0/20
+      - 217.116.112.0/20
+      - 212.9.32.0/19
+  - name: Asterisk RTP
+    port_range:
+      start: 10000
+      end: 20000
+    proto: udp
+    src:
+      - 217.116.112.0/20
+      - 217.10.64.0/20
+asterisk_ip: 88.198.32.212
+
+asterisk_cfg:
+  sipgate:
+    - number: "{{ sipgate_adfc_hh_number }}"
+      password: "{{ sipgate_adfc_hh_password }}"
+  extensions:
+    - phone: jigasy
+      number: 201
+      secret: geheim
+
+# https://basicsupport.sipgate.de/hc/de/articles/207426705-IP-Port-Bereiche-von-sipgate
+asterisk_sip_ips:
+  - 217.10.64.0/20
+  - 217.116.112.0/20
+  - 212.9.32.0/19
+
+jitsi_meet_configure_sip_gateway: true
+jitsi_meet_jigasi_account: jigasi@meet.adfc-intern.de
+jitsi_meet_jigasi_port: 5061
+
+asterisk_rooms:
+  1042:
+    name: admin
+  1043:
+    name: admin
+    pin: yes
+  1001:
+    name: adfc-berlin
+  1002:
+    name: adfc-bezie
+  1003:
+    name: adfc_hamburg_akgps_team
+  1004:
+    name: landesversammlunghh
+  1005:
+    name: adfchh
