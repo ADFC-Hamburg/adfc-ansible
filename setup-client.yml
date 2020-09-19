@@ -15,6 +15,14 @@
   - janrufmonitor
   - links-on-desktop
   - client-apt-remove
+  handlers:
+  - name: XnViewMP manuell installieren
+    apt:
+      deb: "/usr/local/share/ansible_downloads/XnViewMP-linux-x64.deb"
+
+  - name: PDF-Editor manuell installieren
+    apt:
+      deb: "/usr/local/share/ansible_downloads/{{ deb_name_master_pdf_editor }}"
 
   tasks:
 
@@ -122,20 +130,16 @@
     get_url:
       url: http://download.xnview.com/XnViewMP-linux-x64.deb
       dest: /usr/local/share/ansible_downloads/XnViewMP-linux-x64.deb
-    register: xnview_download
-  - name: XnViewMP manuell installieren
-    apt: deb="/usr/local/share/ansible_downloads/XnViewMP-linux-x64.deb"
-    when: xnview_download.changed
+    notify: XnViewMP manuell installieren
+    tags: xnviewmp, software
 
 # Master-PDF-Editor installieren
   - name: PDF-Editor manuell runterladen
     get_url:
       url: https://code-industry.net/public/{{ deb_name_master_pdf_editor }}
       dest: /usr/local/share/ansible_downloads/{{ deb_name_master_pdf_editor }}
-    register: pdfeditor_download
-  - name: PDF-Editor manuell installieren
-    apt: deb="/usr/local/share/ansible_downloads/{{ deb_name_master_pdf_editor }}"
-    when: pdfeditor_download.changed
+    notify: PDF-Editor manuell installieren
+    tags: pdfeditor, software
 
   - name: Pruefe Freemind-snap
     stat:
