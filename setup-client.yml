@@ -15,7 +15,7 @@
   - janrufmonitor
   - links-on-desktop
   - client-apt-remove
-  - gdm
+  - gdm_desktoptheme
   handlers:
   - name: XnViewMP manuell installieren
     apt:
