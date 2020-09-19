@@ -1,2 +1,3 @@
 ansible_ssh_common_args: '-o ProxyCommand="ssh -W %h:%p -q root@babelfish.spdns.de -p 822"'
 ansible_host: 192.168.123.25
+#tasmota_wireless_ip: 192.168.x.x
