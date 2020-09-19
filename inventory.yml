@@ -4,7 +4,6 @@ all:
       hosts:
         proxmox01.gst.hamburg.adfc.de:
         ucs-master.gst.hamburg.adfc.de:
-        babelfish.gst.hamburg.adfc.de:
         tools.adfc-hamburg.de:
         proxmox01.adfc-intern.de:
         int-master.adfc-intern.de:
