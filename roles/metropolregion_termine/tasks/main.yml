@@ -1,0 +1,53 @@
+- name: Create user
+  user:
+    name: metroterm
+    comment: Metropolregion Termin
+    shell: /bin/bash
+    password: '*'
+    system: yes
+
+- name: Git clone
+  git:
+    repo: "{{ metropolregion_termine_git_repo }}"
+    dest: "/home/metroterm/metropolregion_termine_git"
+    version: "{{ metropolregion_termine_git_version }}"
+  become: yes
+  become_user: metroterm
+
+- name: Create Dest Dir
+  file:
+    path: "{{ metropolregion_termine_www_dest_dir }}"
+    mode: 0755
+    owner: metroterm
+    group: www-data
+    state: directory
+
+- name: Copy locs.json
+  copy:
+    src: locs.json
+    dest: "/home/metroterm/metropolregion_termine_git/venv/src"
+    mode: 0644
+    owner: metroterm
+    group: metroterm
+
+- name: Create command
+  template:
+    src: metropol_run.sh.j2
+    dest: "/home/metroterm/run_daily.sh"
+    mode: "0700"
+    owner: metroterm
+    group: metroterm
+
+- name: Test call
+  command: "/home/metroterm/run_daily.sh"
+  become: yes
+  become_user: metroterm
+
+- name: Cron Job um 23:17 Uhr
+  cron:
+    name: "Metropolregion Termine"
+    minute: "17"
+    hour: "23"
+    user: metroterm
+    cron_file: metropolregion_termine
+    job: "/home/metroterm/run_daily.sh"
