@@ -18,7 +18,7 @@ jobs:
     - name: install ansible-lint
       run: |
        pip install --upgrade setuptools wheel
-       pip install ansible-lint ansible
+       pip install ansible-lint=4.2.0 ansible=2.9.14
     - name: Checkout
       uses: actions/checkout@v2
     - name: Fetch Roles Ansible-Galaxy
