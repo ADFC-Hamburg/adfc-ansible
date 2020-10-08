@@ -13,13 +13,15 @@ jobs:
     runs-on: ubuntu-18.04
 
     steps:
+    - name: delete ansible
+      run: sudo apt purge ansible
     - name: install ansible-lint
       run: |
        pip install --upgrade setuptools wheel
-       pip install ansible-lint ansible
+       pip install ansible-lint==4.2.0 ansible==2.9.14
     - name: Checkout
       uses: actions/checkout@v2
     - name: Fetch Roles Ansible-Galaxy
-      run: ansible-galaxy install -r requirements.yml
+      run: ~/.local/bin/ansible-galaxy install -r requirements.yml
     - name: lint files
       run: ~/.local/bin/ansible-lint --exclude=/home/runner/.ansible/roles/jnv.unattended-upgrades/ -x '301,701' *.yml
