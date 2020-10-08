@@ -22,6 +22,6 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
     - name: Fetch Roles Ansible-Galaxy
-      run: ansible-galaxy install -r requirements.yml
+      run: ~/.local/bin/ansible-galaxy install -r requirements.yml
     - name: lint files
       run: ~/.local/bin/ansible-lint --exclude=/home/runner/.ansible/roles/jnv.unattended-upgrades/ -x '503,301,701' *.yml
