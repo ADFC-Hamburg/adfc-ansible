@@ -22,14 +22,6 @@
     group: www-data
     state: directory
 
-- name: Copy locs.json
-  copy:
-    src: locs.json
-    dest: "/home/metroterm/metropolregion_termine_git/venv/src"
-    mode: 0644
-    owner: metroterm
-    group: metroterm
-
 - name: Create command
   template:
     src: metropol_run.sh.j2
