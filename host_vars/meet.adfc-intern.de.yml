@@ -89,3 +89,5 @@ asterisk_rooms:
     name: adfchh
   2001:
     name: NDS_AKMobi
+  2002:
+    name: NDS_Landesvorstand
