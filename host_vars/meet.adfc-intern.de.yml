@@ -97,3 +97,7 @@ asterisk_rooms:
     name: KV_OL
   2005:
     name: KV_WOB
+  2006:
+    name: KV_Hildesheim
+  2007:
+    name: NDS_Allgemein
