@@ -91,3 +91,10 @@ asterisk_rooms:
     name: NDS_AKMobi
   2002:
     name: NDS_Landesvorstand
+  2003:
+    name: KV_Ammer
+  2004:
+    name: KV_OL
+  2005:
+    name: KV_WOB	
+KV_WOB			2005
