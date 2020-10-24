@@ -1,5 +1,5 @@
 metropolregion_termine_git_repo: "https://github.com/michaelu123/adfc2"
-metropolregion_termine_git_version: "13a2acea3c6be4c10e6b2714e2fe03ae30cd4923"
+metropolregion_termine_git_version: "4bc398e9c2e1f295ffd694a45c4d4f57275a949b"
 metropolregion_termine_www_dest_dir: /var/www/html/metropolregion_termine
 metropolregion_termine_zeitraum: 90
 metropolregion_termine_regio_ids:
