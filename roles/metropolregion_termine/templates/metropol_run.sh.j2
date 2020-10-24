@@ -1,0 +1,10 @@
+#!/bin/bash
+cd /home/metroterm/metropolregion_termine_git/venv/src
+echo start $(date) >run.log
+/usr/bin/python3 tp2vadb.py --aktuell \
+   {{ metropolregion_termine_regio_ids | map(attribute='id') | sort | join(',') }} >>run.log 2>&1
+echo EXIT: $? >> run.log
+echo stop $(date) >>run.log
+cp run.log adfc.log unknown_locs.json ADFC-VADB.xml "{{ metropolregion_termine_www_dest_dir }}"
+rm -rf /tmp/tpjson/
+date > "{{ metropolregion_termine_www_dest_dir }}/lastrun.txt"
