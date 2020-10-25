@@ -101,3 +101,7 @@ asterisk_rooms:
     name: KV_Hildesheim
   2007:
     name: NDS_Allgemein
+  2008:
+    name: NDS_Ausbilder
+  2009:
+    name: KV_GOE
