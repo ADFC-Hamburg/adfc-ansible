@@ -98,10 +98,13 @@ asterisk_rooms:
   2005:
     name: KV_WOB
   2006:
-    name: KV_Hildesheim
+    name: KV_HI
   2007:
     name: NDS_Allgemein
   2008:
     name: NDS_Ausbilder
   2009:
     name: KV_GOE
+  2010:
+    name: KV_HM
+    
