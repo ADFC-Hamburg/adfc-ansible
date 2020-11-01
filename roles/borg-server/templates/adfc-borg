@@ -248,10 +248,19 @@ borg_key_export() {
 
 }
 borg_list() {
+    RED='\033[0;31m'
+    GREEN='\033[0;32m'
+    # NC = NO COLOR
+    NC='\033[0m'
+
     RECHNER="$1"
-    echo "Liste der Backups auf ${RECHNER}:"
-    borg_create_ssh_option_file "${RECHNER}"
-    BORG_RSH="ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf" borg list $(borg_repo "${RECHNER}")
+    if [ "$(borg_is_active $RECHNER )" == "1" ] ; then
+        echo "Liste der Backups auf ${RECHNER}:"
+        borg_create_ssh_option_file "${RECHNER}"
+        BORG_RSH="ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf" borg list $(borg_repo "${RECHNER}")
+    else
+        echo -e "${RED}FEHLER:${NC} Rechner $RECHNER nicht verbunden" 1>&2
+    fi
 }
 
 borg_mount() {
