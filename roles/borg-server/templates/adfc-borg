@@ -24,7 +24,11 @@ export BORG_PASSPHRASE=""
 
 borg_last_connect() {
     RECHNER="$1"
-    echo "$(( $( date +%s) - $(stat -c "%Y" /run/client-${RECHNER}.up )))"
+    if [ -f "/run/client-${RECHNER}.up" ] ; then
+        echo "$(( $( date +%s) - $(stat -c "%Y" /run/client-${RECHNER}.up )))"
+    else
+        date "+%s"
+    fi
 }
 
 borg_is_active() {
