@@ -26,13 +26,13 @@
     dest: /etc/postfix/sender_canonical
     mode: 0640
 
-- name: Get Client Auth from Matser
+- name: get client Auth from master
   slurp:
     src: /etc/ansible/secrets/smtp_client_auth
   delegate_to: ucs-master.gst.hamburg.adfc.de
   register: SMTP_AUTH
 
-- name: Create SMTP Client Auth
+- name: create SMTP client Auth
   copy:
     content: "{{ SMTP_AUTH.content |b64decode }}"
     dest: /etc/postfix/smtp_auth
@@ -40,13 +40,13 @@
     owner: root
     group: root
 
-- name: Do postmap on smtp_auth
+- name: do postmap on smtp_auth
   command: /usr/sbin/postmap /etc/postfix/smtp_auth
   args:
     creates: /etc/postfix/smtp_auth.db
   register: postmap
 
-- name: Getnotfication-Emailaddress
+- name: get notfication-emailaddress
   slurp:
     src: /etc/ansible/secrets/mailingliste.txt
   delegate_to: ucs-master.gst.hamburg.adfc.de
@@ -59,7 +59,7 @@
     line: "root: {{ MAILINGLISTE.content |b64decode  |replace('\n', '') }}"
   register: aliases_changed
 
-- name: Do newaliases
+- name: do newaliases
   command: /usr/bin/newaliases
   when: aliases_changed.changed
 
