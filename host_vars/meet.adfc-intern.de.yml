@@ -107,7 +107,9 @@ asterisk_rooms:
     name: KV_GOE
   2010:
     name: KV_HM
-  3001:  
+  2011:
+    name: BezirksgruppeHamburgHarburg
+  3001:
     name: ADFCNRWThemenaustausch
   3002:
     name: ADFCNRWLandeshauptausschuss
