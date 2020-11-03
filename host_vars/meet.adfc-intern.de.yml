@@ -113,3 +113,7 @@ asterisk_rooms:
     name: ADFCNRWThemenaustausch
   3002:
     name: ADFCNRWLandeshauptausschuss
+  4001:
+    name: htk-kreisvorstand
+  4002:
+    name: ADFC-RadlertreffOberursel-Steinbach
