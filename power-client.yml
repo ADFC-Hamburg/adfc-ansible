@@ -6,6 +6,7 @@
     - name: command
       prompt: "Befehl eingeben: (status, poweroff, poweron)"
       default: "status"
+      private: no
 
   tasks:
     - name: Tasmota Power Rolle starten
