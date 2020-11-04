@@ -354,3 +354,10 @@
       validate: '/usr/sbin/visudo -cf %s'
       mode: 0440
     tags: sudo
+
+  - name: Erlaube Zugriff auf video,audio etc.
+    template:
+      src: group.conf.j2
+      dest: /etc/security/group.conf
+      mode: 0644
+    tags: video-dev
