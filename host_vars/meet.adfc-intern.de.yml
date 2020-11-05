@@ -117,3 +117,11 @@ asterisk_rooms:
     name: htk-kreisvorstand
   4002:
     name: ADFC-RadlertreffOberursel-Steinbach
+  4003:
+    name: ADFC-Bergstrasse
+  4004:
+    name: radentscheid-ffm-plenum
+  4005:
+    name: adfcffm_kv_sitzung
+  4006:
+    name: adfc_hessen_lv_sitzung
