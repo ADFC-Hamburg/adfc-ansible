@@ -109,6 +109,10 @@ asterisk_rooms:
     name: KV_HM
   2011:
     name: BezirksgruppeHamburgHarburg
+  2012:
+    name: KV_NI
+  2013:
+    name: KH_Harburg
   3001:
     name: ADFCNRWThemenaustausch
   3002:
