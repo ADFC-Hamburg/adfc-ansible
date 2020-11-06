@@ -113,6 +113,8 @@ asterisk_rooms:
     name: KV_NI
   2013:
     name: KV_Harburg
+  2014:
+    name: KV_SHG
   3001:
     name: ADFCNRWThemenaustausch
   3002:
