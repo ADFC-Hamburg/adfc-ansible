@@ -85,6 +85,14 @@
     - command == "poweroff"
     - (users is defined) and (users | length == 0)
 
+- name: Warte bis richtig heruntergefahren
+  pause:
+    seconds: 30
+  when:
+    - connect_result is failed or command == "poweroff"
+    - command != "poweron" and command != "status"
+    - (users is defined) and (users | length == 0)
+
 - name: Steckdose ausschalten
   delegate_to: ucs-master.gst.hamburg.adfc.de
   uri:
