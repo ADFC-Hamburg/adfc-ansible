@@ -7,7 +7,7 @@
     hcloud_test: false
 
 - name: Setup Videobridge
-  hosts: vbh01.meet.adfc-intern.de
+  hosts: vbh02.meet.adfc-intern.de
   gather_facts: yes
   roles:
     - ssh-keys
