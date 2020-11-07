@@ -6,5 +6,5 @@
       include_role:
         name: tasmota-power
       vars:
-        command: "poweron"
+        command: "poweroff"
       when: tasmota_wireless_ip is defined
