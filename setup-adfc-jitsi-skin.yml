@@ -1,0 +1,9 @@
+- hosts: meet_server
+  gather_facts: yes
+  roles:
+    - adfc_jitsi_skin
+#    - udelarinterior.jitsi_meet
+  tasks:
+    - name: test
+      debug:
+        msg: "Hello world"

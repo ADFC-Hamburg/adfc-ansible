@@ -1,0 +1,9 @@
+github_api_url: "https://api.github.com"
+adfc_repo: "ADFC-Hamburg/jitsi-meet"
+adfc_jitsi_workflow_id: 1370254
+adfc_jitsi_branch: "adfc-devel"
+adfc_repo_url: "{{ github_api_url }}/repos/{{ adfc_repo }}"
+jitsi_completed_workflow_jobs_url: "{{ adfc_repo_url }}/actions/workflows/{{
+  adfc_jitsi_workflow_id }}/runs?branch={{ adfc_jitsi_branch }}&status=completed"
+jitsi_branch_ref_url: "{{ adfc_repo_url }}/git/ref/heads/{{ adfc_jitsi_branch }}"
+adfc_share_dir: "/usr/local/share/adfc"
