@@ -2,15 +2,13 @@
 # {{ ansible_managed }}
 # This Script is called by cron every minute
 
+{% set videobridges = [ 'vbh01.meet.adfc-intern.de', 'vbh02.meet.adfc-intern.de'] %}
 INFLUX_PW=$(cat /etc/influx.secrect)
 INFLUX_DB="telegraf"
 VB_HOST="meet"
 HCLOUD_API_HEADER="Authorization: Bearer $(cat /root/hetzner-cloud.key)"
 HCLOUD_API_SERVERS='https://api.hetzner.cloud/v1/servers'
 TIMERANGE="5m"
-
-PARTICIPANTS_TURN_ON_LIMIT="10"
-PARTICIPANTS_TURN_OFF_LIMIT="4"
 
 # Da wir immer für einen volle Stunde bezahlen, macht es macht keinen Sinn einen Server auzuschalten
 # wenn dieser z.B 62 Minuten gelaufen ist, weil wir ihn dann in den nächsten 58 Minuten ggf. wieder
@@ -34,6 +32,7 @@ source {{ dynamic_lib }}
 
 function prep_and_run_ansible_playbook() {
     ANSIBLE_PLAYBOOK="$1"
+    LIMIT_HOST="$2"
     eval $(ssh-agent -t 600)
     ssh-add -q $SSH_KEY
     if [ -d "${ANSIBLE_DIR}"  ] ; then
@@ -42,10 +41,10 @@ function prep_and_run_ansible_playbook() {
     git clone $ANSIBLE_REPO $ANSIBLE_DIR
     if [ -d "${ANSIBLE_DIR}"  ] ; then
         cd $ANSIBLE_DIR
-        run_ansible_playbook $ANSIBLE_PLAYBOOK
+        run_ansible_playbook $ANSIBLE_PLAYBOOK $LIMIT_HOST
         echo "RTN: $?"  >> playbook.log
         clear_cache
-        cat playbook.log | mailx $ADMIN_MAIL -s "[adfc-jitsi] vbh01 Playbook ${ANSIBLE_PLAYBOOK} result"
+        cat playbook.log | mailx $ADMIN_MAIL -s "[adfc-jitsi] $LIMIT_HOST Playbook ${ANSIBLE_PLAYBOOK} result"
         cd ..
         rm -rf "${ANSIBLE_DIR}"
     fi
@@ -53,25 +52,39 @@ function prep_and_run_ansible_playbook() {
 }
 
 function turn_server_on() {
-    prep_and_run_ansible_playbook "setup-vbh01.yml"
+    LIMIT_HOST=$1
+    prep_and_run_ansible_playbook "setup-meet-vb.yml" $LIMIT_HOST
 }
 
 function turn_server_off() {
-    prep_and_run_ansible_playbook "delete-vbh01.yml"
+    LIMIT_HOST=$1
+    prep_and_run_ansible_playbook "delete-meet-vb.yml" $LIMIT_HOST
 }
 
+function safe_query_participants() {
+    SERVER=$1
+    RTN=$(query_participants $SERVER)
+    if [ "${RTN}" == "NULL" ] ; then
+        echo 0
+    else
+        echo $RTN
+    fi
+}
 
 mkdir -p "${CACHE_DIR}"
 
-PARTICIPANTS_MEET=$(query_participants meet)
-PARTICIPANTS_VBH01=$(query_participants vbh01)
-if [ "${PARTICIPANTS_VBH01}" == "null" ] ; then
-    PARTICIPANTS=${PARTICIPANTS_MEET}
-else
-    PARTICIPANTS=$((PARTICIPANTS_MEET + PARTICIPANTS_VBH01))
-fi
+PARTICIPANTS=$(safe_query_participants meet)
+{% for videobridge in videobridges %}
+PARTICIPANTS_VB=$(safe_query_participants {{ videobridge |regex_replace('\..*','') }})
+PARTICIPANTS=$((PARTICIPANTS + PARTICIPANTS_VB))
+{% endfor %}
 
-HETZNER_JSON=$(query_hetzner_server |jq -r '.[] | select(.name == "vbh01.meet.adfc-intern.de")')
+
+{% for videobridge in videobridges %}
+# --------------------------------------------------------------------------------------
+# Test fuer {{ videobridge}}
+# --------------------------------------------------------------------------------------
+HETZNER_JSON=$(query_hetzner_server |jq -r '.[] | select(.name == "{{ videobridge }}")')
 if [ "${HETZNER_JSON}" = "" ] ; then
     IS_SERVER_ON=0
 else
@@ -87,15 +100,15 @@ else
 fi
 
 if [ "${IS_SERVER_ON}" == "0" ] ; then
-    if [ $PARTICIPANTS -ge $PARTICIPANTS_TURN_ON_LIMIT ] ; then
-        turn_server_on vbh01
+    if [ $PARTICIPANTS -ge {{ hostvars[videobridge]['dynamic_jitsi_scaler_turn_on']['participants'] }} ] ; then
+        turn_server_on {{ videobridge }}
     fi
 else
-    if [ $PARTICIPANTS -le $PARTICIPANTS_TURN_OFF_LIMIT ] ; then
+    if [ $PARTICIPANTS -le {{ hostvars[videobridge]['dynamic_jitsi_scaler_turn_off']['participants'] }} ] ; then
         if [ $MINUTE_MODULO -ge $MINUTE_MODULO_LIMIT ] ; then
-            turn_server_off vbh01
+            turn_server_off {{ videobridge }}
         fi
     fi
 fi
-
+{% endfor %}
 

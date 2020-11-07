@@ -11,6 +11,12 @@ jitsi_meet_jvb_cfg_java_jvb_props:
    - "--subdomain=vbh01"
    - "--apis=rest"
 
+dynamic_jitsi_scaler_turn_on:
+  participants: 10
+  conferences: 1
 
+dynamic_jitsi_scaler_turn_off:
+  participants: 4
+  conferences: 2
 
 

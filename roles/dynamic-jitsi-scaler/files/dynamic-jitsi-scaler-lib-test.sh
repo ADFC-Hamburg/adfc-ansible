@@ -1,8 +1,9 @@
 
 function run_ansible_playbook() {
     ANSIBLE_PLAYBOOK="$1"
-    echo ansible-playbook -v $ANSIBLE_PLAYBOOK > playbook.log
-    touch /tmp/dyn_jitsi_playbook-$ANSIBLE_PLAYBOOK
+    LIMIT_HOST="$2"
+    echo ansible-playbook -v -l $LIMIT_HOST $ANSIBLE_PLAYBOOK > playbook.log
+    touch /tmp/dyn_jitsi_playbook-$LIMIT_HOST-$ANSIBLE_PLAYBOOK
 }
 
 function query_participants() {

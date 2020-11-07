@@ -2,7 +2,8 @@
 
 function run_ansible_playbook() {
     ANSIBLE_PLAYBOOK="$1"
-    ansible-playbook -v $ANSIBLE_PLAYBOOK > playbook.log
+    LIMIT_HOST="$2"
+    ansible-playbook -v -l $LIMIT_HOST $ANSIBLE_PLAYBOOK > playbook.log
 }
 
 function query_participants() {

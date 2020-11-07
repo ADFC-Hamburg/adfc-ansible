@@ -18,13 +18,13 @@
 
 - name: "dynamic-jitsi-sclaer |  test {{ testcase.name }} | check setup playbook is {{ testcase.result.playbook_setup }}"
   stat:
-    path: /tmp/dyn_jitsi_playbook-setup-vbh01.yml
+    path: /tmp/dyn_jitsi_playbook-vbh01.meet.adfc-intern.de-setup-meet-vb.yml
   register: mystat
   failed_when: mystat.stat.exists != testcase.result.playbook_setup
 
 - name: "dynamic-jitsi-sclaer |  test {{ testcase.name }} | check delete playbook is {{ testcase.result.playbook_delete }}"
   stat:
-    path: /tmp/dyn_jitsi_playbook-delete-vbh01.yml
+    path: /tmp/dyn_jitsi_playbook-vbh01.meet.adfc-intern.de-delete-meet-vb.yml
   register: mystat
   failed_when: mystat.stat.exists != testcase.result.playbook_delete
 

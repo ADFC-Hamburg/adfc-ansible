@@ -10,3 +10,11 @@ hcloud_floating_ips:
 jitsi_meet_jvb_cfg_java_jvb_props:
    - "--subdomain=vbh02"
    - "--apis=rest"
+
+dynamic_jitsi_scaler_turn_on:
+  participants: 20
+  conferences: 3
+
+dynamic_jitsi_scaler_turn_off:
+  participants: 10
+  conferences: 2
