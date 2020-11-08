@@ -110,15 +110,11 @@ if [ "${HETZNER_JSON}" = "" ] ; then
     IS_SERVER_ON=0
 else
     IS_SERVER_ON=1
-    echo === {{ videobridge}} ===
     CREATED=$(echo ${HETZNER_JSON} |jq -r '.created')
-    echo CRE $CREATED
     CREATED_SEC=$(date -d "${CREATED}" +%s)
-    echo CRE_SEC $CREATED_SEC
     NOW_SEC=$(date +%s)
-    echo NOW $(date +%s)
     MINUTE_MODULO=$(( ((NOW_SEC - CREATED_SEC) % 3600) / 60))
-    echo Minute Modulo: $MINUTE_MODULO
+    echo {{ videobridge}} CRE $CREATED CRE_SEC $CREATED_SEC  NOW $(date +%s)  Minute Modulo: $MINUTE_MODULO
 fi
 
 if [ "${IS_SERVER_ON}" == "0" ] ; then
