@@ -37,14 +37,14 @@
     sha: "{{ github_sha.json.object.sha }}"
     github_token: "{{ github_token_slurp.content |b64decode |trim }}"
     jitsi_meet_packages: "{{ ansible_facts.packages['jitsi-meet-web'] }}"
-    job_id: "{{ github_jobs.json.workflow_runs |selectattr('head_sha', 'equalto', github_sha.json.object.sha) | map(attribute='id') | list | first}}"
+    job_id: "{{ github_jobs.json.workflow_runs |selectattr('head_sha', 'equalto', github_sha.json.object.sha) | map(attribute='id') | list | first }}"
 
 - name: Write sha hash to file
   copy:
     content: "{{ sha }}"
     dest: "{{  adfc_share_dir }}/jitsi-web.git_hash"
   register: jitsi_web_write_sha
-
+  check_mode: yes
 
 - name: Download and install
   include_tasks: download_and_install.yml
