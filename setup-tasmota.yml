@@ -1,4 +1,13 @@
+---
 - hosts: tasmota
-  roles:
-   - tasmota-setup
   gather_facts: no
+
+  vars_prompt:
+  - name: command
+    prompt: "Befehl eingeben: (setrules, deleterules)"
+    private: no
+
+  tasks:
+    - name: Tasmota Setup durchführen
+      include_role:
+        name: tasmota-setup
