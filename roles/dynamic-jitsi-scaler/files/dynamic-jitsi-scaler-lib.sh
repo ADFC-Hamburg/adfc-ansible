@@ -18,12 +18,12 @@ function query_influx() {
 
 function query_participants() {
     SERVER="$1"
-    query_influx ${SERVER} "round(mean(\"participants\"))"
+    query_influx ${SERVER} "round(max(\"participants\"))"
 }
 
 function query_conferences() {
     SERVER="$1"
-    query_influx ${SERVER} "round(mean(\"conferences\"))"
+    query_influx ${SERVER} "round(max(\"conferences\"))"
 }
 
 function query_hetzner_server() {
