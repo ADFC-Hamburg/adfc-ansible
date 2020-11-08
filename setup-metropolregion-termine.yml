@@ -1,0 +1,3 @@
+- hosts: tools.adfc-hamburg.de
+  roles:
+   - metropolregion_termine

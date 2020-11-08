@@ -1,4 +1,5 @@
 - hosts: arbeitsplatz
+  gather_facts: no
   roles:
   - ubuntu-basic
   - ssh-keys
@@ -15,6 +16,25 @@
   - janrufmonitor
   - links-on-desktop
   - client-apt-remove
+
+  pre_tasks:
+    - name: Power on clients
+      include_role:
+        name: tasmota-power
+      vars:
+        "command": "poweron"
+      when: tasmota_wireless_ip is defined
+
+    - name: Fakten einlesen
+      setup:
+
+  post_tasks:
+    - name: Poweroff unused clients
+      include_role:
+        name: tasmota-power
+      vars:
+        "command": "poweroff"
+      when: tasmota_wireless_ip is defined
 
   tasks:
 

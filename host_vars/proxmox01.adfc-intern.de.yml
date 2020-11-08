@@ -22,6 +22,9 @@ firewall:
   - name: Nginx http
     port: 80
     proto: tcp
+  - name: Influxdb
+    port: 8086
+    proto: tcp
 firewall_test: no
 
 influxdb_host: proxmox01.adfc-intern.de

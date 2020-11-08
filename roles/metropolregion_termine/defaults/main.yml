@@ -1,0 +1,41 @@
+metropolregion_termine_git_repo: "https://github.com/michaelu123/adfc2"
+metropolregion_termine_git_version: "4bc398e9c2e1f295ffd694a45c4d4f57275a949b"
+metropolregion_termine_www_dest_dir: /var/www/html/metropolregion_termine
+metropolregion_termine_zeitraum: 90
+metropolregion_termine_regio_ids:
+    - name: Hamburg
+      id: 158
+    - name: Cuxhaven
+      id: 162260
+    - name: Pinneberg
+      id: 170545
+    - name: Pinneberg (alt)
+      id: 170540
+    - name: LK Harburg
+      id: 162270
+    - name: Uelzen
+      id: 162291
+    - name: Lüneburg
+      id: 162290
+    - name: Neumüsnter
+      id: 170382
+    - name: Schwerin
+      id: 140004
+    - name: Lauenburg
+      id: 170180
+    - name: Lüchow Dannenberg
+      id: 162280
+    - name: Bad Segeberg
+      id: 170387
+    - name: Stade
+      id: 162330
+    - name: Steinburg
+      id: 170550
+    - name: Storman
+      id: 170291
+    - name: Heidekreis
+      id: 162320
+    - name: Ostholtstein
+      id: 170370
+    - name: Rotenburg
+      id: 162310
