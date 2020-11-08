@@ -2,21 +2,19 @@ hcloud_image: debian-10
 # cx11 kleinster Server mit einer CPU für Tests
 # ccx31 8 Dedicierte VCPUs 32 GB RAM
 hcloud_server_type: "{{ 'cx11' if hcloud_test else 'ccx31' }}"
-hcloud_server_location: nbg1
+hcloud_server_location: fsn1
 hcloud_floating_ips:
-  - vhb01.meet-ipv4
-  - vhb01.meet-ipv6
+  - vhb02.meet-ipv4
+  - vhb02.meet-ipv6
 
 jitsi_meet_jvb_cfg_java_jvb_props:
-   - "--subdomain=vbh01"
+   - "--subdomain=vbh02"
    - "--apis=rest"
 
 dynamic_jitsi_scaler_turn_on:
-  participants: 10
-  conferences: 1
+  participants: 20
+  conferences: 3
 
 dynamic_jitsi_scaler_turn_off:
-  participants: 4
+  participants: 10
   conferences: 2
-
-

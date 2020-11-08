@@ -8,6 +8,26 @@
     dest: /tmp/dyn_jitsi_query_participants-vbh01.txt
     content: "{{ testcase.participants.vbh01 }}"
 
+- name: "dynamic-jitsi-sclaer |  test {{ testcase.name }} | set vbh participants"
+  copy:
+    dest: /tmp/dyn_jitsi_query_participants-vbh02.txt
+    content: "{{ testcase.participants.vbh02 }}"
+
+- name: "dynamic-jitsi-sclaer |  test {{ testcase.name }} | set meet conferences"
+  copy:
+    dest: /tmp/dyn_jitsi_query_conferences-meet.txt
+    content: "{{ testcase.conferences.meet }}"
+
+- name: "dynamic-jitsi-sclaer |  test {{ testcase.name }} | set vbh participants"
+  copy:
+    dest: /tmp/dyn_jitsi_query_conferences-vbh01.txt
+    content: "{{ testcase.conferences.vbh01 }}"
+
+- name: "dynamic-jitsi-sclaer |  test {{ testcase.name }} | set vbh participants"
+  copy:
+    dest: /tmp/dyn_jitsi_query_conferences-vbh02.txt
+    content: "{{ testcase.conferences.vbh02 }}"
+
 - name: "dynamic-jitsi-sclaer |  test {{ testcase.name }} | set hetzner result"
   copy:
     dest: /tmp/dyn_jitsi_query_hetzner_server.txt
@@ -16,17 +36,30 @@
 - name: "dynamic-jitsi-sclaer |  test {{ testcase.name }} | run"
   command: /usr/local/bin/dynamic-jitsi-scaler-test
 
-- name: "dynamic-jitsi-sclaer |  test {{ testcase.name }} | check setup playbook is {{ testcase.result.playbook_setup }}"
+- name: "dynamic-jitsi-sclaer |  test {{ testcase.name }} | check vbh01 setup playbook is {{ testcase.result.playbook_setup_vbh01 }}"
   stat:
-    path: /tmp/dyn_jitsi_playbook-setup-vbh01.yml
+    path: /tmp/dyn_jitsi_playbook-vbh01.meet.adfc-intern.de-setup-meet-vb.yml
   register: mystat
-  failed_when: mystat.stat.exists != testcase.result.playbook_setup
+  failed_when: mystat.stat.exists != testcase.result.playbook_setup_vbh01
 
-- name: "dynamic-jitsi-sclaer |  test {{ testcase.name }} | check delete playbook is {{ testcase.result.playbook_delete }}"
+- name: "dynamic-jitsi-sclaer |  test {{ testcase.name }} | check vbh01 delete playbook is {{ testcase.result.playbook_delete_vbh01 }}"
   stat:
-    path: /tmp/dyn_jitsi_playbook-delete-vbh01.yml
+    path: /tmp/dyn_jitsi_playbook-vbh01.meet.adfc-intern.de-delete-meet-vb.yml
   register: mystat
-  failed_when: mystat.stat.exists != testcase.result.playbook_delete
+  failed_when: mystat.stat.exists != testcase.result.playbook_delete_vbh01
+
+- name: "dynamic-jitsi-sclaer |  test {{ testcase.name }} | check vbh02 setup playbook is {{ testcase.result.playbook_setup_vbh02 }}"
+  stat:
+    path: /tmp/dyn_jitsi_playbook-vbh02.meet.adfc-intern.de-setup-meet-vb.yml
+  register: mystat
+  failed_when: mystat.stat.exists != testcase.result.playbook_setup_vbh02
+
+- name: "dynamic-jitsi-sclaer |  test {{ testcase.name }} | check vbh02 delete playbook is {{ testcase.result.playbook_delete_vbh02 }}"
+  stat:
+    path: /tmp/dyn_jitsi_playbook-vbh02.meet.adfc-intern.de-delete-meet-vb.yml
+  register: mystat
+  failed_when: mystat.stat.exists != testcase.result.playbook_delete_vbh02
+
 
 - name: "dynamic-jitsi-sclaer |  test {{ testcase.name }} | clean"
   include_tasks: "clean_test.yml"
