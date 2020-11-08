@@ -8,5 +8,5 @@
         name:
           - python-apt
           - htop
-    - name: setup meet only
-      include_tasks: setup-meet-only.yml
+- name: setup meet only
+  import_playbook: setup-meet-only.yml
