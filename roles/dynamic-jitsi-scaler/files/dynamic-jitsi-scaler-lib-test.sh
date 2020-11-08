@@ -11,9 +11,15 @@ function query_participants() {
     cat /tmp/dyn_jitsi_query_participants-${SERVER}.txt
 }
 
+function query_conferences() {
+    SERVER="$1"
+    cat /tmp/dyn_jitsi_query_conferences-${SERVER}.txt
+}
+
 function query_hetzner_server() {
     cat /tmp/dyn_jitsi_query_hetzner_server.txt
 }
+
 function clear_cache() {
     echo done
 }

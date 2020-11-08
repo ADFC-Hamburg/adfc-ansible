@@ -6,12 +6,24 @@ function run_ansible_playbook() {
     ansible-playbook -v -l $LIMIT_HOST $ANSIBLE_PLAYBOOK > playbook.log
 }
 
-function query_participants() {
+
+function query_influx() {
     SERVER="$1"
-    INFLUX_QUERY="SELECT round(mean(\"participants\")) FROM \"jitsi_stats\" WHERE (time > now()-${TIMERANGE}) and (\"host\" ='${SERVER}')"
+    SELECT="$2"
+    INFLUX_QUERY="SELECT ${SELECT} FROM \"jitsi_stats\" WHERE (time > now()-${TIMERANGE}) and (\"host\" ='${SERVER}')"
     JSON=$(/usr/bin/influx -username admin -password "${INFLUX_PW}" -database "${INFLUX_DB}" \
             -format json -execute "${INFLUX_QUERY}")
     echo $JSON |jq -r ".results[0].series[0].values[0][1]"
+}
+
+function query_participants() {
+    SERVER="$1"
+    query_influx ${SERVER} "round(mean(\"participants\"))"
+}
+
+function query_conferences() {
+    SERVER="$1"
+    query_influx ${SERVER} "round(mean(\"conferences\"))"
 }
 
 function query_hetzner_server() {

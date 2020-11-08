@@ -64,7 +64,17 @@ function turn_server_off() {
 function safe_query_participants() {
     SERVER=$1
     RTN=$(query_participants $SERVER)
-    if [ "${RTN}" == "NULL" ] ; then
+    if [ "${RTN}" == "NULL" -o "${RTN}" == "null" ] ; then
+        echo 0
+    else
+        echo $RTN
+    fi
+}
+
+function safe_query_conferences() {
+    SERVER=$1
+    RTN=$(query_conferences $SERVER)
+    if [ "${RTN}" == "NULL" -o "${RTN}" == "null" ] ; then
         echo 0
     else
         echo $RTN
@@ -74,11 +84,22 @@ function safe_query_participants() {
 mkdir -p "${CACHE_DIR}"
 
 PARTICIPANTS=$(safe_query_participants meet)
+CONFERENCES=$(safe_query_conferences meet)
+if [ $PARTICIPANTS -ge 1 ] ; then
+    echo meet P: ${PARTICIPANTS} C: ${CONFERENCES}
+fi
 {% for videobridge in videobridges %}
 PARTICIPANTS_VB=$(safe_query_participants {{ videobridge |regex_replace('\..*','') }})
+CONFERENCES_VB=$(safe_query_conferences {{ videobridge |regex_replace('\..*','') }})
+if [ $PARTICIPANTS_VB -ge 1 ] ; then
+    echo {{ videobridge}} P: ${PARTICIPANTS_VB} C: ${CONFERENCES_VB}
+fi
 PARTICIPANTS=$((PARTICIPANTS + PARTICIPANTS_VB))
+CONFERENCES=$((CONFERENCES + CONFERENCES_VB))
 {% endfor %}
-
+if [ $PARTICIPANTS -ge 1 ] ; then
+    echo total P: ${PARTICIPANTS} C: ${CONFERENCES}
+fi
 
 {% for videobridge in videobridges %}
 # --------------------------------------------------------------------------------------
@@ -89,6 +110,7 @@ if [ "${HETZNER_JSON}" = "" ] ; then
     IS_SERVER_ON=0
 else
     IS_SERVER_ON=1
+    echo === {{ videobridge}} ===
     CREATED=$(echo ${HETZNER_JSON} |jq -r '.created')
     echo CRE $CREATED
     CREATED_SEC=$(date -d "${CREATED}" +%s)
@@ -100,11 +122,13 @@ else
 fi
 
 if [ "${IS_SERVER_ON}" == "0" ] ; then
-    if [ $PARTICIPANTS -ge {{ hostvars[videobridge]['dynamic_jitsi_scaler_turn_on']['participants'] }} ] ; then
+    if [ $PARTICIPANTS -ge {{ hostvars[videobridge]['dynamic_jitsi_scaler_turn_on']['participants'] }} -a\
+         $CONFERENCES -ge {{ hostvars[videobridge]['dynamic_jitsi_scaler_turn_on']['conferences'] }} ] ; then
         turn_server_on {{ videobridge }}
     fi
 else
-    if [ $PARTICIPANTS -le {{ hostvars[videobridge]['dynamic_jitsi_scaler_turn_off']['participants'] }} ] ; then
+    if [ $PARTICIPANTS -le {{ hostvars[videobridge]['dynamic_jitsi_scaler_turn_off']['participants'] }} -a \
+         $CONFERENCES -le {{ hostvars[videobridge]['dynamic_jitsi_scaler_turn_off']['conferences'] }} ] ; then
         if [ $MINUTE_MODULO -ge $MINUTE_MODULO_LIMIT ] ; then
             turn_server_off {{ videobridge }}
         fi
