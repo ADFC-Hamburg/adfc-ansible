@@ -2,3 +2,4 @@
 .project
 *~
 *.code-workspace
+github_token.txt
