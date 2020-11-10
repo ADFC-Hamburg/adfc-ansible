@@ -8,6 +8,7 @@
   alternatives:
     name: x-session-manager
     path: /usr/bin/startkde
+  when: ansible_distribution_version == '18.04'
 
 - name: copy logo
   copy:
@@ -36,7 +37,6 @@
   notify: Restart polkit
   with_items:
     - xrdp-color-manager.pkla
-    - xrdp-disable-shutdown.pkla
     - xrdp-disable-network-manager.pkla
 
 - name: Change polkit to disable shutdown on virtual machines
