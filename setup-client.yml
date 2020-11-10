@@ -186,6 +186,10 @@
     template:
       src: issue
       dest: /etc/issue
+  
+  - name: Hostname anpassen
+    command: hostnamectl set-hostname {{ inventory_hostname_short }}
+    when: ansible_hostname != inventory_hostname_short
 
   - name: Stat Netplan Network-manager-cfg
     stat:
