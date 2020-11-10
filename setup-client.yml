@@ -13,7 +13,7 @@
   - thunderbird
   - libreoffice
   - slack
-  - janrufmonitor
+    #  - janrufmonitor
   - links-on-desktop
   - client-apt-remove
 
@@ -54,7 +54,7 @@
       repo: 'ppa:phoerious/keepassxc'
     tags: software
 
-  - name: ubuntu-moziala-security-ppa
+  - name: ubuntu-mozilla-security-ppa
     apt_repository:
       repo: 'ppa:ubuntu-mozilla-security/ppa'
     tags: software
@@ -219,7 +219,7 @@
       dest: "/root/ucs-admin-pw.secret"
     when: not stat_ucs_mkhomedir.stat.exists
   - name: Do univention domain join
-    command: "/usr/sbin/univention-domain-join-cli --username Administrator --master-ip ucs-master --password-file /root/ucs-admin-pw.secret"
+    command: "/usr/sbin/univention-domain-join-cli --username Administrator --dc-ip ucs-master --password-file /root/ucs-admin-pw.secret"
     when: not stat_ucs_mkhomedir.stat.exists
   - name: delete password file
     file:
