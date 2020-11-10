@@ -38,3 +38,19 @@
     - xrdp-color-manager.pkla
     - xrdp-disable-shutdown.pkla
     - xrdp-disable-network-manager.pkla
+
+- name: Change polkit to disable shutdown on virtual machines
+  copy:
+    src: xrdp-disable-shutdown.pkla
+    dest: "/etc/polkit-1/localauthority/50-local.d/xrdp-disable-shutdown.pkla"
+    mode: "0644"
+    owner: "root"
+    group: "root"
+  notify: Restart polkit
+  when: ansible_hostname == 'kubuntu-vm'
+
+- name: Make sure polkit is set to enable shutdown on physical machines
+  file:
+    state: absent
+    path: "/etc/polkit-1/localauthority/50-local.d/xrdp-disable-shutdown.pkla"
+  when: ansible_hostname != 'kubuntu-vm'
