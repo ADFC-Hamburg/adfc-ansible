@@ -1,3 +1,11 @@
+# Hat nichts mit coturn zu tun, muss aber irgendwo hin
+- name: Fixe WASM Mime Type
+  lineinfile:
+    path: /etc/nginx/mime.types
+    insertafter: "^.*vnd.openxmlformats-officedocument.presentationml.presentation.*"
+    line: "    application/wasm wasm;"
+    regexp: "application/wasm"
+  tags: wasm
 - name: Installiere coturn
   apt:
     name:
