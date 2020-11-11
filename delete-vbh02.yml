@@ -1,6 +1,6 @@
 - name: Remove Videobridge
   hosts: vbh02.meet.adfc-intern.de
-  gather_facts: yes
+  gather_facts: no
   roles:
     - backup-hcloud-letsencrypt
   tasks:
