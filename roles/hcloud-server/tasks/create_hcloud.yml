@@ -75,7 +75,7 @@
     mode: "0644"
   vars:
     ansible_host: "{{ hcloud_host.hcloud_server.ipv4_address }}"
-    ansible_ssh_extra_args: "-o StrictHostKeyChecking=no"
+    ansible_ssh_extra_args: "-o StrictHostKeyChecking=no -o UpdateHostKeys=no"
 
 - name: restart network
   systemd:
@@ -83,7 +83,7 @@
     state: restarted
   vars:
     ansible_host: "{{ hcloud_host.hcloud_server.ipv4_address }}"
-    ansible_ssh_extra_args: "-o StrictHostKeyChecking=no"
+    ansible_ssh_extra_args: "-o StrictHostKeyChecking=no -o UpdateHostKeys=no"
 
 - name: Create directories
   file:
@@ -123,7 +123,7 @@
     dest: "/etc/adfc_ssh_keys.tar"
   vars:
     ansible_host: "{{ hcloud_host.hcloud_server.ipv4_address }}"
-    ansible_ssh_extra_args: "-o StrictHostKeyChecking=no"
+    ansible_ssh_extra_args: "-o StrictHostKeyChecking=no -o UpdateHostKeys=no"
 
 - name: extract keys
   unarchive:
@@ -132,7 +132,7 @@
     dest: /etc/ssh
   vars:
     ansible_host: "{{ hcloud_host.hcloud_server.ipv4_address }}"
-    ansible_ssh_extra_args: "-o StrictHostKeyChecking=no"
+    ansible_ssh_extra_args: "-o StrictHostKeyChecking=no -o UpdateHostKeys=no"
 
 - name: restart ssh
   systemd:
@@ -140,4 +140,4 @@
     state: restarted
   vars:
     ansible_host: "{{ hcloud_host.hcloud_server.ipv4_address }}"
-    ansible_ssh_extra_args: "-o StrictHostKeyChecking=no"
+    ansible_ssh_extra_args: "-o StrictHostKeyChecking=no -o UpdateHostKeys=no"
