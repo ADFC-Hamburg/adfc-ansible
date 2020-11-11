@@ -14,4 +14,4 @@
     content: "{{ hcloud_lenc.stdout }}"
     dest: "/etc/adfc/hcloud/letsencrypt/{{ inventory_hostname }}.tar"
   delegate_to: proxmox01.adfc-intern.de
-  when: 'stdout' in hcloud_lenc
+  when: "'stdout' in hcloud_lenc"
