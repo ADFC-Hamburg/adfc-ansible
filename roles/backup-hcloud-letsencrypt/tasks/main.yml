@@ -5,6 +5,7 @@
   register: hcloud_lenc
   no_log: True
   ignore_errors: true
+  ignore_unreachable: true
   tags:
     - skip_ansible_lint
 
