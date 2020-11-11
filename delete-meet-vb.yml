@@ -9,6 +9,7 @@
         name: jitsi-videobridge2
         state: stopped
       ignore_errors: yes
+      ignore_unreachable: yes
 
     - name: Get hcloud API Token
       slurp:
