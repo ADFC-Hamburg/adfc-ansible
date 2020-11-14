@@ -29,7 +29,7 @@
 
                 RequestHeader set "X-Forwarded-Proto" expr=%{REQUEST_SCHEME}
                 RequestHeader set "X-Forwarded-SSL" expr=%{HTTPS}
-                RequestHeader set "Host" quartierefuermenschen.adfc-hamburg.de
+                #RequestHeader set "Host" quartierefuermenschen.adfc-hamburg.de
                 ProxyRequests On
                 ProxyPreserveHost On
                 ProxyPass / http://127.0.0.1:{{ qfm_docker_port }}/
