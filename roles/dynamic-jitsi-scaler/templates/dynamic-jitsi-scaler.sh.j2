@@ -17,7 +17,7 @@ TIMERANGE="5m"
 # wir noch dinge wie keys kopieren machen und dass je nachdem mal länger oder kürzer dauern kann
 #
 # Das Minute_Modulo_limit sagt wieviele Minuten verbraucht sein müssen
-MINUTE_MODULO_LIMIT="45"
+MINUTE_MODULO_LIMIT="49"
 
 HCLOUD_CACHE_VALID="20" # in minutes
 CACHE_DIR="/var/cache/dynamic-jitsi-scaler/"
@@ -27,6 +27,15 @@ ANSIBLE_REPO="git://github.com/ADFC-Hamburg/adfc-ansible.git"
 ANSIBLE_DIR="/usr/local/share/adfc-ansible"
 
 ADMIN_MAIL={{ dynamic_admin_mail }}
+
+WOCHENTAG=$(date +%w)
+UHR=$(date +%H%M)
+if [ "$WOCHENTAG" == "0" -o "$WOCHENTAG" == "6" ] ; then
+    WERKTAG=0
+else
+    WERKTAG=1
+fi
+WHHM="${WERKTAG}${UHR:0:3}"
 
 source {{ dynamic_lib }}
 
@@ -41,9 +50,11 @@ function prep_and_run_ansible_playbook() {
     git clone $ANSIBLE_REPO $ANSIBLE_DIR
     if [ -d "${ANSIBLE_DIR}"  ] ; then
         cd $ANSIBLE_DIR
+        date > playbook.log
         run_ansible_playbook $ANSIBLE_PLAYBOOK $LIMIT_HOST
         RTN=$?
         echo "RTN: $RTN"  >> playbook.log
+        date >> playbook.log
         clear_cache
         if [ "$RTN" == "0" ] ; then
             STATUS="OK"
@@ -108,12 +119,24 @@ if [ $PARTICIPANTS -ge 1 ] ; then
 fi
 
 {% for videobridge in videobridges %}
+{% set turn_on_part = hostvars[videobridge]['dynamic_jitsi_scaler_turn_on']['participants'] %}
+{% set turn_on_conf = hostvars[videobridge]['dynamic_jitsi_scaler_turn_on']['conferences'] %}
+{% set turn_off_part = hostvars[videobridge]['dynamic_jitsi_scaler_turn_off']['participants'] %}
+{% set turn_off_conf = hostvars[videobridge]['dynamic_jitsi_scaler_turn_off']['conferences'] %}
+
 # --------------------------------------------------------------------------------------
 # Test fuer {{ videobridge}}
 # --------------------------------------------------------------------------------------
 HETZNER_JSON=$(query_hetzner_server |jq -r '.[] | select(.name == "{{ videobridge }}")')
 if [ "${HETZNER_JSON}" = "" ] ; then
-    IS_SERVER_ON=0
+    if [ $PARTICIPANTS -ge {{ turn_on_part }} -a $CONFERENCES -ge {{ turn_on_conf }} ] ; then
+        turn_server_on {{ videobridge }}
+{% if 'whhm' in hostvars[videobridge]['dynamic_jitsi_scaler_turn_on'] %}
+    elif [ $WHHM = "{{ hostvars[videobridge]['dynamic_jitsi_scaler_turn_on']['whhm'] }}" ] ; then
+        echo WERKTAG START
+        turn_server_on {{ videobridge }}
+{% endif %}
+    fi
 else
     IS_SERVER_ON=1
     CREATED=$(echo ${HETZNER_JSON} |jq -r '.created')
@@ -121,19 +144,8 @@ else
     NOW_SEC=$(date +%s)
     MINUTE_MODULO=$(( ((NOW_SEC - CREATED_SEC) % 3600) / 60))
     echo {{ videobridge}} CRE $CREATED CRE_SEC $CREATED_SEC  NOW $(date +%s)  Minute Modulo: $MINUTE_MODULO
-fi
-
-if [ "${IS_SERVER_ON}" == "0" ] ; then
-    if [ $PARTICIPANTS -ge {{ hostvars[videobridge]['dynamic_jitsi_scaler_turn_on']['participants'] }} -a\
-         $CONFERENCES -ge {{ hostvars[videobridge]['dynamic_jitsi_scaler_turn_on']['conferences'] }} ] ; then
-        turn_server_on {{ videobridge }}
-    fi
-else
-    if [ $PARTICIPANTS -le {{ hostvars[videobridge]['dynamic_jitsi_scaler_turn_off']['participants'] }} -a \
-         $CONFERENCES -le {{ hostvars[videobridge]['dynamic_jitsi_scaler_turn_off']['conferences'] }} ] ; then
-        if [ $MINUTE_MODULO -ge $MINUTE_MODULO_LIMIT ] ; then
-            turn_server_off {{ videobridge }}
-        fi
+    if [ $PARTICIPANTS -le {{ turn_off_part  }} -a $CONFERENCES -le {{ turn_off_conf }} -a $MINUTE_MODULO -ge $MINUTE_MODULO_LIMIT ] ; then
+        turn_server_off {{ videobridge }}
     fi
 fi
 {% endfor %}

@@ -3,7 +3,7 @@
 function run_ansible_playbook() {
     ANSIBLE_PLAYBOOK="$1"
     LIMIT_HOST="$2"
-    ansible-playbook -v -l $LIMIT_HOST $ANSIBLE_PLAYBOOK > playbook.log
+    ansible-playbook -v -l $LIMIT_HOST $ANSIBLE_PLAYBOOK >> playbook.log
 }
 
 
