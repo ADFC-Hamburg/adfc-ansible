@@ -42,9 +42,15 @@ function prep_and_run_ansible_playbook() {
     if [ -d "${ANSIBLE_DIR}"  ] ; then
         cd $ANSIBLE_DIR
         run_ansible_playbook $ANSIBLE_PLAYBOOK $LIMIT_HOST
-        echo "RTN: $?"  >> playbook.log
+        RTN=$?
+        echo "RTN: $RTN"  >> playbook.log
         clear_cache
-        cat playbook.log | mailx $ADMIN_MAIL -s "[adfc-jitsi] $LIMIT_HOST Playbook ${ANSIBLE_PLAYBOOK} result"
+        if [ "$RTN" == "0" ] ; then
+            STATUS="OK"
+        else
+            STATUS="FEHLER"
+        fi
+        cat playbook.log | mailx $ADMIN_MAIL -s "[adfc-jitsi] ${STATUS} $LIMIT_HOST Playbook ${ANSIBLE_PLAYBOOK} result"
         cd ..
         rm -rf "${ANSIBLE_DIR}"
     fi
