@@ -12,7 +12,7 @@ jitsi_meet_jvb_cfg_java_jvb_props:
    - "--apis=rest"
 
 dynamic_jitsi_scaler_turn_on:
-  participants: 20
+  participants: 17
   conferences: 3
 
 dynamic_jitsi_scaler_turn_off:

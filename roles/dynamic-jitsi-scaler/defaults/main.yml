@@ -65,7 +65,7 @@ dynamic_jitsi_scaler_testcases:
 
   - name: Switch on
     participants:
-      meet: 18
+      meet: 16
       vbh01: null
       vbh02: null
     conferences:
