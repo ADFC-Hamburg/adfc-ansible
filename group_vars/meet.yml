@@ -79,7 +79,7 @@ jitsi_meet_videobridge_statistics_transport:  "muc"
 jitsi_meet_channel_last_n: 3
 jitsi_meet_enable_layer_suspension: true
 jitsi_meet_start_audio_only: false
-jitsi_meet_show_audio_levels: true
+jitsi_meet_show_audio_levels: false
 
 jitsi_meet_audio_levels_interval: 200
 
