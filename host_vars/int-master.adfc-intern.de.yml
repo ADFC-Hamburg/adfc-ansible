@@ -83,3 +83,6 @@ firewall:
   - name: Apache http
     port: 80
     proto: tcp
+  - name: DNS
+    port: 53
+    proto: udp
