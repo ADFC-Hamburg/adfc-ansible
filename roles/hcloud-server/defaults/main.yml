@@ -1,1 +1,5 @@
 authorized_key_user: root
+hcloud_floating_ip: []
+hcloud_dyndns_domain: ""
+ucs_dns: "cn=dns,dc=adfc-intern,dc=de"
+hcloud_dyndns_domain: "dyndns.adfc-intern.de"

@@ -15,6 +15,7 @@ all:
               hosts:
                 meet.adfc-intern.de:
                 test.adfc-intern.de:
+                test1.dyndns.adfc-intern.de:
             meet_vb:
               hosts:
                 vbh01.meet.adfc-intern.de:
@@ -23,6 +24,7 @@ all:
               hosts:
                 test.adfc-intern.de:
                 vb01.test.adfc-intern.de:
+                test1.dyndns.adfc-intern.de:
             meet_live:
               hosts:
                 meet.adfc-intern.de:
