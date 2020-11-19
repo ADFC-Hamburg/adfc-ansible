@@ -20,6 +20,7 @@ all:
               hosts:
                 vbh01.meet.adfc-intern.de:
                 vbh02.meet.adfc-intern.de:
+                vbdh01.meet.adfc-intern.de:
             meet_test:
               hosts:
                 test.adfc-intern.de:
@@ -30,6 +31,7 @@ all:
                 meet.adfc-intern.de:
                 vbh01.meet.adfc-intern.de:
                 vbh02.meet.adfc-intern.de:
+                vbdh01.meet.adfc-intern.de:
     arbeitsplatz:
       hosts:
         adfc-testclient.gst.hamburg.adfc.de:
