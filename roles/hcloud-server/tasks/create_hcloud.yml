@@ -35,8 +35,8 @@
 
 - name: Set Dynamic IP
   include_tasks: set_dyndns.yml
-  when: "hcloud_dyndns_domain != ''"
-  
+  when: "hcloud_dyndns_domain | length > 0"
+
 - name: Set Floating IP
   include_tasks: hcloud_floating_ip.yml
   when: hcloud_floating_ip | length >0
