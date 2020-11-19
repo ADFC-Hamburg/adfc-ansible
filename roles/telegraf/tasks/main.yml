@@ -30,6 +30,9 @@
   template:
     src: output-influx.conf.j2
     dest: /etc/telegraf/telegraf.d/output-influx.conf
+    mode: "0644"
+    user: "root"
+    group: "root"
   vars:
     influxdb_password: "{{ influx_password_file_slurp.content | b64decode }}"
   notify: restart telegraf
@@ -38,6 +41,9 @@
   template:
     src: inputs-net.conf.j2
     dest: /etc/telegraf/telegraf.d/inputs-net.conf
+    mode: "0644"
+    user: "root"
+    group: "root"
   when: telegraf_net
   notify: restart telegraf
 
@@ -51,6 +57,9 @@
   template:
     src: input-jitsi-stats.conf.j2
     dest: /etc/telegraf/telegraf.d/input-jitsi-stats.conf
+    mode: "0644"
+    user: "root"
+    group: "root"
   when: telegraf_jitsi
   notify: restart telegraf
 

@@ -18,7 +18,6 @@
   delegate_to: localhost
   register: ssh_hcloud_add_key
 
-
 - name: Create_host
   hcloud_server:
     api_token: "{{ hcloud_api_token }}"
@@ -41,11 +40,13 @@
   include_tasks: hcloud_floating_ip.yml
   when: "hcloud_floating_ip | length > 0"
 
-
 - name: Create directories
   file:
     path: "{{ item }}"
     state: directory
+    mode: "0700"
+    user: "root"
+    group: "root"
   delegate_to: proxmox01.adfc-intern.de
   with_items:
     - "/etc/adfc"
@@ -78,6 +79,9 @@
   copy:
     content: "{{ hcloud_ssh_keys.stdout }}"
     dest: "/etc/adfc_ssh_keys.tar"
+    mode: "0600"
+    user: root
+    group: root
   vars:
     ansible_host: "{{ hcloud_host.hcloud_server.ipv4_address }}"
     ansible_ssh_extra_args: "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"

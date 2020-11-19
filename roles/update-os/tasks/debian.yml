@@ -16,6 +16,7 @@
 - name: check logged on users
   command: who
   register: who_var
+  changed_when: false
 
 - name: parse output
   set_fact:

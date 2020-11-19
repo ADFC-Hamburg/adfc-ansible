@@ -3,11 +3,14 @@
     path: "/root/root.secret"
   register: root_secret
   delegate_to: proxmox01.adfc-intern.de
-
-- name: set vars
+- name: set vars1
+  set_fact:
+   hcloud_dyndns_basename: "{{ hcloud_dyndns_hostname.replace('.'+hcloud_dyndns_domain,'') }}"
+   hcloud_dyndns_ldap_zone: "zoneName=' + hcloud_dyndns_domain + ',' + ucs_dns"
+- name: set vars2
   set_fact:
     ucs_password: "{{ root_secret.content |b64decode |trim }}"
-    dns_entry_dn: "{{ 'relativeDomainName=' + hcloud_dyndns_hostname.replace('.'+hcloud_dyndns_domain,'') + ',zoneName='+ hcloud_dyndns_domain +',' + ucs_dns }}"
+    dns_entry_dn: "{{ 'relativeDomainName=' + hcloud_dyndns_basename + ','  + hcloud_dyndns_ldap_zone }}"
   delegate_to: localhost
 
 
@@ -37,7 +40,7 @@
       - 200
       - 204
     body:
-      position: "{{ 'zoneName='+ hcloud_dyndns_domain +',' + ucs_dns }}"
+      position: "{{ hcloud_dyndns_ldap_zone }}"
       properties:
         a:
           - "{{ hcloud_host.hcloud_server.ipv4_address }}"
@@ -45,7 +48,7 @@
         zonettl: "{{ hcloud_dyndns_ttl }}"
         mx: []
         txt: []
-        name: "{{ hcloud_dyndns_hostname.replace('.'+hcloud_dyndns_domain,'') }}"
+        name: "{{ hcloud_dyndns_basename }}"
   when:
     - ( dyndns_read_entry.status == 200)
     - (( dyndns_read_entry.json.properties.a | map('ipaddr','int') |list |sort |join(',') )  !=
@@ -65,7 +68,7 @@
       - 200
       - 201
     body:
-      position: "{{ 'zoneName='+ hcloud_dyndns_domain +',' + ucs_dns }}"
+      position: "{{ hcloud_dyndns_ldap_zone }}"
       properties:
         a:
           - "{{ hcloud_host.hcloud_server.ipv4_address }}"
@@ -73,7 +76,7 @@
         zonettl: "{{ hcloud_dyndns_ttl }}"
         mx: []
         txt: []
-        name: "{{ hcloud_dyndns_hostname.replace('.'+hcloud_dyndns_domain,'') }}"
+        name: "{{ hcloud_dyndns_basename }}"
   when:
     - ( dyndns_read_entry.status == 404)
   delegate_to: localhost
