@@ -7,9 +7,7 @@
 - name: set vars
   set_fact:
     ucs_password: "{{ root_secret.content |b64decode |trim }}"
-    dyndns_different: false
-    zonettl: 60
-    dns_entry_dn: "{{ 'relativeDomainName=' + inventory_hostname.replace('.'+hcloud_dyndns_domain,'') + ',zoneName='+ hcloud_dyndns_domain +',' + ucs_dns }}"
+    dns_entry_dn: "{{ 'relativeDomainName=' + hcloud_dyndns_hostname.replace('.'+hcloud_dyndns_domain,'') + ',zoneName='+ hcloud_dyndns_domain +',' + ucs_dns }}"
   delegate_to: localhost
 
 
@@ -44,15 +42,15 @@
         a:
           - "{{ hcloud_host.hcloud_server.ipv4_address }}"
           - "{{ hcloud_host.hcloud_server.ipv6_address }}"
-        zonettl: "{{ zonettl }}"
+        zonettl: "{{ hcloud_dyndns_ttl }}"
         mx: []
         txt: []
-        name: "{{ inventory_hostname.replace('.'+hcloud_dyndns_domain,'') }}"
+        name: "{{ hcloud_dyndns_hostname.replace('.'+hcloud_dyndns_domain,'') }}"
   when:
     - ( dyndns_read_entry.status == 200)
     - (( dyndns_read_entry.json.properties.a | map('ipaddr','int') |list |sort |join(',') )  !=
       ( [ hcloud_host.hcloud_server.ipv4_address, ( hcloud_host.hcloud_server.ipv6 |replace('/64', '1') ) ]  | map('ipaddr','int') |list |sort |join(',') )) or
-      ( zonettl != dyndns_read_entry.json.properties.zonettl)
+      ( hcloud_dyndns_ttl != dyndns_read_entry.json.properties.zonettl)
 
 - name: Create entry
   uri:
@@ -72,15 +70,15 @@
         a:
           - "{{ hcloud_host.hcloud_server.ipv4_address }}"
           - "{{ hcloud_host.hcloud_server.ipv6 | replace('/64','1') }}"
-        zonettl: "{{ zonettl }}"
+        zonettl: "{{ hcloud_dyndns_ttl }}"
         mx: []
         txt: []
-        name: "{{ inventory_hostname.replace('.'+hcloud_dyndns_domain,'') }}"
+        name: "{{ hcloud_dyndns_hostname.replace('.'+hcloud_dyndns_domain,'') }}"
   when:
     - ( dyndns_read_entry.status == 404)
   delegate_to: localhost
 
 - name: Wait TTL
   pause:
-    seconds: "{{ zonettl }}"
+    seconds: "{{ hcloud_dyndns_ttl }}"
   delegate_to: localhost
