@@ -4,7 +4,7 @@ hcloud_image: debian-10
 hcloud_server_type: "{{ 'cx11' if hcloud_test else 'ccx31' }}"
 hcloud_server_location: nbg1
 hcloud_dyndns_domain: "dyndns.adfc-intern.de"
-hcloud_dyndns_hostname: "vbbh01"
+hcloud_dyndns_hostname: "vbdh01"
 
 jitsi_meet_jvb_cfg_java_jvb_props:
    - "--subdomain=vbdh01"

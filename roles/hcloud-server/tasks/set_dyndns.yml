@@ -6,7 +6,7 @@
 - name: set vars1
   set_fact:
    hcloud_dyndns_basename: "{{ hcloud_dyndns_hostname.replace('.'+hcloud_dyndns_domain,'') }}"
-   hcloud_dyndns_ldap_zone: "zoneName=' + hcloud_dyndns_domain + ',' + ucs_dns"
+   hcloud_dyndns_ldap_zone: "{{ 'zoneName=' + hcloud_dyndns_domain + ',' + ucs_dns }}"
 - name: set vars2
   set_fact:
     ucs_password: "{{ root_secret.content |b64decode |trim }}"

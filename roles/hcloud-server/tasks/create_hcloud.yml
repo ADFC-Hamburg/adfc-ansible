@@ -45,7 +45,7 @@
     path: "{{ item }}"
     state: directory
     mode: "0700"
-    user: "root"
+    owner: "root"
     group: "root"
   delegate_to: proxmox01.adfc-intern.de
   with_items:
@@ -80,7 +80,7 @@
     content: "{{ hcloud_ssh_keys.stdout }}"
     dest: "/etc/adfc_ssh_keys.tar"
     mode: "0600"
-    user: root
+    owner: root
     group: root
   vars:
     ansible_host: "{{ hcloud_host.hcloud_server.ipv4_address }}"
