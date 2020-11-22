@@ -33,8 +33,11 @@
   register: hcloud_host
 
 - name: Set Dynamic IP
-  include_tasks: set_dyndns.yml
-  when: "hcloud_dyndns_domain | length > 0"
+  include_role: ucs_dns
+  vars:
+    ucs_dns_ips:
+       - "{{ hcloud_host.hcloud_server.ipv4_address }}"
+       - "{{ hcloud_host.hcloud_server.ipv6 | replace('/64','1') }}"
 
 - name: Set Floating IP
   include_tasks: hcloud_floating_ip.yml

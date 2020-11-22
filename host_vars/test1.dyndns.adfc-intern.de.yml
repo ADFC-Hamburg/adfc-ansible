@@ -3,7 +3,7 @@ hcloud_image: debian-10
 # ccx31 8 Dedicierte VCPUs 32 GB RAM
 hcloud_server_type: "cx11"
 hcloud_server_location: nbg1
-hcloud_dyndns_domain: "dyndns.adfc-intern.de"
+ucs_dns_zonename: "dyndns.adfc-intern.de"
 ansible_ssh_extra_args: "-o CheckHostIP=No"
 jitsi_meet_server_name: "{{ inventory_hostname }}"
 adfc_jitsi_branch: "adfc-devel"
