@@ -25,3 +25,5 @@ jobs:
       run: ~/.local/bin/ansible-galaxy install -r requirements.yml
     - name: lint files
       run: ~/.local/bin/ansible-lint --exclude=/home/runner/.ansible/roles/jnv.unattended-upgrades/ -x '106,208,503,301,701' *.yml
+    - name: Syntax check
+      run: ansible-playbook --syntax-check $(find *.yml \! -name inventory.yml -a \! -name requirements.yml )
