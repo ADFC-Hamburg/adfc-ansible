@@ -49,3 +49,7 @@ function clear_cache() {
     CACHE_FILE="${CACHE_DIR}/servers-hcloud.json"
     rm "${CACHE_FILE}"
 }
+function secondes_since_sundy() {
+    # Seltsame verenkung um Sommerzeit/Winterzeitumstellung zu elemenieren
+    echo $(( $(date +%s) - $(date --date="last sunday 4:00:00" +%s) + (4 * 60 * 60) ))
+}

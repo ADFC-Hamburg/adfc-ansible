@@ -28,16 +28,9 @@ ANSIBLE_DIR="/usr/local/share/adfc-ansible"
 
 ADMIN_MAIL={{ dynamic_admin_mail }}
 
-WOCHENTAG=$(date +%w)
-UHR=$(date +%H%M)
-if [ "$WOCHENTAG" == "0" -o "$WOCHENTAG" == "6" ] ; then
-    WERKTAG=0
-else
-    WERKTAG=1
-fi
-WHHM="${WERKTAG}${UHR:0:3}"
-
 source {{ dynamic_lib }}
+
+SECONDS_SINCE_SUNDAY=$(seconds_since_sunday)
 
 function prep_and_run_ansible_playbook() {
     ANSIBLE_PLAYBOOK="$1"
@@ -127,15 +120,26 @@ fi
 # --------------------------------------------------------------------------------------
 # Test fuer {{ videobridge}}
 # --------------------------------------------------------------------------------------
+FORCE_ON=0
+echo SEC=$SECONDS_SINCE_SUNDAY
+{% if 'timerange' in hostvars[videobridge]['dynamic_jitsi_scaler_turn_on'] %}
+{% for timerange in hostvars[videobridge]['dynamic_jitsi_scaler_turn_on']['timerange'] %}
+# if from day={{ timerange.from.weekday }} {{ timerange.from.hour }}:{{ timerange.from.min }} (((({{ timerange.from.weekday }}*24)+{{ timerange.from.hour }} )*60)+{{ timerange.from.min }})*60  to day={{
+    timerange.to.weekday }} {{ timerange.to.hour }}:{{ timerange.to.min }} (((({{ timerange.to.weekday }}*24)+{{ timerange.to.hour }} )*60)+{{ timerange.to.min }})*60
+{% set tr_from_seconds = ((((timerange.from.weekday *24)+ timerange.from.hour)*60)+timerange.from.min)*60 %}
+{% set tr_to_seconds = ((((timerange.to.weekday *24)+ timerange.to.hour)*60)+timerange.to.min)*60 %}
+if [ ${SECONDS_SINCE_SUNDAY} -ge {{ tr_from_seconds }} -a ${SECONDS_SINCE_SUNDAY} -le {{ tr_to_seconds }} ] ; then
+    FORCE_ON=1
+fi
+{% endfor %}
+{% endif %}
 HETZNER_JSON=$(query_hetzner_server |jq -r '.[] | select(.name == "{{ videobridge }}")')
 if [ "${HETZNER_JSON}" = "" ] ; then
     if [ $PARTICIPANTS -ge {{ turn_on_part }} -a $CONFERENCES -ge {{ turn_on_conf }} ] ; then
         turn_server_on {{ videobridge }}
-{% if 'whhm' in hostvars[videobridge]['dynamic_jitsi_scaler_turn_on'] %}
-    elif [ $WHHM = "{{ hostvars[videobridge]['dynamic_jitsi_scaler_turn_on']['whhm'] }}" ] ; then
-        echo WERKTAG START
+    elif [ $FORCE_ON = "1" ] ; then
+        echo FORCE_ON
         turn_server_on {{ videobridge }}
-{% endif %}
     fi
 else
     IS_SERVER_ON=1
@@ -145,7 +149,11 @@ else
     MINUTE_MODULO=$(( ((NOW_SEC - CREATED_SEC) % 3600) / 60))
     echo {{ videobridge}} CRE $CREATED CRE_SEC $CREATED_SEC  NOW $(date +%s)  Minute Modulo: $MINUTE_MODULO
     if [ $PARTICIPANTS -le {{ turn_off_part  }} -a $CONFERENCES -le {{ turn_off_conf }} -a $MINUTE_MODULO -ge $MINUTE_MODULO_LIMIT ] ; then
-        turn_server_off {{ videobridge }}
+        if [ $FORCE_ON = "1" ] ; then
+            echo FORCE_ON=1 - Not turned off
+        else
+            turn_server_off {{ videobridge }}
+        fi
     fi
 fi
 {% endfor %}

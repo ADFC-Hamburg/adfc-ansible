@@ -14,7 +14,48 @@ jitsi_meet_jvb_cfg_java_jvb_props:
 dynamic_jitsi_scaler_turn_on:
   participants: 10
   conferences: 1
-  whhm: 1175
+  timerange:
+    - from:
+        weekday: 1
+        hour: 17
+        min: 30
+      to:
+        weekday: 1
+        hour: 19
+        min: 20
+    - from:
+        weekday: 2
+        hour: 17
+        min: 30
+      to:
+        weekday: 2
+        hour: 19
+        min: 20
+    - from:
+        weekday: 3
+        hour: 17
+        min: 30
+      to:
+        weekday: 3
+        hour: 19
+        min: 20
+    - from:
+        weekday: 4
+        hour: 17
+        min: 30
+      to:
+        weekday: 4
+        hour: 19
+        min: 20
+    - from:
+        weekday: 5
+        hour: 17
+        min: 30
+      to:
+        weekday: 5
+        hour: 19
+        min: 20
+
 
 dynamic_jitsi_scaler_turn_off:
   participants: 4
