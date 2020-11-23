@@ -33,7 +33,8 @@
   register: hcloud_host
 
 - name: Set Dynamic IP
-  include_role: ucs_dns
+  include_role:
+    name: ucs_dns
   vars:
     ucs_dns_ips:
        - "{{ hcloud_host.hcloud_server.ipv4_address }}"
