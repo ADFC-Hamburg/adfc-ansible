@@ -23,6 +23,6 @@ function query_hetzner_server() {
 function clear_cache() {
     echo done
 }
-function secondes_since_sundy() {
+function seconds_since_sunday() {
     echo 18000
 }

@@ -40,10 +40,11 @@ function prep_and_run_ansible_playbook() {
     if [ -d "${ANSIBLE_DIR}"  ] ; then
         rm -f ${ANSIBLE_DIR}
     fi
-    git clone $ANSIBLE_REPO $ANSIBLE_DIR
+    STATUS="FEHLER"
+    date > playbook.log
+    git clone $ANSIBLE_REPO $ANSIBLE_DIR 2>&1 >> playbook.log
     if [ -d "${ANSIBLE_DIR}"  ] ; then
         cd $ANSIBLE_DIR
-        date > playbook.log
         run_ansible_playbook $ANSIBLE_PLAYBOOK $LIMIT_HOST
         RTN=$?
         echo "RTN: $RTN"  >> playbook.log
@@ -51,12 +52,12 @@ function prep_and_run_ansible_playbook() {
         clear_cache
         if [ "$RTN" == "0" ] ; then
             STATUS="OK"
-        else
-            STATUS="FEHLER"
         fi
         cat playbook.log | mailx $ADMIN_MAIL -s "[adfc-jitsi] ${STATUS} $LIMIT_HOST Playbook ${ANSIBLE_PLAYBOOK} result"
         cd ..
         rm -rf "${ANSIBLE_DIR}"
+    else
+        cat playbook.log | mailx $ADMIN_MAIL -s "[adfc-jitsi] ${STATUS} $LIMIT_HOST Playbook ${ANSIBLE_PLAYBOOK} result"
     fi
     ssh-agent -k
 }
@@ -74,7 +75,7 @@ function turn_server_off() {
 function safe_query_participants() {
     SERVER=$1
     RTN=$(query_participants $SERVER)
-    if [ "${RTN}" == "NULL" -o "${RTN}" == "null" ] ; then
+    if [ "${RTN}" == "NULL" -o "${RTN}" == "null" -o "${RTN}" == "" ] ; then
         echo 0
     else
         echo $RTN
@@ -84,7 +85,7 @@ function safe_query_participants() {
 function safe_query_conferences() {
     SERVER=$1
     RTN=$(query_conferences $SERVER)
-    if [ "${RTN}" == "NULL" -o "${RTN}" == "null" ] ; then
+    if [ "${RTN}" == "NULL" -o "${RTN}" == "null" -o "${RTN}" == "" ] ; then
         echo 0
     else
         echo $RTN
@@ -111,6 +112,7 @@ if [ $PARTICIPANTS -ge 1 ] ; then
     echo total P: ${PARTICIPANTS} C: ${CONFERENCES}
 fi
 
+echo SECONDS_SINCE_SUNDAY=$SECONDS_SINCE_SUNDAY
 {% for videobridge in videobridges %}
 {% set turn_on_part = hostvars[videobridge]['dynamic_jitsi_scaler_turn_on']['participants'] %}
 {% set turn_on_conf = hostvars[videobridge]['dynamic_jitsi_scaler_turn_on']['conferences'] %}
@@ -121,7 +123,6 @@ fi
 # Test fuer {{ videobridge}}
 # --------------------------------------------------------------------------------------
 FORCE_ON=0
-echo SEC=$SECONDS_SINCE_SUNDAY
 {% if 'timerange' in hostvars[videobridge]['dynamic_jitsi_scaler_turn_on'] %}
 {% for timerange in hostvars[videobridge]['dynamic_jitsi_scaler_turn_on']['timerange'] %}
 # if from day={{ timerange.from.weekday }} {{ timerange.from.hour }}:{{ timerange.from.min }} (((({{ timerange.from.weekday }}*24)+{{ timerange.from.hour }} )*60)+{{ timerange.from.min }})*60  to day={{
