@@ -28,42 +28,38 @@ ANSIBLE_DIR="/usr/local/share/adfc-ansible"
 
 ADMIN_MAIL={{ dynamic_admin_mail }}
 
-WOCHENTAG=$(date +%w)
-UHR=$(date +%H%M)
-if [ "$WOCHENTAG" == "0" -o "$WOCHENTAG" == "6" ] ; then
-    WERKTAG=0
-else
-    WERKTAG=1
-fi
-WHHM="${WERKTAG}${UHR:0:3}"
-
 source {{ dynamic_lib }}
+
+SECONDS_SINCE_SUNDAY=$(seconds_since_sunday)
 
 function prep_and_run_ansible_playbook() {
     ANSIBLE_PLAYBOOK="$1"
     LIMIT_HOST="$2"
-    eval $(ssh-agent -t 600)
-    ssh-add -q $SSH_KEY
+    echo start $(date) > /tmp/an_playbook.log
+    eval $(ssh-agent -t 600) >> /tmp/an_playbook.log
+    ssh-add -q $SSH_KEY >>/tmp/an_playbook.log
     if [ -d "${ANSIBLE_DIR}"  ] ; then
-        rm -f ${ANSIBLE_DIR}
+        rm -f ${ANSIBLE_DIR} >> /tmp/an_playbook.log
     fi
-    git clone $ANSIBLE_REPO $ANSIBLE_DIR
+    STATUS="FEHLER"
+    git clone $ANSIBLE_REPO $ANSIBLE_DIR 2>&1 >> /tmp/an_playbook.log
+    echo GIT_CLONE_RTN: $? >> playbook.log
     if [ -d "${ANSIBLE_DIR}"  ] ; then
         cd $ANSIBLE_DIR
-        date > playbook.log
+        mv /tmp/an_playbook.log playbook.log
         run_ansible_playbook $ANSIBLE_PLAYBOOK $LIMIT_HOST
         RTN=$?
         echo "RTN: $RTN"  >> playbook.log
-        date >> playbook.log
+        echo end $(date) >> playbook.log
         clear_cache
         if [ "$RTN" == "0" ] ; then
             STATUS="OK"
-        else
-            STATUS="FEHLER"
         fi
-        cat playbook.log | mailx $ADMIN_MAIL -s "[adfc-jitsi] ${STATUS} $LIMIT_HOST Playbook ${ANSIBLE_PLAYBOOK} result"
+        nl -ba playbook.log | mailx $ADMIN_MAIL -s "[adfc-jitsi] ${STATUS} $LIMIT_HOST Playbook ${ANSIBLE_PLAYBOOK} result"
         cd ..
         rm -rf "${ANSIBLE_DIR}"
+    else
+        nl -ba /tmp/an_playbook.log | mailx $ADMIN_MAIL -s "[adfc-jitsi] ${STATUS} $LIMIT_HOST Playbook ${ANSIBLE_PLAYBOOK} result"
     fi
     ssh-agent -k
 }
@@ -81,7 +77,7 @@ function turn_server_off() {
 function safe_query_participants() {
     SERVER=$1
     RTN=$(query_participants $SERVER)
-    if [ "${RTN}" == "NULL" -o "${RTN}" == "null" ] ; then
+    if [ "${RTN}" == "NULL" -o "${RTN}" == "null" -o "${RTN}" == "" ] ; then
         echo 0
     else
         echo $RTN
@@ -91,7 +87,7 @@ function safe_query_participants() {
 function safe_query_conferences() {
     SERVER=$1
     RTN=$(query_conferences $SERVER)
-    if [ "${RTN}" == "NULL" -o "${RTN}" == "null" ] ; then
+    if [ "${RTN}" == "NULL" -o "${RTN}" == "null" -o "${RTN}" == "" ] ; then
         echo 0
     else
         echo $RTN
@@ -118,6 +114,7 @@ if [ $PARTICIPANTS -ge 1 ] ; then
     echo total P: ${PARTICIPANTS} C: ${CONFERENCES}
 fi
 
+echo SECONDS_SINCE_SUNDAY=$SECONDS_SINCE_SUNDAY
 {% for videobridge in videobridges %}
 {% set turn_on_part = hostvars[videobridge]['dynamic_jitsi_scaler_turn_on']['participants'] %}
 {% set turn_on_conf = hostvars[videobridge]['dynamic_jitsi_scaler_turn_on']['conferences'] %}
@@ -127,15 +124,25 @@ fi
 # --------------------------------------------------------------------------------------
 # Test fuer {{ videobridge}}
 # --------------------------------------------------------------------------------------
+FORCE_ON=0
+{% if 'timerange' in hostvars[videobridge]['dynamic_jitsi_scaler_turn_on'] %}
+{% for timerange in hostvars[videobridge]['dynamic_jitsi_scaler_turn_on']['timerange'] %}
+# if from day={{ timerange.from.weekday }} {{ timerange.from.hour }}:{{ timerange.from.min }} (((({{ timerange.from.weekday }}*24)+{{ timerange.from.hour }} )*60)+{{ timerange.from.min }})*60  to day={{
+    timerange.to.weekday }} {{ timerange.to.hour }}:{{ timerange.to.min }} (((({{ timerange.to.weekday }}*24)+{{ timerange.to.hour }} )*60)+{{ timerange.to.min }})*60
+{% set tr_from_seconds = ((((timerange.from.weekday *24)+ timerange.from.hour)*60)+timerange.from.min)*60 %}
+{% set tr_to_seconds = ((((timerange.to.weekday *24)+ timerange.to.hour)*60)+timerange.to.min)*60 %}
+if [ ${SECONDS_SINCE_SUNDAY} -ge {{ tr_from_seconds }} -a ${SECONDS_SINCE_SUNDAY} -le {{ tr_to_seconds }} ] ; then
+    FORCE_ON=1
+fi
+{% endfor %}
+{% endif %}
 HETZNER_JSON=$(query_hetzner_server |jq -r '.[] | select(.name == "{{ videobridge }}")')
 if [ "${HETZNER_JSON}" = "" ] ; then
     if [ $PARTICIPANTS -ge {{ turn_on_part }} -a $CONFERENCES -ge {{ turn_on_conf }} ] ; then
         turn_server_on {{ videobridge }}
-{% if 'whhm' in hostvars[videobridge]['dynamic_jitsi_scaler_turn_on'] %}
-    elif [ $WHHM = "{{ hostvars[videobridge]['dynamic_jitsi_scaler_turn_on']['whhm'] }}" ] ; then
-        echo WERKTAG START
+    elif [ $FORCE_ON = "1" ] ; then
+        echo FORCE_ON
         turn_server_on {{ videobridge }}
-{% endif %}
     fi
 else
     IS_SERVER_ON=1
@@ -145,7 +152,11 @@ else
     MINUTE_MODULO=$(( ((NOW_SEC - CREATED_SEC) % 3600) / 60))
     echo {{ videobridge}} CRE $CREATED CRE_SEC $CREATED_SEC  NOW $(date +%s)  Minute Modulo: $MINUTE_MODULO
     if [ $PARTICIPANTS -le {{ turn_off_part  }} -a $CONFERENCES -le {{ turn_off_conf }} -a $MINUTE_MODULO -ge $MINUTE_MODULO_LIMIT ] ; then
-        turn_server_off {{ videobridge }}
+        if [ $FORCE_ON = "1" ] ; then
+            echo FORCE_ON=1 - Not turned off
+        else
+            turn_server_off {{ videobridge }}
+        fi
     fi
 fi
 {% endfor %}

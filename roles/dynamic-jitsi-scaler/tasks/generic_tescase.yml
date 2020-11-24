@@ -35,6 +35,8 @@
 
 - name: "dynamic-jitsi-sclaer |  test {{ testcase.name }} | run"
   command: /usr/local/bin/dynamic-jitsi-scaler-test
+  register: djs_testcase
+  failed_when: (djs_testcase.rc != 0)  or (djs_testcase.stderr |length >0)
 
 - name: "dynamic-jitsi-sclaer |  test {{ testcase.name }} | check vbh01 setup playbook is {{ testcase.result.playbook_setup_vbh01 }}"
   stat:
