@@ -35,29 +35,31 @@ SECONDS_SINCE_SUNDAY=$(seconds_since_sunday)
 function prep_and_run_ansible_playbook() {
     ANSIBLE_PLAYBOOK="$1"
     LIMIT_HOST="$2"
-    eval $(ssh-agent -t 600)
-    ssh-add -q $SSH_KEY
+    echo start $(date) > /tmp/an_playbook.log
+    eval $(ssh-agent -t 600) >> /tmp/an_playbook.log
+    ssh-add -q $SSH_KEY >>/tmp/an_playbook.log
     if [ -d "${ANSIBLE_DIR}"  ] ; then
-        rm -f ${ANSIBLE_DIR}
+        rm -f ${ANSIBLE_DIR} >> /tmp/an_playbook.log
     fi
     STATUS="FEHLER"
-    date > playbook.log
-    git clone $ANSIBLE_REPO $ANSIBLE_DIR 2>&1 >> playbook.log
+    git clone $ANSIBLE_REPO $ANSIBLE_DIR 2>&1 >> /tmp/an_playbook.log
+    echo GIT_CLONE_RTN: $? >> playbook.log
     if [ -d "${ANSIBLE_DIR}"  ] ; then
         cd $ANSIBLE_DIR
+        mv /tmp/an_playbook.log playbook.log
         run_ansible_playbook $ANSIBLE_PLAYBOOK $LIMIT_HOST
         RTN=$?
         echo "RTN: $RTN"  >> playbook.log
-        date >> playbook.log
+        echo end $(date) >> playbook.log
         clear_cache
         if [ "$RTN" == "0" ] ; then
             STATUS="OK"
         fi
-        cat playbook.log | mailx $ADMIN_MAIL -s "[adfc-jitsi] ${STATUS} $LIMIT_HOST Playbook ${ANSIBLE_PLAYBOOK} result"
+        nl -ba playbook.log | mailx $ADMIN_MAIL -s "[adfc-jitsi] ${STATUS} $LIMIT_HOST Playbook ${ANSIBLE_PLAYBOOK} result"
         cd ..
         rm -rf "${ANSIBLE_DIR}"
     else
-        cat playbook.log | mailx $ADMIN_MAIL -s "[adfc-jitsi] ${STATUS} $LIMIT_HOST Playbook ${ANSIBLE_PLAYBOOK} result"
+        nl -ba /tmp/an_playbook.log | mailx $ADMIN_MAIL -s "[adfc-jitsi] ${STATUS} $LIMIT_HOST Playbook ${ANSIBLE_PLAYBOOK} result"
     fi
     ssh-agent -k
 }
