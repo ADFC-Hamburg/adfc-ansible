@@ -40,7 +40,15 @@
        - "{{ hcloud_host.hcloud_server.ipv4_address }}"
        - "{{ hcloud_host.hcloud_server.ipv6 | replace('/64','1') }}"
 
-- name: Set Floating IP
+- name: Debug1
+  debug:
+    msg: "{{ hcloud_floating_ips }}"
+
+- name: Debug2
+  debug:
+    msg: "{{ hcloud_floating_ips  | length > 0 }}"
+
+- name: Include Set Floating IP
   include_tasks: hcloud_floating_ip.yml
   when: "hcloud_floating_ips | length > 0"
 
