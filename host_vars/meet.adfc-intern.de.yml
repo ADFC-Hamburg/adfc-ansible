@@ -117,6 +117,8 @@ asterisk_rooms:
     name: KV_SHG
   2015:
     name: KV_LER
+  2016:
+    name: KV_EL
   3001:
     name: ADFCNRWThemenaustausch
   3002:
