@@ -4,10 +4,12 @@ dynamic_jitsi_scaler_testcases:
       meet: 10
       vbh01: 8
       vbh02: null
+      vbdh01: null
     conferences:
       meet: 1
       vbh01: 1
       vbh02: null
+      vbdh01: null
     hcloud_api: |
       [ {
         "id": 42,
@@ -28,10 +30,12 @@ dynamic_jitsi_scaler_testcases:
       meet: 4
       vbh01: null
       vbh02: null
+      vbdh01: null
     conferences:
       meet: 1
       vbh01: null
       vbh02: null
+      vbdh01: null
     hcloud_api: []
     result:
       playbook_setup_vbh01: false
@@ -44,10 +48,12 @@ dynamic_jitsi_scaler_testcases:
       meet: 2
       vbh01: 2
       vbh02: null
+      vbdh01: null
     conferences:
       meet: 1
       vbh01: 1
       vbh02: null
+      vbdh01: null
     hcloud_api: |
       [ {
         "id": 42,
@@ -68,10 +74,12 @@ dynamic_jitsi_scaler_testcases:
       meet: 16
       vbh01: null
       vbh02: null
+      vbdh01: null
     conferences:
       meet: 3
       vbh01: null
       vbh02: null
+      vbdh01: null
     hcloud_api: []
     result:
       playbook_setup_vbh01: true
@@ -84,10 +92,12 @@ dynamic_jitsi_scaler_testcases:
       meet: 2
       vbh01: 0
       vbh02: null
+      vbdh01: null
     conferences:
       meet: 1
       vbh01: 0
       vbh02: null
+      vbdh01: null
     hcloud_api: |
       [ {
         "id": 42,
