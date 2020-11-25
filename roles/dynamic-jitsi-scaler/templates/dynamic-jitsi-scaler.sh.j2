@@ -1,8 +1,15 @@
 #!/bin/bash
 # {{ ansible_managed }}
 # This Script is called by cron every minute
-
-{% set videobridges = [ 'vbh01.meet.adfc-intern.de', 'vbh02.meet.adfc-intern.de'] %}
+{% set videobridges = [] %}
+{% for myhost in groups['all'] %}
+{% if myhost != 'meet.adfc-intern.de' and 'jitsi_meet_server_name' in hostvars[myhost] %}
+{% if hostvars[myhost].jitsi_meet_server_name  == "meet.adfc-intern.de" %}
+{{ videobridges.append(myhost) }}
+{% endif %}
+{% endif %}
+{% endfor %}
+# vbs: {{ videobridges}}
 INFLUX_PW=$(cat /etc/influx.secrect)
 INFLUX_DB="telegraf"
 VB_HOST="meet"
@@ -116,9 +123,9 @@ fi
 
 echo SECONDS_SINCE_SUNDAY=$SECONDS_SINCE_SUNDAY
 {% for videobridge in videobridges %}
-{% set turn_on_part = hostvars[videobridge]['dynamic_jitsi_scaler_turn_on']['participants'] %}
-{% set turn_on_conf = hostvars[videobridge]['dynamic_jitsi_scaler_turn_on']['conferences'] %}
-{% set turn_off_part = hostvars[videobridge]['dynamic_jitsi_scaler_turn_off']['participants'] %}
+{% set turn_on_part = hostvars[videobridge]['dynamic_jitsi_scaler_turn_on']['participants']  %}
+{% set turn_on_conf = hostvars[videobridge]['dynamic_jitsi_scaler_turn_on']['conferences']  %}
+{% set turn_off_part = hostvars[videobridge]['dynamic_jitsi_scaler_turn_off']['participants']  %}
 {% set turn_off_conf = hostvars[videobridge]['dynamic_jitsi_scaler_turn_off']['conferences'] %}
 
 # --------------------------------------------------------------------------------------

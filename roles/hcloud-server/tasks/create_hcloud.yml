@@ -18,7 +18,6 @@
   delegate_to: localhost
   register: ssh_hcloud_add_key
 
-
 - name: Create_host
   hcloud_server:
     api_token: "{{ hcloud_api_token }}"
@@ -33,62 +32,25 @@
   delegate_to: localhost
   register: hcloud_host
 
-- name: test floating_ips
-  hcloud_floating_ip_info:
-    api_token: "{{ hcloud_api_token }}"
-  register: hcloud_floating_ip_info
-  delegate_to: localhost
-
-- name: Set Floating Ip fact
-  set_fact:
-    hc_ipv4_floating_ip: "{{ hcloud_floating_ip_info.hcloud_floating_ip_info
-      |selectattr('ip', 'match', lookup('dig', inventory_hostname, 'qtype=A') ) | list |first  }}"
-    hc_ipv6_floating_ip: "{{ hcloud_floating_ip_info.hcloud_floating_ip_info
-      |selectattr('ip', 'match', lookup('dig', inventory_hostname, 'qtype=AAAA') | regex_replace('::1$','::/64') ) |list |first  }}"
-
-- name: Assign floating IPv4 to a server
-  hcloud_floating_ip:
-    api_token: "{{ hcloud_api_token }}"
-    id: "{{ hc_ipv4_floating_ip.id }}"
-    server: "{{ inventory_hostname }}"
-    state: present
-  when: hc_ipv4_floating_ip.server != inventory_hostname
-  delegate_to: localhost
-
-- name: Assign floating IPv6 to a server
-  hcloud_floating_ip:
-    api_token: "{{ hcloud_api_token }}"
-    id: "{{ hc_ipv6_floating_ip.id }}"
-    server: "{{ inventory_hostname }}"
-    state: present
-  when: hc_ipv6_floating_ip.server != inventory_hostname
-  delegate_to: localhost
-
-- name: Pause
-  pause:
-    seconds: 30
-
-- name: create floating_ip config
-  template:
-    src: floating_ip.cfg.j2
-    dest: /etc/network/interfaces.d/60-my-floating-ip.cfg
-    mode: "0644"
+- name: Set Dynamic IP
+  include_role:
+    name: ucs_dns
   vars:
-    ansible_host: "{{ hcloud_host.hcloud_server.ipv4_address }}"
-    ansible_ssh_extra_args: "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+    ucs_dns_ips:
+       - "{{ hcloud_host.hcloud_server.ipv4_address }}"
+       - "{{ hcloud_host.hcloud_server.ipv6 | replace('/64','1') }}"
 
-- name: restart network
-  systemd:
-    name: networking
-    state: restarted
-  vars:
-    ansible_host: "{{ hcloud_host.hcloud_server.ipv4_address }}"
-    ansible_ssh_extra_args: "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+- name: Set Floating IP
+  include_tasks: hcloud_floating_ip.yml
+  when: "hcloud_floating_ip | length > 0"
 
 - name: Create directories
   file:
     path: "{{ item }}"
     state: directory
+    mode: "0700"
+    owner: "root"
+    group: "root"
   delegate_to: proxmox01.adfc-intern.de
   with_items:
     - "/etc/adfc"
@@ -121,6 +83,9 @@
   copy:
     content: "{{ hcloud_ssh_keys.stdout }}"
     dest: "/etc/adfc_ssh_keys.tar"
+    mode: "0600"
+    owner: root
+    group: root
   vars:
     ansible_host: "{{ hcloud_host.hcloud_server.ipv4_address }}"
     ansible_ssh_extra_args: "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"

@@ -1,0 +1,8 @@
+- name: Setup Hetzner Server
+  hosts: test1.dyndns.adfc-intern.de
+  gather_facts: no
+  roles:
+    - hcloud-server
+
+- name: setup meet only
+  import_playbook: setup-meet-only.yml

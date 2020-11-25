@@ -31,3 +31,13 @@
         name: "{{ inventory_hostname }}"
         state: absent
       delegate_to: localhost
+
+    - name: delete dns entry
+      include_role:
+        name: ucs_dns
+      vars:
+        ucs_dns_ips:
+          - 127.0.0.1
+          - ::1
+        usc_dns_ttl_in_seconds: 60
+        ucs_dns_waittime: 1

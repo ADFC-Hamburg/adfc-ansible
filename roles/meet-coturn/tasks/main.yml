@@ -10,6 +10,7 @@
   apt:
     name:
       - coturn
+      - ufw
   tags: coturn
 - name: Check if Password file exists
   stat:
