@@ -1,2 +1,2 @@
 authorized_key_user: root
-hcloud_floating_ip: []
+hcloud_floating_ips: []
