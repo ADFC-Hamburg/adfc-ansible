@@ -2,18 +2,18 @@ dynamic_jitsi_scaler_testcases:
   - name: Leave on vbh01
     participants:
       meet: 10
-      vbh01: 8
+      vbh01: null
       vbh02: null
-      vbdh01: null
+      vbdh01: 8
     conferences:
       meet: 1
-      vbh01: 1
+      vbh01: null
       vbh02: null
-      vbdh01: null
+      vbdh01: 1
     hcloud_api: |
       [ {
         "id": 42,
-        "name": "vbh01.meet.adfc-intern.de",
+        "name": "vbdh01.meet.adfc-intern.de",
         "status": "running",
         "created": "{{ lookup('pipe','date -d "-50 min" +%Y-%m-%dT%H:%M:%S%:z') }}",
         "labels": {},
@@ -24,6 +24,8 @@ dynamic_jitsi_scaler_testcases:
       playbook_delete_vbh01: false
       playbook_setup_vbh02: false
       playbook_delete_vbh02: false
+      playbook_setup_vbdh01: false
+      playbook_delete_vbdh01: false
 
   - name: Leave off
     participants:
@@ -42,22 +44,24 @@ dynamic_jitsi_scaler_testcases:
       playbook_delete_vbh01: false
       playbook_setup_vbh02: false
       playbook_delete_vbh02: false
+      playbook_setup_vbdh01: false
+      playbook_delete_vbdh01: false
 
   - name: Modulo Test
     participants:
       meet: 2
-      vbh01: 2
+      vbh01: null
       vbh02: null
-      vbdh01: null
+      vbdh01: 2
     conferences:
       meet: 1
-      vbh01: 1
+      vbh01: null
       vbh02: null
-      vbdh01: null
+      vbdh01: 1
     hcloud_api: |
       [ {
         "id": 42,
-        "name": "vbh01.meet.adfc-intern.de",
+        "name": "vbdh01.meet.adfc-intern.de",
         "status": "running",
         "created": "{{ lookup('pipe','date -d "-20 min" +%Y-%m-%dT%H:%M:%S%:z') }}",
         "labels": {},
@@ -68,6 +72,8 @@ dynamic_jitsi_scaler_testcases:
       playbook_delete_vbh01: false
       playbook_setup_vbh02: false
       playbook_delete_vbh02: false
+      playbook_setup_vbdh01: false
+      playbook_delete_vbdh01: false
 
   - name: Switch on
     participants:
@@ -82,26 +88,28 @@ dynamic_jitsi_scaler_testcases:
       vbdh01: null
     hcloud_api: []
     result:
-      playbook_setup_vbh01: true
+      playbook_setup_vbh01: false
       playbook_delete_vbh01: false
       playbook_setup_vbh02: false
       playbook_delete_vbh02: false
+      playbook_setup_vbdh01: true
+      playbook_delete_vbdh01: false
 
   - name: Switch off
     participants:
       meet: 2
-      vbh01: 0
+      vbh01: null
       vbh02: null
-      vbdh01: null
+      vbdh01: 0
     conferences:
       meet: 1
-      vbh01: 0
+      vbh01: null
       vbh02: null
-      vbdh01: null
+      vbdh01: 0
     hcloud_api: |
       [ {
         "id": 42,
-        "name": "vbh01.meet.adfc-intern.de",
+        "name": "vbdh01.meet.adfc-intern.de",
         "status": "running",
         "created": "{{ lookup('pipe','date -d "-50 min" +%Y-%m-%dT%H:%M:%S%:z') }}",
         "labels": {},
@@ -109,6 +117,8 @@ dynamic_jitsi_scaler_testcases:
       }]
     result:
       playbook_setup_vbh01: false
-      playbook_delete_vbh01: true
+      playbook_delete_vbh01: false
       playbook_setup_vbh02: false
       playbook_delete_vbh02: false
+      playbook_setup_vbdh01: false
+      playbook_delete_vbdh01: true
