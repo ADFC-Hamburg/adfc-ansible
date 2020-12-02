@@ -1,0 +1,52 @@
+ansible_python_interpreter: /usr/bin/python3
+
+hcloud_image: debian-10
+# cx11 kleinster Server mit einer CPU für Tests
+# ccx31 8 Dedicierte VCPUs 32 GB RAM
+hcloud_server_type: "cx11"
+hcloud_server_location: nbg1
+
+ucs_dns_zonename: "dyndns.adfc-intern.de"
+ucs_computer_position: "cn=computers,dc=adfc-intern,dc=de"
+
+ansible_ssh_extra_args: "-o CheckHostIP=No"
+
+certbot_create_if_missing: true
+certbot_admin_email: "webmaster@adfc-intern.de"
+certbot_certs:
+  - domains:
+     - "{{ inventory_hostname }}"
+     - slides.adfc-intern.de
+     - test1.slides.adfc-intern.de
+     - hessen.slides.adfc-intern.de
+certbot_create_standalone_stop_services: []
+
+ucs_master: int-master.adfc-intern.de
+
+ssh_users_admins:
+  - svena
+  - georgs
+  - janb
+  - ansgarh
+
+openslides_instances:
+  - domainname: test1.slides.adfc-intern.de
+    email_host: localhost
+    email_port: 587
+    email_host_user: ""
+    default_from_email: ""
+    reset_password_verbose_errors: no
+    debug: yes
+    enable_electronic_voting: yes
+    jitsi_domain: 'meet.adfc-intern.de'
+    jitsi_room_name: 'test'
+  - domainname: hessen.slides.adfc-intern.de
+    email_host: localhost
+    email_port: 587
+    email_host_user: ""
+    default_from_email: ""
+    reset_password_verbose_errors: no
+    debug: no
+    enable_electronic_voting: yes
+    jitsi_domain: 'meet.adfc-intern.de'
+    jitsi_room_name: 'hessen'

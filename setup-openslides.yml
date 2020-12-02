@@ -1,0 +1,12 @@
+- hosts: openslides_server
+  gather_facts: no
+  roles:
+    - hcloud-server
+  tasks:
+    - name: Installiere Pakete
+      apt:
+        name:
+          - python-apt
+          - htop
+- name: setup openslides only
+  import_playbook: setup-openslides-only.yml

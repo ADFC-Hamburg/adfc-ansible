@@ -1,0 +1,116 @@
+"""
+Settings file for OpenSlides.
+
+For more information on this file, see
+https://github.com/OpenSlides/OpenSlides/blob/master/SETTINGS.rst
+"""
+
+import os
+from openslides.global_settings import *
+
+
+# The directory for user specific data files
+
+OPENSLIDES_USER_DATA_DIR = '/usr/local/share/openslides/instances/{{ osi.domainname }}/personal_data/var'
+
+INSTALLED_PLUGINS += (
+#    'plugin_module_name',
+)
+
+INSTALLED_APPS += INSTALLED_PLUGINS
+SECRET_KEY = '{{ secret_key_slurp.content | b64decode }}'
+
+DEBUG = {% if osi.debug |bool %}True{% else %}False{% endif %}
+RESET_PASSWORD_VERBOSE_ERRORS = {% if osi.reset_password_verbose_errors |bool %}True{% else %}False{% endif %}
+
+EMAIL_HOST = '{{ osi.email_host }}'
+EMAIL_PORT = {{ osi.email_port }}
+EMAIL_HOST_USER = '{{osi.email_host_user }}'
+EMAIL_HOST_PASSWORD = '{{ email_host_password }}'
+DEFAULT_FROM_EMAIL = '{{ osi.default_from_email }}'
+
+# Increasing Upload size to 100mb (default is 2.5mb)
+DATA_UPLOAD_MAX_MEMORY_SIZE = 104857600
+
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(OPENSLIDES_USER_DATA_DIR, 'db.sqlite3'),
+    }
+}
+
+
+# Set use_redis to True to activate redis as cache-, asgi- and session backend.
+use_redis = False
+
+ENABLE_SAML = False
+
+# Controls if electronic voting (means non-analog polls) are enabled.
+ENABLE_ELECTRONIC_VOTING = {% if osi.enable_electronic_voting |bool %}True{% else %}False{% endif %}
+
+# Jitsi integration
+{% if osi.jitsi_domain |default('') != '' %}
+JITSI_DOMAIN = '{{ osi.jitsi_domain }}'
+JITSI_ROOM_NAME = '{{ osi.jitsi_room_name }}'
+{% endif %}
+# JITSI_PASSWORD = None
+
+# Internationalization
+# https://docs.djangoproject.com/en/1.10/topics/i18n/
+
+TIME_ZONE = 'Europe/Berlin'
+
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/1.10/howto/static-files/
+
+STATICFILES_DIRS = [os.path.join(OPENSLIDES_USER_DATA_DIR, 'static')] + STATICFILES_DIRS
+
+STATIC_ROOT = os.path.join(OPENSLIDES_USER_DATA_DIR, 'collected-static')
+
+
+# Files
+# https://docs.djangoproject.com/en/1.10/topics/files/
+
+MEDIA_ROOT = os.path.join(OPENSLIDES_USER_DATA_DIR, 'media', '')
+
+
+# Password validation
+# https://docs.djangoproject.com/en/1.10/topics/auth/passwords/#module-django.contrib.auth.password_validation
+# AUTH_PASSWORD_VALIDATORS = []
+
+
+# Logging
+# see https://docs.djangoproject.com/en/2.2/topics/logging/
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'gunicorn': {
+            'format': '{asctime} [{process:d}] [{levelname}] {name} {message}',
+            'style': '{',
+            'datefmt': '[%Y-%m-%d %H:%M:%S %z]',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'gunicorn',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+        },
+        'openslides': {
+            'handlers': ['console'],
+            'level': os.getenv('OPENSLIDES_LOG_LEVEL', 'INFO'),
+        }
+    },
+}
+
+SETTINGS_FILEPATH = __file__
+

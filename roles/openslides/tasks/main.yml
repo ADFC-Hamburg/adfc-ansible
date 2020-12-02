@@ -1,0 +1,72 @@
+- name: Create Folder
+  file:
+    path: "{{ item }}"
+    mode: "0755"
+    state: directory
+    owner: root
+    group: root
+  with_list:
+    - /usr/local/share/openslides
+    - /usr/local/share/openslides/py-venv-{{ openslides_version }}
+    - /usr/local/share/openslides/instances
+
+- name: Install APT Dependencies
+  apt:
+    name: "{{ openslides_apt_dependencies }}"
+
+- name: Create openslides virtualenv
+  pip:
+    name: "openslides=={{ openslides_version }}"
+    virtualenv: "/usr/local/share/openslides/py-venv-{{ openslides_version }}"
+    virtualenv_command: /usr/bin/python3 -m venv
+
+- name: Add opeslides system user
+  user:
+    name: openslides
+    comment: Open Slides Sytem User
+    system: yes
+
+- name: openslides start port
+  copy:
+    content: "8000"
+    dest: /usr/local/share/openslides/next_free_port.txt
+    force: no
+    group: root
+    owner: root
+    mode: 0644
+
+- name: Loop over instances
+  include_tasks: openslides_instance.yml
+  loop: "{{ openslides_instances }}"
+  loop_control:
+    loop_var: osi
+
+- name: Create redirect nginx config
+  template:
+    src: "{{ item }}.j2"
+    dest: "/etc/nginx/sites-available/{{ item }}"
+    mode: 0644
+    owner: root
+    group: root
+  notify: restart nginx
+  with_items:
+    - nginx-http-redirect
+    - nginx-https-default
+
+- name: Create Nginx symlinks
+  file:
+    src: "/etc/nginx/sites-available/{{ item }}"
+    dest: "/etc/nginx/sites-enabled/{{ item }}"
+    owner: root
+    group: root
+    state: link
+  notify: restart nginx
+  with_items:
+    - nginx-http-redirect
+    - nginx-https-default
+
+- name: Delete nginx default site
+  file:
+    dest: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: restart nginx

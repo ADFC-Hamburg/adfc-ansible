@@ -1,0 +1,12 @@
+- hosts: openslides_server
+  gather_facts: no
+  tasks:
+    - name: Set Dynamic IP
+      include_role:
+        name: ucs_dns
+      vars:
+        ucs_dns_ips:
+          - "78.47.142.81"
+          - "2a01:4f8:c0c:647c::1"
+
+

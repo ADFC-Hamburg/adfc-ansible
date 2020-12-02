@@ -1,0 +1,57 @@
+#worker_processes auto;
+#
+#events {
+#    worker_connections 32000;
+#}
+#
+server {
+        listen 443 ssl;
+        listen [::]:443 ssl;
+
+        server_name  {{ osi.domainname }};
+
+        root   /usr/local/share/openslides/py-venv-3.2/lib/python3.7/site-packages/openslides/static;
+        index  index.html index.htm;
+        include /etc/nginx/mime.types;
+
+        # Optimizations for OpenSlides
+        client_max_body_size 100M;
+        proxy_connect_timeout 300s;
+        proxy_read_timeout 300s;
+
+        proxy_set_header Host $http_host;
+
+        gzip on;
+        gzip_min_length 1000;
+        gzip_proxied expired no-cache no-store private auth;
+        gzip_types text/plain text/css application/json application/javascript application/x-javascript text/xml application/xml application/xml+rss text/javascript;
+
+        location /apps {
+            proxy_pass http://{{ openslides_dest }};
+        }
+        location /media/ {
+            proxy_pass http://{{ openslides_dest }};
+        }
+        location /rest {
+            proxy_pass http://{{ openslides_dest }};
+        }
+        location /ws {
+            proxy_pass http://{{ openslides_dest }};
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "Upgrade";
+        }
+        location /server-version.txt {
+            proxy_pass http://{{ openslides_dest }};
+        }
+
+        location = /basic_status {
+            stub_status;
+        }
+
+        location / {
+            try_files $uri $uri/ =404;
+        }
+
+
+}
