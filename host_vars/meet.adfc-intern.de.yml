@@ -131,6 +131,8 @@ asterisk_rooms:
     name: ADFCNRWThemenaustausch
   3002:
     name: ADFCNRWLandeshauptausschuss
+  3003:
+    name: ADFCNRWAGMobilitaet
   4001:
     name: htk-kreisvorstand
   4002:
