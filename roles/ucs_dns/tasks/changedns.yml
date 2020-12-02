@@ -61,7 +61,7 @@
   uri:
     headers:
       Accept: application/json
-    url: "https://{{ ucs_dns_dnsserver }}/univention/udm/dns/host_record/{{ ucs_dns_entry_dn |urlencode }}"
+    url: "https://{{ ucs_dns_dnsserver }}/univention/udm/dns/host_record/"
     url_username: "{{ ucs_dns_dnsserver_user }}"
     url_password: "{{ ucs_dns_dnsserver_password }}"
     method: POST
