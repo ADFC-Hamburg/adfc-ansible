@@ -22,6 +22,9 @@ all:
                 vbh01.meet.adfc-intern.de:
                 vbh02.meet.adfc-intern.de:
                 vbdh01.meet.adfc-intern.de:
+            dyn_meet_hessen_vb:
+              hosts:
+                vb01-mv-hessen.dyndns.adfc-intern.de:
             meet_test:
               hosts:
                 test.adfc-intern.de:
