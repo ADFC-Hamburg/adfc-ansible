@@ -13,3 +13,11 @@ certbot_certs:
      - "mv-hessen.adfc-intern.de"
 jitsi_meet_ssl_cert_path: "/etc/letsencrypt/live/{{ inventory_hostname }}/fullchain.pem"
 jitsi_meet_ssl_key_path: "/etc/letsencrypt/live/{{ inventory_hostname }}/privkey.pem"
+
+jitsi_meet_stun_servers:
+  - mv-hessen.adfc-intern.de
+
+jitsi_meet_octo: yes
+jitsi_meet_octo_propability: 1
+jitsi_meet_region: region1
+jitsi_jicofo_bridge_selector: split
