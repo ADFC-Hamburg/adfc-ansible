@@ -9,6 +9,6 @@ jitsi_meet_use_stun_turn: false
 jitsi_meet_jvb_sipcfg_authorized_source_regexp: ""
 
 jitsi_meet_octo: yes
-jitsi_meet_octo_propability: 1
+jitsi_meet_octo_probability: 1
 jitsi_meet_region: region1
 jitsi_jicofo_bridge_selector: split

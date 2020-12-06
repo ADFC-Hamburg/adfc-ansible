@@ -58,7 +58,7 @@ var config = {
     testing: {
     {% if jitsi_meet_octo | default("no") | bool %}
         octo: {
-            propability: {{  jitsi_meet_octo_propability | default("1") }}
+            probability: {{  jitsi_meet_octo_probability | default("1") }}
         },
     {% else %}
         // No OCTO Configured
