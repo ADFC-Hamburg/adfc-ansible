@@ -1,0 +1,13 @@
+- name: reload systemd
+  systemd:
+    daemon_reload: yes
+
+- name: restart nginx
+  systemd:
+    state: restarted
+    name: nginx
+
+- name: restart adfc-webcfg
+  systemd:
+    state: restarted
+    name: adfc-webcfg.service

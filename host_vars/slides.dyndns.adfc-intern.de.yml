@@ -11,6 +11,8 @@ ucs_computer_position: "cn=computers,dc=adfc-intern,dc=de"
 
 ansible_ssh_extra_args: "-o CheckHostIP=No"
 
+adfc_intern_webcfg_domainname: werkstatt.adfc-intern.de
+
 certbot_create_if_missing: true
 certbot_admin_email: "webmaster@adfc-intern.de"
 certbot_certs:
@@ -19,7 +21,9 @@ certbot_certs:
      - slides.adfc-intern.de
      - test1.slides.adfc-intern.de
      - hessen.slides.adfc-intern.de
-certbot_create_standalone_stop_services: []
+     - "{{ adfc_intern_webcfg_domainname }}"
+certbot_create_standalone_stop_services:
+  - nginx
 
 ucs_master: int-master.adfc-intern.de
 

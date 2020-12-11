@@ -1,0 +1,91 @@
+- name: Install APT Dependencies
+  apt:
+    name: "{{ adfc_intern_webcfg_apt_dependencies }}"
+
+- name: Create Folder
+  file:
+    path: "{{ item }}"
+    mode: "0755"
+    state: directory
+    owner: root
+    group: root
+  with_list:
+    - "{{ adfc_intern_webcfg_basedir }}"
+    - "{{ adfc_intern_webcfg_basedir }}/py-venv"
+    - "{{ adfc_intern_webcfg_basedir }}/attibute_maps"
+    - /var/www/empty
+
+- name: checkout adfc intern git
+  git:
+    repo: "{{ adfc_intern_webcfg_git_repo }}"
+    dest: "{{ adfc_intern_webcfg_basedir }}/app"
+    version: "{{ adfc_intern_webcfg_git_version }}"
+  notify: restart adfc-webcfg
+
+- name: Create adfc intern virtualenv
+  pip:
+    requirements: "{{ adfc_intern_webcfg_basedir }}/app/requirements/base.txt"
+    virtualenv: "{{ adfc_intern_webcfg_basedir }}/py-venv"
+    virtualenv_command: /usr/bin/python3 -m venv
+  notify: restart adfc-webcfg
+
+- name: Create User
+  user:
+    name: adfc-webcfg
+    comment: ADFC Webfcfg User
+    system: yes
+
+- name: Create Data Folder
+  file:
+    path: "{{ adfc_intern_webcfg_basedir }}/data"
+    mode: "0755"
+    state: directory
+    owner: adfc-webcfg
+    group: root
+
+- name: Generate Config file
+  template:
+    src: adfc-webcfg-config.py.j2
+    dest:  "{{ adfc_intern_webcfg_basedir }}/app/adfc_intern/prodsettings.py"
+    mode: "0644"
+  notify: restart adfc-webcfg
+
+- name: Copy saml_uri.py
+  copy:
+    src: saml_uri.py
+    dest: "{{ adfc_intern_webcfg_basedir }}/attibute_maps/saml_uri.py"
+    mode: "0644"
+    owner: root
+    group: root
+  notify: restart adfc-webcfg
+
+- name: Generate systemd service
+  template:
+    src: "adfc-webcfg.service.j2"
+    dest: "/lib/systemd/system/adfc-webcfg.service"
+    mode: "0644"
+  notify: reload systemd
+
+- name: Create nginx config
+  template:
+    src: "adfc-webcfg-nginx.j2"
+    dest: "/etc/nginx/sites-available/https-{{ adfc_intern_webcfg_domainname }}"
+    mode: 0644
+    owner: root
+    group: root
+  notify: restart nginx
+
+- name: Create Nginx symlinks
+  file:
+    src: "/etc/nginx/sites-available/https-{{ adfc_intern_webcfg_domainname }}"
+    dest: "/etc/nginx/sites-enabled/https-{{ adfc_intern_webcfg_domainname }}"
+    owner: root
+    group: root
+    state: link
+  notify: restart nginx
+
+- name: Enable adfc-webcfg
+  systemd:
+    name: adfc-webcfg.service
+    enabled: yes
+    state: started

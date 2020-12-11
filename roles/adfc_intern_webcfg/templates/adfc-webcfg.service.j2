@@ -1,0 +1,13 @@
+# {{ ansible_managed }}
+[Unit]
+Description=ADFC Webcfg
+After=systemd-timesyncd.service
+
+[Service]
+Type=simple
+User=adfc-webcfg
+Environment="DJANGO_SETTINGS_MODULE=adfc_intern.prodsettings"
+WorkingDirectory={{ adfc_intern_webcfg_basedir }}/app
+ExecStartPre={{ adfc_intern_webcfg_basedir }}/py-venv/bin/python manage.py migrate
+ExecStart={{ adfc_intern_webcfg_basedir }}/py-venv/bin/python manage.py runserver 127.0.0.1:{{ adfc_intern_webcfg_port }}
+PrivateTmp=true

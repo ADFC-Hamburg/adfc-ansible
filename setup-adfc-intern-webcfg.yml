@@ -1,0 +1,4 @@
+- hosts: slides.dyndns.adfc-intern.de
+  gather_facts: yes
+  roles:
+    - adfc_intern_webcfg
