@@ -4,6 +4,8 @@
     chdir: "/etc/letsencrypt"
   register: hcloud_lenc
   no_log: True
+  ignore_errors: true
+  ignore_unreachable: true
   tags:
     - skip_ansible_lint
 
@@ -12,3 +14,4 @@
     content: "{{ hcloud_lenc.stdout }}"
     dest: "/etc/adfc/hcloud/letsencrypt/{{ inventory_hostname }}.tar"
   delegate_to: proxmox01.adfc-intern.de
+  when: "'stdout' in hcloud_lenc"

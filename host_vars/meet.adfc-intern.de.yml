@@ -87,6 +87,16 @@ asterisk_rooms:
     name: landesversammlunghh
   1005:
     name: adfchh
+  1006: 
+    name: teamkoppel
+  1010:
+    name: Berlin10
+  1020:
+    name: Berlin20
+  1036:
+    name: Berlin36
+  1061:
+    name: Berlin61
   2001:
     name: NDS_AKMobi
   2002:
@@ -115,10 +125,18 @@ asterisk_rooms:
     name: KV_Harburg
   2014:
     name: KV_SHG
+  2015:
+    name: KV_LER
+  2016:
+    name: KV_EL
+  2017:
+    name: NDS_Schatzmeistertreffen
   3001:
     name: ADFCNRWThemenaustausch
   3002:
     name: ADFCNRWLandeshauptausschuss
+  3003:
+    name: ADFCNRWAGMobilitaet
   4001:
     name: htk-kreisvorstand
   4002:
@@ -131,3 +149,5 @@ asterisk_rooms:
     name: adfcffm_kv_sitzung
   4006:
     name: adfc_hessen_lv_sitzung
+  4007:
+    name: usinger-land
