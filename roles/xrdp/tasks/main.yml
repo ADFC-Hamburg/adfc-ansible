@@ -47,10 +47,10 @@
     owner: "root"
     group: "root"
   notify: Restart polkit
-  when: ansible_hostname == 'kubuntu-vm'
+  when: enable_user_shutdown is defined and not enable_user_shutdown
 
 - name: Make sure polkit is set to enable shutdown on physical machines
   file:
     state: absent
     path: "/etc/polkit-1/localauthority/50-local.d/xrdp-disable-shutdown.pkla"
-  when: ansible_hostname != 'kubuntu-vm'
+  when: enable_user_shutdown is undefined
