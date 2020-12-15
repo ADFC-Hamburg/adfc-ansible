@@ -1,6 +1,7 @@
 - hosts: ucs-master.gst.hamburg.adfc.de
   gather_facts: yes
   roles:
+    - tasmota-power-script
     - ssh-keys
     - gray-print
     - systemd-max-memory
