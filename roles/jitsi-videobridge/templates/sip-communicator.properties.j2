@@ -10,6 +10,16 @@ org.jitsi.videobridge.STATISTICS_TRANSPORT=muc,colibri,pubsub
 org.jitsi.videobridge.PUBSUB_SERVICE={{ jitsi_meet_jvb_sipcfg_pubsub_service }}
 {%- endif %}
 
+{% if jitsi_meet_octo | default("no") |bool %}
+# OCTO Support
+org.jitsi.videobridge.octo.BIND_ADDRESS={{ ansible_default_ipv4.address }}
+org.jitsi.videobridge.octo.PUBLIC_ADDRESS={{ ansible_default_ipv4.address }}
+org.jitsi.videobridge.octo.BIND_PORT=4096
+org.jitsi.videobridge.REGION={{ jitsi_meet_region |default("region1") }}
+{% else %}
+# OCTO Disabled
+{% endif %}
+
 {% if jitsi_meet_jvb_sipcfg_pubsub_node != "" -%}
 org.jitsi.videobridge.PUBSUB_NODE={{  jitsi_meet_jvb_sipcfg_pubsub_node }}
 {%- endif %}
