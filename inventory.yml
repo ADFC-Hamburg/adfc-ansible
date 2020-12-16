@@ -25,6 +25,8 @@ all:
             dyn_meet_hessen_vb:
               hosts:
                 vb01-mv-hessen.dyndns.adfc-intern.de:
+                vb02-mv-hessen.dyndns.adfc-intern.de:
+                vb03-mv-hessen.dyndns.adfc-intern.de:
             meet_test:
               hosts:
                 test.adfc-intern.de:
