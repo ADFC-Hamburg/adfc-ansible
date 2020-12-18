@@ -96,7 +96,6 @@
       - keepassxc
       - nextcloud-client
       - nextcloud-client-dolphin
-      - chromium-browser
     tags: software
 
   - name: uninstall hibiscus-ppa
