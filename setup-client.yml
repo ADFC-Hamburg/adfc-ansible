@@ -14,7 +14,7 @@
   - thunderbird
   - libreoffice
   - slack
-    #  - janrufmonitor
+  - janrufmonitor
   - links-on-desktop
   - client-apt-remove
 
@@ -187,7 +187,7 @@
     template:
       src: issue
       dest: /etc/issue
-  
+
   - name: Hostname anpassen
     command: hostnamectl set-hostname {{ inventory_hostname_short }}
     when: ansible_hostname != inventory_hostname_short
