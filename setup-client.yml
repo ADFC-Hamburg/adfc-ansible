@@ -16,7 +16,6 @@
   - slack
   - janrufmonitor
   - links-on-desktop
-  - client-apt-remove
 
   pre_tasks:
     - name: Power on clients
@@ -359,3 +358,7 @@
       validate: '/usr/sbin/visudo -cf %s'
       mode: 0440
     tags: sudo
+
+  - name: Remove unwanted packages
+    include_role:
+      name: client-apt-remove
