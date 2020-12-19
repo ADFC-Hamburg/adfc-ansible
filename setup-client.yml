@@ -1,7 +1,7 @@
 - hosts: arbeitsplatz
   gather_facts: no
   roles:
-  - ubuntu-basic
+  - basic_setup
   - ssh-keys
   - jnv.unattended-upgrades
   - load-contacts

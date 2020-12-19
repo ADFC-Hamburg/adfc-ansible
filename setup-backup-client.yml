@@ -3,7 +3,7 @@
   - load-contacts
   - ssh-keys
   - postfix-auth
-  - ubuntu-basic
+  - basic_setup
   - vpnc
   tasks:
 
