@@ -32,6 +32,9 @@
 - name: create rule variable
   set_fact:
     rule: "{{ 'ON Energy#Power<'+hostvars[inventory_hostname]['auto_off_thresh']|string+' DO Power OFF ENDON' }}"
+  when:
+    - command == "setrules"
+    - hostvars[inventory_hostname]['use_auto_off']
 
 - name: set rule to poweroff if <auto_off_thres watts drawn
   delegate_to: ucs-master.gst.hamburg.adfc.de
@@ -44,6 +47,6 @@
 - name: delete all rules
   delegate_to: ucs-master.gst.hamburg.adfc.de
   uri:
-    url: http://{{ hostvars[inventory_hostname]['ansible_host'] }}/cm?cmnd=Rule0%20''
+    url: http://{{ hostvars[inventory_hostname]['ansible_host'] }}/cm?cmnd=Rule0%20"
   when:
     - command == "deleterules"
