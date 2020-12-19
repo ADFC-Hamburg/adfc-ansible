@@ -19,3 +19,4 @@
     - geerlingguy.certbot
     - ucs-ip-managed-client
     - jitsi-videobridge
+    - telegraf
