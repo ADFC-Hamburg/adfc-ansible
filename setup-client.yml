@@ -1,4 +1,5 @@
 - hosts: arbeitsplatz
+  gather_facts: no
   roles:
   - ubuntu-basic
   - ssh-keys
@@ -7,8 +8,10 @@
   - postfix-auth
   - skype
   - fonts
+  - xrdp
   - unburden-home-dir
   - firefox-client
+  - chromium
   - thunderbird
   - libreoffice
   - slack
@@ -24,6 +27,25 @@
   - name: PDF-Editor manuell installieren
     apt:
       deb: "/usr/local/share/ansible_downloads/{{ deb_name_master_pdf_editor }}"
+
+  pre_tasks:
+    - name: Power on clients
+      include_role:
+        name: tasmota-power
+      vars:
+        "command": "poweron"
+      when: tasmota_wireless_ip is defined
+
+    - name: Fakten einlesen
+      setup:
+
+  post_tasks:
+    - name: Poweroff unused clients
+      include_role:
+        name: tasmota-power
+      vars:
+        "command": "poweroff"
+      when: tasmota_wireless_ip is defined
 
   tasks:
 
@@ -86,10 +108,12 @@
       - gstreamer1.0-plugins-base
       - kdenlive
       - vlc
+      - language-pack-de
       - language-pack-de-base
+      - language-pack-kde-de
+      - gnome-user-docs-de
       - gnupg2
       - gimp
-      - language-pack-gnome-de
       - gimp-help-de
       - glabels
       - openshot-qt
@@ -97,6 +121,7 @@
       - gnucash-docs
       - bsd-mailx
       - krdc
+      - pavucontrol
       - pdfmod
       - pdfsam
       - pdfshuffler
@@ -239,3 +264,10 @@
       validate: '/usr/sbin/visudo -cf %s'
       mode: 0440
     tags: sudo
+
+  - name: Erlaube Zugriff auf video,audio etc.
+    template:
+      src: group.conf.j2
+      dest: /etc/security/group.conf
+      mode: 0644
+    tags: video-dev

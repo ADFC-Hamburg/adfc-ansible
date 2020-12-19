@@ -1,0 +1,65 @@
+- name: Install required packages
+  apt:
+    name:
+     - unzip
+
+- name: Get Github Token
+  slurp:
+    src: "{{ inventory_dir }}/github_token.txt"
+  delegate_to: localhost
+  register: github_token_slurp
+  ignore_errors: true
+
+- name: Fail if token is not there
+  fail:
+    msg: >
+      Bitte unter https://github.com/settings/tokens einen Token für Workflows erzeugen
+      und diesen im {{ inventory_dir }}/gihub_token.txt speichern
+  when:  github_token_slurp.content  is undefined
+
+- name: Gather the package facts
+  package_facts:
+    manager: "apt"
+
+- name: Create directory
+  file:
+    path: "{{ adfc_share_dir }}"
+    mode: 0755
+    state: directory
+
+- name: Get SHA1 Hash for Branch
+  uri:
+    url: "{{ jitsi_branch_ref_url }}"
+  register: github_sha
+
+- name: Get Jobs
+  uri:
+    url: "{{ jitsi_completed_workflow_jobs_url }}"
+  register: github_jobs
+
+- name: Caluclate Artifeact
+  set_fact:
+    sha: "{{ github_sha.json.object.sha }}"
+    github_token: "{{ github_token_slurp.content |b64decode |trim }}"
+    jitsi_meet_packages: "{{ ansible_facts.packages['jitsi-meet-web'] }}"
+    job_id: "{{ github_jobs.json.workflow_runs |selectattr('head_sha', 'equalto', github_sha.json.object.sha) | map(attribute='id') | list | first }}"
+
+- name: Write sha hash to file
+  copy:
+    content: "{{ sha }}"
+    dest: "{{  adfc_share_dir }}/jitsi-web.git_hash"
+  register: jitsi_web_write_sha
+  check_mode: yes
+
+- name: Write apt pin
+  copy:
+    src: adfc-skin-jitsi-apt-preferences
+    dest: /etc/apt/preferences.d/adfc-jitsi
+    mode: 0644
+    owner: root
+    group: root
+
+- name: Download and install
+  include_tasks: download_and_install.yml
+  when: jitsi_web_write_sha.changed and (jitsi_meet_packages |length >0)
+

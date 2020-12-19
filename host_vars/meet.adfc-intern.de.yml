@@ -87,5 +87,73 @@ asterisk_rooms:
     name: landesversammlunghh
   1005:
     name: adfchh
+  1006: 
+    name: teamkoppel
+  1010:
+    name: Berlin10
+  1020:
+    name: Berlin20
+  1036:
+    name: Berlin36
+  1061:
+    name: Berlin61
   2001:
     name: NDS_AKMobi
+  2002:
+    name: NDS_Landesvorstand
+  2003:
+    name: KV_Ammer
+  2004:
+    name: KV_OL
+  2005:
+    name: KV_WOB
+  2006:
+    name: KV_HI
+  2007:
+    name: NDS_Allgemein
+  2008:
+    name: NDS_Ausbilder
+  2009:
+    name: KV_GOE
+  2010:
+    name: KV_HM
+  2011:
+    name: BezirksgruppeHamburgHarburg
+  2012:
+    name: KV_NI
+  2013:
+    name: KV_Harburg
+  2014:
+    name: KV_SHG
+  2015:
+    name: KV_LER
+  2016:
+    name: KV_EL
+  2017:
+    name: NDS_Schatzmeistertreffen
+  2018:
+    name: KV_LG
+  2019:
+    name: KV_OHZ
+  2020:
+    name: KV_DH
+  3001:
+    name: ADFCNRWThemenaustausch
+  3002:
+    name: ADFCNRWLandeshauptausschuss
+  3003:
+    name: ADFCNRWAGMobilitaet
+  4001:
+    name: htk-kreisvorstand
+  4002:
+    name: ADFC-RadlertreffOberursel-Steinbach
+  4003:
+    name: ADFC-Bergstrasse
+  4004:
+    name: radentscheid-ffm-plenum
+  4005:
+    name: adfcffm_kv_sitzung
+  4006:
+    name: adfc_hessen_lv_sitzung
+  4007:
+    name: usinger-land

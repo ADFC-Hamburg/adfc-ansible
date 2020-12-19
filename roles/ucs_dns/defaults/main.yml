@@ -1,0 +1,12 @@
+ucs_dns_ips:
+ - 127.0.0.1
+ - ::1
+usc_dns_ttl_in_seconds: 600
+ucs_dns_hostname: "{{ inventory_hostname }}"
+ucs_dns_zonename: ""
+ucs_dns_dnsserver: int-master.adfc-intern.de
+ucs_dns_dnsserver_user: Administrator
+ucs_dns_dnsserver_password_file: "/root/root.secret"
+ucs_dns_dnsserver_password_file_server: proxmox01.adfc-intern.de
+ucs_dns_ldap_base: "cn=dns,dc=adfc-intern,dc=de"
+ucs_dns_waittime: 60

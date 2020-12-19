@@ -15,17 +15,29 @@ all:
               hosts:
                 meet.adfc-intern.de:
                 test.adfc-intern.de:
+                test1.dyndns.adfc-intern.de:
+                mv-hessen.dyndns.adfc-intern.de:
             meet_vb:
               hosts:
                 vbh01.meet.adfc-intern.de:
+                vbh02.meet.adfc-intern.de:
+                vbdh01.meet.adfc-intern.de:
+            dyn_meet_hessen_vb:
+              hosts:
+                vb01-mv-hessen.dyndns.adfc-intern.de:
+                vb02-mv-hessen.dyndns.adfc-intern.de:
+                vb03-mv-hessen.dyndns.adfc-intern.de:
             meet_test:
               hosts:
                 test.adfc-intern.de:
                 vb01.test.adfc-intern.de:
+                test1.dyndns.adfc-intern.de:
             meet_live:
               hosts:
                 meet.adfc-intern.de:
                 vbh01.meet.adfc-intern.de:
+                vbh02.meet.adfc-intern.de:
+                vbdh01.meet.adfc-intern.de:
     arbeitsplatz:
       hosts:
         adfc-testclient.gst.hamburg.adfc.de:

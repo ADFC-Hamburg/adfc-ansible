@@ -1,0 +1,61 @@
+hcloud_image: debian-10
+# cx11 kleinster Server mit einer CPU für Tests
+# ccx31 8 Dedicierte VCPUs 32 GB RAM
+hcloud_server_type: "{{ 'cx11' if hcloud_test else 'ccx31' }}"
+hcloud_server_location: fsn1
+hcloud_floating_ips:
+  - vhb02.meet-ipv4
+  - vhb02.meet-ipv6
+
+jitsi_meet_jvb_cfg_java_jvb_props:
+   - "--subdomain=vbh02"
+   - "--apis=rest"
+
+dynamic_jitsi_scaler_turn_on:
+  participants: 22
+  conferences: 4
+  timerange:
+    - from:
+        weekday: 1
+        hour: 18
+        min: 5
+      to:
+        weekday: 1
+        hour: 18
+        min: 55
+    - from:
+        weekday: 2
+        hour: 18
+        min: 5
+      to:
+        weekday: 2
+        hour: 18
+        min: 55
+    - from:
+        weekday: 3
+        hour: 18
+        min: 5
+      to:
+        weekday: 3
+        hour: 18
+        min: 55
+    - from:
+        weekday: 4
+        hour: 18
+        min: 5
+      to:
+        weekday: 4
+        hour: 18
+        min: 55
+    - from:
+        weekday: 5
+        hour: 18
+        min: 5
+      to:
+        weekday: 5
+        hour: 18
+        min: 55
+
+dynamic_jitsi_scaler_turn_off:
+  participants: 20
+  conferences: 4

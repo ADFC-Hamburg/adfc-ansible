@@ -5,7 +5,7 @@ STATUS_DIR="/usr/local/share/adfc-borg"
 # Wie alt darf das VPN_KONCK File sein, bevor davon ausgegangen wird, dass die Verbindung nicht mehr existiert
 VPN_KNOCK_TIMEOUT="65"
 
-# Wie lange sollte das letzte erfolgreiche Backup höchstens her sein 60*60*24
+# Wie viele Sekunden sollte das letzte erfolgreiche Backup höchstens her sein 60*60*24 (1 Tag)
 SUCCESS_TIMEOUT="86400"
 
 BORG_USER="borguser" # Benutzerkonto auf Backup-Client / FIX! NICHT ÄNDERN
@@ -24,7 +24,11 @@ export BORG_PASSPHRASE=""
 
 borg_last_connect() {
     RECHNER="$1"
-    echo "$(( $( date +%s) - $(stat -c "%Y" /run/client-${RECHNER}.up )))"
+    if [ -f "/run/client-${RECHNER}.up" ] ; then
+        echo "$(( $( date +%s) - $(stat -c "%Y" /run/client-${RECHNER}.up )))"
+    else
+        date "+%s"
+    fi
 }
 
 borg_is_active() {
@@ -43,6 +47,7 @@ borg_last_successfull_backup() {
     LAST="$(( $( date +%s) - $(stat -c "%Y" $SUCC )))"
     echo "$(( $LAST < $SUCCESS_TIMEOUT ))"
 }
+
 borg_lock() {
     RECHNER="$1"
     LOCK="${STATUS_DIR}/lock/${RECHNER}"
@@ -83,6 +88,7 @@ Host ${RECHNER}
     ServerAliveCountMax 30
 EOF
 }
+
 borg_init() {
     RECHNER="$1"
     if [ -z "${RECHNER}" ] ; then
@@ -120,6 +126,7 @@ borg_for() {
     fi
     exit 0
 }
+
 borg_cron() {
     for FILE in $(ls -tr ${STATUS_DIR}/tried/* ) ; do
         RECHNER=$(basename $FILE)
@@ -243,11 +250,21 @@ borg_key_export() {
     echo "============================================================================"
 
 }
+
 borg_list() {
+    RED='\033[0;31m'
+    GREEN='\033[0;32m'
+    # NC = NO COLOR
+    NC='\033[0m'
+
     RECHNER="$1"
-    echo "Liste der Backups auf ${RECHNER}:"
-    borg_create_ssh_option_file "${RECHNER}"
-    BORG_RSH="ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf" borg list $(borg_repo "${RECHNER}")
+    if [ "$(borg_is_active $RECHNER )" == "1" ] ; then
+        echo "Liste der Backups auf ${RECHNER}:"
+        borg_create_ssh_option_file "${RECHNER}"
+        BORG_RSH="ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf" borg list $(borg_repo "${RECHNER}")
+    else
+        echo -e "${RED}FEHLER:${NC} Rechner $RECHNER nicht verbunden" 1>&2
+    fi
 }
 
 borg_mount() {

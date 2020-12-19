@@ -11,11 +11,22 @@ var interfaceConfig = {
      */
     DISABLE_VIDEO_BACKGROUND: {{ (not jitsi_meet_show_video_background) | bool | lower }},
 
+    /**
+     * Hide the logo on the deep linking pages.
+     */
+    HIDE_DEEP_LINKING_LOGO: false,
+
+    /**
+     * Hide the invite prompt in the header when alone in the meeting.
+     */
+    HIDE_INVITE_MORE_HEADER: false,
     INITIAL_TOOLBAR_TIMEOUT: 20000,
     TOOLBAR_TIMEOUT: 4000,
     TOOLBAR_ALWAYS_VISIBLE: false,
-    DEFAULT_REMOTE_DISPLAY_NAME: '{{ jitsi_meet_default_remote_display_name }}',
     DEFAULT_LOCAL_DISPLAY_NAME: '{{ jitsi_meet_default_local_display_name }}',
+    DEFAULT_LOGO_URL: 'images/watermark.png',
+    DEFAULT_REMOTE_DISPLAY_NAME: '{{ jitsi_meet_default_remote_display_name }}',
+    DEFAULT_WELCOME_PAGE_LOGO_URL: 'images/watermark.png',
     SHOW_JITSI_WATERMARK: true,
     JITSI_WATERMARK_LINK: '{{ jitsi_meet_org_link }}',
 
@@ -28,10 +39,14 @@ var interfaceConfig = {
     GENERATE_ROOMNAMES_ON_WELCOME_PAGE: {{ jitsi_meet_generate_roomnames_on_welcome_page | bool | lower }},
     DISPLAY_WELCOME_PAGE_CONTENT: true,
     DISPLAY_WELCOME_PAGE_TOOLBAR_ADDITIONAL_CONTENT: false,
+
+    ENABLE_DIAL_OUT: true,
+
     APP_NAME: '{{ jitsi_meet_appname }}',
     NATIVE_APP_NAME: '{{ jitsi_meet_appname }}',
     PROVIDER_NAME: 'Jitsi',
     LANG_DETECTION: {{ jitsi_meet_lang_detection | bool | lower }}, // Allow i18n to detect the system language
+    // Sven 2020-11 kann vermutlich weg?
     INVITATION_POWERED_BY: true,
 
     /**
@@ -75,8 +90,8 @@ var interfaceConfig = {
     // A html text to be shown to guests on the close page, false disables it
     CLOSE_PAGE_GUEST_HINT: false,
     SHOW_PROMOTIONAL_CLOSE_PAGE: false,
-    RANDOM_AVATAR_URL_PREFIX: false,
-    RANDOM_AVATAR_URL_SUFFIX: false,
+    //RANDOM_AVATAR_URL_PREFIX: false,
+    //RANDOM_AVATAR_URL_SUFFIX: false,
     FILM_STRIP_MAX_HEIGHT: 120,
 
     // Enables feedback star animation.
@@ -184,7 +199,7 @@ var interfaceConfig = {
 
     // Browsers, in addition to those which do not fully support WebRTC, that
     // are not supported and should show the unsupported browser page.
-    UNSUPPORTED_BROWSERS: [ 'firefox' ],
+    UNSUPPORTED_BROWSERS: [  ],
 
     /**
      * A UX mode where the last screen share participant is automatically

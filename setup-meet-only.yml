@@ -7,6 +7,7 @@
     - geerlingguy.certbot
     - saslauthd
     - udelarinterior.jitsi_meet
+    - adfc_jitsi_skin
     - meet-coturn
     - meet-server-external-vb-addition
     - telegraf

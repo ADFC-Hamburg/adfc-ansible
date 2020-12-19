@@ -1,0 +1,36 @@
+- name: Get arifacts
+  uri:
+    url: "{{ adfc_repo_url }}/actions/runs/{{ job_id }}/artifacts"
+  register: github_artifacts
+
+- name: Get Zip URL of Package
+  uri:
+    headers:
+      Authorization: "token {{ github_token }}"
+    url: "{{ adfc_repo_url }}/actions/artifacts/{{ github_artifacts.json.artifacts[0].id }}/zip"
+  register: github_zip
+
+- name: Download
+  get_url:
+    url: "{{ github_zip.url }}"
+    dest: "{{  adfc_share_dir }}/jitsi-web.zip"
+    mode: 0644
+
+- name: Unpack
+  unarchive:
+    src: "{{  adfc_share_dir }}/jitsi-web.zip"
+    dest: "{{  adfc_share_dir }}"
+    remote_src: yes
+
+- name: install package
+  command:
+    cmd: "/usr/bin/dpkg -i {{  adfc_share_dir }}/jitsi-meet-web_{{ jitsi_meet_packages[0].version }}_all.deb"
+
+- name: Write sha hash to file
+  copy:
+    content: "{{ sha }}"
+    dest: "{{  adfc_share_dir }}/jitsi-web.git_hash"
+
+- name: Run Role
+  include_role:
+    name: udelarinterior.jitsi_meet

@@ -8,16 +8,5 @@
         name:
           - python-apt
           - htop
-- hosts: meet
-  gather_facts: yes
-  roles:
-    - ssh-keys
-    - lxc-logrotate
-    - update-os
-    - ucs-ip-managed-client
-    - geerlingguy.certbot
-    - saslauthd
-    - udelarinterior.jitsi_meet
-    - meet-coturn
-    - meet-server-external-vb-addition
-    - telegraf
+- name: setup meet only
+  import_playbook: setup-meet-only.yml

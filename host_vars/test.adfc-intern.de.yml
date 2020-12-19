@@ -37,3 +37,5 @@ firewall:
   - name: prosody
     port: 5222
     proto: tcp
+
+adfc_jitsi_branch: "adfc-devel"
