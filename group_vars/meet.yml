@@ -104,7 +104,8 @@ jitsi_meet_jvb_cfg_java_sys_props_addition:
   - "--add-opens jdk.management/com.sun.management.internal=ALL-UNNAMED"
 jitsi_meet_interface_config_js_template: "adfc_jitsi_meet_interface_config.js.j2"
 jitsi_meet_jicofo_config_template: adfc_jicofo_config.j2
-
+jitsi_meet_jicofo_sip_template: adfc_jicofo_sip-communicator.properties.j2
+jitsi_meet_config_js_template: adfc_jitsi_meet_config.js.j2
 # Statistics
 influxdb_host: "proxmox01.adfc-intern.de"
 influx_admin_password_file: /etc/influx.secrect

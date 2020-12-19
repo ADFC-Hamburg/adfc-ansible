@@ -1,0 +1,14 @@
+org.jitsi.jicofo.BRIDGE_MUC=JvbBrewery@internal.auth.{{ jitsi_meet_server_name }}
+org.jitsi.jicofo.ALWAYS_TRUST_MODE_ENABLED=true
+{% if jitsi_meet_authentication != 'anonymous' %}
+org.jitsi.jicofo.auth.URL=XMPP:{{ jitsi_meet_server_name }}
+{% endif %}
+org.jitsi.jicofo.SHORT_ID=1
+
+{% if jitsi_meet_octo | default("no") | bool %}
+{% if jitsi_jicofo_bridge_selector | default("region") == "region" %}
+org.jitsi.jicofo.BridgeSelector.BRIDGE_SELECTION_STRATEGY=RegionBasedBridgeSelectionStrategy
+{% else %}
+org.jitsi.jicofo.BridgeSelector.BRIDGE_SELECTION_STRATEGY=SplitBridgeSelectionStrategy
+{% endif %}
+{% endif %}

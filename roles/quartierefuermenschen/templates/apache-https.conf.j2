@@ -1,0 +1,39 @@
+<Directory /var/www/quartierefuermenschen>
+        AllowOverride All
+        Order Allow,Deny
+        Allow from All
+</Directory>
+
+<IfModule mod_ssl.c>
+        <VirtualHost _default_:443>
+                ServerAdmin webmaster@tools.adfc-hamburg.de
+                ServerName {{ quartierefuermenschen_domain }}
+                Header always set Strict-Transport-Security "max-age=63072000; includeSubdomains;preload;"
+                DocumentRoot /var/www/html
+
+                ErrorLog ${APACHE_LOG_DIR}/error-qfm.log
+                CustomLog ${APACHE_LOG_DIR}/access-qfm.log combined
+
+                SSLEngine on
+
+                SSLCertificateFile      /etc/ssl/letsencrypt/{{ quartierefuermenschen_domain }}.crt
+                SSLCertificateKeyFile /etc/ssl/letsencrypt/{{ quartierefuermenschen_domain }}.key
+
+                SSLCertificateChainFile /etc/ssl/letsencrypt/intermediate.pem
+
+                BrowserMatch "MSIE [2-6]" \
+                                nokeepalive ssl-unclean-shutdown \
+                                downgrade-1.0 force-response-1.0
+                # MSIE 7 and newer should be able to use keepalive
+                BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
+
+                RequestHeader set "X-Forwarded-Proto" expr=%{REQUEST_SCHEME}
+                RequestHeader set "X-Forwarded-SSL" expr=%{HTTPS}
+                #RequestHeader set "Host" quartierefuermenschen.adfc-hamburg.de
+                ProxyRequests On
+                ProxyPreserveHost On
+                ProxyPass / http://127.0.0.1:{{ qfm_docker_port }}/
+                ProxyPassReverse / http://127.0.0.1:{{ qfm_docker_port }}/
+
+        </VirtualHost>
+</IfModule>
