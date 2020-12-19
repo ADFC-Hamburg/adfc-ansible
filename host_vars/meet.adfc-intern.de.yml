@@ -133,6 +133,8 @@ asterisk_rooms:
     name: NDS_Schatzmeistertreffen
   2018:
     name: KV_LG
+  2019:
+    name: KV_OHZ
   3001:
     name: ADFCNRWThemenaustausch
   3002:
