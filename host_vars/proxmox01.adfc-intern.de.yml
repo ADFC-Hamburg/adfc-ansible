@@ -29,7 +29,9 @@ firewall_test: no
 
 influxdb_host: proxmox01.adfc-intern.de
 
-admin_mail: sven@anders-hamburg.de
+dynamic_jitsi_scaler_meet_host: meet.adfc-intern.de
+
+admin_mail: "sven@anders-hamburg.de,georg.sommer@hamburg.adfc.de"
 test_admin_mail: sven@anders-hamburg.de
 
 grafana_auth_anonymous_enabled: "true"

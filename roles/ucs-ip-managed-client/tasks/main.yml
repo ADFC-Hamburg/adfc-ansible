@@ -2,6 +2,7 @@
   stat:
     path: "/etc/machine.secret"
   register: machine_secret_stat
+
 - name: Create Password file if empty
   copy:
     content: "{{ lookup('password', '/dev/null length=16') }}"
@@ -9,14 +10,18 @@
     mode: "0600"
     owner: root
   when: not machine_secret_stat.stat.exists
+
 - name: read machine secret
   slurp:
     path: "/etc/machine.secret"
   register: machine_secret
+
 - name: check if object exists
   command: "univention-ldapsearch -LLLLL -b {{ ucs_computer_position }} cn={{ inventory_hostname.split('.')[0] |lower }} dn"
   register: computer_ldapsearch
   delegate_to: "{{ ucs_master }}"
+  changed_when: false
+
 - name: generate client
   command:
     argv:
@@ -36,11 +41,14 @@
       - "password={{ machine_secret.content |b64decode }}"
   when: computer_ldapsearch.stdout | length == 0
   delegate_to: "{{ ucs_master }}"
+  ignore_errors: "{{ ansible_check_mode }}"
+
 - name: read UCS CA Cert
   slurp:
     path: "/etc/univention/ssl/ucsCA/CAcert.pem"
   register: ucs_CA
   delegate_to: "{{ ucs_master }}"
+
 - name: Create UCS CA Cert
   copy:
     content: "{{ ucs_CA.content | b64decode }}"

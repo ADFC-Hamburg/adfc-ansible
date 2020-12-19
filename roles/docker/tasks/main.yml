@@ -1,0 +1,37 @@
+- name: Install Repo Helper Packages
+  apt:
+    name: "{{ docker_repo_helper_packages }}"
+
+- name: Fetch GPG Key
+  get_url:
+    url: "{{ docker_repo_gpg_key }}"
+    dest: "{{ docker_repo_gpg_key_dest }}"
+    mode: 0644
+  register: docker_fetch_gpg
+
+- name: Create Repo File
+  copy:
+    content: >
+      deb [arch=amd64 signed-by={{ docker_repo_gpg_key_dest }}]
+      {{ docker_repo_url }} {{ ansible_distribution_release }} stable
+    dest: /etc/apt/sources.list.d/docker.list
+    mode: 0644
+
+- name: Delete docker.gpg
+  file:
+    path: "{{ docker_repo_gpg_key_gpg }}"
+    state: absent
+  when: docker_fetch_gpg.changed
+
+- name: gpg Convert key
+  command: >
+    gpg2 --batch --dearmor --output
+    {{ docker_repo_gpg_key_gpg }}
+    {{ docker_repo_gpg_key_dest }}
+  args:
+    creates: "{{ docker_repo_gpg_key_gpg }}"
+
+- name: Install Docker Software
+  apt:
+    name: "{{ docker_packages }}"
+    update_cache: yes

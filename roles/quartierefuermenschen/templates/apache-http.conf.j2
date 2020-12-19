@@ -1,0 +1,28 @@
+########################
+# {{ ansible_managed }}
+########################
+
+<VirtualHost *:80>
+        ServerName {{ quartierefuermenschen_domain }}
+
+        ServerAdmin webmaster@tools.adfc-hamburg.de
+        DocumentRoot /var/www/html
+
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+
+        Alias /.well-known/acme-challenge/ /var/www/acme-challenge/
+        <Directory "/var/www/acme-challenge/">
+            Options None
+            AllowOverride None
+            ForceType text/plain
+            #RedirectMatch 404 "^(?!/\.well-known/acme-challenge/[\w-]{43}$)"
+        </Directory>
+
+        RewriteEngine On
+
+        # Redirect all hits except for Let's Encrypt's ACME Challenge verification to example.com
+        RewriteCond %{REQUEST_URI} !^/\.well\-known/acme\-challenge/
+        RewriteRule ^(.*) https://{{ quartierefuermenschen_domain  }}$1 [R=301,L]
+</VirtualHost>

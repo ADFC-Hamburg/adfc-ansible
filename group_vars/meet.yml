@@ -55,6 +55,7 @@ jitsi_meet_default_remote_display_name: 'Mit dem Fahrrad da'
 jitsi_meet_configure_sip_gateway: false
 jitsi_meet_jigasi_account: sipnumber@sip-provider.name
 jitsi_meet_logo_file: false
+jitsi_meet_favicon_file: false
 jitsi_meet_watermark_file: false
 jitsi_meet_use_stun_turn: "true"
 jitsi_meet_stun_servers:
@@ -78,7 +79,7 @@ jitsi_meet_videobridge_statistics_transport:  "muc"
 jitsi_meet_channel_last_n: 3
 jitsi_meet_enable_layer_suspension: true
 jitsi_meet_start_audio_only: false
-jitsi_meet_show_audio_levels: true
+jitsi_meet_show_audio_levels: false
 
 jitsi_meet_audio_levels_interval: 200
 
@@ -91,6 +92,7 @@ jitsi_meet_constraints_video_height_min: 240
 jitsi_meet_videobridge_sip_template: adfc-vb_sip-communicator.properties.j2
 jitsi_meet_behind_nat_firewall: false
 jitsi_meet_videobridge_other_xmpp_servers: {}
+jitsi_meet_videobridge_config_template:  adfc_videobridge_config.j2
 
 jitsi_meet_jvb_cfg_hostname: "{{ jitsi_meet_server_name }}"
 jitsi_meet_jvb_cfg_host: "{{ jitsi_meet_server_name }}"
@@ -101,6 +103,9 @@ jitsi_meet_jvb_sipcfg_pubsub_node: "sharedStatsNode"
 jitsi_meet_jvb_cfg_java_sys_props_addition:
   - "--add-opens jdk.management/com.sun.management.internal=ALL-UNNAMED"
 jitsi_meet_interface_config_js_template: "adfc_jitsi_meet_interface_config.js.j2"
+jitsi_meet_jicofo_config_template: adfc_jicofo_config.j2
+jitsi_meet_jicofo_sip_template: adfc_jicofo_sip-communicator.properties.j2
+jitsi_meet_config_js_template: adfc_jitsi_meet_config.js.j2
 # Statistics
 influxdb_host: "proxmox01.adfc-intern.de"
 influx_admin_password_file: /etc/influx.secrect
