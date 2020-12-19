@@ -1,8 +1,11 @@
 #!/bin/bash
-IP=$1
 
-RULE1_TXT="ON Energy#Power>6 DO Backlog Rule2 ON; Rule1 OFF ENDON"
-RULE2_TXT="ON Energy#Power<6 DO Backlog Power1 OFF; Rule1 ON; Rule2 OFF ENDON"
+#
+# Ansible controlled
+# Not tested. Wenn tasmota funktioniert: If it ain't broke, don't fix it!
+#
+
+IP=$1
 
 urlencode() {
     # urlencode <string>
@@ -21,11 +24,6 @@ urlencode() {
 
     LC_COLLATE=$old_lc_collate
 }
-URLE_RULE1_TXT=$( urlencode "$RULE1_TXT" )
-URLE_RULE2_TXT=$( urlencode "$RULE2_TXT" )
-
-echo $URLE_RULE1_TXT
-echo $URLE_RULE2_TXT
 
 TEXT=$(curl -s "http://${IP}")
 V=$(echo $TEXT |sed 's/.*Tasmota \(8.*\) by Theo .*/\1/')
@@ -50,26 +48,3 @@ if [ -z "$GOSOUND_CFG" ] ; then
 else
     echo Cfg is okay
 fi
-RULE=$(curl "http://${IP}/cm?cmnd=Rule1")
-ST_RULE1_STATUS=$( echo $RULE |jq -r .Rule1)
-ST_RULE1_TXT=$( echo $RULE |jq -r .Rules)
-
-RULE=$(curl "http://${IP}/cm?cmnd=Rule2")
-ST_RULE2_STATUS=$( echo $RULE |jq -r .Rule2)
-ST_RULE2_TXT=$( echo $RULE |jq -r .Rules)
-
-if [ "$ST_RULE1_TXT" != "$RULE1_TXT" ] ; then
-    echo Old Rule1: $RULE1_TXT
-    echo Setzte Rule1
-    curl "http://${IP}/cm?cmnd=Rule1%20${URLE_RULE1_TXT}"
-fi
-if [ "$ST_RULE2_TXT" != "$RULE2_TXT" ] ; then
-    echo Old Rule2: $RULE1_TXT
-    echo Setzte Rule2
-    curl "http://${IP}/cm?cmnd=Rule2%20${URLE_RULE2_TXT}"
-fi
-
-if [ "$RULE1_STATUS" = "OFF" ] && [ "$RULE2_STATUS" = "OFF" ] ; then
-    curl "http://${IP}/cm?cmnd=Rule1%20ON"
-fi
-
