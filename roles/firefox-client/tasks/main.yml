@@ -19,9 +19,7 @@
     src: firefox-extension-update.sh
     dest: /etc/cron.daily/firefox-extension-update.sh
     mode: 0755
-
-- name: "Run firefox extension update script to initially download extensions" # noqa 301
-  command: /etc/cron.daily/firefox-extension-update.sh
+  notify: Run firefox extension update
 
 - name: "Create symbolic links for extensions"
   file:
