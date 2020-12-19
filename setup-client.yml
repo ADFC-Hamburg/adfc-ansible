@@ -11,6 +11,7 @@
   - xrdp
   - unburden-home-dir
   - firefox-client
+  - chromium
   - thunderbird
   - libreoffice
   - slack
@@ -65,7 +66,6 @@
       repo: 'ppa:marko-preuss/hibiscus'
       state: absent
 
-
   - name: Installiere apt-transport-https
     apt:
       name: apt-transport-https
@@ -98,10 +98,12 @@
       - gstreamer1.0-plugins-base
       - kdenlive
       - vlc
+      - language-pack-de
       - language-pack-de-base
+      - language-pack-kde-de
+      - gnome-user-docs-de
       - gnupg2
       - gimp
-      - language-pack-gnome-de
       - gimp-help-de
       - glabels
       - openshot-qt
@@ -109,6 +111,7 @@
       - gnucash-docs
       - bsd-mailx
       - krdc
+      - pavucontrol
       - pdfmod
       - pdfsam
       - pdfshuffler
@@ -129,7 +132,6 @@
   - name: install hibiscus
     include_role:
       name: hibiscus
-
 
   - name: Kein KDE Update Icon mehr anzeigen
     apt:
@@ -358,6 +360,13 @@
       validate: '/usr/sbin/visudo -cf %s'
       mode: 0440
     tags: sudo
+
+  - name: Erlaube Zugriff auf video,audio etc.
+    template:
+      src: group.conf.j2
+      dest: /etc/security/group.conf
+      mode: 0644
+    tags: video-dev
 
   - name: Remove unwanted packages
     include_role:
