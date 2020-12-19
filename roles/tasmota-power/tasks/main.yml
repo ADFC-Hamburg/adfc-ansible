@@ -29,6 +29,15 @@
     - connect_result is not failed
     - (users is defined) and (users | length > 0)
 
+- name: Prüfen ob die Steckdose eingeschaltet ist
+  delegate_to: ucs-master.gst.hamburg.adfc.de
+  uri:
+    url: http://{{ tasmota_wireless_ip }}/cm?cmnd=Power
+  register: tasmota_state
+  when:
+    - connect_result is failed
+    - command == "poweron"
+
 - name: Steckdose ausschalten, falls diese noch an sein sollte
   delegate_to: ucs-master.gst.hamburg.adfc.de
   uri:
@@ -36,6 +45,7 @@
   when:
     - connect_result is failed
     - command == "poweron"
+    - tasmota_state.json.POWER == "ON"
 
 - name: Warten bis Reststrom verbraucht
   pause:
@@ -43,6 +53,7 @@
   when:
     - connect_result is failed
     - command == "poweron"
+    - tasmota_state.json.POWER == "ON"
 
 - name: Einschalten
   delegate_to: ucs-master.gst.hamburg.adfc.de
