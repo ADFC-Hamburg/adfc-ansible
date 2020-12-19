@@ -11,7 +11,7 @@
     url: http://{{ hostvars[inventory_hostname]['ansible_host'] }}/cm?cmnd=Rule1%205
   when:
     - command == "setrules"
-    - hostvars[inventory_hostname]['use_auto_off'] == true
+    - hostvars[inventory_hostname]['use_auto_off']
 
 - name: disable stop-on-error
   delegate_to: ucs-master.gst.hamburg.adfc.de
@@ -19,7 +19,7 @@
     url: http://{{ hostvars[inventory_hostname]['ansible_host'] }}/cm?cmnd=Rule1%208
   when:
     - command == "setrules"
-    - hostvars[inventory_hostname]['use_auto_off'] == true
+    - hostvars[inventory_hostname]['use_auto_off']
 
 - name: activate rule
   delegate_to: ucs-master.gst.hamburg.adfc.de
@@ -27,8 +27,8 @@
     url: http://{{ hostvars[inventory_hostname]['ansible_host'] }}/cm?cmnd=Rule1%201
   when:
     - command == "setrules"
-    - hostvars[inventory_hostname]['use_auto_off'] == true
- 
+    - hostvars[inventory_hostname]['use_auto_off']
+
 - name: create rule variable
   set_fact:
     rule: "{{ 'ON Energy#Power<'+hostvars[inventory_hostname]['auto_off_thresh']|string+' DO Power OFF ENDON' }}"
@@ -39,7 +39,7 @@
     url: http://{{ hostvars[inventory_hostname]['ansible_host'] }}/cm?cmnd=Rule1%20{{ rule|urlencode }}
   when:
     - command == "setrules"
-    - hostvars[inventory_hostname]['use_auto_off'] == true
+    - hostvars[inventory_hostname]['use_auto_off']
 
 - name: delete all rules
   delegate_to: ucs-master.gst.hamburg.adfc.de
