@@ -11,6 +11,7 @@
   - xrdp
   - unburden-home-dir
   - firefox-client
+  - chromium
   - thunderbird
   - libreoffice
   - slack
@@ -99,10 +100,12 @@
       - gstreamer1.0-plugins-base
       - kdenlive
       - vlc
+      - language-pack-de
       - language-pack-de-base
+      - language-pack-kde-de
+      - gnome-user-docs-de
       - gnupg2
       - gimp
-      - language-pack-gnome-de
       - gimp-help-de
       - glabels
       - openshot-qt
