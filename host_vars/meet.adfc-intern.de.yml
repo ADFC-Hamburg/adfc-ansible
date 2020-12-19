@@ -135,6 +135,8 @@ asterisk_rooms:
     name: KV_LG
   2019:
     name: KV_OHZ
+  2020:
+    name: KV_DH
   3001:
     name: ADFCNRWThemenaustausch
   3002:
