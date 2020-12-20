@@ -1,0 +1,13 @@
+
+- name: postfix postmap smtp_auth
+  command: /usr/sbin/postmap /etc/postfix/smtp_auth
+  notify: reload postfix
+
+- name: Postfix newaliases
+  command: /usr/bin/newaliases
+  notify: reload postfix
+
+- name: reload postfix
+  service:
+    name: postfix
+    state: restarted
