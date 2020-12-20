@@ -1,18 +1,14 @@
 ---
 - name: Check ob Client eingeschaltet
-  #    delegate_to: ucs-master.gst.hamburg.adfc.de
   wait_for_connection:
     timeout: 10
   register: connect_result
   ignore_errors: yes
 
-  #  - name: Dem User sagen ob der client laeuft
-  #  debug:
-  #    var: connect_result
-
 - name: Angemeldete User ueberpruefen
   command: who
   register: who_var
+  changed_when: false
   when:
     - connect_result is not failed
 
