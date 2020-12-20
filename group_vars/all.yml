@@ -24,3 +24,4 @@ ssh_users_admins:
 deb_name_master_pdf_editor: master-pdf-editor-5.3.22_qt5.amd64.deb
 unwanted_packages:
   - pdfsam
+ansible_python_interpreter: /usr/bin/python3
