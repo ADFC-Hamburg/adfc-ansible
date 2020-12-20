@@ -8,23 +8,18 @@
     - borg-server
     - external-https
     - self-service-sms
-  tasks:
-    # SSH Key /root/.ssh/rsync-key ist nicht hier eingecheckt und wird nicht deployed, wegen security
-    - name: copy rsync script
-      copy:
-         src: ucs-master-sync-babelfish.sh
-         dest: /usr/local/sbin/ucs-master-sync-babelfish.sh
-         mode: 0755
-      tags: rsync
-    - name: Immer um x:12 Uhr rsync anwerfen
-      cron:
-        name: "sync-babelfish"
-        minute: "12,42"
-        cron_file: sync-babelfish
-        user: root
-        job: /usr/local/sbin/ucs-master-sync-babelfish.sh
-        state: absent
 
+  handlers:
+    - name: ucr commit postifx main.cf
+      command: "ucr commit /etc/postfix/main.cf"
+      notify: restart postfix
+
+    - name: restart postfix
+      systemd:
+        name: postfix
+        state: restarted
+
+  tasks:
     - name: enable cool solutions
       ucr:
         values:
@@ -45,19 +40,14 @@
       template:
         src: ucs-master-sender_canonical
         dest: /etc/postfix/sender_caonical
+      tags: postfix
+
     - name: install postfix main.cf
       template:
         src: ucs-master-postfix-main.cf.local
         dest: /etc/postfix/main.cf.local
-      register: postfix_maincf
-    - name: commit postfix main.cf change
-      command: "ucr commit /etc/postfix/main.cf"
-      when: postfix_maincf.changed
-    - name: restart postfix service
-      systemd:
-        name: postfix
-        state: restarted
-      when: postfix_maincf.changed
+      notify: ucr commit postifx main.cf
+      tags: postfix
 
     - name: Copy OTRS Nagios Check
       copy:
