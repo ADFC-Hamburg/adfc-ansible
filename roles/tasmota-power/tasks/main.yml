@@ -3,7 +3,7 @@
   wait_for_connection:
     timeout: 10
   register: connect_result
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: Angemeldete User ueberpruefen
   command: who
@@ -78,6 +78,7 @@
   async: 1
   poll: 0
   ignore_errors: true
+  changed_when: false
   when:
     - connect_result is not failed
     - command == "poweroff"
