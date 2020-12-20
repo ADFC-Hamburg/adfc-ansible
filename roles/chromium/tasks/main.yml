@@ -5,5 +5,4 @@
     packages:
      - chromium-browser
      - chromium-browser-l10n
-     - chromium-codecs-ffmpeg
      - chromium-codecs-ffmpeg-extra
