@@ -56,3 +56,13 @@ all:
     domain_factory:
       hosts:
         status.adfc-intern.de:
+    tasmota:
+      hosts:
+        tasmota-0673.gst.hamburg.adfc.de:
+        tasmota-3562.gst.hamburg.adfc.de:
+        tasmota-3675.gst.hamburg.adfc.de:
+        tasmota-3720.gst.hamburg.adfc.de:
+        tasmota-4790.gst.hamburg.adfc.de:
+        tasmota-5634.gst.hamburg.adfc.de:
+        tasmota-6340.gst.hamburg.adfc.de:
+        tasmota-6745.gst.hamburg.adfc.de:

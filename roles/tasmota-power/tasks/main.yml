@@ -1,18 +1,14 @@
 ---
 - name: Check ob Client eingeschaltet
-  #    delegate_to: ucs-master.gst.hamburg.adfc.de
   wait_for_connection:
     timeout: 10
   register: connect_result
-  ignore_errors: yes
-
-  #  - name: Dem User sagen ob der client laeuft
-  #  debug:
-  #    var: connect_result
+  ignore_errors: true
 
 - name: Angemeldete User ueberpruefen
   command: who
   register: who_var
+  changed_when: false
   when:
     - connect_result is not failed
 
@@ -29,13 +25,23 @@
     - connect_result is not failed
     - (users is defined) and (users | length > 0)
 
-- name: Steckdose ausschalten, falls diese noch an sein sollte
+- name: Prüfen ob die Steckdose eingeschaltet ist
+  delegate_to: ucs-master.gst.hamburg.adfc.de
+  uri:
+    url: http://{{ tasmota_wireless_ip }}/cm?cmnd=Power
+  register: tasmota_state
+  when:
+    - connect_result is failed
+    - command == "poweron"
+
+- name: Steckdose ausschalten
   delegate_to: ucs-master.gst.hamburg.adfc.de
   uri:
     url: http://{{ tasmota_wireless_ip }}/cm?cmnd=Power+OFF
   when:
     - connect_result is failed
     - command == "poweron"
+    - tasmota_state.json.POWER == "ON"
 
 - name: Warten bis Reststrom verbraucht
   pause:
@@ -43,6 +49,7 @@
   when:
     - connect_result is failed
     - command == "poweron"
+    - tasmota_state.json.POWER == "ON"
 
 - name: Einschalten
   delegate_to: ucs-master.gst.hamburg.adfc.de
@@ -54,7 +61,7 @@
 
 - name: Warten bis Rechner gestartet ist
   wait_for_connection:
-    delay: 30
+    sleep: 10
     timeout: 120
   register: after_start_connect_result
   when:
@@ -71,6 +78,7 @@
   async: 1
   poll: 0
   ignore_errors: true
+  changed_when: false
   when:
     - connect_result is not failed
     - command == "poweroff"
