@@ -29,6 +29,13 @@
     - name: Fakten einlesen
       setup:
 
+    - name: apt-get update
+      apt:
+        cache_valid_time: 3600
+        update_cache: yes
+      tags: software
+
+
   post_tasks:
     - name: Poweroff unused clients that were off before
       include_role:
@@ -74,11 +81,6 @@
   - name: ppa für Nextcloud hinzufügen
     apt_repository:
       repo: 'ppa:nextcloud-devs/client'
-    tags: software
-
-  - name: apt-get update
-    apt:
-      update_cache: yes
     tags: software
 
 # benötigte Programme installieren
