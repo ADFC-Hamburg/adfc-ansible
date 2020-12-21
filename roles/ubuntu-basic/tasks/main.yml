@@ -16,4 +16,3 @@
       path: /usr/local/share/ansible_downloads/
       state: directory
       mode: 0755
-

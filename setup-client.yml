@@ -27,6 +27,11 @@
   - name: PDF-Editor manuell installieren
     apt:
       deb: "/usr/local/share/ansible_downloads/{{ deb_name_master_pdf_editor }}"
+  - name: apt-get update ausführen
+    apt:
+      update_cache: yes
+    tags: software
+
 
   pre_tasks:
     - name: Power on clients
@@ -39,13 +44,19 @@
     - name: Fakten einlesen
       setup:
 
+    - name: apt-get update
+      apt:
+        update_cache: yes
+      tags: software
+
+
   post_tasks:
-    - name: Poweroff unused clients
+    - name: Poweroff unused clients that were off before
       include_role:
         name: tasmota-power
       vars:
         "command": "poweroff"
-      when: tasmota_wireless_ip is defined
+      when: (tasmota_wireless_ip is defined) and (connect_result is failed)
 
   tasks:
 
@@ -59,44 +70,46 @@
   - name: ucs domain join repository
     apt_repository:
       repo: 'ppa:univention-dev/ppa'
+      update-cache: no
+    notify: apt-get update ausführen
 
   - name: keepassxc ppa
     apt_repository:
       repo: 'ppa:phoerious/keepassxc'
+      update-cache: no
+    notify: apt-get update ausführen
     tags: software
 
-  - name: ubuntu-moziala-security-ppa
+  - name: ubuntu-mozilla-security-ppa
     apt_repository:
       repo: 'ppa:ubuntu-mozilla-security/ppa'
+      update-cache: no
+    notify: apt-get update ausführen
     tags: software
 
   - name: ppa fuer hibiskus entfernen
     tags: software
     apt_repository:
       repo: 'ppa:marko-preuss/hibiscus'
+      update-cache: no
       state: absent
-
-
-  - name: Installiere apt-transport-https
-    apt:
-      name: apt-transport-https
-    tags: software
 
   - name: ppa für Nextcloud hinzufügen
     apt_repository:
       repo: 'ppa:nextcloud-devs/client'
-    tags: software
-
-  - name: apt-get update
-    apt:
-      update_cache: yes
+      update-cache: no
+    notify: apt-get update ausführen
     tags: software
 
 # benötigte Programme installieren
 # pdfshuffler muss bei Wechsel auf Kubuntu >=19 in pdfarranger geändert werden
+  - name: Sicherstellen, dass repositories auf dem neusten Stand sind
+    meta: flush_handlers
+
   - name: Installiere Pakete
     apt:
       name:
+      - apt-transport-https
       - emacs
       - ncdu
       - git
@@ -123,7 +136,6 @@
       - krdc
       - pavucontrol
       - pdfmod
-      - pdfsam
       - pdfshuffler
       - keepassxc
       - nextcloud-client
@@ -142,7 +154,6 @@
   - name: install hibiscus
     include_role:
       name: hibiscus
-
 
   - name: Kein KDE Update Icon mehr anzeigen
     apt:
@@ -196,6 +207,10 @@
       src: issue
       dest: /etc/issue
 
+  - name: Hostname anpassen
+    command: hostnamectl set-hostname {{ inventory_hostname_short }}
+    when: ansible_hostname != inventory_hostname_short
+
   - name: Stat Netplan Network-manager-cfg
     stat:
       path: /etc/netplan/01-network-manager-all.yaml
@@ -228,7 +243,7 @@
       dest: "/root/ucs-admin-pw.secret"
     when: not stat_ucs_mkhomedir.stat.exists
   - name: Do univention domain join
-    command: "/usr/sbin/univention-domain-join-cli --username Administrator --master-ip ucs-master --password-file /root/ucs-admin-pw.secret"
+    command: "/usr/sbin/univention-domain-join-cli --username Administrator --dc-ip ucs-master --password-file /root/ucs-admin-pw.secret"
     when: not stat_ucs_mkhomedir.stat.exists
   - name: delete password file
     file:
@@ -271,3 +286,7 @@
       dest: /etc/security/group.conf
       mode: 0644
     tags: video-dev
+
+  - name: Remove unwanted packages
+    include_role:
+      name: client-apt-remove
