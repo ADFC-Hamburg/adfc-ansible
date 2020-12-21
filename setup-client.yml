@@ -27,6 +27,11 @@
   - name: PDF-Editor manuell installieren
     apt:
       deb: "/usr/local/share/ansible_downloads/{{ deb_name_master_pdf_editor }}"
+  - name: apt-get update ausführen
+    apt:
+      update_cache: yes
+    tags: software
+
 
   pre_tasks:
     - name: Power on clients
@@ -41,7 +46,6 @@
 
     - name: apt-get update
       apt:
-        cache_valid_time: 3600
         update_cache: yes
       tags: software
 
@@ -66,38 +70,46 @@
   - name: ucs domain join repository
     apt_repository:
       repo: 'ppa:univention-dev/ppa'
+      update-cache: no
+    notify: apt-get update ausführen
 
   - name: keepassxc ppa
     apt_repository:
       repo: 'ppa:phoerious/keepassxc'
+      update-cache: no
+    notify: apt-get update ausführen
     tags: software
 
   - name: ubuntu-mozilla-security-ppa
     apt_repository:
       repo: 'ppa:ubuntu-mozilla-security/ppa'
+      update-cache: no
+    notify: apt-get update ausführen
     tags: software
 
   - name: ppa fuer hibiskus entfernen
     tags: software
     apt_repository:
       repo: 'ppa:marko-preuss/hibiscus'
+      update-cache: no
       state: absent
-
-  - name: Installiere apt-transport-https
-    apt:
-      name: apt-transport-https
-    tags: software
 
   - name: ppa für Nextcloud hinzufügen
     apt_repository:
       repo: 'ppa:nextcloud-devs/client'
+      update-cache: no
+    notify: apt-get update ausführen
     tags: software
 
 # benötigte Programme installieren
 # pdfshuffler muss bei Wechsel auf Kubuntu >=19 in pdfarranger geändert werden
+  - name: Sicherstellen, dass repositories auf dem neusten Stand sind
+    meta: flush_handlers
+
   - name: Installiere Pakete
     apt:
       name:
+      - apt-transport-https
       - emacs
       - ncdu
       - git
