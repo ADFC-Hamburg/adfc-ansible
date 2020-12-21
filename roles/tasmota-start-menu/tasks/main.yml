@@ -11,15 +11,15 @@
 - name: Make sure user is present on host
   user:
     name: startup_script
-    shell: /usr/bin/startup_script.sh
+    shell: /usr/local/bin/tasmota_start_menu.sh
     state: present
     password: $1$ZBQbTRIM$/6OLvzsHYqHl4eszgo0hk.
     create_home: no
 
 - name: copy the template over
   template:
-    src: startup_script.sh
-    dest: /usr/bin/startup_script.sh
+    src: tasmota_start_menu.sh
+    dest: /usr/local/bin/tasmota_start_menu.sh
     owner: nobody
     group: nogroup
     mode: 0755
