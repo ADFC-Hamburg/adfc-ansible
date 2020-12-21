@@ -8,6 +8,9 @@
     - telegraf
     - grafana
     - firewall
+  handlers:
+    - name: Parse Appamor Profiles
+      command: apparmor_parser -r /etc/apparmor.d/lxc-containers
   tasks:
     - name: Nutze Proxmox Community Repo
       apt_repository:
@@ -78,9 +81,5 @@
       copy:
         src: lxc-adfc-meet
         dest: /etc/apparmor.d/lxc/lxc-adfc-meet
-      register: lxc_adfc_meet
-      tags: lxc-apparmor
-    - name: Parse Appamor Profiles
-      command: apparmor_parser -r /etc/apparmor.d/lxc-containers
-      when: lxc_adfc_meet.changed
+      notify: Parse Appamor Profiles
       tags: lxc-apparmor

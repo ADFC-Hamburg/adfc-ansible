@@ -1,0 +1,7 @@
+- hosts: tools.adfc-hamburg.de
+  roles:
+   - quartierefuermenschen
+  tasks:
+   - name: test
+     debug:
+       msg: hello world

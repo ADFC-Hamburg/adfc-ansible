@@ -1,7 +1,16 @@
+# Hat nichts mit coturn zu tun, muss aber irgendwo hin
+- name: Fixe WASM Mime Type
+  lineinfile:
+    path: /etc/nginx/mime.types
+    insertafter: "^.*vnd.openxmlformats-officedocument.presentationml.presentation.*"
+    line: "    application/wasm wasm;"
+    regexp: "application/wasm"
+  tags: wasm
 - name: Installiere coturn
   apt:
     name:
       - coturn
+      - ufw
   tags: coturn
 - name: Check if Password file exists
   stat:
@@ -30,14 +39,12 @@
     mode: 0755
   register: coturn_cert_cron
   tags: coturn
-- name: Rufe Zertcopy auf
-  command: /etc/cron.daily/coturn-cert.sh
-  when: coturn_cert_cron.changed
-  tags: coturn
+  notify: Coturn Certcopy
 - name: Create DH File
   openssl_dhparam:
     path: /etc/coturn/dhparams.pem
     size: 2066
+  notify: Restart turnserver
   tags: coturn
 - name: Erstelle trunserver.conf
   template:
@@ -46,13 +53,7 @@
     mode: "0644"
   vars:
     turn_secret: "{{  coturn_secret.content |b64decode }}"
-  register: tunserver_conf
-  tags: coturn
-- name: Restart turnserver
-  systemd:
-    name: coturn
-    state: restarted
-  when: tunserver_conf.changed
+  notify: Restart turnserver
   tags: coturn
 - name: Allow Turn Server
   ufw:
