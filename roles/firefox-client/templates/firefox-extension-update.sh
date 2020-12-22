@@ -16,7 +16,9 @@ error_exit()
 mkdir -p /usr/local/share/ansible_downloads
 cd /usr/local/share/ansible_downloads
 {% for extension in firefox_extensions %}
+#if [ ! -f "{{ extension.name }}"]; then
 wget -N {{ extension.url }} || error_exit "$LINENO: {{ extension.name }} could not be downloaded."
+#fi
 {% endfor %}
 
 if [ $exit_var != 0 ]; then
