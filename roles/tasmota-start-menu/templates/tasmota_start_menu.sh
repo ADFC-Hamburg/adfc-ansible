@@ -1,7 +1,7 @@
 #!/bin/bash
 computer=`dialog --radiolist "Welcher Client soll hochgefahren werden:" 0 0 8\
 {% for host in groups['arbeitsplatz'] %}
-{% if hostvars[host]['tasmota_wireless_ip'] is defined %}
+{% if hostvars[host]['tasmota_wireless_ip'] is defined and hostvars[host]['ansible_host_macaddress'] != 'ff:ff:ff:ff:ff:ff' %}
 	{{ hostvars[host]['inventory_hostname_short'] }} "" off\
 {% endif %}
 {% endfor %}
@@ -9,7 +9,7 @@ computer=`dialog --radiolist "Welcher Client soll hochgefahren werden:" 0 0 8\
 dialog --clear
 clear
 {% for host in groups['arbeitsplatz'] %}
-{% if hostvars[host]['tasmota_wireless_ip'] is defined %}
+{% if hostvars[host]['tasmota_wireless_ip'] is defined and hostvars[host]['ansible_host_macaddress'] != 'ff:ff:ff:ff:ff:ff' %}
 if [ $computer = {{ hostvars[host]['inventory_hostname_short'] }} ]; then
 	ip_client="{{ hostvars[host]['ansible_host'] }}"
 	ip_tasmota="{{ hostvars[host]['tasmota_wireless_ip'] }}"
@@ -21,7 +21,7 @@ fi
 if p=$(ping -c1 -W1 $ip_client | grep -i '0 received'); then
 	echo "Der Client $computer reagiert nicht."
 	if a=$(curl -s http://$ip_tasmota/cm?cmnd=power | grep -i '"ON"'); then
-		wakeonlan $mac_client
+		wakeonlan $mac_client &> /dev/null
 		echo "Der client wurde aufgeweckt"
 		sleep 5
 		if b=$(ping -c1 -W1 $ip_client | grep -i '0 received'); then
