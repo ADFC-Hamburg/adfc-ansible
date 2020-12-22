@@ -1,3 +1,8 @@
+- name: Install required packages
+  apt:
+    name:
+     - unzip
+
 - name: Get Github Token
   slurp:
     src: "{{ inventory_dir }}/github_token.txt"
@@ -45,6 +50,14 @@
     dest: "{{  adfc_share_dir }}/jitsi-web.git_hash"
   register: jitsi_web_write_sha
   check_mode: yes
+
+- name: Write apt pin
+  copy:
+    src: adfc-skin-jitsi-apt-preferences
+    dest: /etc/apt/preferences.d/adfc-jitsi
+    mode: 0644
+    owner: root
+    group: root
 
 - name: Download and install
   include_tasks: download_and_install.yml

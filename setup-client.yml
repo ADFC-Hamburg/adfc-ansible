@@ -1,7 +1,7 @@
 - hosts: arbeitsplatz
   gather_facts: no
   roles:
-  - ubuntu-basic
+  - basic_setup
   - ssh-keys
   - jnv.unattended-upgrades
   - load-contacts
@@ -11,12 +11,27 @@
   - xrdp
   - unburden-home-dir
   - firefox-client
+  - chromium
   - thunderbird
   - libreoffice
   - slack
   - janrufmonitor
   - links-on-desktop
   - client-apt-remove
+  - gdm_desktoptheme
+  handlers:
+  - name: XnViewMP manuell installieren
+    apt:
+      deb: "/usr/local/share/ansible_downloads/XnViewMP-linux-x64.deb"
+
+  - name: PDF-Editor manuell installieren
+    apt:
+      deb: "/usr/local/share/ansible_downloads/{{ deb_name_master_pdf_editor }}"
+  - name: apt-get update ausführen
+    apt:
+      update_cache: yes
+    tags: software
+
 
   pre_tasks:
     - name: Power on clients
@@ -29,13 +44,19 @@
     - name: Fakten einlesen
       setup:
 
+    - name: apt-get update
+      apt:
+        update_cache: yes
+      tags: software
+
+
   post_tasks:
-    - name: Poweroff unused clients
+    - name: Poweroff unused clients that were off before
       include_role:
         name: tasmota-power
       vars:
         "command": "poweroff"
-      when: tasmota_wireless_ip is defined
+      when: (tasmota_wireless_ip is defined) and (connect_result is failed)
 
   tasks:
 
@@ -49,60 +70,63 @@
   - name: ucs domain join repository
     apt_repository:
       repo: 'ppa:univention-dev/ppa'
+      update-cache: no
+    notify: apt-get update ausführen
 
   - name: keepassxc ppa
     apt_repository:
       repo: 'ppa:phoerious/keepassxc'
+      update-cache: no
+    notify: apt-get update ausführen
     tags: software
 
-  - name: ubuntu-moziala-security-ppa
+  - name: ubuntu-mozilla-security-ppa
     apt_repository:
       repo: 'ppa:ubuntu-mozilla-security/ppa'
+      update-cache: no
+    notify: apt-get update ausführen
     tags: software
 
   - name: ppa fuer hibiskus entfernen
     tags: software
     apt_repository:
       repo: 'ppa:marko-preuss/hibiscus'
+      update-cache: no
       state: absent
-
-
-  - name: Installiere apt-transport-https
-    apt:
-      name: apt-transport-https
-    tags: software
 
   - name: ppa für Nextcloud hinzufügen
     apt_repository:
       repo: 'ppa:nextcloud-devs/client'
-    tags: software
-
-  - name: apt-get update
-    apt:
-      update_cache: yes
+      update-cache: no
+    notify: apt-get update ausführen
     tags: software
 
 # benötigte Programme installieren
 # pdfshuffler muss bei Wechsel auf Kubuntu >=19 in pdfarranger geändert werden
+  - name: Sicherstellen, dass repositories auf dem neusten Stand sind
+    meta: flush_handlers
+
   - name: Installiere Pakete
     apt:
       name:
+      - apt-transport-https
       - emacs
       - ncdu
       - git
       - univention-domain-join
       - univention-domain-join-cli
-      - gdm3
       - nfs-common
       - openjdk-11-jre
       - flameshot
       - gstreamer1.0-plugins-base
       - kdenlive
       - vlc
+      - language-pack-de
       - language-pack-de-base
+      - language-pack-kde-de
+      - gnome-user-docs-de
       - gnupg2
       - gimp
-      - language-pack-gnome-de
       - gimp-help-de
       - glabels
       - openshot-qt
@@ -110,8 +134,8 @@
       - gnucash-docs
       - bsd-mailx
       - krdc
+      - pavucontrol
       - pdfmod
-      - pdfsam
       - pdfshuffler
       - keepassxc
       - nextcloud-client
@@ -131,7 +155,6 @@
     include_role:
       name: hibiscus
 
-
   - name: Kein KDE Update Icon mehr anzeigen
     apt:
       name: plasma-discover
@@ -143,20 +166,16 @@
     get_url:
       url: http://download.xnview.com/XnViewMP-linux-x64.deb
       dest: /usr/local/share/ansible_downloads/XnViewMP-linux-x64.deb
-    register: xnview_download
-  - name: XnViewMP manuell installieren
-    apt: deb="/usr/local/share/ansible_downloads/XnViewMP-linux-x64.deb"
-    when: xnview_download.changed
+    notify: XnViewMP manuell installieren
+    tags: xnviewmp, software
 
 # Master-PDF-Editor installieren
   - name: PDF-Editor manuell runterladen
     get_url:
       url: https://code-industry.net/public/{{ deb_name_master_pdf_editor }}
       dest: /usr/local/share/ansible_downloads/{{ deb_name_master_pdf_editor }}
-    register: pdfeditor_download
-  - name: PDF-Editor manuell installieren
-    apt: deb="/usr/local/share/ansible_downloads/{{ deb_name_master_pdf_editor }}"
-    when: pdfeditor_download.changed
+    notify: PDF-Editor manuell installieren
+    tags: pdfeditor, software
 
   - name: Pruefe Freemind-snap
     stat:
@@ -188,6 +207,10 @@
       src: issue
       dest: /etc/issue
 
+  - name: Hostname anpassen
+    command: hostnamectl set-hostname {{ inventory_hostname_short }}
+    when: ansible_hostname != inventory_hostname_short
+
   - name: Stat Netplan Network-manager-cfg
     stat:
       path: /etc/netplan/01-network-manager-all.yaml
@@ -201,7 +224,7 @@
       dest: /etc/netplan/02-adfc.yaml
     register: interfaces_create
   - name: Reboot on network interfaces changes
-    reboot:
+    reboot: # noqa 503
     when: interfaces_create.changed
 
   - name: Check if join is alread done
@@ -220,7 +243,7 @@
       dest: "/root/ucs-admin-pw.secret"
     when: not stat_ucs_mkhomedir.stat.exists
   - name: Do univention domain join
-    command: "/usr/sbin/univention-domain-join-cli --username Administrator --master-ip ucs-master --password-file /root/ucs-admin-pw.secret"
+    command: "/usr/sbin/univention-domain-join-cli --username Administrator --dc-ip ucs-master --password-file /root/ucs-admin-pw.secret"
     when: not stat_ucs_mkhomedir.stat.exists
   - name: delete password file
     file:
@@ -247,106 +270,7 @@
 
 # ADFC - Desktop theme
 
-  - name: Create Desktop Theme Directory
-    file:
-      path: /usr/share/plasma/desktoptheme/ADFC
-      state: directory
-      mode: 0755
-    register: desktoptheme
-    tags: gdm
-  - name: Sync Theme folder
-    synchronize:
-      src: desktopthemes/ADFC
-      dest: /usr/share/plasma/desktoptheme/
-      recursive: yes
-      use_ssh_args: yes
-    register: desktoptheme
-    tags: gdm
-  - name: Copy config for default desktoptheme
-    copy:
-      src: desktopthemes/kubuntu-default-plasmarc
-      dest: /usr/share/kubuntu-default-settings/kf5-settings/plasmarc
-      mode: 0644
-    tags: gdm
-  - name: Create wallpaper directory
-    file:
-      path: /usr/share/wallpapers/ADFC
-      state: directory
-      mode: 0755
-    register: desktoptheme
-    tags: gdm
-  - name: Sync wallpaper directory
-    synchronize:
-      src: wallpapers/ADFC
-      dest: /usr/share/wallpapers/
-      recursive: yes
-      use_ssh_args: yes
-    register: desktoptheme
-    tags: gdm
 
-  - name: Create Themes Directory
-    file:
-      path: /usr/local/share/themes/adfc/
-      state: directory
-      mode: 0755
-    tags: gdm
-  - name: Copy ADFC Logo
-    copy:
-      src: ADFC-HH-rgb.jpg
-      dest: /usr/local/share/themes/adfc/ADFC-HH-rgb.jpg
-      mode: 0644
-    tags: gdm
-  - name: Remove Gnome Desktop file ubuntu.desktop
-    command:
-      argv:
-       - "/bin/mv"
-       - "/usr/share/xsessions/ubuntu.desktop"
-       - "/usr/share/xsessions/ubuntu.desktop.dontuse"
-      creates: /usr/share/xsessions/ubuntu.desktop.dontuse
-      removes: /usr/share/xsessions/ubuntu.desktop
-    tags: gdm
-  - name: Remove Gnome Desktop file ubuntu-communitheme-snap.desktop
-    command:
-      argv:
-       - "/bin/mv"
-       - "/usr/share/xsessions/ubuntu-communitheme-snap.desktop"
-       - "/usr/share/xsessions/ubuntu-communitheme-snap.desktop.dontuse"
-      creates: /usr/share/xsessions/ubuntu-communitheme-snap.desktop.dontuse
-      removes: /usr/share/xsessions/ubuntu-communitheme-snap.desktop
-    tags: gdm
-  - name: Copy GDM Config file
-    copy:
-      src: client-etc-gdm3-greeter.dconf-defaults
-      dest: /etc/gdm3/greeter.dconf-defaults
-    register: gdm_file
-    tags: gdm
-  - name: copy ubuntu.css to client
-    copy:
-      src: ubuntu-adfc.css
-      dest: /usr/share/gnome-shell/theme/ubuntu-adfc.css
-      mode: 0644
-    register: gdm_ubuntu_css_file
-    tags: gdm
-  - name: Create Symbolic link to ubuntu-adfc.css
-    file:
-      src: /usr/share/gnome-shell/theme/ubuntu-adfc.css
-      dest: /etc/alternatives/gdm3.css
-      state: link
-    register: gdm_ubuntu_css_file
-    tags: gdm
-  - name: copy ADFC-Login background
-    copy:
-      src: ADFC-login-background.png
-      dest: /usr/local/share/themes/adfc/ADFC-login-background.png
-      mode: 0644
-    register: gdm_adfc_bg_file
-    tags: gdm
-  - name: restart service gdm3
-    systemd:
-      state: restarted
-      name: gdm3
-    when: gdm_file.changed or gdm_adfc_bg_file.changed or gdm_ubuntu_css_file.changed
-    tags: gdm
 
   - name: sudoer erstellen
     template:
@@ -355,3 +279,14 @@
       validate: '/usr/sbin/visudo -cf %s'
       mode: 0440
     tags: sudo
+
+  - name: Erlaube Zugriff auf video,audio etc.
+    template:
+      src: group.conf.j2
+      dest: /etc/security/group.conf
+      mode: 0644
+    tags: video-dev
+
+  - name: Remove unwanted packages
+    include_role:
+      name: client-apt-remove

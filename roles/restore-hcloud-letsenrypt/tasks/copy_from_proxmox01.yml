@@ -1,6 +1,7 @@
 - name: "create lestsencrypt"
   file:
     path: /etc/letsencrypt
+    mode: "0755"
     state: directory
 
 - name: "read tar file"

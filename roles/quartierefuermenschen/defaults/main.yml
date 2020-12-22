@@ -1,0 +1,31 @@
+qfm_apache_config:
+  - template_src: apache-http.conf.j2
+    site_name: http-quartierefuermenschen
+    is_https: no
+  - template_src: apache-https.conf.j2
+    site_name: https-quartierefuermenschen
+    is_https: yes
+
+
+quartierefuermenschen_domain: quartierefuermenschen.adfc-hamburg.de
+
+qfm_mysql_user: qfm_wordpress
+qfm_mysql_db: qfm_wordpress
+qfm_docker_port: 8081
+qfm_docker_volume: quartierefuermenschen
+qfm_docker_image: wordpress
+qfm_docker_version: 5.5.3-php7.4
+
+qfm_wordpress_user: Uu9ea
+qfm_wordpress_title: "Quartiere für Menschen"
+qfm_wordpress_language: de_DE
+
+qfm_password_files:
+  - file: /etc/qfm_mysql_user.secret
+    name: qfm_mysql_user_password
+  - file: /etc/mysql.secret
+    name: mysql_root_password
+  - file: /etc/qfm_wp_user_password.secret
+    name: qfm_wp_user_password
+  - file: /etc/wp_admin_mail.txt
+    name: qfm_wp_admin_mail

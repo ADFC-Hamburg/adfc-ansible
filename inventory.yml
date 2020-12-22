@@ -4,7 +4,6 @@ all:
       hosts:
         proxmox01.gst.hamburg.adfc.de:
         ucs-master.gst.hamburg.adfc.de:
-        babelfish.gst.hamburg.adfc.de:
         tools.adfc-hamburg.de:
         proxmox01.adfc-intern.de:
         int-master.adfc-intern.de:
@@ -15,19 +14,29 @@ all:
               hosts:
                 meet.adfc-intern.de:
                 test.adfc-intern.de:
+                test1.dyndns.adfc-intern.de:
+                mv-hessen.dyndns.adfc-intern.de:
             meet_vb:
               hosts:
                 vbh01.meet.adfc-intern.de:
                 vbh02.meet.adfc-intern.de:
+                vbdh01.meet.adfc-intern.de:
+            dyn_meet_hessen_vb:
+              hosts:
+                vb01-mv-hessen.dyndns.adfc-intern.de:
+                vb02-mv-hessen.dyndns.adfc-intern.de:
+                vb03-mv-hessen.dyndns.adfc-intern.de:
             meet_test:
               hosts:
                 test.adfc-intern.de:
                 vb01.test.adfc-intern.de:
+                test1.dyndns.adfc-intern.de:
             meet_live:
               hosts:
                 meet.adfc-intern.de:
                 vbh01.meet.adfc-intern.de:
                 vbh02.meet.adfc-intern.de:
+                vbdh01.meet.adfc-intern.de:
     arbeitsplatz:
       hosts:
         adfc-testclient.gst.hamburg.adfc.de:
@@ -47,3 +56,13 @@ all:
     domain_factory:
       hosts:
         status.adfc-intern.de:
+    tasmota:
+      hosts:
+        tasmota-0673.gst.hamburg.adfc.de:
+        tasmota-3562.gst.hamburg.adfc.de:
+        tasmota-3675.gst.hamburg.adfc.de:
+        tasmota-3720.gst.hamburg.adfc.de:
+        tasmota-4790.gst.hamburg.adfc.de:
+        tasmota-5634.gst.hamburg.adfc.de:
+        tasmota-6340.gst.hamburg.adfc.de:
+        tasmota-6745.gst.hamburg.adfc.de:

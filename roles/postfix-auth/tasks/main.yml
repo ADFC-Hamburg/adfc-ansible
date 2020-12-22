@@ -19,6 +19,7 @@
     src: postfix-main.cf
     dest: /etc/postfix/main.cf
     mode: 0644
+  notify: reload postfix
 
 - name: copy sender_canonical
   template:
@@ -39,12 +40,7 @@
     mode: 0600
     owner: root
     group: root
-
-- name: do postmap on smtp_auth
-  command: /usr/sbin/postmap /etc/postfix/smtp_auth
-  args:
-    creates: /etc/postfix/smtp_auth.db
-  register: postmap
+  notify: postfix postmap smtp_auth
 
 - name: get notfication-emailaddress
   slurp:
@@ -57,14 +53,4 @@
     path: /etc/aliases
     regexp: '^root:'
     line: "root: {{ MAILINGLISTE.content |b64decode  |replace('\n', '') }}"
-  register: aliases_changed
-
-- name: do newaliases
-  command: /usr/bin/newaliases
-  when: aliases_changed.changed
-
-- name: reload postfix
-  service:
-    name: postfix
-    state: restarted
-  when: (postmap['changed'] or aliases_changed['changed'])
+  notify: Postfix newaliases

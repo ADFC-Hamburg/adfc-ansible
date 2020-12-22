@@ -1,20 +1,17 @@
 # benötigte Programme installieren
   - name: Installiere Pakete
     apt:
-      name: "{{ packages }}"
-    vars:
-      packages:
-      - emacs
-      - vim
-      - nano
-      - htop
-      - mc
-      - ncdu
-      - chromium-browser
+      name: "{{ basic_setup_base_packages }}"
+
+  - name: Setup Journald Settings
+    template:
+      src: base-journald.conf
+      dest: /etc/systemd/journald.conf
+      mode: "0644"
+    notify: restart journald
 
   - name: Downloadverzeichnis für deb-Pakete erstellen
     file:
       path: /usr/local/share/ansible_downloads/
       state: directory
       mode: 0755
-

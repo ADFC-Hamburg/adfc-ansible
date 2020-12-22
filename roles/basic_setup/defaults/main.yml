@@ -1,0 +1,8 @@
+basic_setup_base_packages:
+  - emacs
+  - vim
+  - nano
+  - htop
+  - mc
+  - ncdu
+basic_setup_journald_max_use: "512M"

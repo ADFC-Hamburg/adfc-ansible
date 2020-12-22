@@ -2,7 +2,7 @@
 function run_ansible_playbook() {
     ANSIBLE_PLAYBOOK="$1"
     LIMIT_HOST="$2"
-    echo ansible-playbook -v -l $LIMIT_HOST $ANSIBLE_PLAYBOOK > playbook.log
+    echo ansible-playbook -v -l $LIMIT_HOST $ANSIBLE_PLAYBOOK >> playbook.log
     touch /tmp/dyn_jitsi_playbook-$LIMIT_HOST-$ANSIBLE_PLAYBOOK
 }
 
@@ -22,4 +22,7 @@ function query_hetzner_server() {
 
 function clear_cache() {
     echo done
+}
+function seconds_since_sunday() {
+    echo 18000
 }

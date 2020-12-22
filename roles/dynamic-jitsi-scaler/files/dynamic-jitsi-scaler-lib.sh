@@ -3,7 +3,7 @@
 function run_ansible_playbook() {
     ANSIBLE_PLAYBOOK="$1"
     LIMIT_HOST="$2"
-    ansible-playbook -v -l $LIMIT_HOST $ANSIBLE_PLAYBOOK > playbook.log
+    ansible-playbook -v -l $LIMIT_HOST $ANSIBLE_PLAYBOOK 2>&1 >> playbook.log
 }
 
 
@@ -18,12 +18,12 @@ function query_influx() {
 
 function query_participants() {
     SERVER="$1"
-    query_influx ${SERVER} "round(mean(\"participants\"))"
+    query_influx ${SERVER} "round(max(\"participants\"))"
 }
 
 function query_conferences() {
     SERVER="$1"
-    query_influx ${SERVER} "round(mean(\"conferences\"))"
+    query_influx ${SERVER} "round(max(\"conferences\"))"
 }
 
 function query_hetzner_server() {
@@ -48,4 +48,8 @@ function query_hetzner_server() {
 function clear_cache() {
     CACHE_FILE="${CACHE_DIR}/servers-hcloud.json"
     rm "${CACHE_FILE}"
+}
+function seconds_since_sunday() {
+    # Seltsame verenkung um Sommerzeit/Winterzeitumstellung zu elemenieren
+    echo $(( $(date +%s) - $(date --date="last sunday 4:00:00" +%s) + (4 * 60 * 60) ))
 }
