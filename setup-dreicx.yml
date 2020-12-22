@@ -33,9 +33,17 @@
       user: phonesystem
       state: present
       key: "{{ dreicx_backup_ssh_key.public_key }}"
-      key_options: 'from="192.168.123.32",command="/usr/local/bin/rrsync -ro /var/lib/3cxpbx/Instance1/Data/Backups/",no-agent-forwarding,no-port-forwarding,no-pty,no-user-rc,no-X11-forwarding'
+      key_options: "{{ ssh_key_opts | join(',') }}"
     tags: dreicx_backup
-
+    vars:
+      ssh_key_opts:
+        - from="192.168.123.32"
+        - command="/usr/local/bin/rrsync -ro /var/lib/3cxpbx/Instance1/Data/Backups/"
+        - no-agent-forwarding
+        - no-port-forwarding
+        - no-pty
+        - no-user-rc
+        - no-X11-forwarding
   - name: Create Dest dir
     file:
       path: /adfc/Computer/Datensicherung/dreicx
@@ -50,7 +58,15 @@
       name: "dreicx Backup"
       minute: "20"
       hour: "4"
-      job: /usr/bin/cronic /usr/bin/rsync --recursive --delete  '--rsh=ssh -i /root/.ssh/dreicx-backup' phonesystem@192.168.123.69:. /adfc/Computer/Datensicherung/dreicx/
+      job: >-
+        /usr/bin/cronic
+        /usr/bin/rsync
+        --recursive
+        --delete
+        --times
+        '--rsh=ssh -i /root/.ssh/dreicx-backup'
+        phonesystem@192.168.123.69:.
+        /adfc/Computer/Datensicherung/dreicx/
       user: root
       cron_file: /etc/cron.d/dreicx_backup
     delegate_to: ucs-master.gst.hamburg.adfc.de
