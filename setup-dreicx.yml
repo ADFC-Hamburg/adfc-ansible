@@ -65,7 +65,7 @@
         --delete
         --times
         '--rsh=ssh -i /root/.ssh/dreicx-backup'
-        phonesystem@192.168.123.69:.
+        phonesystem@192.168.123.70:.
         /adfc/Computer/Datensicherung/dreicx/
       user: root
       cron_file: /etc/cron.d/dreicx_backup
