@@ -71,4 +71,5 @@
   copy:
     src: additional_guacamole_cipher.conf
     dest: /etc/ssh/sshd_config.d/
+  notify: Restart ssh  
   when: ansible_distribution_version == '20.04'
