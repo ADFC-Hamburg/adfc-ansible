@@ -4,11 +4,17 @@
   apt:
     name: xrdp
 
-- name: Use KDE for xrdp
+- name: Set correct path for 18.04 KDE start
   alternatives:
     name: x-session-manager
     path: /usr/bin/startkde
   when: ansible_distribution_version == '18.04'
+
+- name: Set correct path for 20.04 KDE start
+  alternatives:
+    name: x-session-manager
+    path: /usr/bin/startplasma-x11
+  when: ansible_distribution_version == '20.04'
 
 - name: copy logo
   copy:
@@ -54,3 +60,15 @@
     state: absent
     path: "/etc/polkit-1/localauthority/50-local.d/xrdp-disable-shutdown.pkla"
   when: enable_user_shutdown is undefined
+
+- name: Make sure the xrdp user is in the ssl-cert group
+  user:
+    name: xrdp
+    groups: ssl-cert
+    append: yes
+
+- name: Make sure a suitable cipher for guacamole is allowed
+  copy:
+    src: additional_guacamole_cipher.conf
+    dest: /etc/ssh/sshd_config.d/
+  when: ansible_distribution_version == '20.04'
