@@ -15,3 +15,14 @@
       path: /usr/local/share/ansible_downloads/
       state: directory
       mode: 0755
+
+# Schlafen von clients deaktivieren
+  - name: Prevent all sleep modes
+    blockinfile:
+      path: /etc/systemd/sleep.conf
+      insertafter: "^[Sleep]"
+      block: |
+        AllowSuspend=no
+        AllowHibernation=no
+        AllowSuspendThenHibernate=no
+        AllowHybridSleep=no
