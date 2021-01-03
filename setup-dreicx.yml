@@ -68,6 +68,6 @@
         phonesystem@192.168.123.70:.
         /adfc/Computer/Datensicherung/dreicx/
       user: root
-      cron_file: /etc/cron.d/dreicx_backup
+      cron_file: /etc/cron.d/ansible_backup_dreicx
     delegate_to: ucs-master.gst.hamburg.adfc.de
     tags: dreicx_backup
