@@ -1,0 +1,73 @@
+- hosts: dreicx.gst.hamburg.adfc.de
+  gather_facts: no
+  roles:
+  - ssh-keys
+  tasks:
+  - name: Installiere Pakete
+    apt:
+      name:
+      - apt-transport-https
+    tags: software
+
+  - name: Create SSH Key for Backup
+    openssh_keypair:
+      path: /root/.ssh/dreicx-backup
+      size: 2048
+      type: rsa
+    delegate_to: ucs-master.gst.hamburg.adfc.de
+    register: dreicx_backup_ssh_key
+    tags: dreicx_backup
+
+  - name: Create rrsync in /usr/local/bin
+    copy:
+      src: /usr/share/doc/rsync/scripts/rrsync
+      dest: /usr/local/bin/rrsync
+      mode: 0755
+      owner: root
+      group: root
+      remote_src: yes
+    tags: dreicx_backup
+
+  - name: Safe Dreicx Backup key
+    authorized_key:
+      user: phonesystem
+      state: present
+      key: "{{ dreicx_backup_ssh_key.public_key }}"
+      key_options: "{{ ssh_key_opts | join(',') }}"
+    tags: dreicx_backup
+    vars:
+      ssh_key_opts:
+        - from="192.168.123.32"
+        - command="/usr/local/bin/rrsync -ro /var/lib/3cxpbx/Instance1/Data/Backups/"
+        - no-agent-forwarding
+        - no-port-forwarding
+        - no-pty
+        - no-user-rc
+        - no-X11-forwarding
+  - name: Create Dest dir
+    file:
+      path: /adfc/Computer/Datensicherung/dreicx
+      mode: "0700"
+      owner: root
+      state: directory
+    delegate_to: ucs-master.gst.hamburg.adfc.de
+    tags: dreicx_backup
+
+  - name: Create Backup Job
+    cron:
+      name: "dreicx Backup"
+      minute: "20"
+      hour: "4"
+      job: >-
+        /usr/bin/cronic
+        /usr/bin/rsync
+        --recursive
+        --delete
+        --times
+        '--rsh=ssh -i /root/.ssh/dreicx-backup'
+        phonesystem@192.168.123.70:.
+        /adfc/Computer/Datensicherung/dreicx/
+      user: root
+      cron_file: /etc/cron.d/ansible_backup_dreicx
+    delegate_to: ucs-master.gst.hamburg.adfc.de
+    tags: dreicx_backup
