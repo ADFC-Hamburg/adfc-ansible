@@ -1,7 +1,8 @@
 #!/bin/bash
-if [ -z who ]; then
-	echo "Client is not used and will be shutdown"
-	poweroff
-else
+if [[ $(who) ]]; then
 	echo "Someone is using this client."
+	echo $(who)
+else
+	echo "Client is not being used and will be shutdown"
+	poweroff
 fi
