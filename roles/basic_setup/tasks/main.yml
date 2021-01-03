@@ -16,20 +16,22 @@
       state: directory
       mode: 0755
 
-# Schlafen von clients deaktivieren
-  - name: Prevent all sleep modes with sleep.conf
-    blockinfile:
-      path: /etc/systemd/sleep.conf
-      insertafter: "^[Sleep]"
-      block: |
-        AllowSuspend=no
-        AllowHibernation=no
-        AllowSuspendThenHibernate=no
-        AllowHybridSleep=no
-    when: ansible_distribution_version == '20.04'
+  - name: Prevent sleep
+    systemd:
+      name: sleep.target
+      masked: true
 
-  - name: Prevent all sleep modes with mask
-    command:
-      cmd: systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
-    changed_when: false
-    when: ansible_distribution_version == '18.04'
+  - name: Prevent suspend
+    systemd:
+      name: suspend.target
+      masked: true
+
+  - name: Prevent hibernate
+    systemd:
+      name: hibernate.target
+      masked: true
+
+  - name: Prevent hybrid-sleep
+    systemd:
+      name: hybrid-sleep.target
+      masked: true
