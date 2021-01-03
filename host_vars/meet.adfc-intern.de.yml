@@ -143,6 +143,8 @@ asterisk_rooms:
     name: ADFCNRWLandeshauptausschuss
   3003:
     name: ADFCNRWAGMobilitaet
+  3004:
+    name: ADFC-Guetersloh
   4001:
     name: htk-kreisvorstand
   4002:
