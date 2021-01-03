@@ -1,0 +1,7 @@
+#!/bin/bash
+if [ -z who ]; then
+	echo "Client is not used and will be shutdown"
+	poweroff
+else
+	echo "Someone is using this client."
+fi

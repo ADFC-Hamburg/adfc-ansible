@@ -1,0 +1,5 @@
+- name: Copy script to client
+  copy:
+    src: inactivity-shutdown
+    dest: /etc/cron.hourly/
+    mode: '0755'

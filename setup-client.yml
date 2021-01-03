@@ -3,6 +3,7 @@
   roles:
   - basic_setup
   - ssh-keys
+  - inactivity-shutdown
   - jnv.unattended-upgrades
   - load-contacts
   - postfix-auth
