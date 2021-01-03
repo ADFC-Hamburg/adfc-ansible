@@ -482,14 +482,15 @@ var config = {
     // disableLocalVideoFlip: false,
 
     // Deployment specific URLs.
-    // deploymentUrls: {
-    //    // If specified a 'Help' button will be displayed in the overflow menu with a link to the specified URL for
-    //    // user documentation.
-    //    userDocumentationURL: 'https://docs.example.com/video-meetings.html',
-    //    // If specified a 'Download our apps' button will be displayed in the overflow menu with a link
-    //    // to the specified URL for an app download page.
-    //    downloadAppsUrl: 'https://docs.example.com/our-apps.html'
-    // },
+    deploymentUrls: {
+        // If specified a 'Help' button will be displayed in the overflow menu with a link to the specified URL for
+        // user documentation.
+        {% if jist_meet_user_doc_url | default('') == '' %}
+        //{% endif %}userDocumentationURL: '{{ jist_meet_user_doc_url | default("https://localhost/doc.pdf") }}',
+        // If specified a 'Download our apps' button will be displayed in the overflow menu with a link
+        // to the specified URL for an app download page.
+        // downloadAppsUrl: 'https://docs.example.com/our-apps.html'
+    },
 
     // Options related to the remote participant menu.
     // remoteVideoMenu: {
