@@ -4,5 +4,6 @@ if [[ $(who) ]]; then
 	echo $(who)
 else
 	echo "Client is not being used and will be shutdown"
+	echo $(who)
 	poweroff
 fi
