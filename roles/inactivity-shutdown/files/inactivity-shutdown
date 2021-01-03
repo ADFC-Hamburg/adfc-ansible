@@ -1,9 +1,11 @@
 #!/bin/bash
 if [[ $(who) ]]; then
-	echo "Someone is using this client."
+	echo "Someone is using this client, shutdown was prevented."
 	echo $(who)
+	echo $(date)
 else
 	echo "Client is not being used and will be shutdown"
 	echo $(who)
+	echo $(date)
 	poweroff
 fi
