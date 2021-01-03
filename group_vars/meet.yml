@@ -42,6 +42,7 @@ jitsi_meet_appname: 'ADFC Jitsi-Meet-Konferenz-System'
 jitsi_meet_org_link: 'https://portal.adfc-intern.de'
 jitsi_meet_welcomepage_title: 'Sichere Videokonferenzen des Allgemeinen Deutschen Fahrrad-Clubs'
 jitsi_meet_welcomepage_description: 'Herzlich Wilkommen im Testbetrieb des Konferenzservers des ADFC. Weitere Infos: info@hamburg.adfc.de'
+jist_meet_user_doc_url: 'https://portal.adfc-intern.de/adfc/adfc-meet.pdf'
 
 # Auf den Unterseiten. Nicht auf der Startseite:
 #jitsi_meet_default_background: "#C0C0C0"

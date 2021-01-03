@@ -35,3 +35,12 @@
     systemd:
       name: hybrid-sleep.target
       masked: true
+
+  - name: Setze die Umask auf 0007
+    copy:
+      content: "umask 0007"
+      dest: /etc/profile.d/ansibe_adfc.sh
+      owner: root
+      group: root
+      mode: "0755"
+    tags: umask
