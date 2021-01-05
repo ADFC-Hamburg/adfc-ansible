@@ -15,12 +15,13 @@
     state: present
     password: $1$ZBQbTRIM$/6OLvzsHYqHl4eszgo0hk.
     create_home: no
+    system: yes
 
 - name: copy the template over
   template:
     src: tasmota_start_menu.sh
     dest: /usr/local/bin/tasmota_start_menu.sh
-    owner: nobody
-    group: nogroup
+    owner: root
+    group: root
     mode: 0755
     force: yes
