@@ -72,8 +72,6 @@ jitsi_meet_jigasi_account: jigasi@meet.adfc-intern.de
 jitsi_meet_jigasi_port: 5061
 
 asterisk_rooms:
-  1042:
-    name: admin
   1043:
     name: admin
     pin: yes
@@ -87,7 +85,7 @@ asterisk_rooms:
     name: landesversammlunghh
   1005:
     name: adfchh
-  1006: 
+  1006:
     name: teamkoppel
   1010:
     name: Berlin10
@@ -95,7 +93,7 @@ asterisk_rooms:
     name: Berlin20
   1036:
     name: Berlin36
-  1042: 
+  1042:
     name: StadtteilgruppeTempelhof
   1061:
     name: Berlin61
