@@ -24,3 +24,12 @@
       group: root
       mode: "0755"
     tags: umask
+    
+- name: Change file permissions of KDE document templates
+  file:
+    path: /usr/share/templates
+    recurse: yes
+    owner: root
+    group: root
+    mode: '0664'
+    
