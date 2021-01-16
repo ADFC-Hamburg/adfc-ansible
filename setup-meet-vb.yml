@@ -16,3 +16,16 @@
     - geerlingguy.certbot
     - jitsi-videobridge
     - telegraf
+  tasks:
+    - name: Alles neu starten etc
+      meta: flush_handlers
+
+    - name: Wait 20 seconds
+      pause:
+        seconds: 20
+
+    - name: Stop Jitsi-Meet vb
+      systemd:
+        name: jitsi-videobridge2
+        state: stopped
+      delegate_to: "{{ jitsi_meet_server_name }}"
