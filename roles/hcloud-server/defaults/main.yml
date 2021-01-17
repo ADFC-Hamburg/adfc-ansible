@@ -1,2 +1,3 @@
 authorized_key_user: root
 hcloud_floating_ips: []
+hcloud_failure_server_location: NONE

@@ -31,14 +31,44 @@
     # nbg1: nürnberg
   delegate_to: localhost
   register: hcloud_host
+  ignore_errors: "{{ hcloud_failure_server_location != 'NONE' }}"
+
+- name: Create host on failure
+  hcloud_server:
+    api_token: "{{ hcloud_api_token }}"
+    name: "{{ inventory_hostname }}"
+    server_type: "{{ hcloud_server_type }}"
+    image: "{{ hcloud_image }}"
+    state: started
+    ssh_keys: "{{ ssh_hcloud_add_key | json_query('results[*].hcloud_ssh_key.name') }}"
+    location: "{{ hcloud_failure_server_location }}"
+    # fsn1: falkenstein
+    # nbg1: nürnberg
+  delegate_to: localhost
+  register: hcloud_failure_host
+  when: hcloud_host is failed
+
+
+- name: set ip address
+  set_fact:
+    hcloud_ipv4_address: "{{ hcloud_host.hcloud_server.ipv4_address }}"
+    hcloud_ipv6_address: "{{ hcloud_host.hcloud_server.ipv6 | replace('/64','1') }}"
+  when: not hcloud_host is failed
+
+- name: set ip address on failure
+  set_fact:
+    hcloud_ipv4_address: "{{ hcloud_failure_host.hcloud_server.ipv4_address }}"
+    hcloud_ipv6_address: "{{ hcloud_failure_host.hcloud_server.ipv6 | replace('/64','1') }}"
+  when: hcloud_host is failed
+
 
 - name: Set Dynamic IP
   include_role:
     name: ucs_dns
   vars:
     ucs_dns_ips:
-       - "{{ hcloud_host.hcloud_server.ipv4_address }}"
-       - "{{ hcloud_host.hcloud_server.ipv6 | replace('/64','1') }}"
+       - "{{ hcloud_ipv4_address }}"
+       - "{{ hcloud_ipv6_address }}"
 
 - name: Debug1
   debug:
@@ -95,7 +125,7 @@
     owner: root
     group: root
   vars:
-    ansible_host: "{{ hcloud_host.hcloud_server.ipv4_address }}"
+    ansible_host: "{{ hcloud_ipv4_address }}"
     ansible_ssh_extra_args: "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
 
 - name: extract keys
@@ -104,7 +134,7 @@
     remote_src: yes
     dest: /etc/ssh
   vars:
-    ansible_host: "{{ hcloud_host.hcloud_server.ipv4_address }}"
+    ansible_host: "{{ hcloud_ipv4_address }}"
     ansible_ssh_extra_args: "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
 
 - name: restart ssh
@@ -112,5 +142,5 @@
     name: ssh
     state: restarted
   vars:
-    ansible_host: "{{ hcloud_host.hcloud_server.ipv4_address }}"
+    ansible_host: "{{ hcloud_ipv4_address }}"
     ansible_ssh_extra_args: "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
