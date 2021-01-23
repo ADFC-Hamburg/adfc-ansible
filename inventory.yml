@@ -19,8 +19,6 @@ all:
                 mv-hessen.dyndns.adfc-intern.de:
             meet_vb:
               hosts:
-                vbh01.meet.adfc-intern.de:
-                vbh02.meet.adfc-intern.de:
                 vbdh01.meet.adfc-intern.de:
                 vbdh02.meet.adfc-intern.de:
             dyn_meet_hessen_vb:
@@ -36,8 +34,6 @@ all:
             meet_live:
               hosts:
                 meet.adfc-intern.de:
-                vbh01.meet.adfc-intern.de:
-                vbh02.meet.adfc-intern.de:
                 vbdh01.meet.adfc-intern.de:
                 vbdh02.meet.adfc-intern.de:
     arbeitsplatz:
