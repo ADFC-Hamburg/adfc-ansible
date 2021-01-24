@@ -1,5 +1,5 @@
 - name: Remove Videobridge
-  hosts: meet_vb
+  hosts: jitsi_vbs
   gather_facts: no
   roles:
     - backup-hcloud-letsencrypt
