@@ -1,18 +1,33 @@
-- name: enable unmaintained
-  ucr:
-    values:
-      repository/online/unmaintained: True
+# Borg ist im Moment haendisch unt
+- name: Installiere pakete
+  apt:
+    name:
+      - python3-pip
+      - python3-venv
+      - cython3
+      - libacl1-dev
   tags: borg-server
 
-- name: check if borgbackup installed
-  stat:
-    path: /usr/bin/borgbackup
-  register: stat_borgbackup
+- name: Install borg
+  pip:
+    name:
+      - wheel
+      - cython
+      - borgbackup==1.1.15
+    virtualenv: /usr/local/share/borg-venv
+    virtualenv_command: pyvenv
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
   tags: borg-server
 
-- name: install borgbackup
-  command: univention-install borgbackup borgbackup-doc
-  when: not stat_borgbackup.stat.exists
+- name: Sysmlink borg executable
+  file:
+    src: "/usr/local/share/borg-venv/bin/{{ item }}"
+    dest: "/usr/local/bin/{{ item }}"
+    state: link
+  with_items:
+    - borg
+    - borgfs
   tags: borg-server
 
 - name: Create Borgbackup Server Key
