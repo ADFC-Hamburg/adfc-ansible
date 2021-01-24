@@ -86,3 +86,9 @@ firewall:
   - name: DNS
     port: 53
     proto: udp
+  - name: ldap auth
+    port: 7389
+    proto: tcp
+    src:
+      - "{{ lookup('dig','event.adfc-intern.de/A') }}"
+      - "{{ lookup('dig','event.adfc-intern.de/AAAA') }}"

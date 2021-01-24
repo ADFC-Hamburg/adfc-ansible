@@ -187,6 +187,10 @@ echo keine Portangabe
 {% endif %}
 {% endfor %}
 {% for fw_ip in fw_ipv6s %}
+{% set src_part_option = '' %}
+{% if (src_part != '')  %}
+{% set src_part_option = '-s ' %}
+{% endif %}
 {% if (src_part == '') or (src_part |ipv6) %}
 {{ ip6tables_bin }} -A {{ fw_chain}} {{ src_part_option |default('') }}{{ src_part }} -d {{ fw_ip }}  {{proto_part}} {{ port_part }} -j ACCEPT
 {% endif %}

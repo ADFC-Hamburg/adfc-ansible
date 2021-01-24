@@ -40,12 +40,21 @@
   register: coturn_cert_cron
   tags: coturn
   notify: Coturn Certcopy
+
+- name: Create Direcotry
+  file:
+    path: /etc/coturn
+    state: directory
+    mode: "0755"
+  tags: coturn
+
 - name: Create DH File
   openssl_dhparam:
     path: /etc/coturn/dhparams.pem
     size: 2066
   notify: Restart turnserver
   tags: coturn
+
 - name: Erstelle trunserver.conf
   template:
     src: "turnserver.conf.j2"
