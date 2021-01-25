@@ -23,11 +23,11 @@
     - name: Wait 20 seconds
       pause:
         seconds: 20
-      when: hostvars[jitsi_meet_server_name].stop_jitsi_vb_on_main | dafault('false')
+      when: hostvars[jitsi_meet_server_name].stop_jitsi_vb_on_main | default('false')
 
     - name: Stop Jitsi-Meet vb
       systemd:
         name: jitsi-videobridge2
         state: stopped
       delegate_to: "{{ jitsi_meet_server_name }}"
-      when: hostvars[jitsi_meet_server_name].stop_jitsi_vb_on_main | dafault('false')
+      when: hostvars[jitsi_meet_server_name].stop_jitsi_vb_on_main | default('false')
