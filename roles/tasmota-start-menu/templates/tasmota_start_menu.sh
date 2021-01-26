@@ -1,7 +1,7 @@
 #!/bin/bash
 computer=`dialog --radiolist "Welcher Client soll hochgefahren werden:" 0 0 8\
 {% for host in groups['arbeitsplatz'] %}
-{% if hostvars[host]['tasmota_wireless_ip'] is defined and hostvars[host]['ansible_host_macaddress'] != 'ff:ff:ff:ff:ff:ff' %}
+{% if hostvars[host]['tasmota_wireless_ip'] is defined %}
 	{{ hostvars[host]['inventory_hostname_short'] }} "" off\
 {% endif %}
 {% endfor %}
@@ -9,7 +9,7 @@ computer=`dialog --radiolist "Welcher Client soll hochgefahren werden:" 0 0 8\
 dialog --clear
 clear
 {% for host in groups['arbeitsplatz'] %}
-{% if hostvars[host]['tasmota_wireless_ip'] is defined and hostvars[host]['ansible_host_macaddress'] != 'ff:ff:ff:ff:ff:ff' %}
+{% if hostvars[host]['tasmota_wireless_ip'] is defined %}
 if [ $computer = {{ hostvars[host]['inventory_hostname_short'] }} ]; then
 	ip_client="{{ hostvars[host]['ansible_host'] }}"
 	ip_tasmota="{{ hostvars[host]['tasmota_wireless_ip'] }}"
