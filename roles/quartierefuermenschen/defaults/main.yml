@@ -7,7 +7,12 @@ qfm_apache_config:
     is_https: yes
 
 
-quartierefuermenschen_domain: quartierefuermenschen.adfc-hamburg.de
+quartierefuermenschen_domain:  quartierefuermenschen.de
+quartierefuermenschen_aliases:
+ - quartierefuermenschen.adfc-hamburg.de
+ - www.quartierefuermenschen.de
+ - xn--quartierefrmenschen-fbc.de
+ - www.xn--quartierefrmenschen-fbc.de
 
 qfm_mysql_user: qfm_wordpress
 qfm_mysql_db: qfm_wordpress

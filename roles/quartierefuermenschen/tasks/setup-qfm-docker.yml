@@ -30,7 +30,7 @@
 
 - name: install wordpress
   uri:
-    url: "https://quartierefuermenschen.adfc-hamburg.de/wp-admin/install.php?step=2"
+    url: "https://{{ quartierefuermenschen_domain }}/wp-admin/install.php?step=2"
     method: POST
     body_format: form-urlencoded
     body:
