@@ -1,12 +1,12 @@
 - name: Setup Hetzner Server
-  hosts: meet_vb
+  hosts: jitsi_vbs
   gather_facts: no
   vars:
     hcloud_test: true
   roles:
     - hcloud-server
 - name: Setup Videobridge
-  hosts: meet_vb
+  hosts: jitsi_vbs
   gather_facts: yes
   roles:
     - ssh-keys
