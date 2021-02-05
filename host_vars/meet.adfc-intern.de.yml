@@ -150,6 +150,8 @@ asterisk_rooms:
     name: ADFC-Guetersloh
   3005:
     name: ADFC-RheinBergOberberg
+  3006:
+    name: ADFC-LippeTourleiterinnen
   4001:
     name: htk-kreisvorstand
   4002:
