@@ -152,6 +152,8 @@ asterisk_rooms:
     name: ADFC-RheinBergOberberg
   3006:
     name: ADFC-LippeTourleiterinnen
+  3007:
+    name: ADFCHamminkeln 
   4001:
     name: htk-kreisvorstand
   4002:
