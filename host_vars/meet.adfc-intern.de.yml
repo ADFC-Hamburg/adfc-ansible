@@ -96,6 +96,9 @@ asterisk_rooms:
     name: Berlin36
   1042:
     name: StadtteilgruppeTempelhof
+# 1043 ist für admin reserviert
+  1044:
+    name: StadtteilgruppeTempelhofPolitik
   1061:
     name: Berlin61
   2001:
