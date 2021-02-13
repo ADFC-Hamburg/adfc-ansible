@@ -70,10 +70,9 @@ asterisk_sip_ips:
 jitsi_meet_configure_sip_gateway: true
 jitsi_meet_jigasi_account: jigasi@meet.adfc-intern.de
 jitsi_meet_jigasi_port: 5061
+stop_jitsi_vb_on_main: yes
 
 asterisk_rooms:
-  1042:
-    name: admin
   1043:
     name: admin
     pin: yes
@@ -87,7 +86,7 @@ asterisk_rooms:
     name: landesversammlunghh
   1005:
     name: adfchh
-  1006: 
+  1006:
     name: teamkoppel
   1010:
     name: Berlin10
@@ -95,6 +94,11 @@ asterisk_rooms:
     name: Berlin20
   1036:
     name: Berlin36
+  1042:
+    name: StadtteilgruppeTempelhof
+# 1043 ist für admin reserviert
+  1044:
+    name: StadtteilgruppeTempelhofPolitik
   1061:
     name: Berlin61
   2001:
@@ -137,6 +141,8 @@ asterisk_rooms:
     name: KV_OHZ
   2020:
     name: KV_DH
+  2021:
+    name: KV_BS
   3001:
     name: ADFCNRWThemenaustausch
   3002:
@@ -145,6 +151,12 @@ asterisk_rooms:
     name: ADFCNRWAGMobilitaet
   3004:
     name: ADFC-Guetersloh
+  3005:
+    name: ADFC-RheinBergOberberg
+  3006:
+    name: ADFC-LippeTourleiterinnen
+  3007:
+    name: ADFCHamminkeln 
   4001:
     name: htk-kreisvorstand
   4002:

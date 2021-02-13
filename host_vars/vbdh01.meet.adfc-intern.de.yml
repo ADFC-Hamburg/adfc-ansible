@@ -1,8 +1,13 @@
 hcloud_image: debian-10
 # cx11 kleinster Server mit einer CPU für Tests
 # ccx31 8 Dedicierte VCPUs 32 GB RAM
-hcloud_server_type: "{{ 'cx11' if hcloud_test else 'ccx31' }}"
+# ccx41 16 Dedicierte VCPUs 64 GB RAM
+hcloud_server_type: "{{ 'cx11' if hcloud_test else 'ccx41' }}"
 hcloud_server_location: nbg1
+hcloud_failure_server_location: fsn1
+
+ansible_python_interpreter: /usr/bin/python3
+
 ucs_dns_zonename: "dyndns.adfc-intern.de"
 ucs_dns_hostname: "vbdh01.dyndns.adfc-intern.de"
 

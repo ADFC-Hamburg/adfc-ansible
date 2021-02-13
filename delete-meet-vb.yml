@@ -1,9 +1,15 @@
 - name: Remove Videobridge
-  hosts: meet_vb
+  hosts: jitsi_vbs
   gather_facts: no
   roles:
     - backup-hcloud-letsencrypt
   tasks:
+    - name: make sure videobride on meet is running
+      systemd:
+        name: jitsi-videobridge2
+        state: started
+      delegate_to: "{{ jitsi_meet_server_name }}"
+
     - name: "stop videobride"
       systemd:
         name: jitsi-videobridge2

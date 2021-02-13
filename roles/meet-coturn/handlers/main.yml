@@ -2,6 +2,5 @@
   systemd:
     name: coturn
     state: restarted
-  when: tunserver_conf.changed
 - name: Coturn Certcopy
   command: /etc/cron.daily/coturn-cert.sh

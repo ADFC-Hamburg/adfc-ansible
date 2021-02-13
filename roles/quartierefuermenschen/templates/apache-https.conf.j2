@@ -8,6 +8,8 @@
         <VirtualHost _default_:443>
                 ServerAdmin webmaster@tools.adfc-hamburg.de
                 ServerName {{ quartierefuermenschen_domain }}
+                ServerAlias {{ quartierefuermenschen_aliases | join(' ')}}
+
                 Header always set Strict-Transport-Security "max-age=63072000; includeSubdomains;preload;"
                 DocumentRoot /var/www/html
 

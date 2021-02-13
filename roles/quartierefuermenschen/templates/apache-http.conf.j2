@@ -6,6 +6,7 @@
         ServerName {{ quartierefuermenschen_domain }}
 
         ServerAdmin webmaster@tools.adfc-hamburg.de
+        ServerAlias {{ quartierefuermenschen_aliases | join(' ')}}
         DocumentRoot /var/www/html
 
         ErrorLog ${APACHE_LOG_DIR}/error.log

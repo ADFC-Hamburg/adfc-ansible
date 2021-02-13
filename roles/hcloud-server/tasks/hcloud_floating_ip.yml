@@ -39,7 +39,7 @@
     dest: /etc/network/interfaces.d/60-my-floating-ip.cfg
     mode: "0644"
   vars:
-    ansible_host: "{{ hcloud_host.hcloud_server.ipv4_address }}"
+    ansible_host: "{{ hcloud_ipv4_address }}"
     ansible_ssh_extra_args: "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
 
 - name: restart network
@@ -47,5 +47,5 @@
     name: networking
     state: restarted
   vars:
-    ansible_host: "{{ hcloud_host.hcloud_server.ipv4_address }}"
+    ansible_host: "{{ hcloud_ipv4_address }}"
     ansible_ssh_extra_args: "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"

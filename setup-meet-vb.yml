@@ -1,5 +1,5 @@
 - name: Setup Hetzner Server
-  hosts: meet_vb
+  hosts: jitsi_vbs
   gather_facts: no
   roles:
     - hcloud-server
@@ -7,7 +7,7 @@
     hcloud_test: false
 
 - name: Setup Videobridge
-  hosts: meet_vb
+  hosts: jitsi_vbs
   gather_facts: yes
   roles:
     - ssh-keys
@@ -16,3 +16,18 @@
     - geerlingguy.certbot
     - jitsi-videobridge
     - telegraf
+  tasks:
+    - name: Alles neu starten etc
+      meta: flush_handlers
+
+    - name: Wait 20 seconds
+      pause:
+        seconds: 20
+      when: hostvars[jitsi_meet_server_name].stop_jitsi_vb_on_main | default('false')
+
+    - name: Stop Jitsi-Meet vb
+      systemd:
+        name: jitsi-videobridge2
+        state: stopped
+      delegate_to: "{{ jitsi_meet_server_name }}"
+      when: hostvars[jitsi_meet_server_name].stop_jitsi_vb_on_main | default('false')
