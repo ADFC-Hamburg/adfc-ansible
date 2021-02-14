@@ -93,3 +93,24 @@
         state: absent
       delegate_to: proxmox01.adfc-intern.de
       with_items: "{{ filesOlderThan.files }}"
+
+    - name: Read Influx Password
+      slurp:
+        path: /etc/influx.secrect
+      register: influx_pw
+      delegate_to: proxmox01.adfc-intern.de
+
+    - name: Write 0 Value to influx
+      influxdb_write:
+        hostname: "localhost"
+        database_name: "telegraf"
+        username: admin
+        password: "{{ influx_pw.content |b64decode }}"
+        data_points:
+          - measurement: jitsi_stats
+            tags:
+              host: "{{ inventory_hostname_short }}"
+              ansible: yes
+            fields: "{{ influx_null_values }}"
+      delegate_to: proxmox01.adfc-intern.de
+
