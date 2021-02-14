@@ -22,3 +22,4 @@ dynamic_jitsi_scaler_turn_on:
 dynamic_jitsi_scaler_turn_off:
   participants: 90
   conferences: 10
+delete_start_meet_vb: no
