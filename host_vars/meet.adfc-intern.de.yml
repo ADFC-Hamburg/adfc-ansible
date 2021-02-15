@@ -75,6 +75,7 @@ stop_jitsi_vb_on_main: yes
 jitsi_meet_octo: yes
 jitsi_meet_octo_probability: 1
 jitsi_meet_region: region1
+jitsi_jicofo_bridge_selector: split
 
 asterisk_rooms:
   1043:
