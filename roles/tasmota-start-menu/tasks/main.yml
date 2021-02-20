@@ -17,7 +17,6 @@
     create_home: no
     system: yes
 
-
 - name: Create startup_script User Key
   command: ssh-keygen -t rsa -b 4096 -f /var/lib/univention-appcenter/apps/guacamole/data/startup_script_user_key -N '' -C 'startup_script user key'
   args:
