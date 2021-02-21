@@ -8,6 +8,8 @@
       systemd:
         name: jitsi-videobridge2
         state: started
+      vars:
+        ansible_user: root
       delegate_to: "{{ jitsi_meet_server_name }}"
       when: delete_start_meet_vb |default('yes')
 
@@ -113,4 +115,3 @@
               ansible: yes
             fields: "{{ influx_null_values }}"
       delegate_to: proxmox01.adfc-intern.de
-
