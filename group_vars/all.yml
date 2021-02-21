@@ -12,8 +12,6 @@ adfc_secret_folder: "/etc/ansible/secrets/"
 adfc_vpnc_source: ucs-master.gst.hamburg.adfc.de
 adfc_borg_server: "{{ ansible_user + '@' + adfc_vpnc_source + ':/path/to/repo'}}"
 ssh_users_admins:
-  - falkh
-  - joergw
   - matthiasr
   - svena
   - volkerk
