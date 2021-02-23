@@ -85,6 +85,7 @@
       - cn={{ inventory_hostname_short }},cn=guacamole,dc=hamburg,dc=adfc,dc=de
   register: udm_config
   changed_when: False
+  failed_when: False
 
 - name: set as a fact what we are searching for
   set_fact: udm_hostname='hostname={{ inventory_hostname }}'
