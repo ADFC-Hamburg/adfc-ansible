@@ -74,6 +74,21 @@
   notify: Restart ssh
   when: ansible_distribution_version == '20.04'
 
+- name: Check if guacamole config for the client is correct
+  delegate_to: ucs-master.gst.hamburg.adfc.de
+  command:
+    argv:
+      - /usr/sbin/udm
+      - guacamole/config
+      - list
+      - --position
+      - cn={{ inventory_hostname_short }},cn=guacamole,dc=hamburg,dc=adfc,dc=de
+  register: udm_config
+  changed_when: False
+
+- name: set as a fact what we are searching for
+  set_fact: udm_hostname='hostname={{ inventory_hostname }}'
+
 - name: Create guacamole config for the client
   delegate_to: ucs-master.gst.hamburg.adfc.de
   command:
@@ -109,8 +124,9 @@
       - guacConfigParamter=server-layout=de-de-qwertz
       - --set
       - guacConfigParameter=enable-printing=true
-      - --set  
+      - --set
       - nestedGroup=cn="Domain Admins",cn=groups,dc=hamburg,dc=adfc,dc=de
       - --set
       - nestedGroup=cn="Domain Users",cn=groups,dc=hamburg,dc=adfc,dc=de
       - --ignore_exists
+  when: not udm_config.stdout is search(udm_hostname)
