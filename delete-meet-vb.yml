@@ -8,7 +8,10 @@
       systemd:
         name: jitsi-videobridge2
         state: started
+      vars:
+        ansible_user: root
       delegate_to: "{{ jitsi_meet_server_name }}"
+      when: delete_start_meet_vb |default('yes')
 
     - name: "stop videobride"
       systemd:
@@ -16,6 +19,22 @@
         state: stopped
       ignore_errors: yes
       ignore_unreachable: yes
+
+    - name: compress logfiles
+      archive:
+        path: /var/log
+        dest: /tmp/ansible-trans-logs.tar.gz
+      ignore_errors: true
+      register: copy_log_compress
+
+    - name: Fetch Remote
+      fetch:
+        mode: pull
+        src: /tmp/ansible-trans-logs.tar.gz
+        dest: /tmp/
+        flat: yes
+      ignore_errors: true
+      register: copy_log_compress
 
     - name: Get hcloud API Token
       slurp:
@@ -30,6 +49,7 @@
     - name: Pause
       pause:
         seconds: 5
+      when: delete_start_meet_vb |default('yes')
 
     - name: delete_host
       hcloud_server:
@@ -47,3 +67,51 @@
           - ::1
         usc_dns_ttl_in_seconds: 60
         ucs_dns_waittime: 1
+
+    - name: Copy to proxmox
+      copy:
+        src: /tmp/ansible-trans-logs.tar.gz
+        dest: "/var/remote_logs/{{ inventory_hostname }}{{ lookup('pipe','date +%Y-%m-%d-%H-%M-%S') }}.tar.gz"
+      ignore_errors: true
+      delegate_to: proxmox01.adfc-intern.de
+
+    - name: Delete tmp file
+      file:
+        path: /tmp/ansible-trans-logs.tar.gz
+        state: absent
+      delegate_to: localhost
+
+    - name: find all files that are older than 14 days
+      find:
+        paths: "/var/remote_logs/"
+        age: 14d
+        recurse: no
+      delegate_to: proxmox01.adfc-intern.de
+      register: filesOlderThan
+
+    - name: remove older files
+      file:
+        path: "{{ item.path }}"
+        state: absent
+      delegate_to: proxmox01.adfc-intern.de
+      with_items: "{{ filesOlderThan.files }}"
+
+    - name: Read Influx Password
+      slurp:
+        path: /etc/influx.secrect
+      register: influx_pw
+      delegate_to: proxmox01.adfc-intern.de
+
+    - name: Write 0 Value to influx
+      influxdb_write:
+        hostname: "localhost"
+        database_name: "telegraf"
+        username: admin
+        password: "{{ influx_pw.content |b64decode }}"
+        data_points:
+          - measurement: jitsi_stats
+            tags:
+              host: "{{ inventory_hostname_short }}"
+              ansible: yes
+            fields: "{{ influx_null_values }}"
+      delegate_to: proxmox01.adfc-intern.de

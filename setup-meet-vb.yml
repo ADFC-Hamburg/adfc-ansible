@@ -29,5 +29,29 @@
       systemd:
         name: jitsi-videobridge2
         state: stopped
+      vars:
+        ansible_user: root
       delegate_to: "{{ jitsi_meet_server_name }}"
+      when: hostvars[jitsi_meet_server_name].stop_jitsi_vb_on_main | default('false')
+
+    - name: Read Influx Password
+      slurp:
+        path: /etc/influx.secrect
+      register: influx_pw
+      delegate_to: proxmox01.adfc-intern.de
+      when: hostvars[jitsi_meet_server_name].stop_jitsi_vb_on_main | default('false')
+
+    - name: Write 0 Value to influx
+      influxdb_write:
+        hostname: "localhost"
+        database_name: "telegraf"
+        username: admin
+        password: "{{ influx_pw.content |b64decode }}"
+        data_points:
+          - measurement: jitsi_stats
+            tags:
+              host: "{{ jitsi_meet_server_name.split('.')[0] }}"
+              ansible: yes
+            fields: "{{ influx_null_values }}"
+      delegate_to: proxmox01.adfc-intern.de
       when: hostvars[jitsi_meet_server_name].stop_jitsi_vb_on_main | default('false')

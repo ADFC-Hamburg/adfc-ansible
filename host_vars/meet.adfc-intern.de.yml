@@ -72,6 +72,11 @@ jitsi_meet_jigasi_account: jigasi@meet.adfc-intern.de
 jitsi_meet_jigasi_port: 5061
 stop_jitsi_vb_on_main: yes
 
+jitsi_meet_octo: yes
+jitsi_meet_octo_probability: 1
+jitsi_meet_region: region1
+jitsi_jicofo_bridge_selector: split
+
 asterisk_rooms:
   1043:
     name: admin
@@ -156,7 +161,7 @@ asterisk_rooms:
   3006:
     name: ADFC-LippeTourleiterinnen
   3007:
-    name: ADFCHamminkeln 
+    name: ADFCHamminkeln
   4001:
     name: htk-kreisvorstand
   4002:
