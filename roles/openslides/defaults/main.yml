@@ -1,0 +1,7 @@
+openslides_version: 3.2
+openslides_apt_dependencies:
+  - python3-virtualenv
+  - python3-venv
+  - nginx
+
+openslides_instances: []

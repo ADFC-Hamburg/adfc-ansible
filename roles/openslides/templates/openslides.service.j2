@@ -1,0 +1,12 @@
+
+# {{ ansible_managed }}
+[Unit]
+Description=Openslides Service
+After=systemd-timesyncd.service
+
+[Service]
+Type=simple
+User=openslides
+WorkingDirectory=/usr/local/share/openslides/instances/{{ osi.domainname }}
+ExecStart=/usr/local/share/openslides/py-venv-3.2/bin/openslides start --local-installation --no-browser  --port {{ port_file_slurp.content |b64decode }} --host 127.0.0.1
+PrivateTmp=true

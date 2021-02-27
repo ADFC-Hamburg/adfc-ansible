@@ -1,0 +1,94 @@
+- name: Create Folder
+  file:
+    path: "{{ item }}"
+    mode: "0755"
+    state: directory
+    owner: openslides
+    group: root
+  with_list:
+    - /usr/local/share/openslides/instances/{{ osi.domainname }}
+    - /usr/local/share/openslides/instances/{{ osi.domainname }}/personal_data/
+    - /usr/local/share/openslides/instances/{{ osi.domainname }}/personal_data/var/
+    - /usr/local/share/openslides/instances/{{ osi.domainname }}/personal_data/var/static
+
+- name: copy port_text if not exists
+  copy:
+    src: /usr/local/share/openslides/next_free_port.txt
+    dest: /usr/local/share/openslides/instances/{{ osi.domainname }}/port.txt
+    force: no
+    group: root
+    owner: root
+    remote_src: yes
+    mode: 0644
+  register: port_file_copy
+
+- name: Read Port file
+  slurp:
+    src: /usr/local/share/openslides/instances/{{ osi.domainname }}/port.txt
+  register: port_file_slurp
+
+- name: increment openslides start port
+  copy:
+    content: "{{ (port_file_slurp.content |b64decode |int ) +1 }}"
+    dest: /usr/local/share/openslides/next_free_port.txt
+    group: root
+    owner: root
+    mode: 0644
+  when: port_file_copy.changed
+
+- name: Genrate secret key
+  copy:
+    content: "{{  lookup('password', '/dev/null length=50') | lower }}"
+    dest:  /usr/local/share/openslides/instances/{{ osi.domainname }}/secret_key.txt
+    force: no
+    group: root
+    owner: root
+    remote_src: yes
+    mode: 0600
+
+- name: Read Secret key
+  slurp:
+    src: /usr/local/share/openslides/instances/{{ osi.domainname }}/secret_key.txt
+  register: secret_key_slurp
+
+- name: Generate Settings
+  template:
+    src: settings.py.j2
+    dest: /usr/local/share/openslides/instances/{{ osi.domainname }}/personal_data/var/settings.py
+    mode: "0644"
+  vars:
+    email_host_password: ""
+
+- name: Generate systemd service
+  template:
+    src: "openslides.service.j2"
+    dest: "/lib/systemd/system/openslides-{{ osi.domainname }}.service"
+    mode: "0644"
+  notify: reload systemd
+
+- name: Enable Service
+  systemd:
+    daemon_reload: yes
+    state: started
+    enabled: yes
+    name: openslides-{{ osi.domainname }}.service
+
+- name: Create redirect nginx config
+  template:
+    src: "nginx-instance.j2"
+    dest: "/etc/nginx/sites-available/{{ osi.domainname }}"
+    mode: 0644
+    owner: root
+    group: root
+  vars:
+    openslides_dest: "127.0.0.1:{{ port_file_slurp.content |b64decode }}"
+  notify: restart nginx
+
+- name: Create Nginx symlinks
+  file:
+    src: "/etc/nginx/sites-available/{{ osi.domainname }}"
+    dest: "/etc/nginx/sites-enabled/{{ osi.domainname }}"
+    owner: root
+    group: root
+    state: link
+  notify: restart nginx

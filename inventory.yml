@@ -9,6 +9,9 @@ all:
         int-master.adfc-intern.de:
         dreicx.gst.hamburg.adfc.de:
       children:
+        openslides_server:
+          hosts:
+            slides.dyndns.adfc-intern.de:
         meet:
           children:
             meet_server:

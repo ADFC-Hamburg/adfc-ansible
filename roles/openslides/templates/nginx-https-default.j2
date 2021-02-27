@@ -1,0 +1,20 @@
+# {{ ansible_managed }}
+ssl_certificate /etc/letsencrypt/live/slides.dyndns.adfc-intern.de/fullchain.pem;
+ssl_certificate_key /etc/letsencrypt/live/slides.dyndns.adfc-intern.de/privkey.pem;
+
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+
+    root /var/www/html;
+
+    server_name _;
+
+
+    location / {
+        # First attempt to serve request as file, then
+        # as directory, then fall back to displaying a 404.
+        try_files $uri $uri/ =404;
+    }
+
+}

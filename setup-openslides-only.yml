@@ -1,0 +1,12 @@
+- hosts: openslides_server
+  gather_facts: yes
+  roles:
+    - ssh-keys
+    - update-os
+    - ucs-ip-managed-client
+    - geerlingguy.certbot
+    - openslides
+  tasks:
+    - name: test
+      debug:
+        msg: "Hello world"

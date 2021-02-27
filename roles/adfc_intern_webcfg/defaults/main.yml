@@ -1,0 +1,10 @@
+adfc_intern_webcfg_git_repo: "https://github.com/ADFC-Hamburg/adfc_intern_webcfg"
+adfc_intern_webcfg_git_version: "119e4be5e9dcba60ecddd4e4d26d1f3b4d52448a"
+adfc_intern_webcfg_apt_dependencies:
+  - python3-virtualenv
+  - python3-venv
+  - git
+  - xmlsec1
+adfc_intern_webcfg_port: 7999
+adfc_intern_webcfg_basedir:  /usr/local/share/adfc-intern-webcfg
+adfc_intern_saml_metadata_url: "https://auth.adfc-intern.de/simplesamlphp/saml2/idp/metadata.php"
