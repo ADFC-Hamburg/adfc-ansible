@@ -1,4 +1,4 @@
 #kwaltz.gst.hamburg.adfc.de
 ansible_host: 192.168.123.64
-use_auto_off: false
-auto_off_thresh: 3
+use_auto_off: true
+auto_off_thresh: 1

@@ -3,6 +3,7 @@
   roles:
   - basic_setup
   - ssh-keys
+  - inactivity-shutdown
   - jnv.unattended-upgrades
   - load-contacts
   - postfix-auth
@@ -36,9 +37,7 @@
   pre_tasks:
     - name: Power on clients
       include_role:
-        name: tasmota-power
-      vars:
-        "command": "poweron"
+        name: tasmota-power-on
       when: tasmota_wireless_ip is defined
 
     - name: Fakten einlesen
@@ -53,9 +52,7 @@
   post_tasks:
     - name: Poweroff unused clients that were off before
       include_role:
-        name: tasmota-power
-      vars:
-        "command": "poweroff"
+        name: tasmota-power-off
       when: (tasmota_wireless_ip is defined) and (connect_result is failed)
 
   tasks:

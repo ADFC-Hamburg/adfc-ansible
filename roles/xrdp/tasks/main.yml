@@ -4,11 +4,17 @@
   apt:
     name: xrdp
 
-- name: Use KDE for xrdp
+- name: Set correct path for 18.04 KDE start
   alternatives:
     name: x-session-manager
     path: /usr/bin/startkde
   when: ansible_distribution_version == '18.04'
+
+- name: Set correct path for 20.04 KDE start
+  alternatives:
+    name: x-session-manager
+    path: /usr/bin/startplasma-x11
+  when: ansible_distribution_version == '20.04'
 
 - name: copy logo
   copy:
@@ -54,3 +60,74 @@
     state: absent
     path: "/etc/polkit-1/localauthority/50-local.d/xrdp-disable-shutdown.pkla"
   when: enable_user_shutdown is undefined
+
+- name: Make sure the xrdp user is in the ssl-cert group
+  user:
+    name: xrdp
+    groups: ssl-cert
+    append: yes
+
+- name: Make sure a suitable cipher for guacamole is allowed
+  copy:
+    src: additional_guacamole_cipher.conf
+    dest: /etc/ssh/sshd_config.d/
+  notify: Restart ssh
+  when: ansible_distribution_version == '20.04'
+
+- name: Check if guacamole config for the client is correct
+  delegate_to: ucs-master.gst.hamburg.adfc.de
+  command:
+    argv:
+      - /usr/sbin/udm
+      - guacamole/config
+      - list
+      - --position
+      - cn={{ inventory_hostname_short }},cn=guacamole,dc=hamburg,dc=adfc,dc=de
+  register: udm_config
+  changed_when: False
+  failed_when: False
+
+- name: set as a fact what we are searching for
+  set_fact: udm_hostname='hostname={{ inventory_hostname }}'
+
+- name: Create guacamole config for the client
+  delegate_to: ucs-master.gst.hamburg.adfc.de
+  command:
+    argv:
+      - /usr/sbin/udm
+      - guacamole/config
+      - create
+      - --position
+      - cn=guacamole,dc=hamburg,dc=adfc,dc=de
+      - --set
+      - name={{ inventory_hostname_short }}
+      - --set
+      - description=Verbindung zum Rechner {{ inventory_hostname_short }}
+      - --set
+      - guacConfigProtocol=rdp
+      - --set
+      - guacConfigParameter=enable-sftp=true
+      - --set
+      - guacConfigParameter=sftp-username=${GUAC_USERNAME}
+      - --set
+      - guacConfigParameter=sftp-password=${GUAC_PASSWORD}
+      - --set
+      - guacConfigParameter=enable-drive=true
+      - --set
+      - guacConfigParameter=username=${GUAC_USERNAME}
+      - --set
+      - guacConfigParameter=password=${GUAC_PASSWORD}
+      - --set
+      - guacConfigParameter=hostname={{ inventory_hostname }}
+      - --set
+      - guacConfigParameter=enable-font-smoothing=true
+      - --set
+      - guacConfigParamter=server-layout=de-de-qwertz
+      - --set
+      - guacConfigParameter=enable-printing=true
+      - --set
+      - nestedGroup=cn="Domain Admins",cn=groups,dc=hamburg,dc=adfc,dc=de
+      - --set
+      - nestedGroup=cn="Domain Users",cn=groups,dc=hamburg,dc=adfc,dc=de
+      - --ignore_exists
+  when: not udm_config.stdout is search(udm_hostname)

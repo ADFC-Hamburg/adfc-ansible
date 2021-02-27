@@ -1,6 +1,7 @@
 - hosts: ucs-master.gst.hamburg.adfc.de
   gather_facts: yes
   roles:
+    - tasmota-start-menu
     - ssh-keys
     - gray-print
     - systemd-max-memory
@@ -92,3 +93,9 @@
         user: root
         job: /usr/bin/find /adfc/Computer/Datensicherung/Proxmox/ -type f -ctime 5 -delete
       tags: proxmox-backup
+
+    - name: Wake On LAN installieren
+      apt:
+        name: wakeonlan
+        state: present
+        update_cache: yes

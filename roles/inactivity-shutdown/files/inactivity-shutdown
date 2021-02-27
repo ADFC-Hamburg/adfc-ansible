@@ -1,0 +1,4 @@
+#!/bin/bash
+if [[ ! $(who) ]]; then
+	poweroff
+fi

@@ -16,6 +16,26 @@
       state: directory
       mode: 0755
 
+  - name: Prevent sleep
+    systemd:
+      name: sleep.target
+      masked: true
+
+  - name: Prevent suspend
+    systemd:
+      name: suspend.target
+      masked: true
+
+  - name: Prevent hibernate
+    systemd:
+      name: hibernate.target
+      masked: true
+
+  - name: Prevent hybrid-sleep
+    systemd:
+      name: hybrid-sleep.target
+      masked: true
+
   - name: Setze die Umask auf 0007
     copy:
       content: "umask 0007"

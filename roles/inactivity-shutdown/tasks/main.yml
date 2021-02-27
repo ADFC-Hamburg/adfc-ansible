@@ -1,0 +1,9 @@
+- name: Copy script to client
+  copy:
+    src: inactivity-shutdown
+    dest: /etc/cron.hourly/
+    mode: '0700'
+    owner: 'root'
+    group: 'root'
+  when: enable_user_shutdown is not defined or enable_user_shutdown
+

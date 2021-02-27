@@ -7,3 +7,8 @@
   systemd:
     name: polkit
     state: restarted
+
+- name: Restart ssh
+  systemd:
+    name: ssh
+    state: restarted
