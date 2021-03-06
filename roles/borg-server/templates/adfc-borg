@@ -101,8 +101,8 @@ borg_init() {
         exit 1
     fi
     borg_create_ssh_option_file "${RECHNER}"
-    echo BORG_RSH=\"ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf\" borg init $BORG_INIT_PARAMS $(borg_repo ${RECHNER})
-    BORG_RSH="ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf" borg init $BORG_INIT_PARAMS $(borg_repo ${RECHNER})
+    echo BORG_RSH=\"ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf\" /usr/local/bin/borg init $BORG_INIT_PARAMS $(borg_repo ${RECHNER})
+    BORG_RSH="ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf" /usr/local/bin/borg init $BORG_INIT_PARAMS $(borg_repo ${RECHNER})
     if [ $? -ne 0 ]; then
         echo Fehler beim borg init
         exit 1
@@ -136,8 +136,8 @@ borg_cron() {
                 borg_create_ssh_option_file "${RECHNER}"
                 borg_lock $RECHNER || exit $?
                 touch "${STATUS_DIR}/tried/${RECHNER}"
-                echo BORG_RSH=\"ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf  -i /root/.ssh/borgbackup-server\" borg create $BORG_CREATE_PARAMS $(borg_repo "${RECHNER}")::'{hostname}-{now:%Y-%m-%d_%H%M%S}' $BORG_SAVE_PATH
-                SSH_AUTH_SOCK="" BORG_RSH="ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf  -i /root/.ssh/borgbackup-server" borg create $BORG_CREATE_PARAMS $(borg_repo "${RECHNER}")::'{hostname}-{now:%Y-%m-%d_%H%M%S}' $BORG_SAVE_PATH 2>&1 |tee -a $LOG
+                echo BORG_RSH=\"ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf  -i /root/.ssh/borgbackup-server\" /usr/local/bin/borg create $BORG_CREATE_PARAMS $(borg_repo "${RECHNER}")::'{hostname}-{now:%Y-%m-%d_%H%M%S}' $BORG_SAVE_PATH
+                SSH_AUTH_SOCK="" BORG_RSH="ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf  -i /root/.ssh/borgbackup-server" /usr/local/bin/borg create $BORG_CREATE_PARAMS $(borg_repo "${RECHNER}")::'{hostname}-{now:%Y-%m-%d_%H%M%S}' $BORG_SAVE_PATH 2>&1 |tee -a $LOG
                 STATUS=${PIPESTATUS[0]}
                 borg_unlock $RECHNER
                 if [ $STATUS -eq 0 ]; then
@@ -198,7 +198,7 @@ borg_status() {
         echo -ne "${GREEN}"
         stat -c "  Prozess aktiv seit: %y" $LOCK
         echo -ne "${NC}"
-        BORG_PID=$(pgrep -f "/usr/bin/python3 /usr/bin/borg create.*$(borg_repo "${RECHNER}")::")
+        BORG_PID=$(pgrep -f "/usr/bin/python3 /usr/local/bin/borg create.*$(borg_repo "${RECHNER}")::")
         if [ "$BORG_PID" != "" ] ; then
             OPENFILE=$(lsof -p $BORG_PID |tail -6 |grep -v pipe |cut -b 55- |head -1)
             echo "  Pid: $BORG_PID Open file: $OPENFILE"
@@ -216,7 +216,7 @@ borg_prune() {
         borg_lock "${RECHNER}" || exit $lock
         borg_create_ssh_option_file "${RECHNER}"
         echo borg prune $(borg_repo "${RECHNER}") --stats --list --keep-within=1d --keep-daily=$PRUNE_DAYS --keep-weekly=$PRUNE_WEEKS --keep-monthly=$PRUNE_MONTHS --keep-yearly=$PRUNE_YEARS  2>&1 |tee -a $LOG
-        BORG_RSH="ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf" borg prune $(borg_repo "${RECHNER}") --stats --list --keep-within=1d --keep-daily=$PRUNE_DAYS --keep-weekly=$PRUNE_WEEKS --keep-monthly=$PRUNE_MONTHS --keep-yearly=$PRUNE_YEARS  2>&1 |tee -a $LOG
+        BORG_RSH="ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf" /usr/local/bin/borg prune $(borg_repo "${RECHNER}") --stats --list --keep-within=1d --keep-daily=$PRUNE_DAYS --keep-weekly=$PRUNE_WEEKS --keep-monthly=$PRUNE_MONTHS --keep-yearly=$PRUNE_YEARS  2>&1 |tee -a $LOG
         borg_unlock "${RECHNER}"
     else
         echo "Rechner $RECHNER wurde deaktiviert"
@@ -242,11 +242,11 @@ borg_key_export() {
     echo "Borg Key fuer Rechner $(hostname) gesichert auf ${RECHNER}"
     borg_create_ssh_option_file "${RECHNER}"
     echo "Kompakt:"
-    BORG_RSH="ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf" borg key export $(borg_repo "${RECHNER}") /dev/stdout
+    BORG_RSH="ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf" /usr/local/bin/borg key export $(borg_repo "${RECHNER}") /dev/stdout
     echo "Papier-Version:"
-    BORG_RSH="ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf" borg key export --paper $(borg_repo "${RECHNER}") /dev/stdout
+    BORG_RSH="ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf" /usr/local/bin/borg key export --paper $(borg_repo "${RECHNER}") /dev/stdout
     echo "QR-Code: /tmp/borg-key-${RECHNER}.html"
-    BORG_RSH="ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf" borg key export --qr-html $(borg_repo "${RECHNER}") /tmp/borg-key-${RECHNER}.html
+    BORG_RSH="ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf" /usr/local/bin/borg key export --qr-html $(borg_repo "${RECHNER}") /tmp/borg-key-${RECHNER}.html
     echo "============================================================================"
 
 }
@@ -261,7 +261,7 @@ borg_list() {
     if [ "$(borg_is_active $RECHNER )" == "1" ] ; then
         echo "Liste der Backups auf ${RECHNER}:"
         borg_create_ssh_option_file "${RECHNER}"
-        BORG_RSH="ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf" borg list $(borg_repo "${RECHNER}")
+        BORG_RSH="ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf" /usr/local/bin/borg list $(borg_repo "${RECHNER}")
     else
         echo -e "${RED}FEHLER:${NC} Rechner $RECHNER nicht verbunden" 1>&2
     fi
@@ -278,7 +278,7 @@ borg_mount() {
     borg_create_ssh_option_file "${RECHNER}"
     mkdir -p "/mnt/restore/${RECHNER}"
     echo "borg mount $(borg_repo "${RECHNER}")${EXPAND} /mnt/restore/${RECHNER}"
-    BORG_RSH="ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf" borg mount $(borg_repo "${RECHNER}")${EXPAND} /mnt/restore/${RECHNER}
+    BORG_RSH="ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf" /usr/local/bin/borg mount $(borg_repo "${RECHNER}")${EXPAND} /mnt/restore/${RECHNER}
     if [ $? -eq 0 ] ; then
         echo "Mountpoint:  /mnt/restore/${RECHNER}"
         echo "Bitte nach dem Restore mit:"
@@ -289,7 +289,7 @@ borg_mount() {
 
 borg_umount() {
     RECHNER="$1"
-    BORG_RSH="ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf" borg umount  /mnt/restore/${RECHNER}
+    BORG_RSH="ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf" /usr/local/bin/borg umount  /mnt/restore/${RECHNER}
 }
 
 borg_help() {
