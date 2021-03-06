@@ -1,3 +1,7 @@
+########################
+# {{ ansible_managed }}
+########################
+
 <Directory /var/www/quartierefuermenschen>
         AllowOverride All
         Order Allow,Deny
@@ -18,10 +22,8 @@
 
                 SSLEngine on
 
-                SSLCertificateFile      /etc/ssl/letsencrypt/{{ quartierefuermenschen_domain }}.crt
+                SSLCertificateFile      /etc/ssl/letsencrypt/{{ quartierefuermenschen_domain }}.chain.crt
                 SSLCertificateKeyFile /etc/ssl/letsencrypt/{{ quartierefuermenschen_domain }}.key
-
-                SSLCertificateChainFile /etc/ssl/letsencrypt/intermediate.pem
 
                 BrowserMatch "MSIE [2-6]" \
                                 nokeepalive ssl-unclean-shutdown \

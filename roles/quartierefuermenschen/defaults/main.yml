@@ -19,7 +19,7 @@ qfm_mysql_db: qfm_wordpress
 qfm_docker_port: 8081
 qfm_docker_volume: quartierefuermenschen
 qfm_docker_image: wordpress
-qfm_docker_version: 5.5.3-php7.4
+qfm_docker_version: 5.6.2-php7.4
 
 qfm_wordpress_user: Uu9ea
 qfm_wordpress_title: "Quartiere für Menschen"
