@@ -19,13 +19,14 @@
         state: stopped
       ignore_errors: yes
       ignore_unreachable: yes
+      register: jitsi_stop
 
     - name: compress logfiles
       archive:
         path: /var/log
         dest: /tmp/ansible-trans-logs.tar.gz
       ignore_errors: true
-      register: copy_log_compress
+      ignore_unreachable: yes
 
     - name: Fetch Remote
       fetch:
@@ -34,7 +35,7 @@
         dest: /tmp/
         flat: yes
       ignore_errors: true
-      register: copy_log_compress
+      ignore_unreachable: yes
 
     - name: Get hcloud API Token
       slurp:
@@ -79,6 +80,7 @@
       file:
         path: /tmp/ansible-trans-logs.tar.gz
         state: absent
+      ignore_errors: true
       delegate_to: localhost
 
     - name: find all files that are older than 14 days
