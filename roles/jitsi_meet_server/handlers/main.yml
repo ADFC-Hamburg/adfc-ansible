@@ -1,0 +1,4 @@
+- name: Restart Prosody
+  systemctl:
+    name: prosdoy
+    state: restarted

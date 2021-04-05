@@ -8,7 +8,7 @@
     - ucs-ip-managed-client
     - geerlingguy.certbot
     - saslauthd
-    - udelarinterior.jitsi_meet
+    - jitsi_meet_server
     - adfc_jitsi_skin
     - meet-coturn
     - meet-server-external-vb-addition
