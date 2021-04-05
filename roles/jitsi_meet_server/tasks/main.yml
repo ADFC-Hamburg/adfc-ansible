@@ -1,0 +1,29 @@
+- name: Include udelarinterior Role
+  include_role:
+    name: udelarinterior.jitsi_meet
+
+- name: Create Lobby Room in Prosody
+  template:
+    src: prosody-lobby.cfg
+    dest:  /etc/prosody/conf.d/01-ansible-lobby.cfg
+    mode: 0644
+    owner: root
+    group: root
+  notify: Restart prosody
+
+- name: Add lobby module
+  lineinfile:
+    path: /etc/prosody/conf.d/meet.adfc-intern.de.cfg.lua
+    insertafter: "^.*conference_duration.;"
+    regexp: '.*muc_lobby_rooms'
+    line: '    "muc_lobby_rooms";'
+  notify: Restart prosody
+
+- name: Insert Block
+  blockinfile:
+    path: /etc/prosody/conf.d/meet.adfc-intern.de.cfg.lua
+    marker: "        -- {mark} ADFC jitsi_meet_server_role"
+    insertafter: "^.*conference_duration_component =.*"
+    block:
+      lobby_muc = "lobby.{{ jitsi_meet_server_name }}"
+      main_muc = "conference.{{ jitsi_meet_server_name }}"
