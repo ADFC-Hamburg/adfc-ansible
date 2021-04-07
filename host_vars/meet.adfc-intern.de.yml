@@ -176,3 +176,5 @@ asterisk_rooms:
     name: adfc_hessen_lv_sitzung
   4007:
     name: usinger-land
+  7001:
+    name: ADFC-BW
