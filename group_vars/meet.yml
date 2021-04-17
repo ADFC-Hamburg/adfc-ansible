@@ -28,7 +28,10 @@ certbot_certs:
      - "{{ inventory_hostname }}"
 certbot_create_standalone_stop_services: []
 
-# Jitsit
+# Jitsi
+
+jitsi_meet_apt_key_id: FFD65A0DA2BEBDEB73D44C8BB4D2D216F1FD7806
+
 jitsi_meet_server_name: "{{ inventory_hostname }}"
 jitsi_meet_install_recommends: no
 
