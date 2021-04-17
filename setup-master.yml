@@ -94,6 +94,14 @@
         job: /usr/bin/find /adfc/Computer/Datensicherung/Proxmox/ -type f -ctime 5 -delete
       tags: proxmox-backup
 
+    - name: Cron delete old tomcat logs
+      cron:
+        name: "ansible-delete-old-tomcat-logs"
+        hour: "23"
+        cron_file: ansible-delete-old-tomcat-logs
+        user: root
+        job: univention-app shell guacamole find /usr/local/tomcat/logs -mtime +3 -delete
+
     - name: Wake On LAN installieren
       apt:
         name: wakeonlan
