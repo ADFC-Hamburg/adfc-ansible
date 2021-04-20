@@ -148,6 +148,8 @@ asterisk_rooms:
     name: KV_DH
   2021:
     name: KV_BS
+  2022:
+    name: NDS_Regional
   3001:
     name: ADFCNRWThemenaustausch
   3002:
