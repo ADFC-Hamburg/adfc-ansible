@@ -9,6 +9,8 @@
     - borg-server
     - external-https
     - self-service-sms
+    - openjdk
+    - signal_cli
 
   handlers:
     - name: ucr commit postifx main.cf

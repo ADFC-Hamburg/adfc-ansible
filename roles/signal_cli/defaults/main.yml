@@ -1,0 +1,7 @@
+signal_cli_version: 0.8.1
+singal_cli_tar_gz_url: "https://github.com/AsamK/signal-cli/releases/download/v{{ signal_cli_version }}/signal-cli-{{ signal_cli_version }}.tar.gz"
+singal_cli_tar_gz_asc_url: "{{ singal_cli_tar_gz_url}}.asc"
+signal_cli_dest_pattern: "signal-cli-*"
+signal_cli_dest_base: "/opt"
+signal_cli_dest: "/opt/signal-cli-{{ signal_cli_version }}"
+signal_cli_java_home: "/usr/local/lib/jvm/jdk-16.0.1/"

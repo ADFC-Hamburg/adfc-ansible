@@ -1,0 +1,36 @@
+
+- name: Download signal_cli
+  ansible.builtin.unarchive:
+    src: "{{ singal_cli_tar_gz_url }}"
+    dest: "{{ signal_cli_dest_base }}"
+    creates: "{{ signal_cli_dest }}"
+    remote_src: yes
+
+- name: Search for old signal_cli
+  find:
+    path: "{{ signal_cli_dest_base }}"
+    patterns: "{{ signal_cli_dest_pattern }}"
+    file_type: directory
+    depth: 1
+    excludes: "{{ signal_cli_dest.replace(signal_cli_dest_base+'/','') }}"
+  register: old_signal_cli_find
+
+- name: delete old signal cli
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items: "{{ old_signal_cli_find.files }}"
+
+- name: Create Programm
+  template:
+    src: "signal-cli.sh.j2"
+    dest: "/usr/local/bin/signal-cli"
+    mode: "0755"
+    owner: root
+    group: root
+
+- name: Test Signal Cli
+  command: "/usr/local/bin/signal-cli --version"
+  register: signal_cli_version_cmd
+  changed_when: False
+  failed_when: signal_cli_version_cmd.stdout != 'signal-cli '+ signal_cli_version
