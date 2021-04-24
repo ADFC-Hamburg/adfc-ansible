@@ -1,0 +1,6 @@
+#!/bin/bash
+#
+#         {{ ansible_managed }}
+#
+export JAVA_HOME={{ signal_cli_java_home }}
+exec {{ signal_cli_dest }}/bin/signal-cli "$@"

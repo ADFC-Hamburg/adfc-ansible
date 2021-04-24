@@ -1,0 +1,13 @@
+- name: Create Jvm dir
+  file:
+    path: /usr/local/lib/jvm
+    state: directory
+    mode: "0755"
+    owner: root
+    group: root
+
+- name: install openjdk
+  unarchive:
+    src: "{{ openjdk_pkg_url }}"
+    remote_src: yes
+    dest: /usr/local/lib/jvm

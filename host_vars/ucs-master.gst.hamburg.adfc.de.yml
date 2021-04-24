@@ -20,3 +20,5 @@ apache_sites:
 apache_ports:
   - "8080"
   - "8443"
+
+signal_cli_java_home: /usr/local/lib/jvm/jdk-16.0.1+9/
