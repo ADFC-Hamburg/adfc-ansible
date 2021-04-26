@@ -2,4 +2,6 @@ warn_list:
   - no-changed-when
   - risky-file-permission
   - role-name
+  - "106"
+  - "208"
   - meta-no-info
