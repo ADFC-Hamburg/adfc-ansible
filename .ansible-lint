@@ -1,0 +1,5 @@
+warn_list:
+  - no-changed-when
+  - risky-file-permission
+  - role-name
+  - meta-no-info
