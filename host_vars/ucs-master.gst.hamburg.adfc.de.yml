@@ -20,3 +20,13 @@ apache_sites:
 apache_ports:
   - "8080"
   - "8443"
+
+zabbix_agent_server: 172.16.28.2
+zabbix_agent_serveractive: 172.16.28.2
+zabbix_url: http://192.168.123.32:9080
+zabbix_api_use: false # use zabbix_api_create_hosts and/or zabbix_api_create_hostgroup from 0.8.0
+zabbix_host_groups:
+  - Linux Servers
+zabbix_link_templates:
+  - Template OS Linux
+zabbix_install_pip_packages: no

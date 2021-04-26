@@ -1,0 +1,12 @@
+#!/bin/sh
+#
+#   {{ ansible_managed }}
+#
+#iptables -I INPUT -p tcp -m tcp --dport 10050 -j LOG --log-prefix "INPUT:" --log-level 6
+#iptables -I INPUT -p tcp -m tcp --dport 10051 -j LOG --log-prefix "INPUT:" --log-level 6
+#iptables -I INPUT -s -p tcp -m tcp --dport 3306 -j LOG --log-prefix "INPUT:" --log-level 6
+
+iptables -A INPUT -p tcp -m tcp --dport 10050 -j ACCEPT
+iptablbe -A INPUT -p tcp -m tcp -s 172.16.28.2 -d 192.168.123.32 --dport 10051 -j ACCEPT
+iptables -A INPUT -p tcp -m tcp -s 172.16.28.2 -d 172.17.42.1 --dport 3306 -j ACCEPT
+iptables -A INPUT -p tcp -m tcp -s 172.16.28.3 -d 172.17.42.1 --dport 3306 -j ACCEPT
