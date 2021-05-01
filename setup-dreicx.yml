@@ -1,8 +1,19 @@
 - hosts: dreicx.gst.hamburg.adfc.de
-  gather_facts: no
+  gather_facts: yes
   roles:
   - ssh-keys
   tasks:
+  - name: Set Zabbix repository (Role macht das falsch)
+    apt_repository:
+      filename: "adfc_ansible_zabbix"
+      repo: "{{ item }} http://repo.zabbix.com/zabbix/{{ zabbix_version }}/raspbian/ {{ ansible_distribution_release }} main"
+      state: present
+    with_items:
+      - deb-src
+      - deb
+  - name: Install Zabbix Agent
+    include_role:
+      name: community.zabbix.zabbix_agent
   - name: Installiere Pakete
     apt:
       name:
