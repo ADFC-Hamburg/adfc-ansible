@@ -1,6 +1,8 @@
 metropolregion_termine_git_repo: "https://github.com/michaelu123/adfc2"
 metropolregion_termine_git_version: "88a1401c86831b4eb1c36a2d859da6ebe5f1d4bc"
 metropolregion_termine_www_dest_dir: /var/www/html/metropolregion_termine
+metropolregion_termine_packages:
+    - python3-caldav
 metropolregion_termine_zeitraum: 90
 metropolregion_termine_regio_ids:
     - name: Hamburg
