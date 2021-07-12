@@ -1,3 +1,7 @@
+- name: Download Pyhton Packages
+  apt:
+    name: "{{ metropolregion_termine_packages }}"
+
 - name: Create user
   user:
     name: metroterm
@@ -30,10 +34,16 @@
     owner: metroterm
     group: metroterm
 
+- name: Delete VADB for Test
+  file:
+    path: /home/metroterm/metropolregion_termine_git/venv/src/ADFC-VADB.xml
+    state: absent
+
 - name: Test call
   command: "/home/metroterm/run_daily.sh"
   become: yes
   become_user: metroterm
+
 
 - name: Cron Job um 23:17 Uhr
   cron:
