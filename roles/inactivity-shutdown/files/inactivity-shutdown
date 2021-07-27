@@ -1,4 +1,5 @@
 #!/bin/bash
-if [[ ! $(who) ]]; then
+if [[ ! $(who) && ! $(netstat -natp | grep -e 3389.*ESTABLISHED) ]]; then
+	echo "This client is currently not used and will be shut down now."
 	poweroff
 fi
