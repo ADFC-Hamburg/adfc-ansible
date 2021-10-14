@@ -148,6 +148,8 @@ asterisk_rooms:
     name: KV_DH
   2021:
     name: KV_BS
+  2022:
+    name: NDS_Regional
   2023:
     name: KV_OS
   2024:
