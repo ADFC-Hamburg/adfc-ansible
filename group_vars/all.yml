@@ -19,7 +19,7 @@ ssh_users_admins:
   - georgs
 
 # Paketverwaltung
-deb_name_master_pdf_editor: master-pdf-editor-5.3.22_qt5.amd64.deb
+deb_name_master_pdf_editor: master-pdf-editor-5.7.60-qt5.x86_64.deb
 unwanted_packages:
   - pdfsam
 

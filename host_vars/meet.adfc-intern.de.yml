@@ -148,6 +148,8 @@ asterisk_rooms:
     name: KV_DH
   2021:
     name: KV_BS
+  2023:
+    name: KV_OS
   2024:
     name: KV_FRI
   2031:
