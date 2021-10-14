@@ -152,6 +152,8 @@ asterisk_rooms:
     name: KV_OS
   2024:
     name: KV_FRI
+  2025:
+    name: KV_WF
   2031:
     name: OG_Velbert_Vorstand
   3001:
