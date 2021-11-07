@@ -2,15 +2,25 @@ Rechner {{ ansible_hostname }}
 
 RAID Disk zu Seriennummer:
 
+Was tun wenn eine Festplatte defekt ist, zB /dev/sdb
+
+Den Befehl:
 /opt/MegaRAID/MegaCli/MegaCli64  -Pdlist -a0 > drive-list.txt
+
+aufrufen:
+
+Dort nach der DiskGroup suchen:
 
 DiskGroup0 = /dev/sda
 DiskGroup1 = /dev/sdb
 ...
 DiskGroup5 = /dev/sdf
 
+und dann nach Slot suchen.
 
-Slot 0 blinken lassen:
+Dann den Solt blinken lassen. 
+
+Beispiel: Slot 0 blinken lassen:
 
 /opt/MegaRAID/MegaCli/MegaCli64  -PdLocate -start --physdrv[252:0] -a0
 
