@@ -1,4 +1,4 @@
-- hosts: proxmox01.gst.hamburg.adfc.de
+- hosts: proxmox02.gst.hamburg.adfc.de
   gather_facts: no
   roles:
     - ucs-master-start
