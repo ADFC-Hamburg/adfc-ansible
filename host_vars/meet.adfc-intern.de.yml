@@ -148,6 +148,16 @@ asterisk_rooms:
     name: KV_DH
   2021:
     name: KV_BS
+  2022:
+    name: NDS_Regional
+  2023:
+    name: KV_OS
+  2024:
+    name: KV_FRI
+  2025:
+    name: KV_WF
+  2031:
+    name: OG_Velbert_Vorstand
   3001:
     name: ADFCNRWThemenaustausch
   3002:
@@ -162,6 +172,8 @@ asterisk_rooms:
     name: ADFC-LippeTourleiterinnen
   3007:
     name: ADFCHamminkeln
+  3008:
+    name: Hagen-Forum
   4001:
     name: htk-kreisvorstand
   4002:

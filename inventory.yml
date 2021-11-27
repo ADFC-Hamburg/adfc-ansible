@@ -3,6 +3,7 @@ all:
     server:
       hosts:
         proxmox01.gst.hamburg.adfc.de:
+        proxmox02.gst.hamburg.adfc.de:
         ucs-master.gst.hamburg.adfc.de:
         tools.adfc-hamburg.de:
         proxmox01.adfc-intern.de:
