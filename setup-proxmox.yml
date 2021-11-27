@@ -1,4 +1,4 @@
-- hosts: proxmox01.gst.hamburg.adfc.de
+- hosts: proxmox02.gst.hamburg.adfc.de
   gather_facts: yes
   roles:
     - community.zabbix.zabbix_agent

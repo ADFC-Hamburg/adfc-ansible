@@ -88,3 +88,5 @@ influx_null_values:
   total_partially_failed_conferences: 0.0
   total_participants: 0.0
   videochannels: 0.0
+
+zabbix_agent_become_on_localhost: false
