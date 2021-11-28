@@ -1,3 +1,7 @@
+# {{ ansible_managed }}
+# Abgespeckte Version von
+# https://github.com/zabbix/zabbix-docker/blob/5.4.7/docker-compose_v3_alpine_mysql_latest.yaml
+# da ucs nicht alle docker features unterstützt
 version: '3.5'
 services:
  zabbix-server:
@@ -16,6 +20,7 @@ services:
    - ./zbx_env/var/lib/zabbix/ssh_keys:/var/lib/zabbix/ssh_keys:ro
    - ./zbx_env/var/lib/zabbix/mibs:/var/lib/zabbix/mibs:ro
    - /var/run/mysqld:/var/run/mysqld
+   - snmptraps:/var/lib/zabbix/snmptraps:rw
   ulimits:
    nproc: 65535
    nofile:
@@ -108,6 +113,31 @@ services:
         - zabbix-web-nginx-alpine-mysql
         - zabbix-web-nginx-mysql-alpine
       ipv4_address: 172.16.28.3
+ zabbix-snmptraps:
+  image: zabbix/zabbix-snmptraps:{{ zabbix_server_docker_version }}
+  ports:
+   - "162:1162/udp"
+  volumes:
+   - snmptraps:/var/lib/zabbix/snmptraps
+  deploy:
+   resources:
+    limits:
+      cpus: '0.5'
+      memory: 256M
+    reservations:
+      cpus: '0.25'
+      memory: 128M
+  networks:
+   zabbix_net:
+    aliases:
+     - zabbix-snmptraps
+    ipv4_address: 172.16.28.4
+  stop_grace_period: 5s
+  labels:
+   com.zabbix.description: "Zabbix snmptraps"
+   com.zabbix.company: "Zabbix LLC"
+   com.zabbix.component: "snmptraps"
+   com.zabbix.os: "alpine"
 networks:
   zabbix_net:
     ipam:
@@ -121,3 +151,5 @@ secrets:
     file: ./.MYSQL_PASSWORD
   MYSQL_ROOT_PASSWORD:
     file: /etc/mysql.secret
+volumes:
+  snmptraps:
