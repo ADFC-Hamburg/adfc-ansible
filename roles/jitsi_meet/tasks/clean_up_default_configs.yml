@@ -1,0 +1,38 @@
+---
+
+- name: Remove default localhost Jitsi Meet config file.
+  file:
+    path: /etc/jitsi/meet/localhost-config.js
+    state: absent
+  notify: restart jitsi-videobridge
+
+- name: Remove Jicofo user config for localhost site.
+  file:
+    path: /var/lib/prosody/auth%2elocalhost
+    state: absent
+  notify:
+    - restart jicofo
+    - restart prosody
+
+- name: Remove default localhost Prosody config file.
+  file:
+    path: /etc/prosody/conf.d/localhost.cfg.lua
+    state: absent
+  notify: restart prosody
+
+  # The "server_names_hash_bucket_size" directive should only occur once in the
+  # Nginx config. If it's duplicated, even only in "available" sites rather than
+  # "enabled", nginx will fail to start. Since this role writes it in a template
+  # when using custom SSL keys, we'll clean up the default localhost file to avoid
+  # duplicating the config line.
+- name: Remove default localhost Nginx config file.
+  file:
+    path: "{{ item }}"
+    state: absent
+  notify: restart nginx
+  with_items:
+    - /etc/nginx/sites-available/localhost.conf
+    - /etc/nginx/sites-enabled/localhost.conf
+  # Only remove the "localhost" file if we're using custom SSL keys, i.e. in prod.
+  when: jitsi_meet_ssl_cert_path and
+        jitsi_meet_ssl_key_path

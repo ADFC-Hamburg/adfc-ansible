@@ -1,18 +1,18 @@
 - hosts: meet_server
   gather_facts: yes
   roles:
-    - ssh-keys
-    - update-os
-    - basic_setup
-    - update-os
-    - ucs-ip-managed-client
-    - geerlingguy.certbot
-    - saslauthd
-    - udelarinterior.jitsi_meet
-    - adfc_jitsi_skin
+#    - ssh-keys
+#    - update-os
+#    - basic_setup
+#    - update-os
+#    - ucs-ip-managed-client
+#    - geerlingguy.certbot
+#    - saslauthd
+    - jitsi_meet
+#    - adfc_jitsi_skin
     - meet-coturn
     - meet-server-external-vb-addition
-    - telegraf
+#    - telegraf
   tasks:
     - name: test
       debug:

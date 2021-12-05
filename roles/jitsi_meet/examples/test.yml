@@ -1,0 +1,12 @@
+---
+- name: Test jitsi-meet role (stable repo)
+  hosts: jitsi-meet-stable
+  roles:
+    - role: ../ansible-role-jitsi-meet
+      jitsi_meet_use_nightly_apt_repo: false
+
+- name: Test jitsi-meet role (unstable repo)
+  hosts: jitsi-meet-unstable
+  roles:
+    - role: ../ansible-role-jitsi-meet
+      jitsi_meet_use_nightly_apt_repo: true

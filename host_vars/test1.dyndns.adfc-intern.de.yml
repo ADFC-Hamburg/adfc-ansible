@@ -7,3 +7,4 @@ ucs_dns_zonename: "dyndns.adfc-intern.de"
 ansible_ssh_extra_args: "-o CheckHostIP=No"
 jitsi_meet_server_name: "{{ inventory_hostname }}"
 adfc_jitsi_branch: "adfc-devel"
+

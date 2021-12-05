@@ -1,0 +1,25 @@
+---
+
+- name: Install ufw package.
+  apt:
+    name: ufw
+    state: present
+
+- name: Specify allowed TCP ports in firewall config.
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: tcp
+  with_items: "{{ jitsi_meet_firewall_ports_allow.tcp }}"
+
+- name: Specify allowed UDP ports in firewall config.
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: udp
+  with_items: "{{ jitsi_meet_firewall_ports_allow.udp }}"
+
+- name: Ensure UFW is running.
+  ufw:
+    name: ufw
+    state: enabled
