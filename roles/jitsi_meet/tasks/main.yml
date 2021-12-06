@@ -52,3 +52,6 @@
   # Build your own with https://github.com/jitsi/jidesha
 - include: browser_extensions.yml
   tags: jitsi_browser_extensions
+
+- include: adfc.yml
+  tags: jitsi_adfc

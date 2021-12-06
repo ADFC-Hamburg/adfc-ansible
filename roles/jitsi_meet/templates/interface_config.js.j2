@@ -23,7 +23,7 @@ var interfaceConfig = {
     SHOW_WATERMARK_FOR_GUESTS: true,
     SHOW_BRAND_WATERMARK: false,
     BRAND_WATERMARK_LINK: '',
-    SHOW_POWERED_BY: false,
+    SHOW_POWERED_BY: true,
     SHOW_DEEP_LINKING_IMAGE: false,
     GENERATE_ROOMNAMES_ON_WELCOME_PAGE: {{ jitsi_meet_generate_roomnames_on_welcome_page | bool | lower }},
     DISPLAY_WELCOME_PAGE_CONTENT: true,
@@ -33,7 +33,11 @@ var interfaceConfig = {
     PROVIDER_NAME: 'Jitsi',
     LANG_DETECTION: {{ jitsi_meet_lang_detection | bool | lower }}, // Allow i18n to detect the system language
     INVITATION_POWERED_BY: true,
-
+    DISPLAY_WELCOME_FOOTER: true,
+    DISPLAY_WELCOME_PAGE_ADDITIONAL_CARD: false,
+    DISPLAY_WELCOME_PAGE_CONTENT: false,
+    DISPLAY_WELCOME_PAGE_TOOLBAR_ADDITIONAL_CONTENT: false,
+    GENERATE_ROOMNAMES_ON_WELCOME_PAGE: false,
     /**
      * If we should show authentication block in profile
      */
@@ -128,7 +132,7 @@ var interfaceConfig = {
      * If indicated some of the error dialogs may point to the support URL for
      * help.
      */
-    SUPPORT_URL: 'https://community.jitsi.org/',
+    SUPPORT_URL: 'https://aktiv.adfc-nrw.de/jitsi/jitsi-feedback/',
 
     /**
      * Whether the connection indicator icon should hide itself based on
@@ -227,13 +231,24 @@ var interfaceConfig = {
     /**
      * Specify custom URL for downloading android mobile app.
      */
-    // MOBILE_DOWNLOAD_LINK_ANDROID: 'https://play.google.com/store/apps/details?id=org.jitsi.meet',
+    //MOBILE_DOWNLOAD_LINK_ANDROID: 'https://play.google.com/store/apps/details?id=org.jitsi.meet',
 
     /**
      * Specify URL for downloading ios mobile app.
      */
-    // MOBILE_DOWNLOAD_LINK_IOS: 'https://itunes.apple.com/us/app/jitsi-meet/id1165103905',
+    //MOBILE_DOWNLOAD_LINK_IOS: 'https://itunes.apple.com/us/app/jitsi-meet/id1165103905',
+    //MOBILE_DOWNLOAD_LINK_F_DROID: 'https://itunes.apple.com/us/app/jitsi-meet/id1165103905',
+    MOBILE_DOWNLOAD_LINK_ANDROID: 'https://play.google.com/store/apps/details?id=de.hoppfoundation.klassenzimmer',
 
+    /**
+     * Specify custom URL for downloading f droid app.
+     */
+    MOBILE_DOWNLOAD_LINK_F_DROID: 'https://f-droid.org/en/packages/org.jitsi.meet/',
+
+    /**
+     * Specify URL for downloading ios mobile app.
+     */
+    MOBILE_DOWNLOAD_LINK_IOS: 'https://apps.apple.com/de/app/digitales-klassenzimmer/id1508736201',
     /**
      * Specify mobile app scheme for opening the app from the mobile browser.
      */

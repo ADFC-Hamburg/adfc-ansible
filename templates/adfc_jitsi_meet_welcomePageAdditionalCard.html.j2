@@ -1,0 +1,60 @@
+<template id = "welcome-page-additional-card-template">
+  {# <script src="static/my.js?v=1"></script> #}
+  <link rel="stylesheet" href="static/adfc.css">
+  <style>
+  .welcome .welcome-watermark {
+    height: 0px;
+  }
+  .welcome .welcome-card-row {
+    justify-content:space-between;
+    line-height: 1.7;
+  }
+  @media only screen and (max-width:500px) {
+    .welcome.with-content .welcome-card {
+      margin-top: 24px;
+      width: 100%;
+    }
+  }
+  </style>
+  <div class="welcome-card-text">
+{#    <div class="welcome-card-jaas-logo">
+      <img width="71" height="32" src="./images/watermark.png">
+    </div>
+#}
+    <h3 class="welcome-card-large-title">Über <b>ADFC Meet</b>.</h3>
+    &nbsp;
+    <p class="welcome-card-paragraph">
+      Starte mit Deiner ADFC-Gliederung oder Deinem ADFC-Arbeitskreis eine Videokonferenz.
+      Moderator*innen starten die virtuelle Sitzung und laden die anderen Teilnehmer*innen ein.
+      Die Konferenz wird im Internet verschlüsselt übertragen.
+      Die Nutzung von ADFC Meet für Vereinszwecke des ADFC ist kostenlos.</p>
+    </p>
+    <div class="welcome-card-button">
+        <a href="https://portal.adfc-intern.de/adfc/adfc-meet.pdf" target="_blank">
+        Anleitung
+      </a>
+    </div>
+    <div class="welcome-card-button">
+        <a href="https://aktiv.adfc-nrw.de/jitsi/jitsi-feedback/" target="_blank">
+        Feedbackformular
+      </a>
+    </div>
+    <div class="welcome-card-button">
+        <a href="https://portal.adfc-intern.de/univention/portal/" target="_blank">
+        Portal mit weiteren Infos/Links
+      </a>
+    </div>
+    <div class="welcome-card-button">
+        <a href="https://hamburg.adfc.de/impressum" target="_blank">
+        Impressum
+      </a>
+      &nbsp;
+      <a href="https://hamburg.adfc.de/datenschutz" target="_blank">
+        Datenschutz
+      </a>
+    </div>
+    <h3 class="welcome-card-large-title" style="margin-top: 15px">Vorteile von <b>ADFC Meet</b>.</h3>
+    &nbsp;
+    <p class="welcome-card-paragraph">✅ DSGVO konform! - 🔒 Verschlüsselt! - ✅ Einfach!</p>
+  </div>
+</template>
