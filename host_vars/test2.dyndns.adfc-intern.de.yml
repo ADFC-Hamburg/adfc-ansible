@@ -35,6 +35,9 @@ jitis_meet_static_override:
   - src: jitsi_favicon.ico
     dest: favicon.ico
     is_template: no
+  - src: jitsi_meet_head.html.j2
+    dest: head.html
+    is_template: yes
 
 jitsi_meet_nginx_config_template:  "adfc_jitsi_meet_nginx.conf.j2"
 
