@@ -51,8 +51,8 @@ var config = {
     // The real JID of focus participant - can be overridden here
     // focusUserJid: 'focus@auth.{{ jitsi_meet_server_name }}',
 
-    dynamicBrandingUrl: "/static/dyn_branding.json",
-    brandingDataUrl:  "/static/dyn_branding.json",
+    dynamicBrandingUrl: "https://{{ inventory_hostname }}/static/dyn_branding.json",
+    brandingDataUrl:  "https://{{ inventory_hostname }}/static/dyn_branding.json",
     prejoinPageEnabled: true,
     enableLayerSuspension: true,
 
