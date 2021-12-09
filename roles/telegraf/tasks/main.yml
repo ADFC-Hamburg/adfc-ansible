@@ -5,7 +5,7 @@
 
 - name: Add InfluxDB repository
   apt_repository:
-    repo: 'deb https://repos.influxdata.com/debian buster stable'
+    repo: 'deb https://repos.influxdata.com/debian {{ ansible_distribution_release }} stable'
     state: present
 
 - name: Install Telegraf packages

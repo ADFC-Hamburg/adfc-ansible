@@ -80,7 +80,7 @@ jitsi_meet_videobridge_statistics_interval: 1000
 jitsi_meet_videobridge_statistics_transport:  "muc"
 
 # Performance Optimierungen, siehe: https://www.kuketz-blog.de/jitsi-meet-optimierung-der-performance/
-jitsi_meet_channel_last_n: 3
+jitsi_meet_channel_last_n: 5
 jitsi_meet_enable_layer_suspension: true
 jitsi_meet_start_audio_only: false
 jitsi_meet_show_audio_levels: false

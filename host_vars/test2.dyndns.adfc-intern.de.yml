@@ -66,6 +66,6 @@ jtisi_rewrite_i18n:
 
 jitsi_font_download_url: "https://google-webfonts-helper.herokuapp.com/api/fonts/roboto?download=zip&subsets=latin&variants=100,300,500,700,900,regular&formats=woff,woff2"
 
-jitsi_meet_default_remote_display_name: "Ubekannte Radfahrer*in"
+jitsi_meet_default_remote_display_name: "Unbekannte Radfahrer*in"
 jitsi_meet_default_local_display_name: "ich"
 jitsi_meet_generate_roomnames_on_welcome_page: false

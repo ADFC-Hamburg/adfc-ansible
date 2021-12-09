@@ -1,4 +1,4 @@
-proxmox_id: "100"
+proxmox_id: "101"
 proxmox_net:
   net0:
     name: eth0
@@ -8,7 +8,8 @@ proxmox_net:
     gw6: 2a01:4f8:a0:32b9::3
     bridge: vmbr0
 proxmox_ramsize_in_mb: 10240
-proxmox_cores: 9
+proxmox_cores: 10
+proxmox_template: debian-11-standard_11.0-1_amd64.tar.gz
 
 firewall:
   - name: Apache http
@@ -190,3 +191,67 @@ asterisk_rooms:
     name: usinger-land
   7001:
     name: ADFC-BW
+
+jitsi_meet_server_name: "{{ inventory_hostname }}"
+
+jitsi_meet_apt_key_url: "https://keys.openpgp.org/vks/v1/by-fingerprint/FFD65A0DA2BEBDEB73D44C8BB4D2D216F1FD7806"
+jitsi_meet_base_packages:
+  - apt-transport-https
+  - debconf
+  - debconf-utils
+  - gpg
+  - unzip
+
+jitis_meet_static_override:
+  - src: adfc_jitsi_meet_welcomePageAdditionalCard.html.j2
+    dest: static/welcomePageAdditionalCard.html
+    is_template: yes
+  - src: adfc_jitsi_meet_close3.html.j2
+    dest: static/close3.html
+    is_template: yes
+  - src: adfc_jitsi.css.j2
+    dest: static/adfc.css
+    is_template: yes
+  - src: jitsi_watermark.png
+    dest: images/watermark.png
+    is_template: no
+  - src: adfc_jitsi_background.png
+    dest: images/welcome-background.png
+    is_template: no
+  - src: jitsi_favicon.ico
+    dest: favicon.ico
+    is_template: no
+  - src: jitsi_meet_head.html.j2
+    dest: head.html
+    is_template: yes
+
+jitsi_meet_nginx_config_template:  "adfc_jitsi_meet_nginx.conf.j2"
+
+jtisi_rewrite_i18n:
+  de:
+    - op: replace
+      path: "/welcomepage/headerTitle"
+      value: "ADFC Meet"
+    - op: replace
+      path: "/welcomepage/headerSubtitle"
+      value: "Das Onlinekonferenzsystem vom ADFC"
+  en:
+    - op: replace
+      path: "/welcomepage/headerTitle"
+      value: "ADFC Meet"
+    - op: replace
+      path: "/welcomepage/headerSubtitle"
+      value: "The online conference system of the ADFC"
+  es:
+    - op: replace
+      path: "/welcomepage/headerTitle"
+      value: "ADFC Meet"
+    - op: replace
+      path: "/welcomepage/headerSubtitle"
+      value: "El sistema de conferencias en línea de ADFC"
+
+jitsi_font_download_url: "https://google-webfonts-helper.herokuapp.com/api/fonts/roboto?download=zip&subsets=latin&variants=100,300,500,700,900,regular&formats=woff,woff2"
+
+jitsi_meet_default_remote_display_name: "Unbekannte Radfahrer*in"
+jitsi_meet_default_local_display_name: "ich"
+jitsi_meet_generate_roomnames_on_welcome_page: false
