@@ -17,7 +17,7 @@ all:
                 meet.adfc-intern.de:
                 test.adfc-intern.de:
                 test1.dyndns.adfc-intern.de:
-                test2.dyndns.adfc-intern.de:		
+                test2.dyndns.adfc-intern.de:
                 event.dyndns.adfc-intern.de:
             jitsi_vbs:
               children:
