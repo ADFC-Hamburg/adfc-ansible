@@ -16,7 +16,7 @@
 
     - name: Pause
       pause:
-        seconds: 20
+        seconds: 60
       when: delete_start_meet_vb |default('yes') and vb_start.changed
 
     - name: "stop videobride"
