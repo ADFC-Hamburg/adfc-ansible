@@ -1,6 +1,14 @@
 - name: Install jigasi
   apt:
-    name: jigasi
+    name:
+      - jigasi
+
+- name: Install old opnenjdk on debian bullseye
+  apt:
+    name:
+      - openjdk-11-jre-headless
+  when: ansible_distribution_release == 'bullseye'
+
 - name: check if password file is there
   stat:
     path: "/etc/jigasi-sip.secret"
