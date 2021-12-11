@@ -9,6 +9,10 @@
     mode: "0644"
   notify: restart nginx
 
+- name: Generate Diffie-Hellman parameters with the default size (4096 bits)
+  community.crypto.openssl_dhparam:
+    path: /etc/ssl/dhparams.pem
+
 - name: Deactivate default Nginx site.
   file:
     path: /etc/nginx/sites-enabled/default
