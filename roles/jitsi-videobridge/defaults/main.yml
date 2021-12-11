@@ -3,6 +3,7 @@ jitsi_meet_base_packages:
   - debconf
   - debconf-utils
   - ufw
+  - gpg
 
 jitsi_meet_apt_repos:
   stable:

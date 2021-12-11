@@ -12,10 +12,9 @@
 
 # Both stable and unstable repos use the same signing key.
 - name: Configure signing key for Jitsi repository.
-  apt_key:
-    id: "{{ jitsi_meet_apt_key_id }}"
+  get_url:
     url: "{{ jitsi_meet_apt_key_url }}"
-    state: present
+    dest: /etc/apt/trusted.gpg.d/jitsi.asc
 
 - name: Install Jitsi apt repo.
   apt_repository:
