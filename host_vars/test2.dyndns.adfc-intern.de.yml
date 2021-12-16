@@ -36,7 +36,7 @@ jitis_meet_static_override:
     dest: favicon.ico
     is_template: no
   - src: jitsi_favicon.ico
-    dest: static/favicon.ico
+    dest: images/favicon.ico
     is_template: no
   - src: jitsi_meet_head.html.j2
     dest: head.html

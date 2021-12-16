@@ -23,3 +23,10 @@
     dest: /etc/jitsi/videobridge/sip-communicator.properties
     mode: 0644
   notify: restart jitsi-videobridge
+
+- name: Add videobridge jvb.config
+  template:
+    src: "{{ jitsi_meet_videobridge_jvb_config }}"
+    dest: /etc/jitsi/videobridge/jvb.conf
+    mode: 0644
+  notify: restart jitsi-videobridge

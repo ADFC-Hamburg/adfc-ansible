@@ -1,0 +1,68 @@
+videobridge {
+    apis {
+        xmpp-client {
+
+           # Controls which statistics are sent.
+           stats-filter {
+              # Whether to filter the statistics.
+              # If true, send whitelisted keys only. If false, send all statistics.
+              enabled = false
+           }
+        }
+        rest {
+            enabled = true
+        }
+        jvb-api {
+            enabled = true
+        }
+    }
+    rest {
+            debug {
+                enabled = true
+            }
+            health {
+                enabled = true
+            }
+            shutdown {
+                # Note that the shutdown API requires the COLIBRI API to also be enabled.
+                enabled = true
+            }
+            version {
+                enabled = true
+            }
+
+    }
+    http-servers {
+        public {
+            port = 9090
+        }
+        private {
+            # See JettyBundleActivatorConfig in Jicoco for values
+            host = 127.0.0.1
+        }
+    }
+{% if jitsi_meet_octo | default("no") |bool %}
+    octo {
+        # Whether or not Octo is enabled
+        enabled=true
+
+        # A string denoting the 'region' of this JVB.  This region
+        # will be used by Jicofo in the selection of a bridge for
+        # a client by comparing it to the client's region.
+        # Must be set when 'enabled' is true
+        region="{{ jitsi_meet_region |default("region1") }}"
+        bind_address="{{ ansible_default_ipv4.address }}"
+        public_address="{{ ansible_default_ipv4.address }}"
+    }
+{% else %}
+# OCTO Disabled
+{% endif %}
+
+    websockets {
+        enabled = true
+        domain = "{{ jitsi_meet_server_name }}:443"
+        tls = true
+    }
+  # The minimum amount of time to stay in graceful-shutdown mode before terminating.
+  graceful-shutdown-delay = 1 minute
+}

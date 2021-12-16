@@ -203,6 +203,7 @@ jitsi_meet_base_packages:
   - debconf-utils
   - gpg
   - unzip
+  - curl
 
 jitis_meet_static_override:
   - src: adfc_jitsi_meet_welcomePageAdditionalCard.html.j2
@@ -226,6 +227,9 @@ jitis_meet_static_override:
   - src: jitsi_meet_head.html.j2
     dest: head.html
     is_template: yes
+  - src: jitsi_favicon.ico
+    dest: images/favicon.ico
+    is_template: no
 
 jitsi_meet_nginx_config_template:  "adfc_jitsi_meet_nginx.conf.j2"
 
