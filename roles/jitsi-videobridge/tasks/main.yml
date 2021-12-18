@@ -56,6 +56,13 @@
     jitsi_meet_jvb_cfg_password: "{{ vb_password_file_slurp.content | b64decode }}"
   notify: restart jitsi-videobridge
 
+- name: Add videobridge jvb.config
+  template:
+    src: "{{ jitsi_meet_videobridge_jvb_config }}"
+    dest: /etc/jitsi/videobridge/jvb.conf
+    mode: 0644
+  notify: restart jitsi-videobridge
+
 - name: Setup jitsi main server firewall for ipv6
   ufw:
     rule: allow
@@ -65,6 +72,7 @@
   vars:
     ansible_user: root
   delegate_to: "{{ jitsi_meet_server_name }}"
+
 - name: Setup jitsi main server firewall for ipv4
   ufw:
     rule: allow

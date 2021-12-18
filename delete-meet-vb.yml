@@ -16,8 +16,21 @@
 
     - name: Pause
       pause:
-        seconds: 60
+        seconds: 30
       when: delete_start_meet_vb |default('yes') and vb_start.changed
+
+    - name: Perfom graceful shutdown
+      uri:
+        url: "http://127.0.0.1:8080/colibri/shutdown"
+        method: POST
+        body: '{ "graceful-shutdown": "true" }'
+        body_format: json
+      ignore_errors: yes
+      ignore_unreachable: yes
+
+    - name: Pause
+      pause:
+        seconds: 20
 
     - name: "stop videobride"
       systemd:
