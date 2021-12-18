@@ -158,6 +158,8 @@ asterisk_rooms:
     name: KV_WF
   2026:
     name: KV_CE
+  2027:
+    name: KV_DEL
   2031:
     name: OG_Velbert_Vorstand
   3001:
