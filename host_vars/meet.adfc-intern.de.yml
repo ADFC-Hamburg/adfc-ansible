@@ -19,7 +19,7 @@ firewall:
     port: 443
     proto: tcp
   - name: Jitsi-Videobridge TCP
-    port: 4443
+    port: 9090
     proto: tcp
   - name: Jitsi-Videobridge UDP
     port: 10000
