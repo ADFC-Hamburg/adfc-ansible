@@ -60,7 +60,11 @@ exten => caller_handler,1,NoOp(Set Header Jitsi-Conference-Room: ${ARG1} -Pass: 
 same => n,GotoIf($[${LEN(${ARG1})} == 0]? 5)
 same => n,Set(PJSIP_HEADER(add,Jitsi-Conference-Room)=${ARG1})
 same => n,Set(PJSIP_HEADER(add,X-Room-Name)=${ARG1})
+; neu 2021-12-11:
+same => n,Set(PJSIP_HEADER(add,JvbRoomName)=${ARG1})
 same => 5,GotoIf($[${LEN(${ARG2})} != 0]? 10)
 same => n,Return()
 same => 10,Set(PJSIP_HEADER(add,Jitsi-Conference-Room-Pass)=${ARG2})
+; neu 2021-12-11:
+same => 10,Set(PJSIP_HEADER(add,JvbRoomPassword)=${ARG2})
 same => n,Return()

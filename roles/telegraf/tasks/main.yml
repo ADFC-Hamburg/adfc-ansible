@@ -2,10 +2,17 @@
   apt_key:
     url: https://repos.influxdata.com/influxdb.key
     state: present
+  when: ansible_distribution_release != 'bullseye'
+
+- name: Import Influxdb GPG siging key
+  get_url:
+    url: "https://repos.influxdata.com/influxdb.key"
+    dest: /etc/apt/trusted.gpg.d/influxdb.asc
+  when: ansible_distribution_release == 'bullseye'
 
 - name: Add InfluxDB repository
   apt_repository:
-    repo: 'deb https://repos.influxdata.com/debian buster stable'
+    repo: 'deb https://repos.influxdata.com/debian {{ ansible_distribution_release }} stable'
     state: present
 
 - name: Install Telegraf packages

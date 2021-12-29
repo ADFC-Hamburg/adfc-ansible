@@ -1,4 +1,4 @@
-hcloud_image: debian-10
+hcloud_image: debian-11
 # cx11 kleinster Server mit einer CPU für Tests
 # ccx31 8 Dedicierte VCPUs 32 GB RAM
 # ccx41 16 Dedicierte VCPUs 64 GB RAM

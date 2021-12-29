@@ -67,7 +67,7 @@ jitsi_meet_stun_servers:
 #jitsi_meet_jigasi_jicofo_sip_template: jicofo_sip-communicator.properties.j2
 #jitsi_meet_jigasi_videobridge_sip_template: videobridge_sip-communicator.properties.j2
 jitsi_meet_enable_third_party_requests: false
-jitsi_meet_videobridge_opts: "--apis=rest"
+jitsi_meet_videobridge_opts: ""
 jitsi_meet_firewall_ports_allow:
   tcp:
     - "22"
@@ -80,7 +80,7 @@ jitsi_meet_videobridge_statistics_interval: 1000
 jitsi_meet_videobridge_statistics_transport:  "muc"
 
 # Performance Optimierungen, siehe: https://www.kuketz-blog.de/jitsi-meet-optimierung-der-performance/
-jitsi_meet_channel_last_n: 3
+jitsi_meet_channel_last_n: 5
 jitsi_meet_enable_layer_suspension: true
 jitsi_meet_start_audio_only: false
 jitsi_meet_show_audio_levels: false
@@ -110,9 +110,12 @@ jitsi_meet_interface_config_js_template: "adfc_jitsi_meet_interface_config.js.j2
 jitsi_meet_jicofo_config_template: adfc_jicofo_config.j2
 jitsi_meet_jicofo_sip_template: adfc_jicofo_sip-communicator.properties.j2
 jitsi_meet_config_js_template: adfc_jitsi_meet_config.js.j2
+jitsi_meet_videobridge_jvb_config: adfc_jitsi_jvb.conf.j2
+
 # Statistics
 influxdb_host: "proxmox01.adfc-intern.de"
 influx_admin_password_file: /etc/influx.secrect
 
 telegraf_jitsi: yes
 telegraf_net: yes
+

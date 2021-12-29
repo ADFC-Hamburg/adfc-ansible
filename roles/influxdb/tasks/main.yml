@@ -79,6 +79,7 @@
     src: '{{ item }}'
     port: "8086"
     proto: tcp
+  when: item != "NXDOMAIN"
   with_items:
     "{{ firewall_in }}"
 
@@ -88,5 +89,6 @@
     src: '{{ item }}'
     port: "8089"
     proto: udp
+  when: item != "NXDOMAIN"
   with_items:
     "{{ firewall_in }}"
