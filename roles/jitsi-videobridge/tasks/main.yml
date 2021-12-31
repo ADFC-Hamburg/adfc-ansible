@@ -83,3 +83,6 @@
   vars:
     ansible_user: root
   delegate_to: "{{ jitsi_meet_server_name }}"
+
+- name: Restart anything if needed
+  meta: flush_handlers
