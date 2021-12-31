@@ -17,7 +17,7 @@
     - name: Pause
       pause:
         seconds: 30
-      when: delete_start_meet_vb |default('yes') and vb_start.changed
+      when: delete_start_meet_vb |default('yes') and vb_start.changed # noqa 503
 
     - name: Perfom graceful shutdown
       uri:
