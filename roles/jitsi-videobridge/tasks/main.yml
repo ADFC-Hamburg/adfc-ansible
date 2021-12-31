@@ -28,6 +28,7 @@
 - name: Install Debian Pakackage
   apt:
     name:
+      - openjdk-11-jre-headless
       - jitsi-videobridge2
 
 - name: get password
