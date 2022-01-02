@@ -3,9 +3,10 @@
   tasks:
     - name: Decrement CPU Limit of meet
       command: pct set 101 -cores 10 -cpulimit 10 -cpuunits 20000
+      changed_when: true
 
     - name: Start VB on Proxmomox
-      systemctl:
+      systemd:
         name: jitsi-videobridge2
         state: started
         enabled: true
@@ -16,7 +17,7 @@
         seconds: 50
 
     - name: Stop VB on Proxmomox
-      systemctl:
+      systemd:
         name: jitsi-videobridge2
         state: stopped
         enabled: false
