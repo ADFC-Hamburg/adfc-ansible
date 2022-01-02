@@ -107,7 +107,14 @@ PARTICIPANTS=$(safe_query_participants meet)
 CONFERENCES=$(safe_query_conferences meet)
 if [ $PARTICIPANTS -ge 1 ] ; then
     echo meet P: ${PARTICIPANTS} C: ${CONFERENCES}
+else
+    PARTICIPANTS=$(safe_query_participants proxmox01)
+    CONFERENCES=$(safe_query_conferences proxmox01)
+    if [ $PARTICIPANTS -ge 1 ] ; then
+        echo proxmox01 P: ${PARTICIPANTS} C: ${CONFERENCES}
+    fi
 fi
+
 {% for videobridge in videobridges %}
 PARTICIPANTS_VB=$(safe_query_participants {{ videobridge |regex_replace('\..*','') }})
 CONFERENCES_VB=$(safe_query_conferences {{ videobridge |regex_replace('\..*','') }})
