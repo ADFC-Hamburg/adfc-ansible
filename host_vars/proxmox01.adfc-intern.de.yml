@@ -25,6 +25,18 @@ firewall:
   - name: Influxdb
     port: 8086
     proto: tcp
+  - name: Jitsi-VB
+    port: 10000
+    proto: udp
+  - name: Jitsi-VB
+    port: 9090
+    proto: tcp
+  - name: Octo Bind Port
+    proto: udp
+    port: 4096
+  - name: Jitsi-VB-Was-ist-das
+    proto: udp
+    port: 5000
 firewall_test: no
 
 influxdb_host: proxmox01.adfc-intern.de
