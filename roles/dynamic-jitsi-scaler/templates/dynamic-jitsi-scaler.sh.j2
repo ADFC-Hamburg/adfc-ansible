@@ -3,7 +3,7 @@
 # This Script is called by cron every minute
 {% set videobridges = [] %}
 {% for myhost in groups['all'] %}
-{% if myhost != 'meet.adfc-intern.de' and 'jitsi_meet_server_name' in hostvars[myhost] %}
+{% if myhost != 'meet.adfc-intern.de' and myhost != 'proxmox01.adfc-intern.de' and 'jitsi_meet_server_name' in hostvars[myhost] %}
 {% if hostvars[myhost].jitsi_meet_server_name  == "meet.adfc-intern.de" %}
 {{ videobridges.append(myhost) }}
 {% endif %}

@@ -1,0 +1,22 @@
+- hosts: proxmox01.adfc-intern.de
+  gather_facts: yes
+  tasks:
+    - name: Decrement CPU Limit of meet
+      command: pct set 101 -cores 10 -cpulimit 10 -cpuunits 20000
+
+    - name: Start VB on Proxmomox
+      systemctl:
+        name: jitsi-videobridge2
+        state: started
+        enabled: true
+      delegate_to: "{{ jitsi_meet_server_name }}"
+
+    - name: Wait
+      pause:
+        seconds: 50
+
+    - name: Stop VB on Proxmomox
+      systemctl:
+        name: jitsi-videobridge2
+        state: stopped
+        enabled: false
