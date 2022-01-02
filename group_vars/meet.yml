@@ -9,6 +9,7 @@ ssh_users_admins:
   - georgs
   - janb
   - ansgarh
+  - annal
 
 ucs_master: int-master.adfc-intern.de
 ucs_network: "cn=default,cn=networks,dc=adfc-intern,dc=de"

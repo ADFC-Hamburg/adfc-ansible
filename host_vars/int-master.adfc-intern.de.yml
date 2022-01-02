@@ -75,6 +75,7 @@ ssh_users_admins:
   - georgs
   - janb
   - ansgarh
+  - annal
 
 firewall:
   - name: Apache https
