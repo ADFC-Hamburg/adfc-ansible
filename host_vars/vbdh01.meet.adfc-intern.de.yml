@@ -61,5 +61,5 @@ dynamic_jitsi_scaler_turn_on:
 
 
 dynamic_jitsi_scaler_turn_off:
-  participants: 9
+  participants: 4
   conferences: 1

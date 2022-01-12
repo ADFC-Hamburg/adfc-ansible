@@ -18,7 +18,6 @@ all:
                 test.adfc-intern.de:
                 test1.dyndns.adfc-intern.de:
                 test2.dyndns.adfc-intern.de:
-                event.dyndns.adfc-intern.de:
             jitsi_vbs:
               children:
                 meet_vb:
@@ -27,6 +26,7 @@ all:
                     vbdh02.meet.adfc-intern.de:
                     vbdh03.meet.adfc-intern.de:
                     vbdh04.meet.adfc-intern.de:
+                    proxmox01.adfc-intern.de:
                 event_vb:
                   hosts:
                     vbedh01.dyndns.adfc-intern.de:
@@ -44,6 +44,7 @@ all:
                 vbdh02.meet.adfc-intern.de:
                 vbdh03.meet.adfc-intern.de:
                 vbdh04.meet.adfc-intern.de:
+                proxmox01.adfc-intern.de:
     arbeitsplatz:
       hosts:
         adfc-testclient.gst.hamburg.adfc.de:

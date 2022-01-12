@@ -12,8 +12,6 @@
   roles:
     - ssh-keys
     - update-os
-    - restore-hcloud-letsenrypt
-    - geerlingguy.certbot
     - jitsi-videobridge
     - telegraf
     - meet_after_vb
