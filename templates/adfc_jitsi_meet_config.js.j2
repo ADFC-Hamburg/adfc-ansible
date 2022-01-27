@@ -195,10 +195,27 @@ var config = {
     desktopSharingFirefoxDisabled: {{ (not jitsi_meet_enable_desktop_sharing_firefox) | bool | lower }},
 
     // Optional desktop sharing frame rate options. Default value: min:5, max:5.
-    // desktopSharingFrameRate: {
-    //     min: 5,
-    //     max: 5
-    // },
+    desktopSharingFrameRate: {
+         min: 15,
+         max: 30
+    },
+
+
+    videoQuality: {
+        preferredCodec: "VP9",
+	maxBitratesVideo: {
+          VP8: {
+            low: 200000,
+            standard: 500000,
+            high: 1500000
+          },
+          VP9: {
+            low: 100000,
+            standard: 300000,
+            high: 1200000
+          }
+        },
+    },
 
     // Try to start calls with screen-sharing instead of camera video.
     // startScreenSharing: false,
