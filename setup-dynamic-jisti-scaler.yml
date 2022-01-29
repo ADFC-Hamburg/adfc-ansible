@@ -2,4 +2,5 @@
   roles:
     - dynamic-jitsi-scaler
   vars:
-    dynamic_jitis_run_test: yes
+    dynamic_jitsi_run_test: no
+    dynamic_jtisi_participant_scale: no

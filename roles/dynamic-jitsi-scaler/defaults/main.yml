@@ -1,3 +1,5 @@
+dynamic_jtisi_participant_scale: true
+
 dynamic_jitsi_scaler_testcases:
   - name: Leave on vbdh01
     participants:

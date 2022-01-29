@@ -37,7 +37,7 @@
     src: "dynamic-jitsi-scaler-lib-test.sh"
     dest: "/usr/local/bin/dynamic-jitsi-scaler-lib-test.sh"
     mode: 0644
-  when: dynamic_jitis_run_test | default(False)
+  when: dynamic_jitsi_run_test | default(False)
 
 - name: dynamic-jitsi-scaler | install script test
   template:
@@ -47,7 +47,7 @@
   vars:
     dynamic_lib: "/usr/local/bin/dynamic-jitsi-scaler-lib-test.sh"
     dynamic_admin_mail: "{{ test_admin_mail }}"
-  when: dynamic_jitis_run_test | default(False)
+  when: dynamic_jitsi_run_test | default(False)
 
 - name: dynamic-jitsi-sclaer | clean test reult
   include_tasks: "clean_test.yml"
@@ -57,7 +57,7 @@
   loop: "{{ dynamic_jitsi_scaler_testcases }}"
   loop_control:
     loop_var: "testcase"
-  when: dynamic_jitis_run_test | default(False)
+  when: dynamic_jitsi_run_test | default(False)
 
 - name:  dynamic-jitsi-scaler |install script
   template:

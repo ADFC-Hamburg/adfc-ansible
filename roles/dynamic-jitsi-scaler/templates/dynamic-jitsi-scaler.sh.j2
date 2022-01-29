@@ -152,9 +152,13 @@ fi
 {% endif %}
 HETZNER_JSON=$(query_hetzner_server |jq -r '.[] | select(.name == "{{ videobridge }}")')
 if [ "${HETZNER_JSON}" = "" ] ; then
+{% if (dynamic_jtisi_participant_scale | bool) %}
     if [ $PARTICIPANTS -ge {{ turn_on_part }} -a $CONFERENCES -ge {{ turn_on_conf }} ] ; then
         turn_server_on {{ videobridge }}
     elif [ $FORCE_ON = "1" ] ; then
+{% else %}
+    if [ $FORCE_ON = "1" ] ; then
+{% endif %}
         echo FORCE_ON
         turn_server_on {{ videobridge }}
     fi
@@ -165,6 +169,7 @@ else
     NOW_SEC=$(date +%s)
     MINUTE_MODULO=$(( ((NOW_SEC - CREATED_SEC) % 3600) / 60))
     echo {{ videobridge}} CRE $CREATED CRE_SEC $CREATED_SEC  NOW $(date +%s)  Minute Modulo: $MINUTE_MODULO
+{% if (dynamic_jtisi_participant_scale | bool) %}
     if [ $PARTICIPANTS -le {{ turn_off_part  }} -a $CONFERENCES -le {{ turn_off_conf }} -a $MINUTE_MODULO -ge $MINUTE_MODULO_LIMIT ] ; then
         if [ $FORCE_ON = "1" ] ; then
             echo FORCE_ON=1 - Not turned off
@@ -172,6 +177,13 @@ else
             turn_server_off {{ videobridge }}
         fi
     fi
+{% else %}
+  if [ $FORCE_ON = "1" ] ; then
+            echo FORCE_ON=1 - Not turned off
+        else
+            turn_server_off {{ videobridge }}
+  fi
+{% endif %}
 fi
 {% endfor %}
 

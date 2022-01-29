@@ -24,7 +24,7 @@ dynamic_jitsi_scaler_turn_on:
         min: 30
       to:
         weekday: 1
-        hour: 19
+        hour: 22
         min: 20
     - from:
         weekday: 2
@@ -32,7 +32,7 @@ dynamic_jitsi_scaler_turn_on:
         min: 30
       to:
         weekday: 2
-        hour: 19
+        hour: 22
         min: 20
     - from:
         weekday: 3
@@ -40,7 +40,7 @@ dynamic_jitsi_scaler_turn_on:
         min: 30
       to:
         weekday: 3
-        hour: 19
+        hour: 22
         min: 20
     - from:
         weekday: 4
@@ -48,7 +48,7 @@ dynamic_jitsi_scaler_turn_on:
         min: 30
       to:
         weekday: 4
-        hour: 19
+        hour: 22
         min: 20
     - from:
         weekday: 5
@@ -56,7 +56,7 @@ dynamic_jitsi_scaler_turn_on:
         min: 30
       to:
         weekday: 5
-        hour: 19
+        hour: 22
         min: 20
 
 
