@@ -18,6 +18,7 @@
   - slack
   - links-on-desktop
   - client-apt-remove
+  - master-pdf-editor
   - gdm_desktoptheme
   handlers:
   - name: XnViewMP manuell installieren

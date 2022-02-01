@@ -13,6 +13,15 @@
     dest: /tmp/dyn_jitsi_query_participants-vbdh02.txt
     content: "{{ testcase.participants.vbdh02 }}"
 
+- name: "dynamic-jitsi-sclaer |  test {{ testcase.name }} | set vbh participants"
+  copy:
+    dest: /tmp/dyn_jitsi_query_participants-vbdh03.txt
+    content: "{{ testcase.participants.vbdh03 }}"
+
+- name: "dynamic-jitsi-sclaer |  test {{ testcase.name }} | set vbh participants"
+  copy:
+    dest: /tmp/dyn_jitsi_query_participants-vbdh04.txt
+    content: "{{ testcase.participants.vbdh04 }}"
 
 - name: "dynamic-jitsi-sclaer |  test {{ testcase.name }} | set meet conferences"
   copy:
@@ -28,6 +37,16 @@
   copy:
     dest: /tmp/dyn_jitsi_query_conferences-vbdh02.txt
     content: "{{ testcase.conferences.vbdh02 }}"
+
+- name: "dynamic-jitsi-sclaer |  test {{ testcase.name }} | set vbh participants"
+  copy:
+    dest: /tmp/dyn_jitsi_query_conferences-vbdh03.txt
+    content: "{{ testcase.conferences.vbdh03 }}"
+
+- name: "dynamic-jitsi-sclaer |  test {{ testcase.name }} | set vbh participants"
+  copy:
+    dest: /tmp/dyn_jitsi_query_conferences-vbdh04.txt
+    content: "{{ testcase.conferences.vbdh04 }}"
 
 - name: "dynamic-jitsi-sclaer |  test {{ testcase.name }} | set hetzner result"
   copy:

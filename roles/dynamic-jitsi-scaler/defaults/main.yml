@@ -4,10 +4,14 @@ dynamic_jitsi_scaler_testcases:
       meet: 10
       vbdh01: 8
       vbdh02: null
+      vbdh03: null
+      vbdh04: null
     conferences:
       meet: 1
       vbdh01: 1
       vbdh02: null
+      vbdh03: null
+      vbdh04: null
     hcloud_api: |
       [ {
         "id": 42,
@@ -22,32 +26,48 @@ dynamic_jitsi_scaler_testcases:
       playbook_delete_vbdh01: false
       playbook_setup_vbdh02: false
       playbook_delete_vbdh02: false
+      playbook_setup_vbdh03: false
+      playbook_delete_vbdh03: false
+      playbook_setup_vbdh04: false
+      playbook_delete_vbdh04: false
 
   - name: Leave off
     participants:
       meet: 4
       vbdh01: null
       vbdh02: null
+      vbdh03: null
+      vbdh04: null
     conferences:
       meet: 1
       vbdh01: null
       vbdh02: null
+      vbdh03: null
+      vbdh04: null
     hcloud_api: []
     result:
       playbook_setup_vbdh01: false
       playbook_delete_vbdh01: false
       playbook_setup_vbdh02: false
       playbook_delete_vbdh02: false
+      playbook_setup_vbdh03: false
+      playbook_delete_vbdh03: false
+      playbook_setup_vbdh04: false
+      playbook_delete_vbdh04: false
 
   - name: Modulo Test
     participants:
       meet: 2
       vbdh01: 2
       vbdh02: null
+      vbdh03: null
+      vbdh04: null
     conferences:
       meet: 1
       vbdh01: 1
       vbdh02: null
+      vbdh03: null
+      vbdh04: null
     hcloud_api: |
       [ {
         "id": 42,
@@ -62,32 +82,48 @@ dynamic_jitsi_scaler_testcases:
       playbook_delete_vbdh01: false
       playbook_setup_vbdh02: false
       playbook_delete_vbdh02: false
+      playbook_setup_vbdh03: false
+      playbook_delete_vbdh03: false
+      playbook_setup_vbdh04: false
+      playbook_delete_vbdh04: false
 
   - name: Switch on
     participants:
       meet: 16
       vbdh01: null
       vbdh02: null
+      vbdh03: null
+      vbdh04: null
     conferences:
       meet: 3
       vbdh01: null
       vbdh02: null
+      vbdh03: null
+      vbdh04: null
     hcloud_api: []
     result:
       playbook_setup_vbdh01: true
       playbook_delete_vbdh01: false
       playbook_setup_vbdh02: false
       playbook_delete_vbdh02: false
+      playbook_setup_vbdh03: false
+      playbook_delete_vbdh03: false
+      playbook_setup_vbdh04: false
+      playbook_delete_vbdh04: false
 
   - name: Switch off
     participants:
       meet: 2
       vbdh01: 0
       vbdh02: null
+      vbdh03: null
+      vbdh04: null
     conferences:
       meet: 1
       vbdh01: 0
       vbdh02: null
+      vbdh03: null
+      vbdh04: null
     hcloud_api: |
       [ {
         "id": 42,
@@ -102,3 +138,7 @@ dynamic_jitsi_scaler_testcases:
       playbook_delete_vbdh01: true
       playbook_setup_vbdh02: false
       playbook_delete_vbdh02: false
+      playbook_setup_vbdh03: false
+      playbook_delete_vbdh03: false
+      playbook_setup_vbdh04: false
+      playbook_delete_vbdh04: false

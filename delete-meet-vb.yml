@@ -1,8 +1,6 @@
 - name: Remove Videobridge
   hosts: jitsi_vbs
   gather_facts: no
-  roles:
-    - backup-hcloud-letsencrypt
   tasks:
     - name: make sure videobride on meet is running
       systemd:
@@ -16,7 +14,7 @@
 
     - name: Pause
       pause:
-        seconds: 30
+        seconds: 20
       when: delete_start_meet_vb |default('yes') and vb_start.changed # noqa 503
 
     - name: Perfom graceful shutdown
@@ -30,7 +28,7 @@
 
     - name: Pause
       pause:
-        seconds: 20
+        seconds: 60
 
     - name: "stop videobride"
       systemd:
