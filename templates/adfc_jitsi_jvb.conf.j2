@@ -59,8 +59,8 @@ videobridge {
 {% endif %}
 
     websockets {
-        enabled = false
-        domain = "{{ jitsi_meet_server_name }}:443"
+        enabled = true
+        domain = "{{ inventory_hostname }}:443"
         tls = true
     }
   # The minimum amount of time to stay in graceful-shutdown mode before terminating.
