@@ -111,7 +111,14 @@ server {
         proxy_set_header Host $http_host;
         tcp_nodelay on;
     }
-
+    # colibri (JVB) websockets for jvb1
+    location ~ ^/colibri-ws/default-id/(.*) {
+        proxy_pass http://127.0.0.1:9090/colibri-ws/default-id/$1$is_args$args;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        tcp_nodelay on;
+    }
 {% if(jitsi_meet_expose_colibri_stats) %}
     # Colibri REST
     location = /colibri/stats {
