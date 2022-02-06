@@ -2,11 +2,15 @@
 # ansible-galaxy install -r requirements.yml
 
 # from galaxy
-- src: jnv.unattended-upgrades
-  version: v1.8.0
-- src: geerlingguy.certbot
-  version: 3.0.3
-- src: udelarinterior.jitsi_meet
-  version: v4.1.0
-- src: nginxinc.nginx
-  version: 0.14.0
+roles:
+ - src: jnv.unattended-upgrades
+   version: v1.8.0
+ - src: geerlingguy.certbot
+   version: 3.0.3
+ - src: udelarinterior.jitsi_meet
+   version: v4.1.0
+ - src: nginxinc.nginx
+   version: 0.14.0
+collections:
+ - name: community.crypto
+   version: 2.2.1
