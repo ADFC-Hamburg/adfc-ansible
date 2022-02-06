@@ -4,7 +4,7 @@ VENDOR=univention
 IMAGE=ucs-generic-amd64
 VERSION=4.4-4
 CONTAINER_NAME=dockertest
-PASSWORD=geheim
+#PASSWORD=geheim
 NAMESERVER=8.8.8.8
 
 TEMPDIR=$(mktemp -d)
@@ -26,11 +26,11 @@ TEMPDIR=$(mktemp -d)
 #docker exec -it ${CONTAINER_NAME} univention-system-setup-boot start
 #docker stop ${CONTAINER_NAME}
 docker create --name ${CONTAINER_NAME} ${VENDOR}/${IMAGE}:${VERSION}
-docker export -o ${TEMPDIR}/image.tar ${CONTAINER_NAME}
+docker export -o "${TEMPDIR}/image.tar" "${CONTAINER_NAME}"
 docker rm ${CONTAINER_NAME}
 mkdir "${TEMPDIR}/rootfs"
 tar xf "${TEMPDIR}/image.tar" -C "${TEMPDIR}/rootfs"
-cat <<EOF >${TEMPDIR}/rootfs/config
+cat <<EOF >"${TEMPDIR}/rootfs/config"
 xc.network.type = veth
 lxc.network.hwaddr = 00:16:3e:27:42:b0
 lxc.network.link = br0

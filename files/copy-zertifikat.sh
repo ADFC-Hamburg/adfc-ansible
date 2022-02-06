@@ -1,12 +1,14 @@
 #!/bin/bash
 Z_AKTION=$1
+# Das Skript wird von Univention mit den Paramtern aufgerufen, auch wenn wir diesen nicht benutzen, deshalb:
+# shellcheck disable=SC2034
 Z_DN=$2
 Z_UID=$3
 Z_CERTPATH=$4
 FROMMAIL=it-support@hamburg.adfc.de
 PW_FILE="${Z_CERTPATH}/${Z_UID}/${Z_UID}-p12-password.txt"
 function copy_zert {
-    EMAIL=$(univention-ldapsearch -LLL uid=$Z_UID mailPrimaryAddress |grep mailPrimaryAddress | cut -d ' ' -f 2)
+    EMAIL=$(univention-ldapsearch -LLL "uid=$Z_UID" mailPrimaryAddress |grep mailPrimaryAddress | cut -d ' ' -f 2)
     Z_HOME="/home/${Z_UID}/adfc-zertifikate"
     mkdir -p "$Z_HOME"
     Z_FILE="$Z_HOME/${Z_UID}$(date +%Y%m%d).p12"
@@ -26,7 +28,7 @@ und muss von dir auf einem sicheren Weg (möglichst per USB Stick) zu dir nach H
 
 Das Passwort für das Zertifikat lautet:
 
-$(cat $PW_FILE)
+$(cat "$PW_FILE")
 
 Eine Anleitung zum Einspielen findet sich unter
 
