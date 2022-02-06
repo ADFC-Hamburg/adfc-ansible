@@ -1,7 +1,7 @@
 - name: shutdown
   community.general.shutdown:
   when: "hcloud_server_info.hcloud_server_info[0].status | default('unknown') != 'off'"
-  ignore_errors: yes
+  failed_when: false
   ignore_unreachable: yes
 
 - name: wait for shutdown
@@ -13,7 +13,7 @@
   when: "hcloud_server_info.hcloud_server_info[0].status != 'off'"
   retries: 8
   delay: 20
-  ignore_errors: yes
+  failed_when: false
   delegate_to: localhost
 
 - name: Stop Server hard if it is not down

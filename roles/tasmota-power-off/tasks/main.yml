@@ -53,11 +53,7 @@
       or wakeonlan_result is not failed
 
 - name: 05_Ausschalten
-  command: shutdown -h now
-  async: 1
-  poll: 0
-  ignore_errors: true
-  changed_when: false
+  community.general.shutdown:
   when:
     - connect_result is not failed
       or wakeonlan_result is not failed

@@ -46,11 +46,11 @@
 - name: read UCS CA Cert
   slurp:
     path: "/etc/univention/ssl/ucsCA/CAcert.pem"
-  register: ucs_CA
+  register: ucs_ca
   delegate_to: "{{ ucs_master }}"
 
 - name: Create UCS CA Cert
   copy:
-    content: "{{ ucs_CA.content | b64decode }}"
+    content: "{{ ucs_ca.content | b64decode }}"
     dest: "/etc/ssl/ucsCAcert.pem"
     mode: "0644"

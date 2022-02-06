@@ -7,5 +7,4 @@ skip_list:
   - no-changed-when
   - risky-file-permissions
   - role-name
-  - var-naming
 offline: true

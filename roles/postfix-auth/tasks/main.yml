@@ -31,11 +31,11 @@
   slurp:
     src: /etc/ansible/secrets/smtp_client_auth
   delegate_to: ucs-master.gst.hamburg.adfc.de
-  register: SMTP_AUTH
+  register: smtp_auth
 
 - name: create SMTP client Auth
   copy:
-    content: "{{ SMTP_AUTH.content |b64decode }}"
+    content: "{{ smtp_auth.content |b64decode }}"
     dest: /etc/postfix/smtp_auth
     mode: 0600
     owner: root
@@ -46,11 +46,11 @@
   slurp:
     src: /etc/ansible/secrets/mailingliste.txt
   delegate_to: ucs-master.gst.hamburg.adfc.de
-  register: MAILINGLISTE
+  register: mailingliste
 
 - name: Make sure mail for root is redirected
   lineinfile:
     path: /etc/aliases
     regexp: '^root:'
-    line: "root: {{ MAILINGLISTE.content |b64decode  |replace('\n', '') }}"
+    line: "root: {{ mailingliste.content |b64decode  |replace('\n', '') }}"
   notify: Postfix newaliases
