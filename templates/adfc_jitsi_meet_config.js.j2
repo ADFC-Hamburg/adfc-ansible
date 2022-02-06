@@ -200,6 +200,22 @@ var config = {
          max: 30
     },
 
+    videoQuality: {
+        preferredCodec: "VP9",
+	maxBitratesVideo: {
+          VP8: {
+            low: 200000,
+            standard: 500000,
+            high: 1500000
+          },
+          VP9: {
+            low: 100000,
+            standard: 300000,
+            high: 1200000
+          }
+        },
+    },
+
     // Try to start calls with screen-sharing instead of camera video.
     // startScreenSharing: false,
 

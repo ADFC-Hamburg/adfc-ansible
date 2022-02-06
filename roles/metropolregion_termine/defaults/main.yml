@@ -1,5 +1,5 @@
 metropolregion_termine_git_repo: "https://github.com/michaelu123/adfc2"
-metropolregion_termine_git_version: "cc33557fda3b719f2cbd64d94a97b3f7c44f9c78"
+metropolregion_termine_git_version: "d0bb7de6f9ef4287900201f8482261d0f6ea45a4"
 metropolregion_termine_www_dest_dir: /var/www/html/metropolregion_termine
 metropolregion_termine_packages:
     - python3-caldav
