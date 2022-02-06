@@ -50,7 +50,6 @@
       notify: ucr commit postifx main.cf
       tags: postfix
 
-
     - name: Copy copy-zertifikat.sh
       copy:
         src: copy-zertifikat.sh
