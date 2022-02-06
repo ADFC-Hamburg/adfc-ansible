@@ -4,8 +4,8 @@ exclude_paths:
   - ~/.ansible/roles/jnv.unattended-upgrades
 skip_list:
   - meta-no-info
-  - no-changed-whem
+  - no-changed-when
   - risky-file-permissions
-  - role-anme
-  - var-name
+  - role-name
+  - var-nameing
 offline: true
