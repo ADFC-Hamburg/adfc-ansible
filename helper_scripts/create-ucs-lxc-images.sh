@@ -28,8 +28,8 @@ TEMPDIR=$(mktemp -d)
 docker create --name ${CONTAINER_NAME} ${VENDOR}/${IMAGE}:${VERSION}
 docker export -o ${TEMPDIR}/image.tar ${CONTAINER_NAME}
 docker rm ${CONTAINER_NAME}
-mkdir ${TEMPDIR}/rootfs
-tar xf ${TEMPDIR}/image.tar -C ${TEMPDIR}/rootfs
+mkdir "${TEMPDIR}/rootfs"
+tar xf "${TEMPDIR}/image.tar" -C "${TEMPDIR}/rootfs"
 cat <<EOF >${TEMPDIR}/rootfs/config
 xc.network.type = veth
 lxc.network.hwaddr = 00:16:3e:27:42:b0
@@ -66,6 +66,6 @@ lxc.environment = nameserver1=${NAMESERVER}
 lxc.environment = rootpwd=univention
 lxc.environment = appcenter/docker=false
 EOF
-echo tar cfz ${IMAGE}-${VERSION}.tar -C ${TEMPDIR}/rootfs .
-tar cfz ${IMAGE}-${VERSION}.tar -C ${TEMPDIR}/rootfs .
+echo "tar cfz ${IMAGE}-${VERSION}.tar -C ${TEMPDIR}/rootfs ."
+tar cfz "${IMAGE}-${VERSION}.tar" -C "${TEMPDIR}/rootfs" .
 #rm -rf ${TEMPDIR}

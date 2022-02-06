@@ -8,11 +8,11 @@ PW_FILE="${Z_CERTPATH}/${Z_UID}/${Z_UID}-p12-password.txt"
 function copy_zert {
     EMAIL=$(univention-ldapsearch -LLL uid=$Z_UID mailPrimaryAddress |grep mailPrimaryAddress | cut -d ' ' -f 2)
     Z_HOME="/home/${Z_UID}/adfc-zertifikate"
-    mkdir -p $Z_HOME
+    mkdir -p "$Z_HOME"
     Z_FILE="$Z_HOME/${Z_UID}$(date +%Y%m%d).p12"
-    cp "${Z_CERTPATH}/${Z_UID}/${Z_UID}.p12"  $Z_FILE
+    cp "${Z_CERTPATH}/${Z_UID}/${Z_UID}.p12" "$Z_FILE"
     chown -R "${Z_UID}" "${Z_HOME}"
-    mailx -r "${FROMMAIL}" -s "Neues Zertikat" $EMAIL <<EOF
+    mailx -r "${FROMMAIL}" -s "Neues Zertikat" "$EMAIL" <<EOF
 
 AUTOMATISCH ERZEUGTE E-MAIL
 
