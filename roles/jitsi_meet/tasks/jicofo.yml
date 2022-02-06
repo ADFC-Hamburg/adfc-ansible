@@ -9,6 +9,15 @@
     mode: "0644"
   notify: restart jicofo
 
+- name: Copy Jicofo config file.
+  template:
+    dest: /etc/jitsi/jicofo/jicofo.conf
+    src: "{{ jitsi_meet_jicofo_jicofo_template }}"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: restart jicofo
+
 - name: Set Jicofo log level.
   lineinfile:
     dest: /etc/jitsi/jicofo/logging.properties
