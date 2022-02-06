@@ -25,6 +25,6 @@ jobs:
     - name: Fetch Roles Ansible-Galaxy
       run: ~/.local/bin/ansible-galaxy install -r requirements.yml
     - name: lint files
-      run: ~/.local/bin/ansible-lint --offline --exclude=/home/runner/.ansible/roles/jnv.unattended-upgrades/  -x '106,208,301,701'
+      run: ~/.local/bin/ansible-lint
     - name: Syntax check
       run: ~/.local/bin/ansible-playbook --syntax-check $(find *.yml \! -name inventory.yml -a \! -name requirements.yml )

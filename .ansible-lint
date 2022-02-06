@@ -1,0 +1,11 @@
+exclude_paths:
+  - .cache/
+  - .github/
+  - ~/.ansible/roles/jnv.unattended-upgrades
+skip_list:
+  - meta-no-info
+  - no-changed-whem
+  - risky-file-permissions
+  - role-anme
+  - var-name
+offline: true
