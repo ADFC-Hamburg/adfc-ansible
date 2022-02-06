@@ -17,13 +17,14 @@
     dest: /tmp/letsencrypt_ansible.tar
     mode: 0644
   when: "'content' in letsencrypt_tar"
+  register: create_tar
 
 - name: "untar letsencrypt.tar"
   unarchive:
     src: /tmp/letsencrypt_ansible.tar
     dest: /etc/letsencrypt/
     remote_src: yes
-  when: "'content' in letsencrypt_tar"
+  when: "'content' in letsencrypt_tar and create_tar.size>0"
 
 - name: "delete tar file"
   file:

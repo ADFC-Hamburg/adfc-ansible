@@ -1,6 +1,8 @@
 - name: Remove Videobridge
   hosts: jitsi_vbs
   gather_facts: no
+  roles:
+    - backup-hcloud-letsencrypt
   tasks:
     - name: make sure videobride on meet is running
       systemd:
