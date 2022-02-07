@@ -64,11 +64,10 @@
 
 - name: Set Dynamic IP
   include_role:
-    name: ucs_dns
+    name: hetzner_dns
   vars:
-    ucs_dns_ips:
-       - "{{ hcloud_ipv4_address }}"
-       - "{{ hcloud_ipv6_address }}"
+    hetzner_dns_ip4: "{{ hcloud_ipv4_address }}"
+    hetzner_dns_ip6: "{{ hcloud_ipv6_address }}"
 
 - name: Debug1
   debug:
