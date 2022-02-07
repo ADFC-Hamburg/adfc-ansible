@@ -14,3 +14,5 @@ roles:
 collections:
  - name: community.crypto
    version: 2.2.1
+ - name: community.dns
+   version: 2.0.6
