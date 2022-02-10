@@ -1,3 +1,0 @@
-{
-  "ignore": ["**/.git/**", "**/library/json_patch.py"]
-}
