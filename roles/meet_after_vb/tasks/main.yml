@@ -4,7 +4,7 @@
 - name: Setup cron vb restart
   ansible.builtin.cron:
     name: "vb-restart"
-    minute: "{{ lookup('pipe','date -d "-9 min" +%M') }}"
+    minute: "{{ lookup('pipe','date -d -9min +%M') }}"
     hour: "21-23"
     user: root
     job: "/usr/bin/systemctl restart jitsi-videobridge2.service"
