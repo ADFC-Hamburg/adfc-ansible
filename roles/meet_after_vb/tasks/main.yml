@@ -1,6 +1,15 @@
 - name: Alles neu starten etc
   meta: flush_handlers
 
+- name: Setup cron vb restart
+  ansible.builtin.cron:
+    name: "vb-restart"
+    minute: "{{ lookup('pipe','date -d -9min +%M') }}"
+    hour: "21-23"
+    user: root
+    job: "/usr/bin/systemctl restart jitsi-videobridge2.service"
+    cron_file: ansible_vb_restart
+
 - name: Wait 10 seconds
   pause:
     seconds: 10
