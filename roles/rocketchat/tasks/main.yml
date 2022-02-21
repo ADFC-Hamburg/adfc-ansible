@@ -17,7 +17,9 @@
     mode: '0755'
 
 - name: Copy rocketchat docker-compose.yml
-  template: src=docker-compose.yml dest=/root/docker-rocket/docker-compose.yml
+  template:
+    src: docker-compose.yml
+    dest: /root/docker-rocket/docker-compose.yml
 
 
 # use files parameter to use multiple docker-compose.yml files
