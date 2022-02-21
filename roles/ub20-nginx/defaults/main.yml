@@ -1,4 +1,3 @@
-php_versions: []
 nginx_client_max_body_size: 20m
 nginx_worker_processes: 1
 nginx_worker_connections: 4096
