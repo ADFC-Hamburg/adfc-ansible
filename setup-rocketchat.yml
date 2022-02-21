@@ -1,0 +1,15 @@
+- hosts: deploymenttest.stakkle.com
+  gather_facts: yes
+  roles:
+#ub20-nginx    - ssh-keys
+#    - postfix-auth
+    - rocketchat
+    - acme
+    - ub20-nginx
+    - rocketchat-nginx
+    - role: acme-create-cert
+      vars:
+        acme_domain: "{{ rocketchat_hostname }}"
+        acme_challenge_path: /home/acme
+        acme_renew_hook: systemctl reload nginx
+    - rocketchat-nginx

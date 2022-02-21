@@ -1,0 +1,87 @@
+- name: Add PHP repo from PPA and install its signing key on Ubuntu target
+  ansible.builtin.apt_repository:
+    repo: ppa:ondrej/nginx
+
+- name: install Nginx
+  apt:
+    name: nginx
+    state: present
+
+- name: Creates apps directory
+  file: path=/etc/nginx/apps state=directory
+
+- name: Creates cache directory
+  file: path=/var/cache/nginx/microcache state=directory owner={{nginx_user}} group={{nginx_group}} mode=0755 recurse=yes
+
+- name: Creates SSL certificate directory
+  file: path=/etc/nginx/ssl state=directory owner={{nginx_user}} group={{nginx_group}} mode=0755 recurse=yes
+
+- name: Creates includes directory
+  file: path=/etc/nginx/examples state=directory  owner={{nginx_user}} group={{nginx_group}} mode=0755 recurse=yes
+
+- name: Create PHP upstream configurations
+  include_tasks: upstreams.yml
+  with_items: "{{ php_versions }}"
+  loop_control:
+    loop_var: phpversion
+
+
+- name: Copy status configuration
+  template: src=status.conf dest=/etc/nginx/sites-available/status.conf
+  notify: restart nginx
+
+- name: Copy nginx default configuration
+  template: src=nginx.conf dest=/etc/nginx/nginx.conf
+  notify: restart nginx
+
+- name: Copy nginx default host configuration
+  template: src=default.conf dest=/etc/nginx/sites-available/default.conf
+  notify: restart nginx
+
+- name: Copy additional config files
+  copy: src=./configs/ dest=/etc/nginx/
+  notify: restart nginx
+
+- name: Copy nginx_modsite
+  copy: src=./nginx_modsite dest=/usr/local/bin/nginx_modsite
+  notify: restart nginx
+
+- name: Change file ownership, group and permissions
+  ansible.builtin.file:
+    path: /usr/local/bin/nginx_modsite
+    mode: '0744'
+
+- stat: path=/etc/nginx/dhparams.pem
+  register: dh_param
+
+- name: Generate DH parameter
+  command: openssl dhparam -out /etc/nginx/dhparams.pem 4096
+  when: dh_param.stat.exists == False
+
+- name: Remove file (delete file)
+  ansible.builtin.file:
+    path: /etc/nginx/sites-available/default
+    state: absent
+
+- name: Remove file (delete file)
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+
+
+- name: create default.conf symlink
+  file:
+    src: /etc/nginx/sites-available/default.conf
+    dest: /etc/nginx/sites-enabled/default.conf
+    state: link
+  notify: restart nginx
+
+- name: create status.conf symlink
+  file:
+    src: /etc/nginx/sites-available/status.conf
+    dest: /etc/nginx/sites-enabled/status.conf
+    state: link
+  notify: restart nginx
+
+- name: Enable Nginx
+  service: name=nginx state=restarted enabled=true

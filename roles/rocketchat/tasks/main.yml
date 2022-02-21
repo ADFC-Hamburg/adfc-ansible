@@ -1,0 +1,28 @@
+---
+# Playbook to configure Postfix on a server to be able to send emails to admins
+
+- name: install docker
+  apt:
+    name:
+      - docker
+      - docker-compose
+    state: present
+
+- name: Create a directory if it does not exist
+  ansible.builtin.file:
+    path: /root/docker-rocket
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Copy rocketchat docker-compose.yml
+  template: src=docker-compose.yml dest=/root/docker-rocket/docker-compose.yml
+
+
+# use files parameter to use multiple docker-compose.yml files
+- name: deploy Docker Compose stack
+  docker_compose:
+    project_src: /root/docker-rocket/
+    files:
+      - docker-compose.yml

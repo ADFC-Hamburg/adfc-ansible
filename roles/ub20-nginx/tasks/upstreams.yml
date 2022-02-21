@@ -1,0 +1,6 @@
+---
+
+- name: Copy fastcgi upstream configuration
+  template: src=upstream_phpcgi_tcp.conf dest=/etc/nginx/conf.d/upstream_phpcgi{{ phpversion | replace('php','') | replace('.','') }}_tcp.conf
+  notify: restart nginx
+

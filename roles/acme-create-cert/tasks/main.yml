@@ -1,0 +1,8 @@
+- stat: path=/root/.acme.sh/{{ acme_domain }}/fullchain.cer
+  register: fullchaincer
+
+- command: "/root/.acme.sh/acme.sh --issue -d {{ acme_domain }} -w {{ acme_challenge_path }} --renew-hook '{{ acme_renew_hook }}' "
+  when: fullchaincer.stat.exists==false
+  args:
+    creates: /root/.acme.sh/{{ acme_domain }}/fullchain.cer
+

@@ -1,0 +1,10 @@
+- stat: path=/root/.acme.sh
+  register: acmedir
+
+- shell: "wget -O -  https://get.acme.sh  | sh -s email=admin@hamburg.adfc.de"
+  when: acmedir.stat.exists==false
+
+- command: "/root/.acme.sh/acme.sh --set-default-ca  --server  letsencrypt"
+
+- command: "/root/.acme.sh/acme.sh --upgrade"
+  when: acmedir.stat.exists==true
