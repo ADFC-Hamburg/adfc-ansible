@@ -3,7 +3,9 @@
   register: fullchaincer
 
 - name: Copy rocketchat configuration
-  template: src=rocketchat.conf dest=/etc/nginx/sites-available/rocketchat.conf
+  template:
+    src: rocketchat.conf
+    dest: /etc/nginx/sites-available/rocketchat.conf
 
 - command: "nginx_modsite -e rocketchat.conf"
   ignore_errors: yes
