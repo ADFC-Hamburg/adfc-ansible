@@ -10,6 +10,7 @@ ssh_users_admins:
   - janb
   - ansgarh
   - annal
+  - joachimb
 
 ucs_master: int-master.adfc-intern.de
 ucs_network: "cn=default,cn=networks,dc=adfc-intern,dc=de"
