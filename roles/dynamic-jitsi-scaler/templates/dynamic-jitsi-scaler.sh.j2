@@ -30,7 +30,7 @@ HCLOUD_CACHE_VALID="20" # in minutes
 CACHE_DIR="/var/cache/dynamic-jitsi-scaler/"
 
 SSH_KEY="/root/.ssh/batch"
-ANSIBLE_REPO="git://github.com/ADFC-Hamburg/adfc-ansible.git"
+ANSIBLE_REPO="https://github.com/ADFC-Hamburg/adfc-ansible.git"
 ANSIBLE_DIR="/usr/local/share/adfc-ansible"
 
 ADMIN_MAIL={{ dynamic_admin_mail }}
@@ -130,6 +130,7 @@ fi
 
 echo SECONDS_SINCE_SUNDAY=$SECONDS_SINCE_SUNDAY
 {% for videobridge in videobridges %}
+{% if  'dynamic_jitsi_scaler_turn_on' in hostvars[videobridge] and 'dynamic_jitsi_scaler_turn_off' in hostvars[videobridge] %}
 {% set turn_on_part = hostvars[videobridge]['dynamic_jitsi_scaler_turn_on']['participants']  %}
 {% set turn_on_conf = hostvars[videobridge]['dynamic_jitsi_scaler_turn_on']['conferences']  %}
 {% set turn_off_part = hostvars[videobridge]['dynamic_jitsi_scaler_turn_off']['participants']  %}
@@ -173,5 +174,8 @@ else
         fi
     fi
 fi
+{% else %}
+# FIXME {{ videobridge }} hat keine dynamic_jitsi_scaler_turn_on oder dynamic_jitsi_scaler_turn_off
+{% endif %}
 {% endfor %}
 

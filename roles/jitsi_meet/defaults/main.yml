@@ -76,6 +76,7 @@ jitsi_meet_base_packages:
   - apt-transport-https
   - debconf
   - debconf-utils
+  - unzip
 
 # Whether to use nightly builds of the Jitsi Meet components.
 jitsi_meet_use_nightly_apt_repo: false
