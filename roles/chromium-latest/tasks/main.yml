@@ -1,0 +1,40 @@
+- name: Create chromium-latest-update sudo file
+  copy:
+    src: update-chromium-latest-sudoers
+    dest: /etc/sudoers.d/ansible-chromium-update-sudoers
+    owner: root
+    group: root
+    validate: '/usr/sbin/visudo -cf %s'
+    mode: 0440
+
+- name: Create chromium-latest-update
+  copy:
+    src: update-chromium-latest
+    dest: /usr/local/bin/update-chromium-latest
+    mode: 0755
+    owner: root
+    group: root
+
+- name: Create chromium-latest
+  copy:
+    src: chromium-latest.sh
+    dest: /usr/local/bin/chromium-latest
+    mode: 0755
+    owner: root
+    group: root
+
+- name: Create chromium-latest.desktop file
+  copy:
+    src: chromium-latest.desktop
+    dest: /usr/local/share/applications/
+    mode: 0755
+    owner: root
+    group: root
+
+- name: Generate chromium dir
+  file:
+    path: /usr/local/chromium
+    mode: 0755
+    owner: root
+    group: root
+    state: directory

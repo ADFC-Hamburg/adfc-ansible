@@ -20,6 +20,7 @@
   - client-apt-remove
   - master-pdf-editor
   - gdm_desktoptheme
+  - chromium-latest
   handlers:
   - name: XnViewMP manuell installieren
     apt:

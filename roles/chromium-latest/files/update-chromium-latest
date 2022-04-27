@@ -1,0 +1,49 @@
+#!/bin/bash
+#  Ansible Managed
+# Idea: https://github.com/scheib/chromium-latest-linux/blob/master/update.sh
+
+# on every error abort
+set -e
+
+WHOAMI=$(whoami)
+
+if [ "${WHOAMI}" != "root" ] ; then
+    sudo /usr/local/bin/update-chromium-latest
+    exit
+fi
+
+cd /usr/local/chromium
+
+LASTCHANGE_URL="https://www.googleapis.com/download/storage/v1/b/chromium-browser-snapshots/o/Linux_x64%2FLAST_CHANGE?alt=media"
+
+REVISION=$(curl -s -S $LASTCHANGE_URL)
+
+echo "latest revision is $REVISION"
+
+touch installed-revision.txt
+INSTALLED_REVISION=$(cat installed-revision.txt)
+
+if [ "${INSTALLED_REVISION}" == "${REVISION}" ] ; then
+  echo "already have latest version"
+  exit
+fi
+
+ZIP_URL="https://www.googleapis.com/download/storage/v1/b/chromium-browser-snapshots/o/Linux_x64%2F$REVISION%2Fchrome-linux.zip?alt=media"
+ZIP_FILE="chrome-linux.zip"
+(
+    /usr/bin/flock -n 99 || exit 99
+    rm -rf unzip
+    mkdir unzip
+    cd unzip
+    echo "fetching $ZIP_URL ${REVISION}"
+    curl -# $ZIP_URL > $ZIP_FILE
+    echo "unzipping.."
+    unzip $ZIP_FILE
+    cd ..
+    echo ${REVISION} > installed-revision.txt
+) 99>/var/lock/chrome-latest-update.lock
+EXIT=$?
+
+if [ "$EXIT" == "99" ] ; then
+    echo another update runs 1>&2
+fi
