@@ -1,0 +1,4 @@
+- hosts: arbeitsplatz
+  gather_facts: false
+  roles:
+  - chromium-latest

@@ -1,3 +1,9 @@
+- name: Install curl und unzip
+  apt:
+    name:
+      - curl
+      - unzip
+
 - name: Create chromium-latest-update sudo file
   copy:
     src: update-chromium-latest-sudoers
