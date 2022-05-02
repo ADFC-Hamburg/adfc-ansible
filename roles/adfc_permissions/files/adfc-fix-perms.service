@@ -1,0 +1,6 @@
+[Unit]
+Description=ADFC Fix Permissions
+
+[Service]
+User=root
+ExecStart=/usr/local/sbin/fix_adfc_perms.sh
