@@ -4,8 +4,8 @@
 
 {% for perm in adfc_perms %}
 ### {{ perm.name }}
-/bin/chgrp -c "{{ perm.group }}"  {{ perm.name }}
-/usr/bin/find {{ perm.name }} -type d \( -not -perm 2770 \) -exec /bin/chmod -c 2770 {} \;
+/bin/chgrp -R -c "{{ perm.group }}"  {{ perm.name }}
+/usr/bin/find {{ perm.name }} -type d \( -not -perm {{ perm.dir_perm |default('2770') }} \) -exec /bin/chmod -c {{ perm.dir_perm |default('2770') }} {} \;
 /usr/bin/find {{ perm.name }} -type f \( -not -perm 0660 \) -exec /bin/chmod -c 0660 {} \;
 
 {% endfor %}

@@ -38,10 +38,8 @@ adfc_perms:
     group: Personal
   - name: /adfc/08_Scans
     group: Domain Users
+    dir_perm: 2777
   - name: /adfc/Computer
-    group: Domain Admins
-  - name: /adfc/Scans
     group: Domain Admins
   - name: /adfc/software
     group: Domain Admins
-
