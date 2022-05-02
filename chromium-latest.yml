@@ -1,4 +1,15 @@
 - hosts: arbeitsplatz
   gather_facts: false
+  serial: 1
   roles:
   - chromium-latest
+  pre_tasks:
+    - name: Power on clients
+      include_role:
+        name: tasmota-power-on
+      when: tasmota_wireless_ip is defined
+  post_tasks:
+    - name: Poweroff unused clients that were off before
+      include_role:
+        name: tasmota-power-off
+      when: (tasmota_wireless_ip is defined) and (connect_result is failed)
