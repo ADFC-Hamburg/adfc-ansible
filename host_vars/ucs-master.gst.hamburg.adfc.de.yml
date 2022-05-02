@@ -20,3 +20,26 @@ apache_sites:
 apache_ports:
   - "8080"
   - "8443"
+
+adfc_perms:
+  - name: /adfc/01_Vereinsverwaltung
+    group: Hauptis
+  - name: /adfc/02_Akquise
+    group: Hauptis
+  - name: /adfc/03_Arbeitsmittel
+    group: Hauptis
+  - name: /adfc/04_Öffentlichkeitsarbeit
+    group: Hauptis
+  - name: /adfc/05_Verkehrspolitik
+    group: Hauptis
+  - name: /adfc/06_Buchhaltung
+    group: Buchhaltung
+  - name: /adfc/07_Personal
+    group: Personal
+  - name: /adfc/08_Scans
+    group: Domain Users
+    dir_perm: 2777
+  - name: /adfc/Computer
+    group: Domain Admins
+  - name: /adfc/software
+    group: Domain Admins

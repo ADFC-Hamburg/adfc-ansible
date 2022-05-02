@@ -1,0 +1,19 @@
+- name: Create fix_adfc_perms.sh
+  template:
+    src: fix_adfc_perms.sh.j2
+    dest: /usr/local/sbin/fix_adfc_perms.sh
+    mode: 0700
+    owner: root
+    group: root
+
+- name: Install systemd files
+  copy:
+    src: "{{ item }}"
+    dest: "/etc/systemd/system/{{ item }}"
+    mode: 0644
+    owner: root
+    group: root
+  notify: reload systemd
+  with_items:
+    - adfc-fix-perms.service
+    - adfc-fix-perms.timer
