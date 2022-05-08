@@ -78,6 +78,12 @@
     notify: apt-get update ausführen
     tags: software
 
+  - name: add ucs-master to /etc/hosts
+    lineinfile:
+      path: /etc/hosts
+      line: "192.168.123.32  ucs-master.gst.hamburg.adfc.de"
+    tags: etc_hosts
+
   - name: ubuntu-mozilla-security-ppa
     apt_repository:
       repo: 'ppa:ubuntu-mozilla-security/ppa'
