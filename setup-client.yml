@@ -144,6 +144,9 @@
       - keepassxc
       - nextcloud-client
       - nextcloud-client-dolphin
+      - language-pack-gnome-de
+      - qrencode
+      - qtqr
     tags: software
 
   - name: uninstall hibiscus-ppa
