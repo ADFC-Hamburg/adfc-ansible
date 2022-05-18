@@ -14,6 +14,7 @@
     - update-os
     - restore-hcloud-letsenrypt
     - geerlingguy.certbot
+    - certbot_renew
     - vb-nginx-proxy
     - jitsi-videobridge
     - telegraf
