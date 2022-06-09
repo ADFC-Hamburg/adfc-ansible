@@ -102,3 +102,19 @@
     proto: udp
     src: '{{ item }}'
   loop: "{{ asterisk_sip_ips }}"
+
+- name: Create Asterisk Monitor
+  copy:
+    src: restart_asterisk_on_error.sh
+    dest: /usr/local/sbin/restart_asterisk_on_error.sh
+    mode: 0755
+    owner: root
+    group: root
+
+- name: cron entry for monitor
+  ansible.builtin.cron:
+    name: asterisk_restart
+    job:  /usr/local/sbin/restart_asterisk_on_error.sh
+    minute: "12,32,52"
+    user: root
+    cron_file: ansible_asterisk
