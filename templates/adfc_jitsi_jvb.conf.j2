@@ -42,17 +42,24 @@ videobridge {
         }
     }
 {% if jitsi_meet_octo | default("no") |bool %}
+   relay {
+        relay-id="{{ inventory_hostname_short }}"
+        region="{{ jitsi_meet_region |default("region1") }}"
+   }
+
     octo {
         # Whether or not Octo is enabled
         enabled=true
-
+        relay-id="{{ inventory_hostname_short }}"
         # A string denoting the 'region' of this JVB.  This region
         # will be used by Jicofo in the selection of a bridge for
         # a client by comparing it to the client's region.
         # Must be set when 'enabled' is true
         region="{{ jitsi_meet_region |default("region1") }}"
         bind_address="{{ ansible_default_ipv4.address }}"
+        bind-address="{{ ansible_default_ipv4.address }}"
         public_address="{{ ansible_default_ipv4.address }}"
+        public-address="{{ ansible_default_ipv4.address }}"
     }
 {% else %}
 # OCTO Disabled
