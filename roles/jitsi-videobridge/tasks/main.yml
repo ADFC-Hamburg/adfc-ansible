@@ -29,7 +29,7 @@
   apt:
     name:
       - openjdk-11-jre-headless
-      - jitsi-videobridge2
+      - jitsi-videobridge2=2.1-681-g3544ed05-1
 
 - name: get password
   include_tasks: "vb_password.yml"
