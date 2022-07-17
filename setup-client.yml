@@ -147,6 +147,8 @@
       - language-pack-gnome-de
       - qrencode
       - qtqr
+      - pdfgrep
+      - kleopatra 
     tags: software
 
   - name: uninstall hibiscus-ppa
