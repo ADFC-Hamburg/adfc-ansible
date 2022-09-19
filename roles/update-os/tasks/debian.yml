@@ -1,3 +1,8 @@
+- name: Remove bad Hetzner Repo
+  file:
+    path: /etc/apt/sources.list.d/hetzner-mirror.list
+    state: absent
+
 - name: Update all packages to the latest version
   apt:
     upgrade: dist
