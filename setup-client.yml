@@ -2,6 +2,7 @@
   gather_facts: no
   roles:
   - basic_setup
+  - kubuntu
   - ssh-keys
   - inactivity-shutdown
   - jnv.unattended-upgrades
@@ -148,7 +149,7 @@
       - qrencode
       - qtqr
       - pdfgrep
-      - kleopatra 
+      - kleopatra
     tags: software
 
   - name: uninstall hibiscus-ppa

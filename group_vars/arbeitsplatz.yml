@@ -3,11 +3,16 @@ firefox_extensions:
   - {name: "i_dont_care_about_cookies.xpi", id: "jid1-KKzOGWgsW3Ao4Q@jetpack.xpi", url: "https://addons.mozilla.org/firefox/downloads/file/3397453/i_dont_care_about_cookies.xpi"}
   - {name: "ublock_origin.xpi", id: "uBlock0@raymondhill.net.xpi", url: "https://addons.mozilla.org/firefox/downloads/file/1166954/ublock_origin.xpi"}
 
+# siehe: https://pimylifeup.com/unattended-upgrades-debian-ubuntu/
 unattended_origins_patterns:
+  - 'origin=Ubuntu,archive=${distro_codename}'
   - 'origin=Ubuntu,archive=${distro_codename}-security'
   - 'origin=Ubuntu,archive=${distro_codename}-updates'
+  - 'origin=Ubuntu,archive=${distro_codename}-backports'
 unattended_install_on_shutdown: false
 unattended_random_sleep: 1800
 unattended_automatic_reboot_time: 03:00
+
 ansible_python_interpreter: /usr/bin/python3
 ansible_host_macaddress: ff:ff:ff:ff:ff:ff
+ansible_ssh_common_args: '-o ProxyCommand="ssh -W %h:%p -q root@babelfish.spdns.de -p 922"'

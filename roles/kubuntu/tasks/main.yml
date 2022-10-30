@@ -1,0 +1,26 @@
+- name: Install Kubuntu Packages
+  apt:
+    name:
+      - kubuntu-desktop
+      - kubuntu-notification-helper
+      - kubuntu-restricted-addons
+      - kubuntu-settings-desktop
+      - kubuntu-notification-helper
+- name: Display Manager setzen
+  copy:
+    dest: "/etc/X11/default-display-manager"
+    content: |
+      /usr/bin/sddm
+    mode: 0644
+    owner: root
+    group: root
+- name: stop gdm
+  systemd:
+    name: gdm.service
+    state: stopped
+    enabled: false
+- name: Make sure sddm is started
+  systemd:
+    name: sddm.service
+    state: started
+    enabled: true
