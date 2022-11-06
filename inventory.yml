@@ -59,6 +59,7 @@ all:
             matratze02.gst.hamburg.adfc.de:
             ucs-master.gst.hamburg.adfc.de:
             dreicx.gst.hamburg.adfc.de:
+            nextcloud-srv.gst.hamburg.adfc.de:
     backup_clients:
       hosts:
         adfc-hh-bak-1:
