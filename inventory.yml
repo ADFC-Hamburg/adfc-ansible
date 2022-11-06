@@ -63,6 +63,9 @@ all:
     domain_factory:
       hosts:
         status.adfc-intern.de:
+    hetzner:
+      hosts:
+        chat.hamburg.adfc.de:
     tasmota:
       hosts:
         tasmota-0673.gst.hamburg.adfc.de:
