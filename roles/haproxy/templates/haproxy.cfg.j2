@@ -52,6 +52,14 @@ backend lets_encrypt_{{ le_domain }}
     mode http
     server {{ le_domain }} {{ hostvars[ha_backend_host]['ansible_host']}}:80
 {% endfor %}
+
+{% for le_domain in (hostvars[ha_backend_host]['haproxy_dehydrated_domains'] | default([])) %}
+backend lets_encrypt_{{ le_domain }}
+    mode http
+    http-request set-path "%[path,regsub(^/.well-known/acme-challenge/,/)]"
+    server {{ le_domain }} {{ hostvars[ha_backend_host]['ansible_host']}}:180
+{% endfor %}
+
 {% for ha_site in (hostvars[ha_backend_host]['haproxy_ssl_sites'] | default([])) %}
 backend https_{{ ha_site.domain }}
    mode http
@@ -79,7 +87,11 @@ frontend http
         acl lets_encrypt path_beg /.well-known/acme-challenge/
         # redirects from http to https
 {% for ha_backend_host in groups[haproxy_backend_group] %}
+        # {{ ha_backend_host }}
 {% for le_domain in (hostvars[ha_backend_host]['haproxy_lets_encrypt_domains'] | default([ha_backend_host])) %}
+        use_backend lets_encrypt_{{ le_domain }} if lets_encrypt  { hdr(Host) -i {{ le_domain }} }
+{% endfor %}
+{% for le_domain in (hostvars[ha_backend_host]['haproxy_dehydrated_domains'] | default([])) %}
         use_backend lets_encrypt_{{ le_domain }} if lets_encrypt  { hdr(Host) -i {{ le_domain }} }
 {% endfor %}
 {% endfor %}
@@ -105,11 +117,11 @@ frontend https
     use_backend https_{{ ha_site.domain }} if {{ ha_acl}}
 {% endfor %}
 {% endfor %}
-    #acl acl-ucs-master ssl_fc_sni ucs-master.gst.hamburg.adfc.de
-    #http-request deny if acl-ucs-master !{ ssl_c_used 1 } || acl-ucs-master !{ ssl_c_verify 0 }
-    #use_backend https_ucs-master.gst.hamburg.adfc.de if acl-ucs-master
+    {{ haproxy_https_extra_content |default('') |indent(4) }}
     default_backend default_https
 
+
+{{ haproxy_file_extra_content |default('') }}
 backend proxmox
    description Back-end proxmox
    mode http

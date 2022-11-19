@@ -1,0 +1,38 @@
+- name: Install dehyrated
+  apt:
+    name: dehydrated
+
+- name: Search for account info
+  find:
+    path:
+      - /var/lib/dehydrated/accounts/
+    patterns:
+      - account_key.pem
+    recurse: true
+  register: account_info
+
+- name: Register
+  command:
+    cmd: "dehydrated --register --accept-terms"
+  when: "account_info.matched == 0"
+
+- name: Install http_server
+  include_tasks: http_server.yml
+
+- name: Create domains.txt
+  template:
+    src: domains.txt.j2
+    dest: /etc/dehydrated/domains.txt
+    mode: 0644
+    owner: root
+    group: root
+  notify: Domains abholen
+
+- name: Dehydrated cron
+  ansible.builtin.cron:
+    name: dehydrated
+    day: "1,15"
+    hour: "9"
+    user: root
+    job: "/usr/bin/dehyrated --cron >/dev/null"
+    cron_file: ansible_dehyrated

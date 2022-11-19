@@ -2,6 +2,8 @@
 # {{ ansible_managed }}
 TMPFILE=$(/usr/bin/mktemp  -t)
 
+# FIXME funktioniert noch nicht bei zwei Domains in einer Datie immer bei --BEGIN aufspalten
+# FIXME Bei Änderungen haproxy neu starten
 fetch_key() {
     TARGET_HOST=$1
     BHOST=$2
