@@ -55,11 +55,21 @@ all:
             zem.gst.hamburg.adfc.de:
         gsthh_server:
           hosts:
-            matratze01.gst.hamburg.adfc.de:
-            matratze02.gst.hamburg.adfc.de:
             ucs-master.gst.hamburg.adfc.de:
             dreicx.gst.hamburg.adfc.de:
             nextcloud-srv.gst.hamburg.adfc.de:
+          children:
+            proxmox_gst:
+              hosts:
+                matratze01.gst.hamburg.adfc.de:
+                matratze02.gst.hamburg.adfc.de:
+            haproxy_gst_backends:
+              hosts:
+                ucs-master.gst.hamburg.adfc.de:
+                dreicx.gst.hamburg.adfc.de:
+                nextcloud-srv.gst.hamburg.adfc.de:
+              children:
+                proxmox_gst:
     backup_clients:
       hosts:
         adfc-hh-bak-1:

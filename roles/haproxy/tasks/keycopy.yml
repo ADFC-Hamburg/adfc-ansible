@@ -1,0 +1,11 @@
+- name: add ssh keys of the admins
+  authorized_key:
+      user: "root"
+      comment: "ADFC-Ansible haproxy role"
+      key: "{{ keycopy_ssh_keypair.public_key }}"
+      state: present
+      key_options: "restrict,command=\"{{ ssh_command }}\""
+  delegate_to: "{{ ha_backend_host }}"
+  vars:
+    ssh_command: "/bin/cat {{ hostvars[ha_backend_host]['haproxy_cert_and_key_files'] |join(' ') }}"
+  when: "hostvars[ha_backend_host]['haproxy_cert_and_key_files'] | default([]) |length >0"

@@ -1,0 +1,17 @@
+#!/bin/bash
+# {{ ansible_managed }}
+TMPFILE=$(/usr/bin/mktemp  -t)
+
+fetch_key() {
+    TARGET_HOST=$1
+    BHOST=$2
+    echo '' > ${TMPFILE}
+    ssh -o "RequestTTY=no" -i /usr/local/share/harpoxy-key-copy/ssh-key root@${TARGET_HOST} > ${TMPFILE}
+    grep 'PRIVATE KEY' ${TMPFILE} >/dev/null && cp ${TMPFILE} /etc/haproxy/certs/${BHOST}.pem
+}
+{% for ha_backend_host in groups[haproxy_backend_group] %}
+{% if hostvars[ha_backend_host]['haproxy_cert_and_key_files'] | default([]) |length >0 %}
+fetch_key "{{ hostvars[ha_backend_host]['ansible_host'] }}" {{ ha_backend_host }}
+{% endif %}
+{% endfor %}
+rm $TMPFILE

@@ -1,2 +1,11 @@
 ansible_ssh_common_args: '-o ProxyCommand="ssh -W %h:%p -q root@babelfish.spdns.de -p 922"'
 ansible_host: 192.168.123.70
+
+haproxy_cert_and_key_files:
+  - /var/lib/3cxpbx/Instance1/Bin/Cert/domain_cert_adfc-hh.my3cx.de.pem
+  - /var/lib/3cxpbx/Instance1/Bin/Cert/domain_key_adfc-hh.my3cx.de.pem
+
+haproxy_ssl_sites:
+  - domain: adfc-hh.my3cx.de
+    port: 5001
+    check_user_cert: true

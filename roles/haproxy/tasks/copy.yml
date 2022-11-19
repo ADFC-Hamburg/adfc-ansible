@@ -1,0 +1,13 @@
+- name: Fetch File
+  slurp:
+    path: "{{ item.src_file }}"
+  register: copy_slurp
+  delegate_to: "ucs-master.gst.hamburg.adfc.de"
+
+- name: Write file
+  copy:
+    content: "{{ copy_slurp.content | b64decode }}"
+    dest: "{{ item.dst_file }}"
+    mode: "{{ item.dst_mode |default('0644') }}"
+    owner: root
+    group: root

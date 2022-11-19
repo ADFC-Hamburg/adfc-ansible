@@ -1,0 +1,80 @@
+- name: Install haproxy
+  apt:
+    name: haproxy
+
+- name: Generate directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
+  with_items:
+    - /usr/local/share/harpoxy-key-copy
+    - /etc/haproxy/static
+    - /etc/haproxy/certs
+    - /etc/haproxy/cert_auth
+
+- name: Generate SSH Key
+  community.crypto.openssh_keypair:
+    path: /usr/local/share/harpoxy-key-copy/ssh-key
+  register: keycopy_ssh_keypair
+
+- name: Include keycopy
+  include_tasks: keycopy.yml
+  loop: "{{ groups[haproxy_backend_group] }}"
+  loop_control:
+    loop_var: ha_backend_host
+
+
+- name: Write keycopy command
+  template:
+    src: fetch_haproxy_certs.sh.j2
+    dest: /usr/local/share/harpoxy-key-copy/fetch-certs
+    mode: 0700
+    owner: root
+    group: root
+
+- name: Call keycopy
+  command:
+    cmd: /usr/local/share/harpoxy-key-copy/fetch-certs
+  changed_when: true
+
+- name: Put Keycopy in cron
+  ansible.builtin.cron:
+    name: keycopy
+    minute: "17"
+    user: root
+    job: "/usr/local/share/harpoxy-key-copy/fetch-certs"
+    cron_file: ansible_haproxy_fetch_certs
+
+- name: Copy Static files
+  copy:
+    src: "{{ item }}"
+    dest: "/etc/haproxy/static/{{ item }}"
+    mode: 0644
+    owner: root
+    group: root
+  with_items:
+    - fehler.http.static.html
+    - fehler.https.static.html
+
+- name: copy Univention Certificates
+  include_tasks: copy.yml
+  with_items:
+    - src_file: /etc/univention/ssl/ucsCA/CAcert.pem
+      dst_file: /etc/haproxy/cert_auth/CA.pem
+    - src_file: /etc/univention/ssl/ucsCA/crl/crl.pem
+      dst_file: /etc/haproxy/cert_auth/crl.pem
+
+- name: Generate haproxy template
+  template:
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
+    mode: 0644
+    owner: root
+    group: root
+    validate: /usr/sbin/haproxy -f %s -c -q
+  notify: restart haproxy
+  tags:
+    - haproxy_cfg
