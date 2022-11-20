@@ -9,28 +9,15 @@ fetch_key() {
     # zur sicherheit Tempfile leeren
     echo '' > ${TMPFILE}
     OK="0"
-    COUNTER=0
     SSH_AUTH_SOCK="" ssh -o "RequestTTY=no" -i /usr/local/share/harpoxy-key-copy/ssh-key root@${TARGET_HOST} > ${TMPFILE}
     grep 'PRIVATE KEY' ${TMPFILE} >/dev/null && OK="1"
     if [ "$OK" == 1 ] ; then
-        while IFS= read -r line
-        do
-            if [[ $line == "-----BEGIN"* ]]; then
-                COUNTER=$((COUNTER+1))
-                rm -f /etc/haproxy/certs/new-${BHOST}-${COUNTER}.pem
-            fi
-            echo "$line" >>/etc/haproxy/certs/new-${BHOST}-${COUNTER}.pem
-        done <${TMPFILE}
-        for newf in /etc/haproxy/certs/new-${BHOST}* ; do
-            oldf=${newf//\/new-/\/}
-            GLEICH="0"
-            diff $oldf $newf >/dev/null 2>&1 && GLEICH="1"
-            if [ "$GLEICH" = "0" ]; then
-                ALLGLEICH=0
-            fi
-            # Auch verschieben wenn gleich dadurch Zeitstempel neu brauchen wir unten
-            mv $newf $oldf
-        done
+        diff ${TMPFILE} /etc/haproxy/certs/${BHOST}.pem >/dev/null 2>&1 && GLEICH="1"
+        if [ "$GLEICH" = "0" ]; then
+            ALLGLEICH=0
+        fi
+        # Auch kopieren wenn gleich dadurch Zeitstempel neu brauchen wir unten
+        cp ${TMPFILE} /etc/haproxy/certs/${BHOST}.pem
     else
         # Abholen nicht erfolgreich z.B. Host down
         ALLOKAY=0
