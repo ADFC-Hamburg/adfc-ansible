@@ -26,7 +26,6 @@
   loop_control:
     loop_var: ha_backend_host
 
-
 - name: Write keycopy command
   template:
     src: fetch_haproxy_certs.sh.j2
@@ -34,15 +33,28 @@
     mode: 0700
     owner: root
     group: root
+  register: fetch_certs_templ
+  tags:
+   - haproxy-fetch-certs
+
+- name: Search for certs
+  find:
+    path:
+      - /etc/haproxy/certs
+    patterns:
+      - "*.pem"
+  register: find_certs
 
 - name: Call keycopy
   command:
     cmd: /usr/local/share/harpoxy-key-copy/fetch-certs
   changed_when: true
+  when: "find_certs.matched == 0 or fetch_certs_templ.changed"
 
 - name: Put Keycopy in cron
   ansible.builtin.cron:
     name: keycopy
+    hour: "3"
     minute: "17"
     user: root
     job: "/usr/local/share/harpoxy-key-copy/fetch-certs"
