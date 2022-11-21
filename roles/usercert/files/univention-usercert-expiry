@@ -1,5 +1,8 @@
 #!/usr/bin/python2.7
 #
+# Copyright 2022 Sven Anders, ADFC Hamburg
+# Based on Code from https://github.com/univention/cool-solutions/tree/ucs-4.4/master/univention-usercert
+#
 # Copyright 2009-2022 Univention GmbH
 #
 # http://www.univention.de/

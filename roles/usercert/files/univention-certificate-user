@@ -1,7 +1,9 @@
 #!/bin/bash
 #
-# Univention SSL
-#  openssl wrapper
+#
+# Copyright 2022 Sven Anders, ADFC Hamburg
+# Based on Code from https://github.com/univention/cool-solutions/tree/ucs-4.4/master/univention-usercert
+#
 #
 # Copyright 2004-2022 Univention GmbH
 #
@@ -104,7 +106,7 @@ while [ $# -gt 0 ]; do
 	shift 2 || usage "Missing argument to $1"
 done
 
-. /usr/share/univention-ssl/make-certificates-user.sh
+. /usr/local/share/adfc-usercert/make-certificates-user.sh
 
 if [ -n "$ca" ]; then
 	test -n "$sslbase" || usage "missing -sslbase for -ca"

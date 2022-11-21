@@ -1,0 +1,121 @@
+# HOME			= .
+# RANDFILE		= $ENV::HOME/.rnd
+# oid_section		= new_oids
+#
+# [ new_oids ]
+#
+
+path		= {{ sslbase }}
+
+[ ca ]
+default_ca	= CA_default
+
+[ CA_default ]
+
+dir                 = $path/{{ CA }}
+certs               = $dir/certs
+crl_dir             = $dir/crl
+database            = $dir/index.txt
+new_certs_dir       = $dir/newcerts
+
+certificate         = $dir/CAcert.pem
+serial              = $dir/serial
+crl                 = $dir/crl.pem
+private_key         = $dir/private/CAkey.pem
+RANDFILE            = $dir/private/.rand
+
+x509_extensions     = {{ CA }}_ext
+crl_extensions     = crl_ext
+copy_extensions     = copy
+default_days        = {{ days }}
+default_crl_days    = {{ DEFAULT_CRL_DAYS }}
+default_md          = {{ DEFAULT_MD }}
+preserve            = no
+
+policy              = policy_match
+
+[ policy_match ]
+
+countryName		= match
+stateOrProvinceName	= supplied
+localityName		= optional
+organizationName	= supplied
+organizationalUnitName	= optional
+commonName		= supplied
+emailAddress		= optional
+
+[ policy_anything ]
+
+countryName		= match
+stateOrProvinceName	= optional
+localityName		= optional
+organizationName	= optional
+organizationalUnitName	= optional
+commonName		= supplied
+emailAddress		= optional
+
+[ req ]
+
+default_bits		= {{ DEFAULT_BITS }}
+default_keyfile 	= privkey.pem
+default_md          = {{ DEFAULT_MD }}
+distinguished_name	= req_distinguished_name
+attributes		= req_attributes
+x509_extensions		= v3_ca
+prompt		= no
+{% if password %}
+input_password = {{ password }}
+output_password = {{ password }}
+{% endif %}
+string_mask = nombstr
+req_extensions = v3_req
+
+[ req_distinguished_name ]
+
+C	= {{ ssl_country | _escape }}
+ST	= {{ ssl_state | _escape }}
+L	= {{ ssl_locality | _escape }}
+O	= {{ ssl_organization | _escape }}
+OU	= {{ ssl_organizationalunit | _escape }}
+CN	= {{ name | _escape }}
+emailAddress	= {{ ssl_email | _escape }}
+
+[ req_attributes ]
+
+challengePassword		= A challenge password
+unstructuredName	= Univention GmbH
+
+[ {{ CA }}_ext ]
+
+basicConstraints        = CA:FALSE
+# keyUsage                = cRLSign, keyCertSign
+subjectKeyIdentifier    = hash
+authorityKeyIdentifier  = keyid,issuer:always
+# subjectAltName          = email:copy
+# issuerAltName           = issuer:copy
+# nsCertType              = sslCA, emailCA, objCA
+# nsComment               = signed by Univention Corporate Server Root CA
+
+[ v3_req ]
+
+basicConstraints = critical, CA:FALSE
+keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+{% if SAN_txt %}
+subjectAltName = {{ SAN_txt }}
+{% endif %}
+
+[ v3_ca ]
+
+basicConstraints        = critical, CA:TRUE
+subjectKeyIdentifier    = hash
+authorityKeyIdentifier  = keyid:always,issuer:always
+keyUsage                = cRLSign, keyCertSign
+nsCertType              = sslCA, emailCA, objCA
+subjectAltName          = email:copy
+issuerAltName           = issuer:copy
+nsComment               = This certificate is a Root CA Certificate
+
+[ crl_ext ]
+
+issuerAltName           = issuer:copy
+authorityKeyIdentifier  = keyid:always,issuer:always

@@ -1,0 +1,27 @@
+- name: Create directories
+  file:
+    name: "{{ item }}"
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
+  with_items:
+    - /usr/local/share/adfc-usercert
+
+- name: Create Files
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dst }}"
+    mode: "{{ item.mode |default('0755') }}"
+    owner: root
+    group: root
+  with_items:
+    - src: adfc-usercert.py
+      dst: /usr/local/sbin/adfc-usercert
+    - src: make-certificates-user.sh
+      dst: /usr/local/share/adfc-usercert/make-certificates-user.sh
+    - src: univention-certificate-user
+      dst: /usr/local/sbin/univention-certificate-user
+    - src: openssl.cnf.j2
+      dst: /usr/local/share/adfc-usercert/openssl.cnf.j2
+

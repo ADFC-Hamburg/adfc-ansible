@@ -1,7 +1,7 @@
 #! /bin/bash -e
 #
-# Univention SSL
-#  gencertificate script
+# Copyright 2022 Sven Anders, ADFC Hamburg
+# Based on Code from https://github.com/univention/cool-solutions/tree/ucs-4.4/master/univention-usercert
 #
 # Copyright 2004-2022 Univention GmbH
 #
@@ -50,7 +50,7 @@ mk_config () {
 	local ssl_state=$8
 	local ssl_locality=$9
 	local ssl_organization=${10}
-	
+
 	if test -z $ssl_country; then eval `univention-config-registry shell ssl/country`; fi
 	if test -z $ssl_state; then eval `univention-config-registry shell ssl/state`; fi
 	if test -z $ssl_locality; then eval `univention-config-registry shell ssl/locality`; fi
@@ -199,7 +199,7 @@ renew_cert () {
 	local owner="$4"
 	local extfile="$5"
 	cd "$SSLBASE"
-	
+
 	if [ -z "$owner" ]; then
 		owner="cert"
 	fi
@@ -208,20 +208,20 @@ renew_cert () {
 		echo "missing certificate name" 1>&2
 		return 1
 	fi
-	
+
 	local NUM=`list_cert_names | grep "$cn$" | sed -e 's/^\([0-9A-Fa-f]*\).*/\1/1'`
 	if [ -z "$NUM" ]; then
 		echo "no certificate for $cn registered" 1>&2
 		return 1
 	fi
-	
+
 	if [ -z "$days" ]; then
 		days=$DEFAULT_DAYS
 	fi
-	
+
 	# revoke cert
 	revoke_cert "$cn"
-	
+
 	# extensions?
 	if [ -f "$extfile" ]; then
 		local ext="-extfile $(bash ${extfile})"
