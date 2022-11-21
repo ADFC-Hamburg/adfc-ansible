@@ -46,7 +46,7 @@
   register: find_certs
 
 - name: Call keycopy
-  command:
+  command: # noqa no-handler
     cmd: /usr/local/share/harpoxy-key-copy/fetch-certs
   changed_when: true
   when: "find_certs.matched == 0 or fetch_certs_templ.changed"
