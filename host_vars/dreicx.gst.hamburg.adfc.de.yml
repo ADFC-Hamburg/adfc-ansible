@@ -9,4 +9,4 @@ haproxy_ssl_sites:
   - domain: adfc-hh.my3cx.de
     port: 5001
     check_user_cert: true
-    extra_srv_opt: force-tlsv12
+    extra_srv_opt: ssl-min-ver TLSv1.1 force-tlsv12

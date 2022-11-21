@@ -28,6 +28,14 @@
     group: root
   notify: Domains abholen
 
+- name: Set deploy hook
+  template:
+    src: hook.sh.j2
+    dest: /etc/dehydrated/hook.sh
+    mode: 0755
+    owner: root
+    group: root
+
 - name: Dehydrated cron
   ansible.builtin.cron:
     name: dehydrated
@@ -36,3 +44,11 @@
     user: root
     job: "/usr/bin/dehyrated --cron >/dev/null"
     cron_file: ansible_dehyrated
+- name: Set hook
+  ansible.builtin.copy:
+    content: |
+      HOOK=/etc/dehydrated/hook.sh
+    dest: /etc/dehydrated/conf.d/ansible.sh
+    mode: 0755
+    owner: root
+    group: root

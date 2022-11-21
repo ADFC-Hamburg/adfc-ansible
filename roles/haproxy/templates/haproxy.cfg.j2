@@ -62,13 +62,27 @@ backend lets_encrypt_{{ le_domain }}
 
 {% endfor %}
 {% for ha_site in (hostvars[ha_backend_host]['haproxy_ssl_sites'] | default([])) %}
+
+#    hostvars[ha_backend_host]['ansible_host'] + ':' ,
+
+{% set server_params = [
+    ha_site.domain,
+    hostvars[ha_backend_host]['ansible_host'] + ':'+ ( ha_site.port  | default(443) |string ),
+    'check',
+    'inter 60s',
+    'ssl',
+    'verify '+(ha_site.ssl_verify | default('required')),
+    'ca-file /etc/ssl/certs/ca-certificates.crt',
+     (ha_site.extra_srv_opt |default(''))
+    ]
+%}
 backend https_{{ ha_site.domain }}
    mode http
    option forwardfor
    option httpchk {{ ha_site.httpchk |default('GET /') }}
    http-request set-header X-Forwarded-Port %[dst_port]
    http-request add-header X-Forwarded-Proto https if { ssl_fc }
-   server {{ ha_site.domain }} {{ hostvars[ha_backend_host]['ansible_host']}}:{{ ha_site.port | default('443') }} check inter 60s ssl verify none {{ ha_site.extra_srv_opt |default('') }}
+   server {{ server_params |join(' ') }}
 
 {% endfor %}
 {% endfor %}
