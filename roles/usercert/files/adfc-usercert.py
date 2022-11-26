@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 import argparse
 import sys
-from pprint import pprint
 import univention.uldap
 import univention.config_registry
 from jinja2.nativetypes import NativeEnvironment
@@ -13,9 +12,13 @@ from string import ascii_letters, digits
 import subprocess
 from datetime import datetime
 from shutil import copyfile
+import logging
+from pprint import pformat
 
-SSLBASE="/etc/adfc-test-ssl" # FIXME
-# SSLBASE="/etc/univention/ssl"
+logging.basicConfig(filename='/var/log/adfc/usercert.log',
+    level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s')
+# SSLBASE="/etc/adfc-test-ssl" # Zum testen, Achtung Pfade in /etc/adfc-test-ssl/openssl.cnf anpassen
+SSLBASE="/etc/univention/ssl"
 JINJA_OPENSSL_TEMPLATE="/usr/local/share/adfc-usercert/openssl.cnf.j2"
 CA="ucsCA"
 
@@ -76,7 +79,6 @@ def mk_config(outfile:str, password:str, name:str, days:str, ssl_email='',
     context['DEFAULT_MD']=ucr.get('ssl/default/hashfunction')
     context['DEFAULT_BITS']=ucr.get('ssl/default/bits')
     context['DEFAULT_CRL_DAYS']=ucr.get('ssl/default/days')
-    pprint(context)
     file=open(JINJA_OPENSSL_TEMPLATE)
     file_content="".join(file.readlines())
     file.close()
@@ -90,7 +92,7 @@ def mk_config(outfile:str, password:str, name:str, days:str, ssl_email='',
     chmod(outfile, 0o600)
 
 def openssl(*args):
-    print('openssl "%s"' % ("\" \"".join(args)))
+    logging.info('openssl "%s"' % ("\" \"".join(args)))
     fargs=['openssl']+list(args)
     enviroment={
         'HOME': '/root',
@@ -99,11 +101,18 @@ def openssl(*args):
         'DEFAULT_BITS': DEFAULT_BITS
     }
     rtn=subprocess.run(fargs,capture_output=True, env=enviroment)
-    print('Stdout:')
-    print(rtn.stdout.decode('utf-8'))
-    print('Stderr:')
-    print(rtn.stderr.decode('utf-8'))
-    if (rtn.returncode!=0):
+    if (rtn.returncode==0):
+        logging.info('stdout: %s' %rtn.stdout.decode('utf-8'))
+        logging.info('stderr: %s' %rtn.stdout.decode('utf-8'))
+        logging.info('rtncode %d' %rtn.returncode)
+    else:
+        logging.error('stdout: %s' %rtn.stdout.decode('utf-8'))
+        logging.error('stderr: %s' %rtn.stdout.decode('utf-8'))
+        logging.error('rtncode %d' %rtn.returncode)
+        print('Stdout:')
+        print(rtn.stdout.decode('utf-8'))
+        print('Stderr:')
+        print(rtn.stderr.decode('utf-8'))
         print('Returncode: %d',rtn.returncode)
         sys.exit(2)
     # else
@@ -137,7 +146,7 @@ def fix_permissions(path):
             chmod(os_join(dirpath,file),0o400)
         chmod(dirpath,0x500)
 
-def sign_cert(path, priv_key, req, days, username):
+def sign_cert(path, priv_key, req, days, username:str):
     global_openssl_cnf=os_join(SSLBASE,"openssl.cnf")
     cert= os_join(path, 'cert.pem')
     cert_der = os_join(path, 'cert.cer')
@@ -165,6 +174,7 @@ def sign_cert(path, priv_key, req, days, username):
 def generate(user):
     if has_valid_cert(user['uid']):
         print('ERROR: There is one valid cert, please revoke first')
+        logging.error('There is one valid cert, please revoke first')
         sys.exit(1)
     path=os_join(SSLBASE,'user', user['uid'])
     if not isdir(path):
@@ -182,14 +192,15 @@ def generate(user):
         '-new',
         '-key',priv_key,
         '-out',req)
-    sign_cert(path, priv_key, req, days, user)
+    sign_cert(path, priv_key, req, days, user['uid'])
     move_cert("%s/%s/newcerts/" % (SSLBASE,CA))
     fix_permissions(path)
-
+    print('Userzertifikat erstellt, siehe: %s' % path)
 def status(user):
     serial=get_valid_cert(user['uid'])
     if serial==None:
-        print('Kein Certifikat für den User %s gefunden.' %user['uid'])
+        print('Kein Zertifikat für den User %s gefunden.' %user['uid'])
+        logging.info('Kein Zertifikat für den User %s gefunden.' %user['uid'])
         return
     # else
     print('Gültiges Zertifikat gefunden:\n')
@@ -222,6 +233,7 @@ def revoke(user):
     }
     if serial is None:
         print('ERROR: There no valid cert to revoke.')
+        logging.error('There no valid cert to revoke.')
         sys.exit(1)
     cert=os_join(SSLBASE,CA,'certs',('%s.pem' % serial))
     openssl('ca',
@@ -230,6 +242,7 @@ def revoke(user):
         '-passin', ("file:%s" % CA_PASSWORD_FILE)
     )
     gencrl()
+    print('User revoked')
 
 def gencrl():
     global_openssl_cnf=os_join(SSLBASE,"openssl.cnf")
@@ -256,13 +269,16 @@ def ldap_search_user(username):
         lo = univention.uldap.getMachineConnection()
     except Exception as e:
         print('ERROR: authentication error: %s' % str(e))
+        logging.error('authentication error %s',str(e))
         sys.exit(1)
     results = lo.search(filter='(uid=%s)' % username, attr=['uid', 'cn', 'mailPrimaryAddress'])
     if len(results)==0:
         print('ERROR: User %s not found' % username)
+        logging.error('User not found')
         sys.exit(1)
     if len(results)>1:
         print('ERROR: More than one user with name %s found' % username)
+        logging.error("More than one user found")
         sys.exit(1)
     assert(len(results)==1)
     userobj={ 'uid': username}
@@ -294,6 +310,7 @@ def main():
         help="Revoke the certificate.")
 
     args = parser.parse_args()
+    logging.debug('Aufruf %s' % pformat(args))
     userobj=ldap_search_user(args.username)
     args.action(userobj)
 

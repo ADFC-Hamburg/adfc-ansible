@@ -18,10 +18,6 @@
   with_items:
     - src: adfc-usercert.py
       dst: /usr/local/sbin/adfc-usercert
-    - src: make-certificates-user.sh
-      dst: /usr/local/share/adfc-usercert/make-certificates-user.sh
-    - src: univention-certificate-user
-      dst: /usr/local/sbin/univention-certificate-user
     - src: openssl.cnf.j2
       dst: /usr/local/share/adfc-usercert/openssl.cnf.j2
 
