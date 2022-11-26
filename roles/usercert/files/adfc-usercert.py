@@ -11,6 +11,8 @@ from os.path import join as os_join
 from random import choice
 from string import ascii_letters, digits
 import subprocess
+from datetime import datetime
+from shutil import copyfile
 
 SSLBASE="/etc/adfc-test-ssl" # FIXME
 # SSLBASE="/etc/univention/ssl"
@@ -22,6 +24,27 @@ ucr.load()
 DEFAULT_BITS=ucr.get('ssl/default/bits')
 
 CA_PASSWORD_FILE=os_join(SSLBASE,'password')
+
+def get_cn_from_cert_dn(dn):
+    for dn_part in dn.split("/"):
+        if dn_part.upper().startswith('CN='):
+            return dn_part[3:] # Zeichenkette ohne die ersten drei Zeichen
+    return None
+
+def get_valid_cert(cn):
+    now_str="%sZ" % datetime.utcnow().strftime('%y%m%d%H%M%S')
+    filename=os_join(SSLBASE,CA,'index.txt')
+    index_file=open(filename,'r')
+    lines=index_file.readlines()
+    index_file.close()
+    for line in lines[::-1]:
+        (status,expire_date,revoce_date,serial,filename,cert_dn)=line.strip().split('\t')
+        if status=='V' and get_cn_from_cert_dn(cert_dn)==cn and now_str<expire_date:
+            return serial
+    return None
+
+def has_valid_cert(cn):
+    return get_valid_cert(cn)!=None
 
 def generate_password_file(filename):
     password=(''.join(choice(digits + ascii_letters) for i in range(8)))
@@ -45,8 +68,9 @@ def mk_config(outfile:str, password:str, name:str, days:str, ssl_email='',
         "password": password,
         "days": days
     }
-    for ucr_varname in ['ssl/country', 'ssl/locality', 'ssl/state', 'ssl/organizationalunit', 'ssl/organization', 'ssl/email']:
-        j2_varname=ucr_varname.replace('/','_')
+    for ucr_suffix in ['country', 'locality', 'state', 'organizationalunit', 'organization', 'email']:
+        ucr_varname='ssl/usercert/default/%s' % ucr_suffix
+        j2_varname='ssl_%s' % ucr_suffix
         if context[j2_varname]=='':
             context[j2_varname]=ucr.get(ucr_varname,'')
     context['DEFAULT_MD']=ucr.get('ssl/default/hashfunction')
@@ -67,8 +91,22 @@ def mk_config(outfile:str, password:str, name:str, days:str, ssl_email='',
 
 def openssl(*args):
     print('openssl "%s"' % ("\" \"".join(args)))
-    fargs=['openssl']+args
-    rtn=subprocess.run(fargs,capture_output=True)
+    fargs=['openssl']+list(args)
+    enviroment={
+        'HOME': '/root',
+        'DEFAULT_CRL_DAYS': ucr.get('ssl/default/days'),
+        'DEFAULT_MD': ucr.get('ssl/default/hashfunction'),
+        'DEFAULT_BITS': DEFAULT_BITS
+    }
+    rtn=subprocess.run(fargs,capture_output=True, env=enviroment)
+    print('Stdout:')
+    print(rtn.stdout.decode('utf-8'))
+    print('Stderr:')
+    print(rtn.stderr.decode('utf-8'))
+    if (rtn.returncode!=0):
+        print('Returncode: %d',rtn.returncode)
+        sys.exit(2)
+    # else
     return rtn
 
 def _escape(inp:str):
@@ -84,13 +122,13 @@ def move_cert(path):
                 "-noout",
                 "-in", filename], capture_output=True)
             hash=out.stdout.decode('utf-8').strip()
-            dest_content=listdir(dir_content)
+            dest_content=listdir(dest_dir)
             count=0
             symlink_dest="%s.%d" % (hash,count)
             while symlink_dest in dest_content:
                 count=count+1
                 symlink_dest="%s.%d" % (hash,count)
-            replace(filename, dest_dir)
+            replace(filename, os_join(dest_dir,filebasename))
             symlink(filebasename,os_join(dest_dir,symlink_dest))
 
 def fix_permissions(path):
@@ -125,14 +163,15 @@ def sign_cert(path, priv_key, req, days, username):
         '-passout','file:%s' % (owner_pw_file))
 
 def generate(user):
-    # FIXME Revoc if there
-    # FIXME chdir
-    path=os_join(SSLBASE,'user', user['username'])
+    if has_valid_cert(user['uid']):
+        print('ERROR: There is one valid cert, please revoke first')
+        sys.exit(1)
+    path=os_join(SSLBASE,'user', user['uid'])
     if not isdir(path):
         mkdir(path,0o500)
     openssl_cnf=os_join(path,"openssl.cnf")
     days=ucr.get('ssl/usercert/days')
-    mk_config(openssl_cnf, '', user['cn'], days, user['mail'])
+    mk_config(openssl_cnf, '', user['uid'], days, user['mail'])
     priv_key=os_join(path,'private.key')
     req=os_join(path,'req.pem')
     openssl('genrsa',
@@ -148,14 +187,69 @@ def generate(user):
     fix_permissions(path)
 
 def status(user):
-    pprint(user)
-    pass
+    serial=get_valid_cert(user['uid'])
+    if serial==None:
+        print('Kein Certifikat für den User %s gefunden.' %user['uid'])
+        return
+    # else
+    print('Gültiges Zertifikat gefunden:\n')
+    cert=os_join(SSLBASE,CA,'certs',('%s.pem' % serial))
+    out=openssl('x509', '-in', cert, '-text', '-noout')
+    keywords=[
+        'Not Before:',
+        'Not After :',
+        'Public Key Algorithm:',
+        'Subject:',
+        'RSA Public-Key:',
+        'Serial Number:',
+        'Issuer:'
+    ]
+    for line in out.stdout.decode('utf-8').split('\n'):
+        for keyword in keywords:
+            if keyword in line:
+                line_parts=line.strip().split(':')
+                print('%-21s%s' % (keyword,":".join(line_parts[1:])))
 
-def renew(username):
-    pass
 
-def revoke(username):
-    pass
+def revoke(user):
+    serial=get_valid_cert(user['uid'])
+    global_openssl_cnf=os_join(SSLBASE,"openssl.cnf")
+    enviroment={
+        'HOME': '/root',
+        'DEFAULT_CRL_DAYS': ucr.get('ssl/default/days'),
+        'DEFAULT_MD': ucr.get('ssl/default/hashfunction'),
+        'DEFAULT_BITS': DEFAULT_BITS
+    }
+    if serial is None:
+        print('ERROR: There no valid cert to revoke.')
+        sys.exit(1)
+    cert=os_join(SSLBASE,CA,'certs',('%s.pem' % serial))
+    openssl('ca',
+        '-config', global_openssl_cnf,
+        '-revoke', cert,
+        '-passin', ("file:%s" % CA_PASSWORD_FILE)
+    )
+    gencrl()
+
+def gencrl():
+    global_openssl_cnf=os_join(SSLBASE,"openssl.cnf")
+    pem=os_join(SSLBASE,CA,'crl','crl.pem')
+    der=os_join(SSLBASE,CA,'crl',('%s.crl' % CA))
+    der_www=os_join('/var/www',('%s.crl' % CA))
+    openssl('ca',
+        '-config', global_openssl_cnf,
+        '-gencrl',
+        '-out', pem,
+        '-passin', ("file:%s" % CA_PASSWORD_FILE)
+    )
+    openssl('crl',
+        '-in', pem,
+        '-out', der,
+        '-inform', 'pem',
+        '-outform', 'der'
+    )
+    copyfile(der,der_www)
+    chmod(der_www,0o644)
 
 def ldap_search_user(username):
     try:
@@ -171,7 +265,7 @@ def ldap_search_user(username):
         print('ERROR: More than one user with name %s found' % username)
         sys.exit(1)
     assert(len(results)==1)
-    userobj={ 'username': username}
+    userobj={ 'uid': username}
     for dn, attrs in results:
         userobj['dn']=dn
         userobj['cn']=attrs['cn'][0].decode("UTF-8")
@@ -192,9 +286,9 @@ def main():
     group.add_argument('-s', '--status',
         dest='action', action='store_const', const=status,
         help="Shows status of the user cerificate")
-    group.add_argument('-r', '--renew',
-        dest='action', action='store_const', const=renew,
-        help="Renew certificate")
+#    group.add_argument('-r', '--renew',
+#        dest='action', action='store_const', const=renew,
+#        help="Renew certificate")
     group.add_argument('--revoke',
         dest='action', action='store_const', const=revoke,
         help="Revoke the certificate.")
