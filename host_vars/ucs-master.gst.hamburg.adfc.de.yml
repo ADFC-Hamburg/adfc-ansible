@@ -43,3 +43,16 @@ adfc_perms:
     group: Domain Admins
   - name: /adfc/software
     group: Domain Admins
+haproxy_lets_encrypt_domains:
+  - ucs-sso.gst.hamburg.adfc.de
+  - ucs-master.gst.hamburg.adfc.de
+
+haproxy_cert_and_key_files:
+  - /etc/univention/letsencrypt/domain.key
+  - /etc/univention/letsencrypt/signed_chain.crt
+
+haproxy_ssl_sites:
+  - domain: ucs-master.gst.hamburg.adfc.de
+    check_user_cert: true
+  - domain: ucs-sso.gst.hamburg.adfc.de
+    check_user_cert: false

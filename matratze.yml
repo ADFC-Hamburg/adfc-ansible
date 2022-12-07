@@ -1,0 +1,5 @@
+- hosts: proxmox_gst
+  gather_facts: no
+  roles:
+  - dehydrated
+  - haproxy

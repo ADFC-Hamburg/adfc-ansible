@@ -1,5 +1,5 @@
 - name: shutdown
-  community.general.shutdown:
+  community.general.shutdown: # noqa ignore-errors
   when: "hcloud_server_info.hcloud_server_info[0].status | default('unknown') != 'off'"
   failed_when: false
   ignore_unreachable: yes

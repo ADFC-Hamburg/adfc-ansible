@@ -16,7 +16,7 @@
   when: hostvars[jitsi_meet_server_name].stop_jitsi_vb_on_main | default('false')
 
 - name: Perfom graceful shutdown
-  uri:
+  uri: # noqa ignore-errors
     url: "http://127.0.0.1:8080/colibri/shutdown"
     method: POST
     body: '{ "graceful-shutdown": "true" }'
