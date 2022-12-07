@@ -11,14 +11,14 @@
   slurp:
     src: "{{ adfc_secret_folder + 'vpnc/' + inventory_hostname + '_vpnc_shared_secret' }}"
   delegate_to: "{{ adfc_vpnc_source }}"
-  register: VPNC_SHARED_SECRET
+  register: vpnc_shared_secret
   tags: vpnc
 
 - name: Get vpnc.conf password from master
   slurp:
     src: "{{ adfc_secret_folder + 'vpnc/' + inventory_hostname + '_vpnc_password' }}"
   delegate_to: "{{ adfc_vpnc_source }}"
-  register: VPNC_PASSWORD
+  register: vpnc_password
   tags: vpnc
 
 - name: Entferne altes vpnc file

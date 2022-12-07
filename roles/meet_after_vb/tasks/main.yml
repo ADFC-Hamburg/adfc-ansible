@@ -21,7 +21,7 @@
     method: POST
     body: '{ "graceful-shutdown": "true" }'
     body_format: json
-  ignore_errors: true
+  failed_when: false
   when: hostvars[jitsi_meet_server_name].stop_jitsi_vb_on_main | default('false')
   delegate_to: "{{ jitsi_meet_server_name }}"
 
