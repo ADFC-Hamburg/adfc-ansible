@@ -3,7 +3,6 @@ exclude_paths:
   - .github/
   - ~/.ansible/roles/jnv.unattended-upgrades
 skip_list:
-  - meta-no-info
   - no-changed-when
   - risky-file-permissions
   - role-name
