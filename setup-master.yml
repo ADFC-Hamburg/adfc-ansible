@@ -50,11 +50,6 @@
       notify: ucr commit postifx main.cf
       tags: postfix
 
-    - name: Copy OTRS Nagios Check
-      copy:
-        src: nagios-otrs.cfg
-        dest: /etc/nagios/conf.local.d/check_otrs.cfg
-
     - name: Copy copy-zertifikat.sh
       copy:
         src: copy-zertifikat.sh
