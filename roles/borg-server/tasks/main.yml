@@ -43,6 +43,38 @@
     mode: "0755"
   tags: borg-server,adfc-borg
 
+- name: Keyscan of clients
+  command:
+    argv:
+      - ssh-keyscan
+      - localhost
+  delegate_to: "{{ item }}"
+  changed_when: false
+  loop: "{{ groups['backup_clients'] }}"
+  register: backup_clients_keyscan
+  tags: borg-server,adfc-borg,borg-keyscan
+
+- name: Output Keyscan
+  copy:
+    content: |
+      {% for res in backup_clients_keyscan.results %}
+      {% for line in res.stdout_lines |sort %}
+      {{ res.item }}{{ line |regex_replace('^localhost','') }}
+      {% endfor %}
+      {% endfor %}
+    dest: /usr/local/share/adfc-borg/known_hosts
+    mode: 0644
+    owner: root
+    group: root
+  tags: borg-server,adfc-borg,borg-keyscan
+
+- name: install ssh-config
+  template:
+    src: ssh-config
+    dest: /usr/local/share/adfc-borg/ssh-config
+    mode: "0644"
+  tags: borg-server,adfc-borg
+
 - name: Setup Cronjob
   cron:
     name: adfc-borg
@@ -59,3 +91,22 @@
     dest: /etc/logrotate.d/adfc-borg
     mode: "0644"
   tags: borg-server
+
+- name: Get Borgbackup key
+  slurp:
+      src: /root/.ssh/borgbackup-server.pub
+  register: borgbackupkey
+  tags:
+    - borg-server
+    - adfc-borg
+    - backup_client
+
+- name: Setup Backup client
+  include_tasks: setup_client.yml
+  loop: "{{ groups['backup_clients'] }}"
+  loop_control:
+    loop_var: backup_client
+  tags:
+    - borg-server
+    - adfc-borg
+    - backup_client

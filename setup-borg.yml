@@ -1,0 +1,5 @@
+- hosts: ucs-master.gst.hamburg.adfc.de
+  gather_facts: yes
+  roles:
+    - borg-server
+

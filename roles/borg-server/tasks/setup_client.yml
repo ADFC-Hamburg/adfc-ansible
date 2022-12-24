@@ -1,0 +1,54 @@
+- name: Create borgbackup user
+  user:
+    name: "{{ borg_client_user }}"
+    comment: "Borg Backup User for {{ inventory_hostname_short }}"
+    system: yes
+    password: '*'
+  delegate_to: "{{ backup_client }}"
+  tags:
+    - borg-server
+    - adfc-borg
+    - backup_client
+
+- name: Create Authorized_keys for borguser append
+  authorized_key:
+    user: "{{ borg_client_user }}"
+    key: "{{ borgbackupkey.content |b64decode }}"
+    state: present
+    key_options: "{{ key_options |join(',') }}"
+  delegate_to: "{{ backup_client }}"
+  vars:
+    key_options:
+      - no-pty
+      - no-agent-forwarding
+      - no-port-forwarding
+      - no-X11-forwarding
+      - no-user-rc
+      - 'command="borg serve --append-only --restrict-to-path {{ adfc_borg_repo }}"'
+      - from="{{ public_ipv4 }}"
+  tags:
+    - borg-server
+    - adfc-borg
+    - backup_client
+
+- name: Create adfc_borg_repo
+  file:
+    path: "{{ adfc_borg_repo }}"
+    state: directory
+    mode: 0700
+    owner: "{{ borg_client_user }}"
+
+- name: Generate SSH Keys for borgbackup
+  include_role:
+    name: ssh-keys
+  vars:
+    authorized_key_user: "{{ borg_client_user }}"
+
+- name: Check if Borg Repo is initialized,
+  stat:
+    path: "{{ adfc_borg_repo }}/config"
+  register: borg_config
+
+- name: Initialize Repo
+  command: "/usr/local/sbin/adfc-borg init {{ inventory_hostname }}"
+  when: not borg_config.stat.isreg

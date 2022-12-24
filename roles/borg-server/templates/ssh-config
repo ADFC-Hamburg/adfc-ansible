@@ -1,0 +1,12 @@
+# {{ ansible_managed }}
+{% for backup_client in groups['backup_clients'] %}
+Host {{ backup_client }}
+    HostName {{ hostvars[backup_client]['ansible_host'] }}
+    Port {{ hostvars[backup_client]['ansible_port'] }}
+    HostKeyAlias {{ backup_client }}
+    UserKnownHostsFile /usr/local/share/adfc-borg/known_hosts
+    StrictHostKeyChecking yes
+    CheckHostIP no
+    ServerAliveInterval 10
+    ServerAliveCountMax 30
+{% endfor %}
