@@ -94,7 +94,7 @@
 
 - name: Get Borgbackup key
   slurp:
-      src: /root/.ssh/borgbackup-server.pub
+    src: /root/.ssh/borgbackup-server.pub
   register: borgbackupkey
   tags:
     - borg-server

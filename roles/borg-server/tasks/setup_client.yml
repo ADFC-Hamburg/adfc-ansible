@@ -3,7 +3,7 @@
     name: "{{ borg_client_user }}"
     comment: "Borg Backup User for {{ inventory_hostname_short }}"
     system: yes
-    password: '*'
+    password: "*"
   delegate_to: "{{ backup_client }}"
   tags:
     - borg-server
