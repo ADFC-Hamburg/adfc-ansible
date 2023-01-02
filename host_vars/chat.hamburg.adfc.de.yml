@@ -7,4 +7,4 @@ borg_save_exclude_dirs:
 public_ipv4: "{{ lookup('dig', inventory_hostname, 'qtype=A') }}"
 borg_cron_hour: "2,14"
 borg_cron_minute: "9"
-borg_client_user: 'borgchat'
+borg_client_user: "borgchat"
