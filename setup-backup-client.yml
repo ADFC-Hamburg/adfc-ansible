@@ -1,50 +1,49 @@
 - hosts: backup_clients
   roles:
-  - load-contacts
-  - ssh-keys
-  - postfix-auth
-  - basic_setup
+    - load-contacts
+    - ssh-keys
+    - postfix-auth
+    - basic_setup
   tasks:
+    # benötigte Programme installieren
+    - name: Borgbackup ppa
+      apt_repository:
+        repo: "ppa:costamagnagianfranco/borgbackup/"
+      tags: software
 
-# benötigte Programme installieren
-  - name: Borgbackup ppa
-    apt_repository:
-      repo: 'ppa:costamagnagianfranco/borgbackup/'
-    tags: software
+    - name: Installiere Pakete
+      apt:
+        name: "{{ packages }}"
+      vars:
+        packages:
+          - borgbackup
+          - mailutils
+          - monitoring-plugins-basic
+          - nagios-nrpe-server
+      tags: monitoring, software
 
-  - name: Installiere Pakete
-    apt:
-      name: "{{ packages }}"
-    vars:
-      packages:
-      - borgbackup
-      - mailutils
-      - monitoring-plugins-basic
-      - nagios-nrpe-server
-    tags: monitoring, software
+    - name: Create Directory /adfc-backup/
+      file:
+        path: /adfc-backup/
+        state: directory
+        mode: 0755
+        owner: root
+        group: root
 
-  - name: Create Directory /adfc-backup/
-    file:
-      path: /adfc-backup/
-      state: directory
-      mode: 0755
-      owner: root
-      group: root
+    - name: Mount Disk to /adfc-backup/
+      mount:
+        path: /adfc-backup
+        src: "{{ backup_disk_src }}"
+        fstype: ext4
+        state: mounted
+        opts: noatime
 
-  - name: Mount Disk to /adfc-backup/
-    mount:
-      path: /adfc-backup
-      src: "{{ backup_disk_src }}"
-      fstype: ext4
-      state: mounted
-      opts: noatime
+    ################################ Monitoring ####################
 
-################################ Monitoring ####################
-
-  - name: Create Local NRPE Config
-    template:
-      src: nrpe_local.cfg
-      dest: /etc/nagios/nrpe_local.cfg
-      mode: "0644"
-    tags: monitoring
-    notify: Restart Nrpe
+    - name: Create Local NRPE Config
+      template:
+        src: nrpe_local.cfg
+        dest: /etc/nagios/nrpe_local.cfg
+        mode: "0644"
+      tags: monitoring
+      notify: Restart Nrpe
