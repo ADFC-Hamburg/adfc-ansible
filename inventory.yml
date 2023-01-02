@@ -5,6 +5,7 @@ all:
         tools.adfc-hamburg.de:
         proxmox01.adfc-intern.de:
         int-master.adfc-intern.de:
+        chat.hamburg.adfc.de:
       children:
         gsthh_server:
         meet:

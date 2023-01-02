@@ -6,7 +6,13 @@
       - python3-venv
       - cython3
       - libacl1-dev
+      - libssl-dev
   tags: borg-server
+
+- name: Install virtualenv via pip
+  pip:
+    name: virtualenv
+    executable: pip3
 
 - name: Install borg
   pip:
@@ -15,7 +21,6 @@
       - cython
       - borgbackup==1.1.15
     virtualenv: /usr/local/share/borg-venv
-    virtualenv_command: pyvenv
   vars:
     ansible_python_interpreter: /usr/bin/python3
   tags: borg-server
@@ -54,6 +59,14 @@
   register: backup_clients_keyscan
   tags: borg-server,adfc-borg,borg-keyscan
 
+- name: Create dir
+  file:
+    path: /usr/local/share/adfc-borg
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
+
 - name: Output Keyscan
   copy:
     content: |
@@ -78,8 +91,8 @@
 - name: Setup Cronjob
   cron:
     name: adfc-borg
-    minute: "55"
-    hour: "6,7,11,21"
+    minute: "{{ borg_cron_minute }}"
+    hour: "{{ borg_cron_hour }}"
     user: root
     job: /usr/local/sbin/adfc-borg cron >/dev/null
     cron_file: ansible_adfc-borg

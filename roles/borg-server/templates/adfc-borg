@@ -92,10 +92,18 @@ borg_for() {
 }
 
 borg_cron() {
-    for FILE in $(ls -tr ${STATUS_DIR}/tried/* ) ; do
-        RECHNER=$(basename $FILE)
-        LOG="/var/log/adfc-borg-${RECHNER}.log"
-        if [ ! -f "${STATUS_DIR}/disabled/${RECHNER}" ] ; then
+    {% if borg_create_pre_job |default('') != '' %}
+    OK=0
+    {{ borg_create_pre_job |default('') }} && OK=1
+    {% else %}
+    OK=1
+    {% endif %}
+    export BORG_RSH="ssh -F /usr/local/share/adfc-borg/ssh-config -i /root/.ssh/borgbackup-server"
+    if [ "$OK" == "1" ] ; then
+        for FILE in $(ls -tr ${STATUS_DIR}/tried/* ) ; do
+            RECHNER=$(basename $FILE)
+            LOG="/var/log/adfc-borg-${RECHNER}.log"
+            if [ ! -f "${STATUS_DIR}/disabled/${RECHNER}" ] ; then
                 borg_lock $RECHNER || exit $?
                 touch "${STATUS_DIR}/tried/${RECHNER}"
                 echo /usr/local/bin/borg create $BORG_CREATE_PARAMS $(borg_repo "${RECHNER}")::'{hostname}-{now:%Y-%m-%d_%H%M%S}' $BORG_SAVE_PATH
@@ -109,8 +117,9 @@ borg_cron() {
                     exit 0
                 fi
                 # Sonst in der Schleife den nächsten nehmen
-        fi
-    done
+            fi
+        done
+    fi
 }
 
 borg_status() {
@@ -205,12 +214,11 @@ borg_list() {
     NC='\033[0m'
 
     RECHNER="$1"
-    if [ "$(borg_is_active $RECHNER )" == "1" ] ; then
-        echo "Liste der Backups auf ${RECHNER}:"
-        /usr/local/bin/borg list $(borg_repo "${RECHNER}")
-    else
-        echo -e "${RED}FEHLER:${NC} Rechner $RECHNER nicht verbunden" 1>&2
-    fi
+    echo "Liste der Backups auf ${RECHNER}:"
+    /usr/local/bin/borg list $(borg_repo "${RECHNER}")
+    #else
+    #    echo -e "${RED}FEHLER:${NC} Rechner $RECHNER nicht verbunden" 1>&2
+    #fi
 }
 
 borg_mount() {

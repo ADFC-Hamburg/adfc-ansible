@@ -37,18 +37,22 @@
     state: directory
     mode: 0700
     owner: "{{ borg_client_user }}"
+  delegate_to: "{{ backup_client }}"
 
 - name: Generate SSH Keys for borgbackup
   include_role:
     name: ssh-keys
   vars:
     authorized_key_user: "{{ borg_client_user }}"
+    authorized_key_delegate: "{{ backup_client }}"
 
 - name: Check if Borg Repo is initialized,
   stat:
     path: "{{ adfc_borg_repo }}/config"
   register: borg_config
+  delegate_to: "{{ backup_client }}"
 
 - name: Initialize Repo
-  command: "/usr/local/sbin/adfc-borg init {{ inventory_hostname }}"
-  when: not borg_config.stat.isreg
+  fail:
+    msg: "Bitte Repo initalisieren mit: /usr/local/sbin/adfc-borg init {{ backup_client }}"
+  when: not borg_config.stat.exists

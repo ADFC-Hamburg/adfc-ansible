@@ -20,6 +20,8 @@ borg_save_exclude_dirs:
   - "*/.cache"
   - /adfc/software
 borg_client_user: borguser
+borg_cron_hour: "6,7,11,21"
+borg_cron_minute: "55"
 
 systemd_max_memory:
   - service_name: univention-management-console-web-server

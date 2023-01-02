@@ -3,6 +3,7 @@
 Host {{ backup_client }}
     HostName {{ hostvars[backup_client]['ansible_host'] }}
     Port {{ hostvars[backup_client]['ansible_port'] }}
+    User "{{ borg_client_user }}"
     HostKeyAlias {{ backup_client }}
     UserKnownHostsFile /usr/local/share/adfc-borg/known_hosts
     StrictHostKeyChecking yes

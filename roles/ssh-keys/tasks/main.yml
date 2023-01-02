@@ -33,6 +33,7 @@
       comment: "ADFC-Ansible {{ item | relpath(inventory_dir + '/' + key_path) }}"
       key: "{{ lookup('file', item) }}"
       state: present
+  delegate_to: "{{ authorized_key_delegate |default(omit) }}"
   with_items: "{{ add_keys_files |json_query('results[*].files[*].path')  }}"
 
 
@@ -42,3 +43,4 @@
       key: "{{ lookup('file', item.path) }}"
       state: absent
   with_items: "{{ remove_keys_files.files }}"
+  delegate_to: "{{ authorized_key_delegate |default(omit) }}"

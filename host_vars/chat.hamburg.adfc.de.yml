@@ -1,0 +1,10 @@
+borg_create_pre_job: docker exec docker-rocket-mongodb-1 sh -c 'mongodump --archive'  > /usr/local/share/rocketchat/mongodump 2>/usr/local/share/rocketchat/mongodump.log
+
+borg_save_path: "/usr/local/share/rocketchat /etc"
+borg_save_exclude_dirs:
+  - /tmp
+
+public_ipv4: "{{ lookup('dig', inventory_hostname, 'qtype=A') }}"
+borg_cron_hour: "2,14"
+borg_cron_minute: "9"
+borg_client_user: 'borgchat'
