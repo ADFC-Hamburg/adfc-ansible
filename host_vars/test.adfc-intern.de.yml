@@ -10,7 +10,7 @@ proxmox_net:
 proxmox_ramsize_in_mb: 1024
 proxmox_cores: 1
 
-jitsi_meet_authentication: cyrus
+# jitsi_meet_authentication: cyrus
 
 firewall:
   - name: Apache http
@@ -39,3 +39,55 @@ firewall:
     proto: tcp
 
 adfc_jitsi_branch: "adfc-devel"
+
+jitis_meet_static_override:
+  - src: jitsi_watermark.png
+    dest: images/adfc-meet-logo.png
+    is_template: no
+  - src: adfc_jitsi_background.png
+    dest: images/welcome-background.png
+    is_template: no
+  - src: jitsi_favicon.ico
+    dest: favicon.ico
+    is_template: no
+  - src: dyn_branding.json.j2
+    dest: static/dyn_branding.json
+    is_template: yes
+  - src: adfc_jitsi_meet_close3.html.j2
+    dest: static/close3.html
+    is_template: yes
+  - src: adfc_jitsi_meet_close3.html.j2
+    dest: static/close2.html
+    is_template: yes
+  - src: jitsi_favicon.ico
+    dest: images/favicon.ico
+    is_template: no
+  - src: jitsi_favicon.ico
+    dest: favicon.ico
+    is_template: no
+  - src: adfc_jitsi_meet_welcomePageAdditionalCard.html.j2
+    dest: static/welcomePageAdditionalCard.html
+    is_template: yes
+
+jtisi_rewrite_i18n:
+  de:
+    - op: replace
+      path: "/welcomepage/headerTitle"
+      value: "ADFC Meet"
+    - op: replace
+      path: "/welcomepage/headerSubtitle"
+      value: "Das Onlinekonferenzsystem vom ADFC"
+  en:
+    - op: replace
+      path: "/welcomepage/headerTitle"
+      value: "ADFC Meet"
+    - op: replace
+      path: "/welcomepage/headerSubtitle"
+      value: "The online conference system of the ADFC"
+  es:
+    - op: replace
+      path: "/welcomepage/headerTitle"
+      value: "ADFC Meet"
+    - op: replace
+      path: "/welcomepage/headerSubtitle"
+      value: "El sistema de conferencias en línea de ADFC"

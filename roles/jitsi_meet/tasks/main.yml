@@ -1,57 +1,69 @@
 ---
 
-- include: packages.yml
+- include_tasks: packages.yml
   tags: jitsi_packages
+
+- name: Copy certs
+  include_tasks: copy_certs.yml
 
   # Read Jitsi Meet config files and extract secrets for use in template configs.
   # Import to run these tasks after package installation, but before config tasks.
-- include: dynamic_vars.yml
-  tags: always
+#- include: dynamic_vars.yml
+#  tags: always
 
-- include: jitsi_meet.yml
+- include_tasks: jitsi_meet.yml
   tags: jitsi_meet
 
-- include: jicofo.yml
-  tags: jitsi_jicofo
+- name: Interface Config
+  lineinfile:
+    path: "/usr/share/jitsi-meet/interface_config.js"
+    search_string: "DISPLAY_WELCOME_PAGE_ADDITIONAL_CARD"
+    line: "    DISPLAY_WELCOME_PAGE_ADDITIONAL_CARD: true,"
+    owner: root
+    group: root
+    mode: "0644"
 
-- include: prosody.yml
-  tags: jitsi_prosody
+#- include: jicofo.yml
+#  tags: jitsi_jicofo
 
-- include: sip_gateway.yml
-  tags: jitsi_sip
-  when: jitsi_meet_configure_sip_gateway | bool
+#- include: prosody.yml
+#  tags: jitsi_prosody
 
-- include: videobridge.yml
-  tags: jitsi_videobridge
+#- include: sip_gateway.yml
+#  tags: jitsi_sip
+#  when: jitsi_meet_configure_sip_gateway | bool
 
-- include: nginx.yml
+#- include: videobridge.yml
+#  tags: jitsi_videobridge
+
+- include_tasks: nginx.yml
   tags: jitsi_nginx
   when:
     - jitsi_meet_configure_nginx | bool
     - jitsi_meet_ssl_cert_path | length > 0
     - jitsi_meet_ssl_key_path | length > 0
 
-- include: ufw.yml
-  tags: jitsi_ufw
-  when: jitsi_meet_configure_firewall | bool
+#- include: ufw.yml
+#  tags: jitsi_ufw
+#  when: jitsi_meet_configure_firewall | bool
 
-- include: clean_up_default_configs.yml
-  tags: jitsi_clean
-  when: jitsi_meet_server_name != 'localhost'
+#- include: clean_up_default_configs.yml
+#  tags: jitsi_clean
+#  when: jitsi_meet_server_name != 'localhost'
 
-  # Official recommended tweaks
-- include: systemd.yml
+#  Official recommended tweaks
+- include_tasks: systemd.yml
   tags: jitsi_systemd
 
-- include: ui_customization.yml
-  tags: jitsi_ui
-  when: jitsi_meet_customize_the_ui | bool
+#- include: ui_customization.yml
+#  tags: jitsi_ui
+#  when: jitsi_meet_customize_the_ui | bool
 
   # Placing the browser extensions last so the associated debugging tasks
   # that display URLs are visible near the end of the play.
   # Build your own with https://github.com/jitsi/jidesha
-- include: browser_extensions.yml
+- include_tasks: browser_extensions.yml
   tags: jitsi_browser_extensions
 
-- include: adfc.yml
+- include_tasks: adfc.yml
   tags: jitsi_adfc

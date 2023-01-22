@@ -1,0 +1,40 @@
+- name: Get Key File
+  slurp:
+    path: "/etc/letsencrypt/live/{{ jitsi_meet_server_name }}/privkey.pem"
+  register: key_slurp
+
+- name: Get Cert file
+  slurp:
+    path: "/etc/letsencrypt/live/{{ jitsi_meet_server_name }}/fullchain.pem"
+  register: cert_slurp
+
+- name: Write key file
+  copy:
+    content: "{{ key_slurp.content | b64decode }}"
+    dest: "{{ item.dest }}"
+    mode: "0600"
+    owner: root
+    group: root
+  notify:
+    - "{{ item.notify }}"
+  loop:
+    - dest: /etc/jitsi/meet/{{ jitsi_meet_server_name }}.key
+      notify: restart nginx
+    - dest: /etc/prosody/certs/{{ jitsi_meet_server_name }}.key
+      notify: restart prosody
+
+- name: Write cert file
+  copy:
+    content: "{{ cert_slurp.content | b64decode }}"
+    dest: "{{ item.dest }}"
+    mode: "0644"
+    owner: root
+    group: root
+  notify:
+    - "{{ item.notify }}"
+  loop:
+    - dest: /etc/jitsi/meet/{{ jitsi_meet_server_name }}.crt
+      notify: restart nginx
+    - dest: /etc/prosody/certs/{{ jitsi_meet_server_name }}.crt
+      notify: restart prosody
+
