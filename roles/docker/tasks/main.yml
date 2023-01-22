@@ -25,7 +25,7 @@
 
 - name: gpg Convert key
   command: >
-    gpg2 --batch --dearmor --output
+    gpg --batch --dearmor --output
     {{ docker_repo_gpg_key_gpg }}
     {{ docker_repo_gpg_key_dest }}
   args:
@@ -35,3 +35,9 @@
   apt:
     name: "{{ docker_packages }}"
     update_cache: yes
+
+- name: Install Pip Packages
+  pip:
+    name:
+      - docker
+      - docker-compose
