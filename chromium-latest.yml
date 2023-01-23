@@ -3,7 +3,7 @@
   gather_facts: false
   serial: 1
   roles:
-    - chromium-latest
+    - chromium_latest
   pre_tasks:
     - name: Power on clients
       include_role:

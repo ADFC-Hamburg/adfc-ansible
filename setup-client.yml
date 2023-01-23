@@ -22,7 +22,7 @@
     - client_apt_remove
     - master_pdf_editor
     - gdm_desktoptheme
-    - chromium-latest
+    - chromium_latest
   handlers:
     - name: XnViewMP manuell installieren
       ansible.builtin.apt:
