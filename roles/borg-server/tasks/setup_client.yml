@@ -1,6 +1,6 @@
 ---
 - name: Create borgbackup user
-  user:
+  ansible.builtin.user:
     name: "{{ borg_client_user }}"
     comment: Borg Backup User for {{ inventory_hostname_short }}
     system: true
@@ -13,7 +13,7 @@
 
 - name: Create Authorized_keys for borguser append
   authorized_key:
-    user: "{{ borg_client_user }}"
+    ansible.builtin.user: "{{ borg_client_user }}"
     key: "{{ borgbackupkey.content |b64decode }}"
     state: present
     key_options: "{{ key_options |join(',') }}"

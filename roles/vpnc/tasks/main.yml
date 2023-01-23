@@ -81,7 +81,7 @@
 
 - name: Call VPNC Monitor every minute
   cron:
-    user: root
+    ansible.builtin.user: root
     cron_file: ansible-vpnc
     name: vpnc-monitor
     minute: "*"

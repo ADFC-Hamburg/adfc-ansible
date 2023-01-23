@@ -13,7 +13,7 @@
     user_pass: "{{ lookup('password', '/dev/null length=16') }}"
 
 - name: Make sure user is present on host
-  user:
+  ansible.builtin.user:
     name: startup_script
     shell: /usr/local/bin/tasmota_start_menu.sh
     state: present

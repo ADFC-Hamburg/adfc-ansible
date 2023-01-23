@@ -4,7 +4,7 @@
     name: "{{ metropolregion_termine_packages }}"
 
 - name: Create user
-  user:
+  ansible.builtin.user:
     name: metroterm
     comment: Metropolregion Termin
     shell: /bin/bash
@@ -50,6 +50,6 @@
     name: Metropolregion Termine
     minute: "17"
     hour: "23"
-    user: metroterm
+    ansible.builtin.user: metroterm
     cron_file: metropolregion_termine
     job: /home/metroterm/run_daily.sh

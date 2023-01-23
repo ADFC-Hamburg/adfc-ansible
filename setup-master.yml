@@ -77,7 +77,7 @@
         hour: 10,14,17
         minute: "11"
         cron_file: ansible_backup_win
-        user: root
+        ansible.builtin.user: root
         job: /usr/local/sbin/adfc-backup-win7pro
       tags: backup-windows
 
@@ -87,7 +87,7 @@
         hour: "19"
         minute: "28"
         cron_file: ansible-delete-proxmox-datensicherung
-        user: root
+        ansible.builtin.user: root
         job: /usr/bin/find /adfc/Computer/Datensicherung/Proxmox/ -type f -ctime 5 -delete
       tags: proxmox-backup
 
@@ -97,7 +97,7 @@
         hour: "23"
         minute: "27"
         cron_file: ansible-delete-old-tomcat-logs
-        user: root
+        ansible.builtin.user: root
         job: univention-app shell guacamole find /usr/local/tomcat/logs -mtime +3 -delete
 
     - name: Wake On LAN installieren

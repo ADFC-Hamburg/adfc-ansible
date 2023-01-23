@@ -94,7 +94,7 @@
     name: adfc-borg
     minute: "{{ borg_cron_minute }}"
     hour: "{{ borg_cron_hour }}"
-    user: root
+    ansible.builtin.user: root
     job: /usr/local/sbin/adfc-borg cron >/dev/null
     cron_file: ansible_adfc-borg
   tags: borg-server

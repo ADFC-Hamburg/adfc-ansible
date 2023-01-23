@@ -31,7 +31,7 @@
 
     - name: Safe Dreicx Backup key
       authorized_key:
-        user: phonesystem
+        ansible.builtin.user: phonesystem
         state: present
         key: "{{ dreicx_backup_ssh_key.public_key }}"
         key_options: "{{ ssh_key_opts | join(',') }}"
@@ -68,7 +68,7 @@
           '--rsh=ssh -i /root/.ssh/dreicx-backup'
           phonesystem@192.168.123.70:.
           /adfc/Computer/Datensicherung/dreicx/
-        user: root
+        ansible.builtin.user: root
         cron_file: /etc/cron.d/ansible_backup_dreicx
       delegate_to: ucs-master.gst.hamburg.adfc.de
       tags: dreicx_backup

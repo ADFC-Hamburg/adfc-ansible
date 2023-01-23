@@ -63,7 +63,7 @@
   when: enable_user_shutdown is undefined
 
 - name: Make sure the xrdp user is in the ssl-cert group
-  user:
+  ansible.builtin.user:
     name: xrdp
     groups: ssl-cert
     append: true

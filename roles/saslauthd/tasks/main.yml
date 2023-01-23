@@ -38,7 +38,7 @@
     mode: 0644
 
 - name: Create saslauthd user
-  user:
+  ansible.builtin.user:
     name: saslauthd
     comment: Saslauthd
     system: true

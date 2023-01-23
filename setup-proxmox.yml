@@ -7,12 +7,12 @@
     - proxmox-backup
   tasks:
     - name: Erstellen eine Unix User fuer Tools-Server Backup
-      user:
+      ansible.builtin.user:
         name: tools-backup
         comment: tools Server Backup
     - name: Kopiere SSH Public Key fuer Tools-Server Backup
       authorized_key:
-        user: tools-backup
+        ansible.builtin.user: tools-backup
         state: present
         key: "{{ lookup('file', 'ssh-tools-server-backup.pub') }}"
         key_options: no-port-forwarding
@@ -48,4 +48,4 @@
         minute: "0"
         job: /usr/local/bin/check_ips.sh
         cron_file: adfc_ansible
-        user: root
+        ansible.builtin.user: root
