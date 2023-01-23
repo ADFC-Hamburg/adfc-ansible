@@ -7,7 +7,7 @@
     - ssh_keys
     - inactivity_shutdown
     - jnv.unattended-upgrades
-    - load-contacts
+    - load_contacts
     - postfix_auth
     - skype
     - fonts
