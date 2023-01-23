@@ -1,0 +1,11 @@
+# {{ ansible_managed }}
+
+[main]
+plugins=ifupdown,keyfile
+dns=default
+
+[ifupdown]
+managed=false
+
+[device]
+wifi.scan-rand-mac-address=no
