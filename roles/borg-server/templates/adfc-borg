@@ -8,34 +8,20 @@ VPN_KNOCK_TIMEOUT="65"
 # Wie viele Sekunden sollte das letzte erfolgreiche Backup höchstens her sein 60*60*24 (1 Tag)
 SUCCESS_TIMEOUT="86400"
 
-BORG_USER="borguser" # Benutzerkonto auf Backup-Client / FIX! NICHT ÄNDERN
-REPO_PATH="~/adfc-ucs-master/"
+BORG_USER=""{{ borg_client_user }}"" # Benutzerkonto auf Backup-Client
+REPO_PATH="{{ adfc_borg_repo }}"
 PRUNE_DAYS="7"       # Anzahl der vorzuhaltenden Tagessicherungen
 PRUNE_WEEKS="4"      # Anzahl der vorzuhaltenden Wochensicherungen
 PRUNE_MONTHS="12"    # Anzahl der vorzuhaltenden Monatssicherungen
 PRUNE_YEARS="2"      # Anzahl der vorzuhaltenden Jahressicherungen
 
-BORG_CREATE_PARAMS="-C lz4 --info --exclude-caches --show-rc --stats --numeric-owner --noatime -e /mnt -e /var/cache -e /run -e /dev -e /sys -e /proc -e /tmp -e /usr/share/ppd -e /home.old -e */ImapMail -e */.npm -e */.cache -e /adfc/software --list --filter=AMEx"
-BORG_SAVE_PATH="/"
+BORG_CREATE_PARAMS="-C lz4 --info --exclude-caches --show-rc --stats --numeric-owner --noatime -e {{ borg_save_exclude_dirs |join(' -e ') }} --list --filter=AMEx"
+BORG_SAVE_PATH="{{ borg_save_path }}"
 
 BORG_INIT_PARAMS="--encryption keyfile"
 
-export BORG_PASSPHRASE=""
+export BORG_PASSPHRASE="" BORG_RSH="ssh -F /usr/local/share/adfc-borg/ssh-config"
 
-borg_last_connect() {
-    RECHNER="$1"
-    if [ -f "/run/client-${RECHNER}.up" ] ; then
-        echo "$(( $( date +%s) - $(stat -c "%Y" /run/client-${RECHNER}.up )))"
-    else
-        date "+%s"
-    fi
-}
-
-borg_is_active() {
-    RECHNER="$1"
-    LAST=$(borg_last_connect $RECHNER)
-    echo "$(( $LAST < $VPN_KNOCK_TIMEOUT ))"
-}
 
 borg_last_successfull_backup() {
     RECHNER="$1"
@@ -67,27 +53,6 @@ borg_repo() {
     echo "ssh://${RECHNER}/${REPO_PATH}"
 }
 
-borg_create_ssh_option_file() {
-    RECHNER="$1"
-    IP_FILE="/run/client-${RECHNER}.up"
-    IP=$(cat $IP_FILE)
-    KNOWN_HOSTS="${STATUS_DIR}/ssh_conf/${RECHNER}.pub"
-    if [ -f $KNOWN_HOSTS ] ; then
-        STRICT="yes"
-    else
-        STRICT="no"
-    fi
-    cat > "${STATUS_DIR}/ssh_conf/${RECHNER}.conf" <<EOF
-Host ${RECHNER}
-    HostName ${IP}
-    User ${BORG_USER}
-    HostKeyAlias ${RECHNER}
-    UserKnownHostsFile ${KNOWN_HOSTS}
-    StrictHostKeyChecking ${STRICT}
-    ServerAliveInterval 10
-    ServerAliveCountMax 30
-EOF
-}
 
 borg_init() {
     RECHNER="$1"
@@ -100,9 +65,8 @@ borg_init() {
         echo existiert schon
         exit 1
     fi
-    borg_create_ssh_option_file "${RECHNER}"
-    echo BORG_RSH=\"ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf\" /usr/local/bin/borg init $BORG_INIT_PARAMS $(borg_repo ${RECHNER})
-    BORG_RSH="ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf" /usr/local/bin/borg init $BORG_INIT_PARAMS $(borg_repo ${RECHNER})
+    echo /usr/local/bin/borg init $BORG_INIT_PARAMS $(borg_repo ${RECHNER})
+    /usr/local/bin/borg init $BORG_INIT_PARAMS $(borg_repo ${RECHNER})
     if [ $? -ne 0 ]; then
         echo Fehler beim borg init
         exit 1
@@ -128,16 +92,22 @@ borg_for() {
 }
 
 borg_cron() {
-    for FILE in $(ls -tr ${STATUS_DIR}/tried/* ) ; do
-        RECHNER=$(basename $FILE)
-        LOG="/var/log/adfc-borg-${RECHNER}.log"
-        if [ ! -f "${STATUS_DIR}/disabled/${RECHNER}" ] ; then
-            if [ "$(borg_is_active $RECHNER )" == "1" ] ; then
-                borg_create_ssh_option_file "${RECHNER}"
+    {% if borg_create_pre_job |default('') != '' %}
+    OK=0
+    {{ borg_create_pre_job |default('') }} && OK=1
+    {% else %}
+    OK=1
+    {% endif %}
+    export BORG_RSH="ssh -F /usr/local/share/adfc-borg/ssh-config -i /root/.ssh/borgbackup-server"
+    if [ "$OK" == "1" ] ; then
+        for FILE in $(ls -tr ${STATUS_DIR}/tried/* ) ; do
+            RECHNER=$(basename $FILE)
+            LOG="/var/log/adfc-borg-${RECHNER}.log"
+            if [ ! -f "${STATUS_DIR}/disabled/${RECHNER}" ] ; then
                 borg_lock $RECHNER || exit $?
                 touch "${STATUS_DIR}/tried/${RECHNER}"
-                echo BORG_RSH=\"ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf  -i /root/.ssh/borgbackup-server\" /usr/local/bin/borg create $BORG_CREATE_PARAMS $(borg_repo "${RECHNER}")::'{hostname}-{now:%Y-%m-%d_%H%M%S}' $BORG_SAVE_PATH
-                SSH_AUTH_SOCK="" BORG_RSH="ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf  -i /root/.ssh/borgbackup-server" /usr/local/bin/borg create $BORG_CREATE_PARAMS $(borg_repo "${RECHNER}")::'{hostname}-{now:%Y-%m-%d_%H%M%S}' $BORG_SAVE_PATH 2>&1 |tee -a $LOG
+                echo /usr/local/bin/borg create $BORG_CREATE_PARAMS $(borg_repo "${RECHNER}")::'{hostname}-{now:%Y-%m-%d_%H%M%S}' $BORG_SAVE_PATH
+                SSH_AUTH_SOCK="" /usr/local/bin/borg create $BORG_CREATE_PARAMS $(borg_repo "${RECHNER}")::'{hostname}-{now:%Y-%m-%d_%H%M%S}' $BORG_SAVE_PATH 2>&1 |tee -a $LOG
                 STATUS=${PIPESTATUS[0]}
                 borg_unlock $RECHNER
                 if [ $STATUS -eq 0 ]; then
@@ -148,8 +118,8 @@ borg_cron() {
                 fi
                 # Sonst in der Schleife den nächsten nehmen
             fi
-        fi
-    done
+        done
+    fi
 }
 
 borg_status() {
@@ -180,19 +150,7 @@ borg_status() {
     else
         echo -e "  ${RED}Auf dem Rechner wurde noch nie eine Sicherung erfolgreich gesichert${NC}"
     fi
-    IP_FILE="/run/client-${RECHNER}.up"
-    if [ -f $IP_FILE ] ; then
-        if [ "$(borg_is_active $RECHNER )" == "1" ] ; then
-            echo -e "  ${GREEN}Der Client ist aktiv verbunden.${NC}"
-            echo "  Aktive IPv4 Addresse: $(cat $IP_FILE)"
-        else
-            echo -e "  ${RED}Der Client ist NICHT verbunden.${NC}"
-            stat  -c "  Letzte erfolgreiche VPN Verbindung: %y" "/run/client-${RECHNER}.up"
-            echo "  Letzte IPv4 Addresse: $(cat $IP_FILE)"
-        fi
-    else
-        echo -e "  ${RED}Es gab noch keine VPN Connection mit diesen Rechner${NC}"
-    fi
+    /usr/local/bin/borg info  $(borg_repo "${RECHNER}")
     LOCK="${STATUS_DIR}/lock/${RECHNER}"
     if [ -f $LOCK ] ; then
         echo -ne "${GREEN}"
@@ -214,9 +172,8 @@ borg_prune() {
     LOG="/var/log/adfc-borg-${RECHNER}.log"
     if [ ! -f "${STATUS_DIR}/disabled/${RECHNER}" ] ; then
         borg_lock "${RECHNER}" || exit $lock
-        borg_create_ssh_option_file "${RECHNER}"
         echo borg prune $(borg_repo "${RECHNER}") --stats --list --keep-within=1d --keep-daily=$PRUNE_DAYS --keep-weekly=$PRUNE_WEEKS --keep-monthly=$PRUNE_MONTHS --keep-yearly=$PRUNE_YEARS  2>&1 |tee -a $LOG
-        BORG_RSH="ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf" /usr/local/bin/borg prune $(borg_repo "${RECHNER}") --stats --list --keep-within=1d --keep-daily=$PRUNE_DAYS --keep-weekly=$PRUNE_WEEKS --keep-monthly=$PRUNE_MONTHS --keep-yearly=$PRUNE_YEARS  2>&1 |tee -a $LOG
+        /usr/local/bin/borg prune $(borg_repo "${RECHNER}") --stats --list --keep-within=1d --keep-daily=$PRUNE_DAYS --keep-weekly=$PRUNE_WEEKS --keep-monthly=$PRUNE_MONTHS --keep-yearly=$PRUNE_YEARS  2>&1 |tee -a $LOG
         borg_unlock "${RECHNER}"
     else
         echo "Rechner $RECHNER wurde deaktiviert"
@@ -240,13 +197,12 @@ borg_key_export() {
     echo "============================================================================"
     echo "ADFC Hamburg Vertraulich, nicht fuer Dritte!"
     echo "Borg Key fuer Rechner $(hostname) gesichert auf ${RECHNER}"
-    borg_create_ssh_option_file "${RECHNER}"
     echo "Kompakt:"
-    BORG_RSH="ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf" /usr/local/bin/borg key export $(borg_repo "${RECHNER}") /dev/stdout
+    /usr/local/bin/borg key export $(borg_repo "${RECHNER}") /dev/stdout
     echo "Papier-Version:"
-    BORG_RSH="ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf" /usr/local/bin/borg key export --paper $(borg_repo "${RECHNER}") /dev/stdout
+    /usr/local/bin/borg key export --paper $(borg_repo "${RECHNER}") /dev/stdout
     echo "QR-Code: /tmp/borg-key-${RECHNER}.html"
-    BORG_RSH="ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf" /usr/local/bin/borg key export --qr-html $(borg_repo "${RECHNER}") /tmp/borg-key-${RECHNER}.html
+    /usr/local/bin/borg key export --qr-html $(borg_repo "${RECHNER}") /tmp/borg-key-${RECHNER}.html
     echo "============================================================================"
 
 }
@@ -258,13 +214,11 @@ borg_list() {
     NC='\033[0m'
 
     RECHNER="$1"
-    if [ "$(borg_is_active $RECHNER )" == "1" ] ; then
-        echo "Liste der Backups auf ${RECHNER}:"
-        borg_create_ssh_option_file "${RECHNER}"
-        BORG_RSH="ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf" /usr/local/bin/borg list $(borg_repo "${RECHNER}")
-    else
-        echo -e "${RED}FEHLER:${NC} Rechner $RECHNER nicht verbunden" 1>&2
-    fi
+    echo "Liste der Backups auf ${RECHNER}:"
+    /usr/local/bin/borg list $(borg_repo "${RECHNER}")
+    #else
+    #    echo -e "${RED}FEHLER:${NC} Rechner $RECHNER nicht verbunden" 1>&2
+    #fi
 }
 
 borg_mount() {
@@ -275,10 +229,9 @@ borg_mount() {
     else
         EXPAND="::$SICHERUNG"
     fi
-    borg_create_ssh_option_file "${RECHNER}"
     mkdir -p "/mnt/restore/${RECHNER}"
     echo "borg mount $(borg_repo "${RECHNER}")${EXPAND} /mnt/restore/${RECHNER}"
-    BORG_RSH="ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf" /usr/local/bin/borg mount $(borg_repo "${RECHNER}")${EXPAND} /mnt/restore/${RECHNER}
+    /usr/local/bin/borg mount $(borg_repo "${RECHNER}")${EXPAND} /mnt/restore/${RECHNER}
     if [ $? -eq 0 ] ; then
         echo "Mountpoint:  /mnt/restore/${RECHNER}"
         echo "Bitte nach dem Restore mit:"
@@ -289,7 +242,7 @@ borg_mount() {
 
 borg_umount() {
     RECHNER="$1"
-    BORG_RSH="ssh -F ${STATUS_DIR}/ssh_conf/${RECHNER}.conf" /usr/local/bin/borg umount  /mnt/restore/${RECHNER}
+    /usr/local/bin/borg umount  /mnt/restore/${RECHNER}
 }
 
 borg_help() {
