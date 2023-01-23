@@ -2,7 +2,7 @@
 - hosts: ucs-master.gst.hamburg.adfc.de
   gather_facts: true
   roles:
-    - tasmota-start-menu
+    - tasmota_start_menu
     - ssh_keys
     - gray-print
     - systemd-max-memory
