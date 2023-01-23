@@ -4,7 +4,7 @@
   roles:
     - tasmota_start_menu
     - ssh_keys
-    - gray-print
+    - gray_print
     - systemd_max_memory
     - links-on-desktop
     - borg_server
