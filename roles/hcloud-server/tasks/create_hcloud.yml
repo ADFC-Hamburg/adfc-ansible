@@ -127,7 +127,7 @@
     ansible_ssh_extra_args: -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null
 
 - name: extract keys
-  unarchive:
+  ansible.builtin.unarchive:
     src: /etc/adfc_ssh_keys.tar
     remote_src: true
     dest: /etc/ssh

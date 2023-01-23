@@ -52,7 +52,7 @@
   tags: jitsi_adfc
 
 - name: unzip robto font
-  unarchive:
+  ansible.builtin.unarchive:
     src: roboto.zip
     dest: /usr/share/jitsi-meet/static/fonts/
   tags: jitsi_adfc

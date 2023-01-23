@@ -21,7 +21,7 @@
   register: create_tar
 
 - name: untar letsencrypt.tar
-  unarchive:
+  ansible.builtin.unarchive:
     src: /tmp/letsencrypt_ansible.tar
     dest: /etc/letsencrypt/
     remote_src: true

@@ -6,13 +6,13 @@
     mode: "0755"
 
 - name: unarchive base sounds
-  unarchive:
+  ansible.builtin.unarchive:
     src: https://www.asterisksounds.org/de/download/asterisk-sounds-core-de-sln16.zip
     dest: "{{ asterisk_sounds_dir }}/de"
     remote_src: true
 
 - name: unarchive extra sounds
-  unarchive:
+  ansible.builtin.unarchive:
     src: https://www.asterisksounds.org/de/download/asterisk-sounds-extra-de-sln16.zip
     dest: "{{ asterisk_sounds_dir }}/de"
     remote_src: true

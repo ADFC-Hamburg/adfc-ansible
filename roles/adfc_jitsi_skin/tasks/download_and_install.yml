@@ -18,7 +18,7 @@
     mode: 0644
 
 - name: Unpack
-  unarchive:
+  ansible.builtin.unarchive:
     src: "{{  adfc_share_dir }}/jitsi-web.zip"
     dest: "{{  adfc_share_dir }}"
     remote_src: true

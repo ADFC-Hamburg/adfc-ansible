@@ -1,6 +1,6 @@
 ---
 - name: unpack hibiscus
-  unarchive:
+  ansible.builtin.unarchive:
     src: "{{ hibiscus_archive_url }}"
     remote_src: true
     dest: /opt/jameica/plugins

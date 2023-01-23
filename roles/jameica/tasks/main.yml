@@ -8,7 +8,7 @@
     mode: 0755
 
 - name: Unpack jameica
-  unarchive:
+  ansible.builtin.unarchive:
     src: "{{ jameica_archive_url }}"
     remote_src: true
     dest: /opt
