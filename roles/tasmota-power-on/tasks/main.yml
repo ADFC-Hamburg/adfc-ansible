@@ -39,7 +39,7 @@
     - wakeonlan_result is failed
 
 - name: 05_Warten bis Reststrom verbraucht
-  pause:
+  ansible.builtin.pause:
     seconds: 60
   when:
     - connect_result is failed

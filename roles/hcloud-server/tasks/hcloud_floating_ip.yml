@@ -31,7 +31,7 @@
   delegate_to: localhost
 
 - name: Pause
-  pause:
+  ansible.builtin.pause:
     seconds: 30
 
 - name: create floating_ip config

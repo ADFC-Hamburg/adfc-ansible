@@ -16,7 +16,7 @@
       when: delete_start_meet_vb |default('yes')
 
     - name: Pause
-      pause:
+      ansible.builtin.pause:
         seconds: 20
       when: delete_start_meet_vb |default('yes') and vb_start.changed # noqa no-handler
 
@@ -30,7 +30,7 @@
       ignore_unreachable: true
 
     - name: Pause
-      pause:
+      ansible.builtin.pause:
         seconds: 60
 
     - name: stop videobride
@@ -68,7 +68,7 @@
         hcloud_api_token: "{{ hcloud_key_slurp.content | b64decode |trim }}"
 
     - name: Pause
-      pause:
+      ansible.builtin.pause:
         seconds: 5
       when: delete_start_meet_vb |default('yes')
 

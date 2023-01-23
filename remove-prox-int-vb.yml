@@ -14,7 +14,7 @@
       delegate_to: "{{ jitsi_meet_server_name }}"
 
     - name: Wait
-      pause:
+      ansible.builtin.pause:
         seconds: 50
 
     - name: Stop VB on Proxmomox

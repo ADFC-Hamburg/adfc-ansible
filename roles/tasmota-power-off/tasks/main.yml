@@ -61,7 +61,7 @@
     - connect_result is not failed or wakeonlan_result is not failed
 
 - name: 06_Warte bis richtig heruntergefahren
-  pause:
+  ansible.builtin.pause:
     seconds: 30
   when:
     - connect_result is not failed or wakeonlan_result is not failed

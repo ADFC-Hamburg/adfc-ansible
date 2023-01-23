@@ -239,7 +239,7 @@
         path: /usr/share/pam-configs/ucs_mkhomedir
       register: stat_ucs_mkhomedir
     - name: Prompt for Admin Password
-      pause:
+      ansible.builtin.pause:
         prompt: Enter UCS-Master Administrator password
       register: UCSAdminPassword
       no_log: true

@@ -19,13 +19,13 @@
 - name: stop ucs-master # noqa no-changed-when
   ansible.builtin.command: qm stop 100
 - name: wait
-  pause:
+  ansible.builtin.pause:
     seconds: 5
 
 - name: start ucs-master # noqa no-changed-when
   ansible.builtin.command: qm start 100
 - name: wait
-  pause:
+  ansible.builtin.pause:
     seconds: 30
 
 - name: loop over chars
@@ -37,7 +37,7 @@
 - name: send return # noqa no-changed-when
   ansible.builtin.command: qm sendkey 100 kp_enter
 - name: wait
-  pause:
+  ansible.builtin.pause:
     seconds: 90
 
 - name: test
