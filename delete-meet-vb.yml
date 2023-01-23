@@ -73,7 +73,7 @@
       when: delete_start_meet_vb |default('yes')
 
     - name: delete_host
-      hcloud_server:
+      hetzner.hcloud.hcloud_server:
         api_token: "{{ hcloud_api_token }}"
         name: "{{ inventory_hostname }}"
         state: absent

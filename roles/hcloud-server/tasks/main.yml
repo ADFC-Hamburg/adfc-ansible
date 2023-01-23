@@ -12,7 +12,7 @@
   no_log: true
 
 - name: Gather hcloud server infos
-  hcloud_server_info:
+  hetzner.hcloud.hcloud_server_info:
     api_token: "{{ hcloud_api_token }}"
   register: output
   delegate_to: localhost

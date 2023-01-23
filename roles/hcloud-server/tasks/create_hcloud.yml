@@ -20,7 +20,7 @@
   register: ssh_hcloud_add_key
 
 - name: Create_host
-  hcloud_server:
+  hetzner.hcloud.hcloud_server:
     api_token: "{{ hcloud_api_token }}"
     name: "{{ inventory_hostname }}"
     server_type: "{{ hcloud_server_type }}"
@@ -35,7 +35,7 @@
   ignore_errors: "{{ hcloud_failure_server_location != 'NONE' }}"
 
 - name: Create host on failure
-  hcloud_server:
+  hetzner.hcloud.hcloud_server:
     api_token: "{{ hcloud_api_token }}"
     name: "{{ inventory_hostname }}"
     server_type: "{{ hcloud_server_type }}"

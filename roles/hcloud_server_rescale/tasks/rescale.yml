@@ -6,7 +6,7 @@
   ignore_unreachable: true
 
 - name: wait for shutdown
-  hcloud_server_info:
+  hetzner.hcloud.hcloud_server_info:
     api_token: "{{ hcloud_api_token }}"
     name: "{{ inventory_hostname }}"
   register: hcloud_server_info
@@ -18,7 +18,7 @@
   delegate_to: localhost
 
 - name: Stop Server hard if it is not down
-  hcloud_server:
+  hetzner.hcloud.hcloud_server:
     name: "{{ inventory_hostname }}"
     api_token: "{{ hcloud_api_token }}"
     state: stopped
@@ -26,7 +26,7 @@
   delegate_to: localhost
 
 - name: Resize Server
-  hcloud_server:
+  hetzner.hcloud.hcloud_server:
     name: "{{ inventory_hostname }}"
     api_token: "{{ hcloud_api_token }}"
     server_type: "{{ hcloud_new_server_type  }}"
