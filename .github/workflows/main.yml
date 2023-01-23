@@ -28,4 +28,4 @@ jobs:
     - name: lint files
       run: ~/.local/bin/ansible-lint
     - name: Syntax check
-      run: ~/.local/bin/ansible-playbook --syntax-check $(find *.yml \! -name inventory.yml -a \! -name requirements.yml )
+      run: ~/.local/bin/ansible-playbook --syntax-check -- $(find *.yml \! -name inventory.yml -a \! -name requirements.yml )
