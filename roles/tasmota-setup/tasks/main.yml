@@ -1,7 +1,7 @@
 ---
 - name: Set standard action
   ansible.builtin.set_fact:
-    ansible.builtin.command: setrules
+    command: setrules
 
 # - name: Execute tasmota fw setup script
 #  ansible.builtin.command: tasmota_fw-update.sh {{ hostvars[inventory_hostname]['ansible_host'] }}
@@ -35,7 +35,7 @@
 
 - name: Create rule variable
   ansible.builtin.set_fact:
-    rule: "{{ 'ON Energy#Power<'+hostvars[inventory_hostname]['auto_off_thresh']|string+' DO Power OFF ENDON' }}"
+    rule: "{{ 'ON Energy#Power<' + hostvars[inventory_hostname]['auto_off_thresh'] | string + ' DO Power OFF ENDON' }}"
   when:
     - command == "setrules"
     - hostvars[inventory_hostname]['use_auto_off']
@@ -43,7 +43,7 @@
 - name: Set rule to poweroff if <auto_off_thres watts drawn
   delegate_to: ucs-master.gst.hamburg.adfc.de
   ansible.builtin.uri:
-    url: http://{{ hostvars[inventory_hostname]['ansible_host'] }}/cm?cmnd=Rule1%20{{ rule|urlencode }}
+    url: http://{{ hostvars[inventory_hostname]['ansible_host'] }}/cm?cmnd=Rule1%20{{ rule | urlencode }}
   when:
     - command == "setrules"
     - hostvars[inventory_hostname]['use_auto_off']

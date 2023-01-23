@@ -7,4 +7,3 @@
     owner: root
     group: root
   notify: restart dehydrated http
-

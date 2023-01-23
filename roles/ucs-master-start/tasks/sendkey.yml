@@ -6,5 +6,5 @@
   ansible.builtin.command: qm sendkey 100 {{ char }}
   when: (char >= '0' and char <='9' )
 - name: Send big chars
-  ansible.builtin.command: qm sendkey 100 shift-{{ char |lower }}
+  ansible.builtin.command: qm sendkey 100 shift-{{ char | lower }}
   when: (char >= 'A' and char <= 'Z' )

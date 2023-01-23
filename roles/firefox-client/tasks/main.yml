@@ -24,7 +24,7 @@
 
 - name: Create symbolic links for extensions
   ansible.builtin.file:
-    src: /usr/local/share/ansible_downloads/{{ item.name  }}
+    src: /usr/local/share/ansible_downloads/{{ item.name }}
     dest: /usr/share/mozilla/extensions/{ec8030f7-c20a-464f-9b0e-13a3a9e97384}/{{ item.id }}
     state: link
     force: true

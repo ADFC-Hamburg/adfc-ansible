@@ -56,7 +56,10 @@
 
 - name: 06_Warten auf ausgeschaltet
   delegate_to: localhost
-  ansible.builtin.wait_for: host={{ ansible_host }} port=22 state=stopped
+  ansible.builtin.wait_for:
+    host: "{{ ansible_host }}"
+    port: 22
+    state: stopped
   when:
     - connect_result is not failed or wakeonlan_result is not failed
 

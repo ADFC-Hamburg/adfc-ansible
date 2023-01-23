@@ -32,7 +32,7 @@
   ansible.builtin.include_tasks: sendkey.yml
   vars:
     char: "{{ item }}"
-  with_items: "{{ get_password.content |b64decode |list }}"
+  with_items: "{{ get_password.content | b64decode | list }}"
 
 - name: Send return # noqa no-changed-when
   ansible.builtin.command: qm sendkey 100 kp_enter

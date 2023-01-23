@@ -40,7 +40,7 @@
 - name: Dehydrated cron
   ansible.builtin.cron:
     name: dehydrated
-    minute: "{{ 59 |random(seed=inventory_hostname) }}"
+    minute: "{{ 59 | random(seed=inventory_hostname) }}"
     day: 1,15
     hour: "9"
     user: root

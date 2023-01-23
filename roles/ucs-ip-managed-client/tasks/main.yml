@@ -18,7 +18,7 @@
   register: machine_secret
 
 - name: Check if object exists
-  ansible.builtin.command: univention-ldapsearch -LLLLL -b {{ ucs_computer_position }} cn={{ inventory_hostname.split('.')[0] |lower }} dn
+  ansible.builtin.command: univention-ldapsearch -LLLLL -b {{ ucs_computer_position }} cn={{ inventory_hostname.split('.')[0] | lower }} dn
   register: computer_ldapsearch
   delegate_to: "{{ ucs_master }}"
   changed_when: false
@@ -33,13 +33,13 @@
       - --position
       - "{{ ucs_computer_position }}"
       - --set
-      - name={{ inventory_hostname.split('.')[0] |lower  }}
+      - name={{ inventory_hostname.split('.')[0] | lower }}
       - --append
       - ip={{ ansible_default_ipv4.address }}
       - --append
       - ip={{ ansible_default_ipv6.address }}
       - --set
-      - password={{ machine_secret.content |b64decode }}
+      - password={{ machine_secret.content | b64decode }}
   when: computer_ldapsearch.stdout | length == 0
   delegate_to: "{{ ucs_master }}"
   ignore_errors: "{{ ansible_check_mode }}"

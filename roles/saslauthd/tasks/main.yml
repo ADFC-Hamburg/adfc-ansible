@@ -64,8 +64,8 @@
     mode: 0644
     owner: root
   vars:
-    saslauthd_bind_dn: cn={{ inventory_hostname.split('.')[0] |lower  }},{{ ucs_computer_position }}
-    saslauthd_bind_pw: "{{ machine_secret.content |b64decode }}"
+    saslauthd_bind_dn: cn={{ inventory_hostname.split('.')[0] | lower  }},{{ ucs_computer_position }}
+    saslauthd_bind_pw: "{{ machine_secret.content | b64decode }}"
     saslauthd_tls_cacert_file: /etc/ssl/ucsCAcert.pem
   notify: Restart saslauthd
   tags: saslauthd

@@ -245,8 +245,11 @@ jitsi_meet_lang: en
 jitsi_meet_appname: My app name
 jitsi_meet_org_link: https://link-to-my-organization.com
 jitsi_meet_welcomepage_title: Secure, fully featured, and completely free video conferencing
-jitsi_meet_welcomepage_description: Go ahead, video chat with the whole team. In fact, invite everyone you know. __app__ is a fully encrypted, 100% open source video
-  conferencing solution that you can use all day, every day, for free — with no account needed.
+jitsi_meet_welcomepage_description: >
+  Go ahead, video chat with the whole team. In fact, invite everyone you
+  know. __app__ is a fully encrypted, 100% open source video
+  conferencing solution that you can use all day, every day, for free — with
+  no account needed.
 
 # By default it is an empty string because the CSS file is a bundled file for
 # the entire site, and it change very frequently with each release. It will be

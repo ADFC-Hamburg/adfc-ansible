@@ -66,7 +66,7 @@
   ansible.builtin.cron:
     name: keycopy
     hour: "3"
-    minute: "{{ 59 |random(seed=inventory_hostname) }}"
+    minute: "{{ 59 | random(seed=inventory_hostname) }}"
     user: root
     job: /usr/local/share/harpoxy-key-copy/fetch-certs
     cron_file: ansible_haproxy_fetch_certs
@@ -75,7 +75,7 @@
   ansible.builtin.cron:
     name: crlfetch
     hour: 4-23
-    minute: "{{ 59 |random(seed=inventory_hostname) }}"
+    minute: "{{ 59 | random(seed=inventory_hostname) }}"
     user: root
     job: /usr/local/share/harpoxy-key-copy/fetch-crl
     cron_file: ansible_haproxy_fetch_certs
