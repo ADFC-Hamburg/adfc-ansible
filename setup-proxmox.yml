@@ -3,7 +3,7 @@
   gather_facts: true
   roles:
     - ssh_keys
-    - postfix-auth
+    - postfix_auth
     - proxmox_backup
   tasks:
     - name: Erstellen eine Unix User fuer Tools-Server Backup

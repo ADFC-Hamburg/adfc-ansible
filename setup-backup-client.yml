@@ -3,7 +3,7 @@
   roles:
     - load-contacts
     - ssh_keys
-    - postfix-auth
+    - postfix_auth
     - basic_setup
   tasks:
     # benötigte Programme installieren
