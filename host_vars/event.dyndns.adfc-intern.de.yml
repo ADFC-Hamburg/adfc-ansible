@@ -26,5 +26,5 @@ jitsi_jicofo_bridge_selector: split
 
 jitsi_meet_authentication: cyrus
 saslauthd_ldap_search_base: dc=adfc-intern,dc=de
-#jitsi_meet_use_nightly_apt_repo: yes
+# jitsi_meet_use_nightly_apt_repo: yes
 adfc_jitsi_branch: adfc-devel

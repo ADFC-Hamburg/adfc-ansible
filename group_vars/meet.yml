@@ -50,12 +50,12 @@ jitsi_meet_welcomepage_description: "Herzlich Wilkommen im Testbetrieb des Konfe
 jist_meet_user_doc_url: https://portal.adfc-intern.de/adfc/adfc-meet.pdf
 
 # Auf den Unterseiten. Nicht auf der Startseite:
-#jitsi_meet_default_background: "#C0C0C0"
+# jitsi_meet_default_background: "#C0C0C0"
 # By default it is an empty string because the CSS file is a bundled file for
 # the entire site, and it change very frequently with each release. It will be
 # replaced only if you have a custom CSS file and indicate its path in this variable
-#jitsi_meet_css_file: 'jitsi.css'
-#jitsi_meet_welcome_page_additions_file: jitsiMeetWelcomePage.html.j2
+# jitsi_meet_css_file: 'jitsi.css'
+# jitsi_meet_welcome_page_additions_file: jitsiMeetWelcomePage.html.j2
 jitsi_meet_default_remote_display_name: Mit dem Fahrrad da
 
 jitsi_meet_configure_sip_gateway: false
@@ -66,8 +66,8 @@ jitsi_meet_watermark_file: false
 jitsi_meet_use_stun_turn: "true"
 jitsi_meet_stun_servers:
   - "{{ inventory_hostname }}:4446"
-#jitsi_meet_jigasi_jicofo_sip_template: jicofo_sip-communicator.properties.j2
-#jitsi_meet_jigasi_videobridge_sip_template: videobridge_sip-communicator.properties.j2
+# jitsi_meet_jigasi_jicofo_sip_template: jicofo_sip-communicator.properties.j2
+# jitsi_meet_jigasi_videobridge_sip_template: videobridge_sip-communicator.properties.j2
 jitsi_meet_enable_third_party_requests: false
 jitsi_meet_videobridge_opts: ""
 jitsi_meet_firewall_ports_allow:

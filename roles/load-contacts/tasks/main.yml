@@ -4,7 +4,7 @@
 - name: Get adfc_notification_email from master
   ansible.builtin.slurp:
     src: "{{ adfc_secret_folder + 'adfc_notification_email.txt' }}"
-  #{{ VPNC_SHARED_SECRET.content | b64decode | replace('\n', '')}}
+  # {{ VPNC_SHARED_SECRET.content | b64decode | replace('\n', '')}}
   delegate_to: "{{ adfc_vpnc_source }}"
   register: adfc_notification_email
   tags: load_contacts

@@ -11,15 +11,15 @@
     ucs_dns_ldap_zone: "{{ 'zoneName=' + ucs_dns_zonename + ',' + ucs_dns_ldap_base }}"
 - name: Set vars2
   ansible.builtin.set_fact:
-    ucs_dns_dnsserver_password: "{{ ucs_dns_root_secret.content |b64decode |trim }}"
-    ucs_dns_entry_dn: "{{ 'relativeDomainName=' + ucs_dns_basename + ','  + ucs_dns_ldap_zone }}"
+    ucs_dns_dnsserver_password: "{{ ucs_dns_root_secret.content | b64decode | trim }}"
+    ucs_dns_entry_dn: "{{ 'relativeDomainName=' + ucs_dns_basename + ',' + ucs_dns_ldap_zone }}"
   delegate_to: localhost
 
 - name: Get entry
   ansible.builtin.uri:
     headers:
       Accept: application/json
-    url: https://{{ ucs_dns_dnsserver }}/univention/udm/dns/host_record/{{ ucs_dns_entry_dn |urlencode }}
+    url: https://{{ ucs_dns_dnsserver }}/univention/udm/dns/host_record/{{ ucs_dns_entry_dn | urlencode }}
     url_username: "{{ ucs_dns_dnsserver_user }}"
     url_password: "{{ ucs_dns_dnsserver_password }}"
     status_code:
@@ -32,7 +32,7 @@
   ansible.builtin.uri:
     headers:
       Accept: application/json
-    url: https://{{ ucs_dns_dnsserver }}/univention/udm/dns/host_record/{{ ucs_dns_entry_dn |urlencode }}
+    url: https://{{ ucs_dns_dnsserver }}/univention/udm/dns/host_record/{{ ucs_dns_entry_dn | urlencode }}
     url_username: "{{ ucs_dns_dnsserver_user }}"
     url_password: "{{ ucs_dns_dnsserver_password }}"
     method: PUT
@@ -51,7 +51,8 @@
   register: ucs_dns_change_action
   when:
     - ( dyndns_read_entry.status == 200)
-    - (( dyndns_read_entry.json.properties.a | map('ipaddr','int') |list |sort |join(',') )  != ( ucs_dns_ips  | map('ipaddr','int') |list |sort |join(',') )) or
+    - (( dyndns_read_entry.json.properties.a | map('ipaddr','int') | list | sort | join(',') )
+        != ( ucs_dns_ips  | map('ipaddr','int') | list | sort | join(',') )) or
       ( usc_dns_ttl_in_seconds != dyndns_read_entry.json.properties.zonettl)
   delegate_to: localhost
   changed_when: true
