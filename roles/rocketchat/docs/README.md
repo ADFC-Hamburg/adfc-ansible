@@ -3,7 +3,8 @@
 Mit ansible aufsetzen, die DB unter /usr/local/share/rocketchat/mongodump restoren.
 
 Dann:
-```
+
+```shell
 cd /srv/docker-rocket
 # initale Mongodb löschen, die Ansible angelegt hat.
 docker rm docker-rocket-mongodb-1
