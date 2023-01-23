@@ -4,4 +4,4 @@
     - chat.hamburg.adfc.de
   gather_facts: true
   roles:
-    - borg-server
+    - borg_server

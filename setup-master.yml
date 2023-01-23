@@ -7,7 +7,7 @@
     - gray-print
     - systemd_max_memory
     - links-on-desktop
-    - borg-server
+    - borg_server
     - external_https
     - self_service_sms
 
