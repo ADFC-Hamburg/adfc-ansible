@@ -200,7 +200,7 @@
         src: flameshot.khotkeys
         dest: /usr/share/khotkeys/flameshot.khotkeys
     - name: Standard-Hotkeys fuer Spectacle löschen
-      file:
+      ansible.builtin.file:
         path: /usr/share/khotkeys/spectacle.khotkeys
         state: absent
 
@@ -253,7 +253,7 @@
       ansible.builtin.command: /usr/sbin/univention-domain-join-cli --username Administrator --dc-ip ucs-master --password-file /root/ucs-admin-pw.secret
       when: not stat_ucs_mkhomedir.stat.exists
     - name: delete password file
-      file:
+      ansible.builtin.file:
         state: absent
         path: /root/ucs-admin-pw.secret
     - name: Reboot after domain join

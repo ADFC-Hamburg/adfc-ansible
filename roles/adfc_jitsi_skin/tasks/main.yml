@@ -23,7 +23,7 @@
     manager: apt
 
 - name: Create directory
-  file:
+  ansible.builtin.file:
     path: "{{ adfc_share_dir }}"
     mode: 0755
     state: directory

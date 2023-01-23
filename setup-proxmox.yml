@@ -23,7 +23,7 @@
       # ansible.builtin.apt_repository:
       #  repo: "deb https://enterprise.proxmox.com/debian/pve stretch pve-enterprise"
       #  state: absent
-      file:
+      ansible.builtin.file:
         path: /etc/apt/sources.list.d/pve-enterprise.list
         state: absent
 

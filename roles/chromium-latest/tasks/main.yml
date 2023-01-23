@@ -39,7 +39,7 @@
     group: root
 
 - name: Generate chromium dir
-  file:
+  ansible.builtin.file:
     path: /usr/local/chromium
     mode: 0755
     owner: root

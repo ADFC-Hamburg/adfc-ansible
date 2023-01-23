@@ -33,7 +33,7 @@
     - backup_client
 
 - name: Create adfc_borg_repo
-  file:
+  ansible.builtin.file:
     path: "{{ adfc_borg_repo }}"
     state: directory
     mode: 0700

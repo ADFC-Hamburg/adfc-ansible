@@ -1,6 +1,6 @@
 ---
 - name: create german sounds dir mkdir
-  file:
+  ansible.builtin.file:
     path: "{{ asterisk_sounds_dir }}/de"
     state: directory
     mode: "0755"

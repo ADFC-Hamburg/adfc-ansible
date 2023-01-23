@@ -19,7 +19,7 @@
     mode: 0644
 
 - name: Delete docker.gpg
-  file:
+  ansible.builtin.file:
     path: "{{ docker_repo_gpg_key_gpg }}"
     state: absent
   when: docker_fetch_gpg.changed # noqa no-handler

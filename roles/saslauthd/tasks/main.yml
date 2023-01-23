@@ -24,7 +24,7 @@
   tags: saslauthd
 
 - name: Create /etc/sasl
-  file:
+  ansible.builtin.file:
     path: /etc/sasl
     state: directory
     mode: 0755
@@ -46,7 +46,7 @@
   tags: saslauthd
 
 - name: Create systemd config dir
-  file:
+  ansible.builtin.file:
     path: /etc/systemd/system/saslauthd.service.d
     state: directory
     mode: "0755"

@@ -1,6 +1,6 @@
 ---
 - name: Create required directories
-  file:
+  ansible.builtin.file:
     path: /opt
     state: directory
     owner: root

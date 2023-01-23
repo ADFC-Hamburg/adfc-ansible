@@ -15,7 +15,7 @@
   when: not test_german_sounds.stat.exists
 
 - name: create adfc sounds dir
-  file:
+  ansible.builtin.file:
     path: "{{ asterisk_sounds_dir }}/adfc"
     state: directory
     mode: "0755"

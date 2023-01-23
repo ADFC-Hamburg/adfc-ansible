@@ -9,7 +9,7 @@
     state: present
 
 - name: Create directory for postfix
-  file:
+  ansible.builtin.file:
     path: /etc/postfix
     state: directory
     mode: 0644

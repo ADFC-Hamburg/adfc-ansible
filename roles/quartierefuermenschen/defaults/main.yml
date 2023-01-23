@@ -26,11 +26,11 @@ qfm_wordpress_title: Quartiere für Menschen
 qfm_wordpress_language: de_DE
 
 qfm_password_files:
-  - file: /etc/qfm_mysql_user.secret
+  - ansible.builtin.file: /etc/qfm_mysql_user.secret
     name: qfm_mysql_user_password
-  - file: /etc/mysql.secret
+  - ansible.builtin.file: /etc/mysql.secret
     name: mysql_root_password
-  - file: /etc/qfm_wp_user_password.secret
+  - ansible.builtin.file: /etc/qfm_wp_user_password.secret
     name: qfm_wp_user_password
-  - file: /etc/wp_admin_mail.txt
+  - ansible.builtin.file: /etc/wp_admin_mail.txt
     name: qfm_wp_admin_mail

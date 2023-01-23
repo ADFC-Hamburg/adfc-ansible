@@ -1,6 +1,6 @@
 ---
 - name: dynamic-jitsi-scaler |cleanup
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: absent
   with_items:

@@ -27,7 +27,7 @@
   tags: borg-server
 
 - name: Sysmlink borg executable
-  file:
+  ansible.builtin.file:
     src: /usr/local/share/borg-venv/bin/{{ item }}
     dest: /usr/local/bin/{{ item }}
     state: link
@@ -61,7 +61,7 @@
   tags: borg-server,adfc-borg,borg-keyscan
 
 - name: Create dir
-  file:
+  ansible.builtin.file:
     path: /usr/local/share/adfc-borg
     state: directory
     mode: 0755

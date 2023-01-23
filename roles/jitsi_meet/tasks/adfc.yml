@@ -18,7 +18,7 @@
   tags: jitsi_adfc
 
 - name: Create Lang Dir
-  file:
+  ansible.builtin.file:
     path: /usr/share/jitsi-meet/lang-new/
     state: directory
     mode: 0755
@@ -44,7 +44,7 @@
   tags: jitsi_adfc
 
 - name: Create Fonts dir
-  file:
+  ansible.builtin.file:
     path: /usr/share/jitsi-meet/static/fonts
     state: directory
     mode: 0755

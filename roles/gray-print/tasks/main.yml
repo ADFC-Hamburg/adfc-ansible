@@ -15,7 +15,7 @@
     mode: 0644
 
 - name: setup directroy
-  file:
+  ansible.builtin.file:
     path: /var/spool/cups-pdf-gray
     state: directory
     mode: 0755

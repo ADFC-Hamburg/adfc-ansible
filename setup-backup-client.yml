@@ -24,7 +24,7 @@
       tags: monitoring, software
 
     - name: Create Directory /adfc-backup/
-      file:
+      ansible.builtin.file:
         path: /adfc-backup/
         state: directory
         mode: 0755

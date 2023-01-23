@@ -20,7 +20,7 @@
   become_user: metroterm
 
 - name: Create Dest Dir
-  file:
+  ansible.builtin.file:
     path: "{{ metropolregion_termine_www_dest_dir }}"
     mode: 0755
     owner: metroterm
@@ -36,7 +36,7 @@
     group: metroterm
 
 - name: Delete VADB for Test
-  file:
+  ansible.builtin.file:
     path: /home/metroterm/metropolregion_termine_git/venv/src/ADFC-VADB.xml
     state: absent
 

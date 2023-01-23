@@ -5,7 +5,7 @@
       - gdm3
 
 - name: Create Desktop Theme Directory
-  file:
+  ansible.builtin.file:
     path: /usr/share/plasma/desktoptheme/ADFC
     state: directory
     mode: 0755
@@ -27,7 +27,7 @@
   tags: gdm
 
 - name: Create wallpaper directory
-  file:
+  ansible.builtin.file:
     path: /usr/share/wallpapers/ADFC
     state: directory
     mode: 0755
@@ -42,7 +42,7 @@
   tags: gdm
 
 - name: Create Themes Directory
-  file:
+  ansible.builtin.file:
     path: /usr/local/share/themes/adfc/
     state: directory
     mode: 0755
@@ -91,7 +91,7 @@
   tags: gdm
 
 - name: Create Symbolic link to ubuntu-adfc.css
-  file:
+  ansible.builtin.file:
     src: /usr/share/gnome-shell/theme/ubuntu-adfc.css
     dest: /etc/alternatives/gdm3.css
     state: link

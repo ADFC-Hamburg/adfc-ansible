@@ -95,7 +95,7 @@
       delegate_to: proxmox01.adfc-intern.de
 
     - name: Delete tmp file
-      file:
+      ansible.builtin.file:
         path: /tmp/ansible-trans-logs.tar.gz
         state: absent
       ignore_errors: true
@@ -110,7 +110,7 @@
       register: filesOlderThan
 
     - name: remove older files
-      file:
+      ansible.builtin.file:
         path: "{{ item.path }}"
         state: absent
       delegate_to: proxmox01.adfc-intern.de

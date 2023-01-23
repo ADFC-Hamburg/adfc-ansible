@@ -10,7 +10,7 @@
 # clean it up and use a generalized filename for configuring the apt repo,
 # regardless of whether stable or unstable is used.
 - name: Remove deprecated repo filename.
-  file:
+  ansible.builtin.file:
     path: /etc/apt/sources.list.d/download_jitsi_org_nightly_deb.list
     state: absent
 

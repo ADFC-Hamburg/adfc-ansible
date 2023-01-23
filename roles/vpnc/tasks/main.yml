@@ -23,7 +23,7 @@
   tags: vpnc
 
 - name: Entferne altes vpnc file
-  file:
+  ansible.builtin.file:
     path: /etc/vpnc/vpnc.conf
     state: absent
   tags:
@@ -66,7 +66,7 @@
   tags: vpnc
 
 - name: Generate Directory /etc/vpnc/post-connect.d/
-  file:
+  ansible.builtin.file:
     path: /etc/vpnc/post-connect.d/
     state: directory
     mode: "0755"

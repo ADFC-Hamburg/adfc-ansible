@@ -81,7 +81,7 @@
   when: hcloud_floating_ips | length > 0
 
 - name: Create directories
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     mode: "0700"

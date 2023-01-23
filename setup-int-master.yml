@@ -6,7 +6,7 @@
     - telegraf
   tasks:
     - name: unlink runme.sh
-      file:
+      ansible.builtin.file:
         path: "{{ item }}"
         state: absent
       with_items:
@@ -54,7 +54,7 @@
         univention-run-join-scripts --force --run-scripts 92univention-management-console-web-server.inst
       when: reload_sso is defined and reload_sso
     - name: Verzeichnisse erstellen
-      file:
+      ansible.builtin.file:
         path: "{{ item }}"
         state: directory
         mode: "0755"

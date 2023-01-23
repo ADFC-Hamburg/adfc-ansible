@@ -1,6 +1,6 @@
 ---
 - name: create lestsencrypt
-  file:
+  ansible.builtin.file:
     path: /etc/letsencrypt
     mode: "0755"
     state: directory
@@ -28,6 +28,6 @@
   when: "'content' in letsencrypt_tar and create_tar.size>0"
 
 - name: delete tar file
-  file:
+  ansible.builtin.file:
     path: /tmp/letsencrypt_ansible.tar
     state: absent

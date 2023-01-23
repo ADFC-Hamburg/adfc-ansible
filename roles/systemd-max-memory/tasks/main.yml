@@ -1,6 +1,6 @@
 ---
 - name: Create Direcotry
-  file:
+  ansible.builtin.file:
     path: /etc/systemd/system/{{ item.service_name }}.service.d
     state: directory
     mode: 0755

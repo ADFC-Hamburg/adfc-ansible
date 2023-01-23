@@ -12,7 +12,7 @@
   notify: restart journald
 
 - name: Downloadverzeichnis für deb-Pakete erstellen
-  file:
+  ansible.builtin.file:
     path: /usr/local/share/ansible_downloads/
     state: directory
     mode: 0755

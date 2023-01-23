@@ -46,7 +46,7 @@
           - no-user-rc
           - no-X11-forwarding
     - name: Create Dest dir
-      file:
+      ansible.builtin.file:
         path: /adfc/Computer/Datensicherung/dreicx
         mode: "0700"
         owner: root
