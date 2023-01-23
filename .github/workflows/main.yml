@@ -8,26 +8,25 @@ on: [push]
 
 jobs:
   build:
-
     # Machine environment:
     runs-on: ubuntu-22.04
 
     steps:
-    - name: delete ansible
-      run: sudo apt purge ansible
-    - name: Install Testresource
-      run: sudo apt install python3-testresources
-    - name: install ansible-lint
-      run: |
-       pip3 install --upgrade pip
-       pip3 install --upgrade setuptools wheel
-       pip3 install ansible-lint==5.3.2 ansible==5.3.0
-    - name: Checkout
-      uses: actions/checkout@v3
-    - name: Fetch Roles Ansible-Galaxy
-      run: ~/.local/bin/ansible-galaxy install -r requirements.yml
-    - name: lint files
-      run: ~/.local/bin/ansible-lint
+      - name: delete ansible
+        run: sudo apt purge ansible
+      - name: Install Testresource
+        run: sudo apt install python3-testresources
+      - name: install ansible-lint
+        run: |
+          pip3 install --upgrade pip
+          pip3 install --upgrade setuptools wheel
+          pip3 install ansible-lint==5.3.2 ansible==5.3.0
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Fetch Roles Ansible-Galaxy
+        run: ~/.local/bin/ansible-galaxy install -r requirements.yml
+      - name: lint files
+        run: ~/.local/bin/ansible-lint
 # Das funktioniert nicht mit Actlion Linter
 #    - name: Syntax check
 #      run: ~/.local/bin/ansible-playbook --syntax-check -- $(find *.yml \! -name inventory.yml -a \! -name requirements.yml )

@@ -10,7 +10,7 @@
     state: directory
     owner: root
     group: root
-    mode: '0755'
+    mode: "0755"
 
 - name: Copy rocketchat docker-compose.yml
   copy:
@@ -20,7 +20,6 @@
     owner: root
     group: root
 
-
 - name: Create env file
   template:
     src: docker-env.j2
@@ -28,7 +27,6 @@
     mode: 0644
     owner: root
     group: root
-
 
 # use files parameter to use multiple docker-compose.yml files
 - name: deploy Docker Compose stack
@@ -45,7 +43,7 @@
     state: directory
     owner: root
     group: root
-    mode: '0755'
+    mode: "0755"
   loop:
     - /var/www/chat-wartung
     - /var/www/empty
@@ -67,7 +65,7 @@
     src: nginx-site.conf.j2
     dest: /etc/nginx/sites-available/{{ rocketchat_server_name }}.conf
   notify:
-   - restart nginx
+    - restart nginx
   tags:
     - nginx
 
@@ -76,7 +74,7 @@
     src: nginx-site-wartung.conf.j2
     dest: /etc/nginx/sites-available/{{ rocketchat_server_name }}-wartung.conf
   notify:
-   - restart nginx
+    - restart nginx
   tags:
     - nginx
 
@@ -85,7 +83,7 @@
     path: /etc/nginx/sites-enabled/default.conf
     state: absent
   notify:
-   - restart nginx
+    - restart nginx
   tags:
     - nginx
 
@@ -95,6 +93,6 @@
     dest: /etc/nginx/sites-enabled/{{ rocketchat_server_name }}.conf
     state: link
   notify:
-   - restart nginx
+    - restart nginx
   tags:
     - nginx_synlink

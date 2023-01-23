@@ -12,7 +12,7 @@
 
 - name: Add InfluxDB repository
   ansible.builtin.apt_repository:
-    repo: 'deb https://repos.influxdata.com/debian {{ ansible_distribution_release }} stable'
+    repo: "deb https://repos.influxdata.com/debian {{ ansible_distribution_release }} stable"
     state: present
 
 - name: Install Telegraf packages
@@ -30,7 +30,7 @@
   ansible.builtin.lineinfile:
     path: /etc/telegraf/telegraf.conf
     regexp: '^.*\[\[outputs.influxdb\]\]'
-    line: '# [[outputs.influxdb]]'
+    line: "# [[outputs.influxdb]]"
   notify: restart telegraf
 
 - name: Create output info
