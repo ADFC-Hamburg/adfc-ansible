@@ -6,7 +6,7 @@
   delegate_to: localhost
 
 - name: Set Floating Ip fact
-  set_fact:
+  ansible.builtin.set_fact:
     hc_ipv4_floating_ip: "{{ hcloud_floating_ip_info.hcloud_floating_ip_info |selectattr('ip', 'match', lookup('dig', inventory_hostname, 'qtype=A') ) | list |first\
       \  }}"
     hc_ipv6_floating_ip: "{{ hcloud_floating_ip_info.hcloud_floating_ip_info |selectattr('ip', 'match', lookup('dig', inventory_hostname, 'qtype=AAAA') | regex_replace('::1$','::/64')\

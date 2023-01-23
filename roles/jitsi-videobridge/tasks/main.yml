@@ -7,7 +7,7 @@
     cache_valid_time: 3600
 
 - name: Determine repo strategy.
-  set_fact:
+  ansible.builtin.set_fact:
     jitsi_strategy: "{{ 'unstable' if jitsi_meet_use_nightly_apt_repo else 'stable' }}"
 
 # Both stable and unstable repos use the same signing key.

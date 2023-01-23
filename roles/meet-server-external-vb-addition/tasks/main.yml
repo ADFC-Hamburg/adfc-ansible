@@ -1,6 +1,6 @@
 ---
 - name: Empty list
-  set_fact:
+  ansible.builtin.set_fact:
     videobridges: []
     vb_comp: ""
     prosody_admins:

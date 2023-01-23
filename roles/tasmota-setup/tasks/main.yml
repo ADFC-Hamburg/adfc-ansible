@@ -1,6 +1,6 @@
 ---
 - name: set standard action
-  set_fact:
+  ansible.builtin.set_fact:
     ansible.builtin.command: setrules
 
 #- name: Execute tasmota fw setup script
@@ -34,7 +34,7 @@
     - hostvars[inventory_hostname]['use_auto_off']
 
 - name: create rule variable
-  set_fact:
+  ansible.builtin.set_fact:
     rule: "{{ 'ON Energy#Power<'+hostvars[inventory_hostname]['auto_off_thresh']|string+' DO Power OFF ENDON' }}"
   when:
     - command == "setrules"

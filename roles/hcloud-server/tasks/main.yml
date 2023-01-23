@@ -7,7 +7,7 @@
   no_log: true
 
 - name: Setze hcloud_api_token
-  set_fact:
+  ansible.builtin.set_fact:
     hcloud_api_token: "{{ hcloud_key_slurp.content | b64decode |trim }}"
   no_log: true
 

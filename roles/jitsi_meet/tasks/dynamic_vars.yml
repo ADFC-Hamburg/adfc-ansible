@@ -9,7 +9,7 @@
   changed_when: false
 
 - name: Set fact for Jitsi Videobridge secret var.
-  set_fact:
+  ansible.builtin.set_fact:
     jitsi_meet_videobridge_secret: "{{ jitsi_meet_videobridge_secret_result.stdout }}"
   # Permit custom secrets in the template; only set the var if no custom secret is declared.
   when: jitsi_meet_videobridge_secret is not defined or not jitsi_meet_videobridge_secret
@@ -24,7 +24,7 @@
   failed_when: jitsi_meet_jicofo_secret_result.rc != 0 or not jitsi_meet_jicofo_secret_result.stdout
 
 - name: Set fact for Jicofo secret var.
-  set_fact:
+  ansible.builtin.set_fact:
     jitsi_meet_jicofo_secret: "{{ jitsi_meet_jicofo_secret_result.stdout }}"
   # Permit custom secrets in the template; only set the var if no custom secret is declared.
   when: jitsi_meet_jicofo_secret is not defined or not jitsi_meet_jicofo_secret
@@ -39,7 +39,7 @@
   failed_when: jitsi_meet_jicofo_password_result.rc != 0 or not jitsi_meet_jicofo_password_result.stdout
 
 - name: Set fact for Jicofo user auth password var.
-  set_fact:
+  ansible.builtin.set_fact:
     jitsi_meet_jicofo_password: "{{ jitsi_meet_jicofo_password_result.stdout }}"
   # Permit custom secrets in the template; only set the var if no custom secret is declared.
   when: jitsi_meet_jicofo_password is not defined or not jitsi_meet_jicofo_password
@@ -54,5 +54,5 @@
   failed_when: jitsi_meet_videobridge_muc_uuid_result.rc != 0 or not jitsi_meet_videobridge_muc_uuid_result.stdout
 
 - name: Set fact for Jitsi Videobridge MUC UUID
-  set_fact:
+  ansible.builtin.set_fact:
     jitsi_meet_videobridge_muc_uuid: "{{ jitsi_meet_videobridge_muc_uuid_result.stdout }}"

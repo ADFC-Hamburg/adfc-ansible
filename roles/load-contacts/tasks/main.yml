@@ -24,7 +24,7 @@
   tags: load_contacts
 
 - name: set variable
-  set_fact:
+  ansible.builtin.set_fact:
     adfc_notification_email: "{{ adfc_notification_email.content | b64decode | replace('\n', '') }}"
     unattended_mail_only_on_error: "{{ unattended_mail_only_on_error.content | b64decode | replace('\n', '') }}"
     postfix_host_email: "{{ postfix_host_email.content | b64decode | replace('\n', '') }}"

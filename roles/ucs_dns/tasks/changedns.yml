@@ -6,11 +6,11 @@
   delegate_to: "{{ ucs_dns_dnsserver_password_file_server }}"
 
 - name: set vars1
-  set_fact:
+  ansible.builtin.set_fact:
     ucs_dns_basename: "{{ ucs_dns_hostname.replace('.' + ucs_dns_zonename, '') }}"
     ucs_dns_ldap_zone: "{{ 'zoneName=' + ucs_dns_zonename + ',' + ucs_dns_ldap_base }}"
 - name: set vars2
-  set_fact:
+  ansible.builtin.set_fact:
     ucs_dns_dnsserver_password: "{{ ucs_dns_root_secret.content |b64decode |trim }}"
     ucs_dns_entry_dn: "{{ 'relativeDomainName=' + ucs_dns_basename + ','  + ucs_dns_ldap_zone }}"
   delegate_to: localhost

@@ -5,7 +5,7 @@
     jitsi_meet_vb_password_file: /etc/jitsi_jvb{{ vb_host }}.secret
     jitsi_meet_server: "{{ jitsi_meet_server_name }}"
 - name: find all vb server
-  set_fact:
+  ansible.builtin.set_fact:
     videobridges: "{{ videobridges + [ vb_host ] }}"
     vb_comp: |
       {{ vb_comp }}

@@ -38,7 +38,7 @@
     - connect_result is not failed or wakeonlan_result is not failed
 
 - name: 04_Den Output parsen
-  set_fact:
+  ansible.builtin.set_fact:
     users: '{{ who_var.stdout_lines | reject("match", "^root ") | list }}'
   when:
     - connect_result is not failed or wakeonlan_result is not failed

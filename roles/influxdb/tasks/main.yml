@@ -58,10 +58,10 @@
   when: influxdb_install
 
 - name: Empty list
-  set_fact:
+  ansible.builtin.set_fact:
     firewall_in: []
 - name: find all telegraf server
-  set_fact:
+  ansible.builtin.set_fact:
     firewall_in: "{{ firewall_in + [ lookup('dig', tele_host + '.', 'qtype=A') ] + [ lookup('dig', tele_host + '.', 'qtype=AAAA') ]  }}"
   when: "'influxdb_host' in hostvars[tele_host] and hostvars[tele_host]['influxdb_host'] == inventory_hostname"
   loop_control:

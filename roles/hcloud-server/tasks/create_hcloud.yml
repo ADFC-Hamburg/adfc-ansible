@@ -50,13 +50,13 @@
   when: hcloud_host is failed
 
 - name: set ip address
-  set_fact:
+  ansible.builtin.set_fact:
     hcloud_ipv4_address: "{{ hcloud_host.hcloud_server.ipv4_address }}"
     hcloud_ipv6_address: "{{ hcloud_host.hcloud_server.ipv6 | replace('/64','1') }}"
   when: not hcloud_host is failed
 
 - name: set ip address on failure
-  set_fact:
+  ansible.builtin.set_fact:
     hcloud_ipv4_address: "{{ hcloud_failure_host.hcloud_server.ipv4_address }}"
     hcloud_ipv6_address: "{{ hcloud_failure_host.hcloud_server.ipv6 | replace('/64','1') }}"
   when: hcloud_host is failed

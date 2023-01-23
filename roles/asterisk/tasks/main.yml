@@ -34,12 +34,12 @@
   tags: asterisk-extension
 
 - name: set sipgate fact
-  set_fact:
+  ansible.builtin.set_fact:
     sipgate_secret: "{{ sipgate_secret_b64.content | b64decode }}"
   tags: asterisk-extension
 
 - name: set facts
-  set_fact:
+  ansible.builtin.set_fact:
     sipgate_adfc_hh_number: "2086851"
     sipgate_adfc_hh_password: "{{ sipgate_secret.split(' ')[4] }}"
   tags: asterisk-extension

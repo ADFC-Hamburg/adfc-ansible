@@ -39,7 +39,7 @@
   register: github_jobs
 
 - name: Caluclate Artifeact
-  set_fact:
+  ansible.builtin.set_fact:
     sha: "{{ github_sha.json.object.sha }}"
     github_token: "{{ github_token_slurp.content |b64decode |trim }}"
     jitsi_meet_packages: "{{ ansible_facts.packages['jitsi-meet-web'] }}"

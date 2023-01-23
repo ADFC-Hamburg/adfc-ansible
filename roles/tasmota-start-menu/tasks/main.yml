@@ -9,7 +9,7 @@
     state: present
 
 - name: generate password for startup_script user
-  set_fact:
+  ansible.builtin.set_fact:
     user_pass: "{{ lookup('password', '/dev/null length=16') }}"
 
 - name: Make sure user is present on host
