@@ -71,7 +71,8 @@ jtisi_rewrite_i18n:
       path: /welcomepage/headerSubtitle
       value: El sistema de conferencias en línea de ADFC
 
-jitsi_font_download_url: https://google-webfonts-helper.herokuapp.com/api/fonts/roboto?download=zip&subsets=latin&variants=100,300,500,700,900,regular&formats=woff,woff2
+jitsi_font_download_url: >
+  https://google-webfonts-helper.herokuapp.com/api/fonts/roboto?download=zip&subsets=latin&variants=100,300,500,700,900,regular&formats=woff,woff2
 
 jitsi_meet_default_remote_display_name: Unbekannte Radfahrer*in
 jitsi_meet_default_local_display_name: ich

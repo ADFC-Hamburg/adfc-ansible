@@ -72,8 +72,8 @@
   ansible.builtin.copy:
     content: |
       {% for res in backup_clients_keyscan.results %}
-      {% for line in res.stdout_lines |sort %}
-      {{ res.item }}{{ line |regex_replace('^localhost','') }}
+      {% for line in res.stdout_lines | sort %}
+      {{ res.item }}{{ line | regex_replace('^localhost', '') }}
       {% endfor %}
       {% endfor %}
     dest: /usr/local/share/adfc-borg/known_hosts
