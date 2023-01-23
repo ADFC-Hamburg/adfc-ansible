@@ -20,7 +20,7 @@
     - slack
     - links-on-desktop
     - client_apt_remove
-    - master-pdf-editor
+    - master_pdf_editor
     - gdm_desktoptheme
     - chromium-latest
   handlers:
