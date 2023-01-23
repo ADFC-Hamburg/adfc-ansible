@@ -44,7 +44,7 @@
     - connect_result is not failed or wakeonlan_result is not failed
 
 - name: 04_Die angemeldeten Nutzer melden
-  debug:
+  ansible.builtin.debug:
     var: users
   when:
     - connect_result is not failed or wakeonlan_result is not failed

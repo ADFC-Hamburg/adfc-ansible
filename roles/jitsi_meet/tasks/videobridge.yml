@@ -9,7 +9,7 @@
   notify: restart jitsi-videobridge
 
 - name: Set jitsi-videobridge log level.
-  lineinfile:
+  ansible.builtin.lineinfile:
     dest: /etc/jitsi/videobridge/logging.properties
     regexp: ^\.level
     line: .level={{ jitsi_meet_videobridge_loglevel }}

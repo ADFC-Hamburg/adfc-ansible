@@ -15,7 +15,7 @@
   loop: "{{ groups['all'] }}"
 
 - name: change admins
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/prosody/prosody.cfg.lua
     regexp: ^admins = {
     line: admins = { "{{ videobridges | join('", "') }}" }

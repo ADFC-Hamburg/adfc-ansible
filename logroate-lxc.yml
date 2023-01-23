@@ -5,5 +5,5 @@
     - lxc-logrotate
   tasks:
     - name: test
-      debug:
+      ansible.builtin.debug:
         msg: Hello world

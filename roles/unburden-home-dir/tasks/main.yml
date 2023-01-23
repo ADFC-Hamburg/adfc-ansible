@@ -17,7 +17,7 @@
   tags: unburden
 
 - name: Enable unburden
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/default/unburden-home-dir
     regexp: UNBURDEN_HOME
     line: UNBURDEN_HOME=true

@@ -69,11 +69,11 @@
     hetzner_dns_ip6: "{{ hcloud_ipv6_address }}"
 
 - name: Debug1
-  debug:
+  ansible.builtin.debug:
     msg: "{{ hcloud_floating_ips }}"
 
 - name: Debug2
-  debug:
+  ansible.builtin.debug:
     msg: "{{ hcloud_floating_ips  | length > 0 }}"
 
 - name: Include Set Floating IP
@@ -144,7 +144,7 @@
     ansible_ssh_extra_args: -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null
 
 - name: Dig until address set
-  debug:
+  ansible.builtin.debug:
     msg: "IPv4: {{ lookup('dig', inventory_hostname, 'qtype=A') }} IPv6: {{ lookup('dig', inventory_hostname, 'qtype=AAAA') }}"
   until: lookup('dig', inventory_hostname, 'qtype=A') == hcloud_ipv4_address
   # retries and delay are in seconds TTL is maximal 600

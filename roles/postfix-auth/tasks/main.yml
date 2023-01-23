@@ -49,7 +49,7 @@
   register: mailingliste
 
 - name: Make sure mail for root is redirected
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/aliases
     regexp: "^root:"
     line: "root: {{ mailingliste.content |b64decode  |replace('\n', '') }}"

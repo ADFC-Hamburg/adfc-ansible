@@ -77,7 +77,7 @@
       tags: software
 
     - name: add ucs-master to /etc/hosts
-      lineinfile:
+      ansible.builtin.lineinfile:
         path: /etc/hosts
         line: 192.168.123.32  ucs-master.gst.hamburg.adfc.de
       tags: etc_hosts

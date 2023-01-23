@@ -8,7 +8,7 @@
   when: jitsi_meet_desktop_sharing_chrome_extension_filename is defined and jitsi_meet_desktop_sharing_chrome_extension_filename
 
 - name: Display URL for downloading Chrome web browser extension.
-  debug:
+  ansible.builtin.debug:
     msg: >-
       Installed Chrome web extension. Participants who wish to share
       their screens in Jitsi Meet must download the extension from

@@ -69,7 +69,7 @@
   loop: "{{ groups['all'] }}"
 
 - name: out
-  debug:
+  ansible.builtin.debug:
     var: firewall_in
 
 - name: set firewall tcp

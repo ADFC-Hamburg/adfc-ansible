@@ -5,5 +5,5 @@
     - ucs-master-start
   tasks:
     - name: test
-      debug:
+      ansible.builtin.debug:
         msg: hello world

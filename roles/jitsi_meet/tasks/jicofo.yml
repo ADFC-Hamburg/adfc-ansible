@@ -18,7 +18,7 @@
   notify: restart jicofo
 
 - name: Set Jicofo log level.
-  lineinfile:
+  ansible.builtin.lineinfile:
     dest: /etc/jitsi/jicofo/logging.properties
     regexp: ^\.level
     line: .level={{ jitsi_meet_jicofo_loglevel }}

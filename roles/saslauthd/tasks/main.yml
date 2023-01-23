@@ -8,7 +8,7 @@
   tags: saslauthd
 
 - name: Enable saslauthd
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/default/saslauthd
     regexp: ^START=
     line: START=yes
@@ -16,7 +16,7 @@
   tags: saslauthd
 
 - name: Set Ldap Mechanism
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/default/saslauthd
     regexp: ^MECHANISMS=
     line: MECHANISMS="ldap"
