@@ -6,7 +6,7 @@
     - ssh_keys
     - gray_print
     - systemd_max_memory
-    - links-on-desktop
+    - links_on_desktop
     - borg_server
     - external_https
     - self_service_sms
