@@ -6,7 +6,7 @@
     mode: 0644
 
 - name: Check if Certificate is there
-  stat:
+  ansible.builtin.stat:
     path: /etc/ssl/letsencrypt/{{ quartierefuermenschen_domain }}.crt
   register: cert_stat
 

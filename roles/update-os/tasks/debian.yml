@@ -14,7 +14,7 @@
     autoclean: true
 
 - name: Check if a reboot is required
-  stat:
+  ansible.builtin.stat:
     path: /var/run/reboot-required
     get_md5: false
   register: reboot_required_file

@@ -60,25 +60,25 @@
   failed_when: (djs_testcase.rc != 0)  or (djs_testcase.stderr |length >0)
 
 - name: dynamic-jitsi-sclaer |  test {{ testcase.name }} | check vbdh01 setup playbook is {{ testcase.result.playbook_setup_vbh01 }}
-  stat:
+  ansible.builtin.stat:
     path: /tmp/dyn_jitsi_playbook-vbdh01.meet.adfc-intern.de-setup-meet-vb.yml
   register: mystat
   failed_when: mystat.stat.exists != testcase.result.playbook_setup_vbdh01
 
 - name: dynamic-jitsi-sclaer |  test {{ testcase.name }} | check vbdh01 delete playbook is {{ testcase.result.playbook_delete_vbh01 }}
-  stat:
+  ansible.builtin.stat:
     path: /tmp/dyn_jitsi_playbook-vbdh01.meet.adfc-intern.de-delete-meet-vb.yml
   register: mystat
   failed_when: mystat.stat.exists != testcase.result.playbook_delete_vbdh01
 
 - name: dynamic-jitsi-sclaer |  test {{ testcase.name }} | check vbdh02 setup playbook is {{ testcase.result.playbook_setup_vbh01 }}
-  stat:
+  ansible.builtin.stat:
     path: /tmp/dyn_jitsi_playbook-vbdh02.meet.adfc-intern.de-setup-meet-vb.yml
   register: mystat
   failed_when: mystat.stat.exists != testcase.result.playbook_setup_vbdh02
 
 - name: dynamic-jitsi-sclaer |  test {{ testcase.name }} | check vbdh02 delete playbook is {{ testcase.result.playbook_delete_vbh01 }}
-  stat:
+  ansible.builtin.stat:
     path: /tmp/dyn_jitsi_playbook-vbdh02.meet.adfc-intern.de-delete-meet-vb.yml
   register: mystat
   failed_when: mystat.stat.exists != testcase.result.playbook_delete_vbdh02

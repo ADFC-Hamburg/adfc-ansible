@@ -48,7 +48,7 @@
     authorized_key_delegate: "{{ backup_client }}"
 
 - name: Check if Borg Repo is initialized,
-  stat:
+  ansible.builtin.stat:
     path: "{{ adfc_borg_repo }}/config"
   register: borg_config
   delegate_to: "{{ backup_client }}"

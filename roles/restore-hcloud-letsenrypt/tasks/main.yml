@@ -1,6 +1,6 @@
 ---
 - name: create lestsencrypt
-  stat:
+  ansible.builtin.stat:
     path: /etc/letsencrypt
   register: stat_le_dir
 

@@ -1,6 +1,6 @@
 ---
 - name: check if password file is there
-  stat:
+  ansible.builtin.stat:
     path: /etc/machine.secret
   register: machine_secret_stat
 

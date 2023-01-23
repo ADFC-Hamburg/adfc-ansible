@@ -14,7 +14,7 @@
       - ufw
   tags: coturn
 - name: Check if Password file exists
-  stat:
+  ansible.builtin.stat:
     path: /etc/coturn.secret
   register: coturn_secret_stat
 - name: Generate Password file

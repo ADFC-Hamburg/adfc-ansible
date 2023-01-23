@@ -6,7 +6,7 @@
       - unzip
 
 - name: Test German Sounds
-  stat:
+  ansible.builtin.stat:
     path: /usr/share/asterisk/sounds/de/confbridge-pin.sln16
   register: test_german_sounds
 
@@ -45,7 +45,7 @@
   tags: asterisk-extension
 
 - name: check if password file is there
-  stat:
+  ansible.builtin.stat:
     path: /etc/jigasi-sip.secret
   register: jigasi_sip_secret_stat
 

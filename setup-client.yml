@@ -185,7 +185,7 @@
       tags: pdfeditor, software
 
     - name: Pruefe Freemind-snap
-      stat:
+      ansible.builtin.stat:
         path: /var/lib/snapd/desktop/applications/freemind_freemind.desktop
       register: freemind_snap_result
 
@@ -219,7 +219,7 @@
       when: ansible_hostname != inventory_hostname_short
 
     - name: Stat Netplan Network-manager-cfg
-      stat:
+      ansible.builtin.stat:
         path: /etc/netplan/01-network-manager-all.yaml
       register: netplan_nmgr_stat
     - name: Move Netplan Network-manager-cfg
@@ -235,7 +235,7 @@
       when: interfaces_create.changed
 
     - name: Check if join is alread done
-      stat:
+      ansible.builtin.stat:
         path: /usr/share/pam-configs/ucs_mkhomedir
       register: stat_ucs_mkhomedir
     - name: Prompt for Admin Password

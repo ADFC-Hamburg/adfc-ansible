@@ -18,14 +18,14 @@
       ansible.builtin.apt:
         name: univention-portal
     - name: teste ob univention-letsencrypt installiert ist
-      stat:
+      ansible.builtin.stat:
         path: /usr/share/doc/univention-letsencrypt/copyright
       register: ucs_letsencrypt
     - name: Installiere univention-letsencrypt
       ansible.builtin.command: /usr/bin/univention-app install letsencrypt
       when: not ucs_letsencrypt.stat.exists
     - name: teste ob univention-self-service installiert ist
-      stat:
+      ansible.builtin.stat:
         path: /usr/share/doc/univention-self-service/copyright
       register: ucs_self_service
     - name: Installiere univention-self-service

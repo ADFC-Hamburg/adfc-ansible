@@ -2,7 +2,7 @@
 # Role to Create Link-Folder on Users Desktops
 
 - name: Check if path exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ adfc_link_path }}"
   register: stat_result
   when: ansible_hostname == "ucs-master"

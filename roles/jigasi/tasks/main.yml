@@ -11,7 +11,7 @@
   when: ansible_distribution_release == 'bullseye'
 
 - name: check if password file is there
-  stat:
+  ansible.builtin.stat:
     path: /etc/jigasi-sip.secret
   register: jigasi_sip_secret_stat
 

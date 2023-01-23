@@ -6,7 +6,7 @@
   tags: skype
 
 - name: check if skype is installed
-  stat:
+  ansible.builtin.stat:
     path: /usr/share/applications/skypeforlinux.desktop
   register: skypedesktop
   tags: skype

@@ -10,7 +10,7 @@
       - fonts-larabie-uncommon
 
 - name: Teste TTF
-  stat:
+  ansible.builtin.stat:
     path: /usr/share/fonts/truetype/msttcorefonts/Arial.ttf
   register: mssfont
 - name: Accecpt mscorefonts-eula

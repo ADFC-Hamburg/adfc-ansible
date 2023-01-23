@@ -30,7 +30,7 @@
           repository/online/component/cool-solutions/unmaintained: true
       tags: cool_solutions
     - name: check if univention-homedir-autocreate is installed
-      stat:
+      ansible.builtin.stat:
         path: /usr/lib/univention-directory-listener/system/homedir-autocreate.py
       register: stat_homedir_listener
     - name: install module for autocreation of home dirs
