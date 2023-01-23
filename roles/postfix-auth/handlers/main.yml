@@ -8,6 +8,6 @@
   notify: reload postfix
 
 - name: reload postfix
-  service:
+  ansible.builtin.service:
     name: postfix
     state: restarted

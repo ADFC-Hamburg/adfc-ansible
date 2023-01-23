@@ -4,6 +4,6 @@
   changed_when: false
 
 - name: Restart Apache
-  service:
+  ansible.builtin.service:
     name: apache2
     state: restarted
