@@ -4,7 +4,7 @@
   roles:
     - ssh_keys
     - postfix-auth
-    - proxmox-backup
+    - proxmox_backup
   tasks:
     - name: Erstellen eine Unix User fuer Tools-Server Backup
       ansible.builtin.user:
