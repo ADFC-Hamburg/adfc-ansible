@@ -1,6 +1,6 @@
 ---
 - name: Import InfluxDB GPG signing key
-  apt_key:
+  ansible.builtin.apt_key:
     url: https://repos.influxdata.com/influxdb.key
     state: present
 

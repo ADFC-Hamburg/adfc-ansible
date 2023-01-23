@@ -5,7 +5,7 @@
   tags: skype
 
 - name: Skype-Repo und GPG-Key hinzu
-  apt_key:
+  ansible.builtin.apt_key:
     url: https://repo.skype.com/data/SKYPE-GPG-KEY
     state: present
   tags: skype

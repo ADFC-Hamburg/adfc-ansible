@@ -1,6 +1,6 @@
 ---
 - name: Import GPG signing key
-  apt_key:
+  ansible.builtin.apt_key:
     url: https://packages.grafana.com/gpg.key
     state: present
 
