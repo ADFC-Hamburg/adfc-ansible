@@ -36,7 +36,7 @@
   notify: restart prosody
 
 - name: Allow prosody firewall for ipv4
-  ufw:
+  community.general.ufw:
     rule: allow
     port: "5222"
     proto: tcp

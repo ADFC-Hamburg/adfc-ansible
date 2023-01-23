@@ -73,7 +73,7 @@
     var: firewall_in
 
 - name: set firewall tcp
-  ufw:
+  community.general.ufw:
     rule: allow
     src: "{{ item }}"
     port: "8086"
@@ -82,7 +82,7 @@
   with_items: "{{ firewall_in }}"
 
 - name: set firewall udp
-  ufw:
+  community.general.ufw:
     rule: allow
     src: "{{ item }}"
     port: "8089"

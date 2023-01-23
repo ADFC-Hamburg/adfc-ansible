@@ -45,7 +45,7 @@
     name: jigasi
     state: started
 - name: Allow firewall for ipv4 sip
-  ufw:
+  community.general.ufw:
     rule: allow
     port: "5060"
     proto: udp

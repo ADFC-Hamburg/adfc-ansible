@@ -15,20 +15,20 @@
 
 # Videobridge is connecting via ipv4 only
 #- name: Setup jitsi main server firewall for ipv6
-#  ufw:
+#  community.general.ufw:
 #    rule: allow
 #    port: "5347"
 #    from: "{{ lookup('dig', vb_host + '.', 'qtype=AAAA') }}"
 #    proto: tcp
 - name: Setup jitsi main server firewall for ipv4
-  ufw:
+  community.general.ufw:
     rule: allow
     port: "5347"
     from: "{{ lookup('dig', vb_host + '.', 'qtype=A') }}"
     proto: tcp
 
 - name: Setup jitsi main server firewall for ipv6
-  ufw:
+  community.general.ufw:
     rule: allow
     port: "5347"
     from: "{{ lookup('dig', vb_host + '.', 'qtype=AAAA') }}"

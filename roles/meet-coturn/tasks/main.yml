@@ -66,12 +66,12 @@
   notify: Restart turnserver
   tags: coturn
 - name: Allow Turn Server
-  ufw:
+  community.general.ufw:
     rule: allow
     port: "4446"
     proto: udp
 - name: Allow TLS Turn Server
-  ufw:
+  community.general.ufw:
     rule: allow
     port: "4445"
     proto: udp
