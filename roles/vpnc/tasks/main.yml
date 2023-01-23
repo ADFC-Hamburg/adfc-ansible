@@ -31,7 +31,7 @@
     - cleanup
 
 - name: Erstelle /etc/vpnc/adfc-gst.conf
-  template:
+  ansible.builtin.template:
     src: vpnc-adfc-gst.conf
     dest: /etc/vpnc/adfc-gst.conf
     owner: root

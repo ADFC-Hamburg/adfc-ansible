@@ -29,13 +29,13 @@
   register: jigasi_sip_secret
 
 - name: Create sip-communicatior.properties
-  template:
+  ansible.builtin.template:
     src: jigasi_sip-communicator.properties.j2
     dest: /etc/jitsi/jigasi/sip-communicator.properties
   notify: restart jigasi
 
 - name: Create jigasi/config
-  template:
+  ansible.builtin.template:
     src: jigasi_config.j2
     dest: /etc/jitsi/jigasi/config
   notify: restart jigasi

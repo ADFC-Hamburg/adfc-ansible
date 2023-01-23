@@ -1,6 +1,6 @@
 ---
 - name: Create Apache HTTP Config
-  template:
+  ansible.builtin.template:
     src: "{{ apache_cfg.template_src }}"
     dest: /etc/apache2/sites-available/{{ apache_cfg.site_name }}.conf
     mode: 0644

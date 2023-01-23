@@ -38,7 +38,7 @@
         name: bsd-mailx
 
     - name: Kopiere check_ips Skript
-      template:
+      ansible.builtin.template:
         src: check_ips.sh
         dest: /usr/local/bin/check_ips.sh
         mode: 0755

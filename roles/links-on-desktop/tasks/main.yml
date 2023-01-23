@@ -30,7 +30,7 @@
   when: ansible_hostname == "ucs-master"
 
 - name: copy all users autostart to client
-  template:
+  ansible.builtin.template:
     src: forallusers.desktop
     dest: /etc/xdg/autostart/forallusers.desktop
     mode: 0644

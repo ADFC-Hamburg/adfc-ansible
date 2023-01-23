@@ -10,13 +10,13 @@
       - bsd-mailx
 
 - name: Set Firefox sysprefs.js
-  template:
+  ansible.builtin.template:
     src: sysprefs.js
     dest: /etc/firefox/syspref.js
     mode: 0644
 
 - name: Copy firefox extension update cron script
-  template:
+  ansible.builtin.template:
     src: firefox-extension-update.sh
     dest: /etc/cron.daily/firefox-extension-update.sh
     mode: 0755

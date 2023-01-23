@@ -63,7 +63,7 @@
   register: jigasi_sip_secret
 
 - name: create extension.conf
-  template:
+  ansible.builtin.template:
     src: extensions.conf.j2
     dest: /etc/asterisk/extensions.conf
     mode: 0644
@@ -71,7 +71,7 @@
   tags: asterisk-extension
 
 - name: Create pjsip.conf
-  template:
+  ansible.builtin.template:
     src: pjsip.conf.j2
     dest: /etc/asterisk/pjsip.conf
     mode: 0644

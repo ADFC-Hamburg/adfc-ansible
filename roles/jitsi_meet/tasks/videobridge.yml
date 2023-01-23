@@ -1,6 +1,6 @@
 ---
 - name: Copy Jitsi Videobridge config file.
-  template:
+  ansible.builtin.template:
     src: "{{ jitsi_meet_videobridge_config_template }}"
     dest: /etc/jitsi/videobridge/config
     owner: root
@@ -17,14 +17,14 @@
   notify: restart jitsi-videobridge
 
 - name: Add videobridge sip-communicator config
-  template:
+  ansible.builtin.template:
     src: "{{ jitsi_meet_videobridge_sip_template }}"
     dest: /etc/jitsi/videobridge/sip-communicator.properties
     mode: 0644
   notify: restart jitsi-videobridge
 
 - name: Add videobridge jvb.config
-  template:
+  ansible.builtin.template:
     src: "{{ jitsi_meet_videobridge_jvb_config }}"
     dest: /etc/jitsi/videobridge/jvb.conf
     mode: 0644

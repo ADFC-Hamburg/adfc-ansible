@@ -35,7 +35,7 @@
     seconds: 30
 
 - name: create floating_ip config
-  template:
+  ansible.builtin.template:
     src: floating_ip.cfg.j2
     dest: /etc/network/interfaces.d/60-my-floating-ip.cfg
     mode: "0644"

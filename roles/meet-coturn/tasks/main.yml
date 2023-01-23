@@ -57,7 +57,7 @@
   tags: coturn
 
 - name: Erstelle trunserver.conf
-  template:
+  ansible.builtin.template:
     src: turnserver.conf.j2
     dest: /etc/turnserver.conf
     mode: "0644"

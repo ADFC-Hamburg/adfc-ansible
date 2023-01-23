@@ -35,7 +35,7 @@
   register: password_file_slurp
 
 - name: Create influx config
-  template:
+  ansible.builtin.template:
     src: influxdb.conf.j2
     dest: /etc/influxdb/influxdb.conf
   notify: restart influxdb

@@ -1,6 +1,6 @@
 ---
 - name: Generate Templates
-  template:
+  ansible.builtin.template:
     src: "{{ item.src }}"
     dest: /usr/share/jitsi-meet/{{ item.dest }}
     mode: 0644

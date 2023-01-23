@@ -43,7 +43,7 @@
   tags: borg-server
 
 - name: install borg-script
-  template:
+  ansible.builtin.template:
     src: adfc-borg
     dest: /usr/local/sbin/adfc-borg
     mode: "0755"
@@ -83,7 +83,7 @@
   tags: borg-server,adfc-borg,borg-keyscan
 
 - name: install ssh-config
-  template:
+  ansible.builtin.template:
     src: ssh-config
     dest: /usr/local/share/adfc-borg/ssh-config
     mode: "0644"
@@ -100,7 +100,7 @@
   tags: borg-server
 
 - name: install logrotate script
-  template:
+  ansible.builtin.template:
     src: logrotate
     dest: /etc/logrotate.d/adfc-borg
     mode: "0644"

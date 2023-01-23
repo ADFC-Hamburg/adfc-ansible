@@ -44,11 +44,11 @@
         dest: /etc/hostname
         mode: "0644"
     - name: Setze /etc/hosts
-      template:
+      ansible.builtin.template:
         src: hosts
         dest: /etc/hosts
     - name: Lade interfaces
-      template:
+      ansible.builtin.template:
         src: hetzner-interfaces.j2
         dest: /etc/network/interfaces
       tags: interface

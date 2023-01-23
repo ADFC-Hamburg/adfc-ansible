@@ -28,7 +28,7 @@
     state: directory
 
 - name: Create command
-  template:
+  ansible.builtin.template:
     src: metropol_run.sh.j2
     dest: /home/metroterm/run_daily.sh
     mode: "0700"

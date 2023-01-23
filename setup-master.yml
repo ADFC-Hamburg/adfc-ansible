@@ -39,13 +39,13 @@
       tags: cool_solutions
 
     - name: install postfix sender_canonical
-      template:
+      ansible.builtin.template:
         src: ucs-master-sender_canonical
         dest: /etc/postfix/sender_caonical
       tags: postfix
 
     - name: install postfix main.cf
-      template:
+      ansible.builtin.template:
         src: ucs-master-postfix-main.cf.local
         dest: /etc/postfix/main.cf.local
       notify: ucr commit postifx main.cf
@@ -58,7 +58,7 @@
         mode: "0755"
 
     - name: Create adfc-who
-      template:
+      ansible.builtin.template:
         src: adfc-who.sh
         dest: /usr/local/sbin/adfc-who
         mode: "0755"

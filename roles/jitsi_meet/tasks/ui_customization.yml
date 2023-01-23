@@ -1,6 +1,6 @@
 ---
 - name: Application configuration file
-  template:
+  ansible.builtin.template:
     dest: /usr/share/jitsi-meet/interface_config.js
     src: "{{ jitsi_meet_interface_config_js_template }}"
     owner: root
@@ -13,7 +13,7 @@
     - restart nginx
 
 - name: Title configuration file
-  template:
+  ansible.builtin.template:
     dest: /usr/share/jitsi-meet/title.html
     src: "{{ jitsi_meet_title_template }}"
     owner: root
@@ -21,7 +21,7 @@
     mode: "0644"
 
 - name: Welcome Page Additions
-  template:
+  ansible.builtin.template:
     src: "{{ jitsi_meet_welcome_page_additions_file }}"
     dest: /usr/share/jitsi-meet/static/welcomePageAdditionalContent.html
     owner: root
@@ -29,7 +29,7 @@
     mode: "0644"
 
 - name: Site CSS
-  template:
+  ansible.builtin.template:
     src: "{{ jitsi_meet_css_file }}"
     dest: /usr/share/jitsi-meet/css/all.css
     owner: root

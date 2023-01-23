@@ -21,7 +21,7 @@
   include_tasks: http_server.yml
 
 - name: Create domains.txt
-  template:
+  ansible.builtin.template:
     src: domains.txt.j2
     dest: /etc/dehydrated/domains.txt
     mode: 0644
@@ -30,7 +30,7 @@
   notify: Domains abholen
 
 - name: Set deploy hook
-  template:
+  ansible.builtin.template:
     src: hook.sh.j2
     dest: /etc/dehydrated/hook.sh
     mode: 0755

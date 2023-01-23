@@ -41,7 +41,7 @@
   when: dynamic_jitis_run_test | default(False)
 
 - name: dynamic-jitsi-scaler | install script test
-  template:
+  ansible.builtin.template:
     src: dynamic-jitsi-scaler.sh.j2
     dest: /usr/local/bin/dynamic-jitsi-scaler-test
     mode: "0755"
@@ -61,7 +61,7 @@
   when: dynamic_jitis_run_test | default(False)
 
 - name: dynamic-jitsi-scaler |install script
-  template:
+  ansible.builtin.template:
     src: dynamic-jitsi-scaler.sh.j2
     dest: /usr/local/bin/dynamic-jitsi-scaler
     mode: "0755"
@@ -70,7 +70,7 @@
     dynamic_admin_mail: "{{ admin_mail }}"
 
 - name: dynamic-jitsi-scaler | Create system timer and service
-  template:
+  ansible.builtin.template:
     src: systemd-{{ item }}.j2
     dest: /lib/systemd/system/{{ item }}
     mode: "0644"

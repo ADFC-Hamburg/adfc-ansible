@@ -210,7 +210,7 @@
         dest: /usr/share/applications/adfc-datenbank.desktop
 
     - name: Erstelle /etc/issue
-      template:
+      ansible.builtin.template:
         src: issue
         dest: /etc/issue
 
@@ -226,7 +226,7 @@
       command: mv /etc/netplan/01-network-manager-all.yaml /etc/netplan/01-network-manager-all.yaml.unused
       when: netplan_nmgr_stat.stat.exists
     - name: Erstelle /etc/netplan/02-adfc.yaml
-      template:
+      ansible.builtin.template:
         src: etc-netplan-02-adfc.yaml
         dest: /etc/netplan/02-adfc.yaml
       register: interfaces_create
@@ -277,7 +277,7 @@
     # ADFC - Desktop theme
 
     - name: sudoer erstellen
-      template:
+      ansible.builtin.template:
         src: sudoers-client
         dest: /etc/sudoers.d/adfc-ansible
         validate: /usr/sbin/visudo -cf %s
@@ -285,7 +285,7 @@
       tags: sudo
 
     - name: Erlaube Zugriff auf video,audio etc.
-      template:
+      ansible.builtin.template:
         src: group.conf.j2
         dest: /etc/security/group.conf
         mode: 0644

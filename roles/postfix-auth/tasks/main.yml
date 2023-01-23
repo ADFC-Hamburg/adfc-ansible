@@ -15,14 +15,14 @@
     mode: 0644
 
 - name: copy postfix configuration file
-  template:
+  ansible.builtin.template:
     src: postfix-main.cf
     dest: /etc/postfix/main.cf
     mode: 0644
   notify: reload postfix
 
 - name: copy sender_canonical
-  template:
+  ansible.builtin.template:
     src: sender-canonical
     dest: /etc/postfix/sender_canonical
     mode: 0640

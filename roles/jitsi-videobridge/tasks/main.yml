@@ -36,7 +36,7 @@
   register: vb_passwd_file_stat
 
 - name: Create config
-  template:
+  ansible.builtin.template:
     src: vb-config.j2
     dest: /etc/jitsi/videobridge/config
     owner: root
@@ -45,7 +45,7 @@
   notify: restart jitsi-videobridge
 
 - name: Create sip-communicator.properties config
-  template:
+  ansible.builtin.template:
     src: "{{ jitsi_meet_videobridge_sip_template }}"
     dest: /etc/jitsi/videobridge/sip-communicator.properties
     owner: root
@@ -56,7 +56,7 @@
   notify: restart jitsi-videobridge
 
 - name: Add videobridge jvb.config
-  template:
+  ansible.builtin.template:
     src: "{{ jitsi_meet_videobridge_jvb_config }}"
     dest: /etc/jitsi/videobridge/jvb.conf
     mode: 0644

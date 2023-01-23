@@ -23,7 +23,7 @@
     system: true
 
 - name: copy the template over
-  template:
+  ansible.builtin.template:
     src: tasmota_start_menu.sh
     dest: /usr/local/bin/tasmota_start_menu.sh
     owner: root

@@ -5,7 +5,7 @@
     name: "{{ basic_setup_base_packages }}"
 
 - name: Setup Journald Settings
-  template:
+  ansible.builtin.template:
     src: base-journald.conf
     dest: /etc/systemd/journald.conf
     mode: "0644"

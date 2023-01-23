@@ -42,7 +42,7 @@
     ################################ Monitoring ####################
 
     - name: Create Local NRPE Config
-      template:
+      ansible.builtin.template:
         src: nrpe_local.cfg
         dest: /etc/nagios/nrpe_local.cfg
         mode: "0644"

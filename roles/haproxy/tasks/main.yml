@@ -28,7 +28,7 @@
     loop_var: ha_backend_host
 
 - name: Write keycopy command
-  template:
+  ansible.builtin.template:
     src: fetch_haproxy_certs.sh.j2
     dest: /usr/local/share/harpoxy-key-copy/fetch-certs
     mode: 0700
@@ -102,7 +102,7 @@
       dst_file: /etc/haproxy/cert_auth/crl.pem
 
 - name: Generate haproxy template
-  template:
+  ansible.builtin.template:
     src: haproxy.cfg.j2
     dest: /etc/haproxy/haproxy.cfg
     mode: 0644

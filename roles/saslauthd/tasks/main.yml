@@ -58,7 +58,7 @@
   register: machine_secret
 
 - name: Create config file
-  template:
+  ansible.builtin.template:
     src: saslauthd.conf.j2
     dest: /etc/saslauthd.conf
     mode: 0644

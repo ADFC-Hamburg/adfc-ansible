@@ -1,6 +1,6 @@
 ---
 - name: Create fix_adfc_perms.sh
-  template:
+  ansible.builtin.template:
     src: fix_adfc_perms.sh.j2
     dest: /usr/local/sbin/fix_adfc_perms.sh
     mode: 0700
