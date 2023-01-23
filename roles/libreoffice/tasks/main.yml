@@ -8,7 +8,7 @@
       - libreoffice-l10n-de
 
 - name: Copy settings
-  copy:
+  ansible.builtin.copy:
     src: adfc.xcd
     dest: /usr/lib/libreoffice/share/registry/adfc.xcd
     mode: 0644

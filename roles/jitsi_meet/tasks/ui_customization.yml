@@ -38,7 +38,7 @@
   when: jitsi_meet_css_file | length > 0
 
 - name: Replace watermark for a customized one
-  copy:
+  ansible.builtin.copy:
     src: "{{ jitsi_meet_watermark_file }}"
     dest: /usr/share/jitsi-meet/images/watermark.png
     owner: root
@@ -47,7 +47,7 @@
   when: jitsi_meet_watermark_file is defined and jitsi_meet_watermark_file
 
 - name: Replace logo for a customized one
-  copy:
+  ansible.builtin.copy:
     src: "{{ jitsi_meet_logo_file }}"
     dest: /usr/share/jitsi-meet/images/jitsilogo.png
     owner: root
@@ -56,7 +56,7 @@
   when: jitsi_meet_logo_file is defined and jitsi_meet_logo_file
 
 - name: Replace favicon for a customized one
-  copy:
+  ansible.builtin.copy:
     src: "{{ jitsi_meet_favicon_file }}"
     dest: /usr/share/jitsi-meet/images/favicon.ico
     owner: root

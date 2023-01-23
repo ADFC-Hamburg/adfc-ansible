@@ -46,14 +46,14 @@
     job_id: "{{ github_jobs.json.workflow_runs |selectattr('head_sha', 'equalto', github_sha.json.object.sha) | map(attribute='id') | list | first }}"
 
 - name: Write sha hash to file
-  copy:
+  ansible.builtin.copy:
     content: "{{ sha }}"
     dest: "{{  adfc_share_dir }}/jitsi-web.git_hash"
   register: jitsi_web_write_sha
   check_mode: true
 
 - name: Write apt pin
-  copy:
+  ansible.builtin.copy:
     src: adfc-skin-jitsi-apt-preferences
     dest: /etc/apt/preferences.d/adfc-jitsi
     mode: 0644

@@ -38,7 +38,7 @@
     masked: true
 
 - name: Setze die Umask auf 0007
-  copy:
+  ansible.builtin.copy:
     content: umask 0007
     dest: /etc/profile.d/ansibe_adfc.sh
     owner: root

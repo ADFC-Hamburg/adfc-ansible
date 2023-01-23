@@ -8,7 +8,7 @@
   tags: software, thunderbird
 
 - name: Setup Thunderbid Settings
-  copy:
+  ansible.builtin.copy:
     src: sysprefs.js
     dest: /etc/thunderbird/syspref.js
     mode: "0644"

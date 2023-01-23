@@ -83,7 +83,7 @@
     - haproxy-fetch-crl
 
 - name: Copy Static files
-  copy:
+  ansible.builtin.copy:
     src: "{{ item }}"
     dest: /etc/haproxy/static/{{ item }}
     mode: 0644

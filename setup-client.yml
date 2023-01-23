@@ -57,7 +57,7 @@
 
   tasks:
     - name: Setup Cups client.conf
-      copy:
+      ansible.builtin.copy:
         content: ServerName ucs-master.gst.hamburg.adfc.de
         dest: /etc/cups/client.conf
         mode: 0644
@@ -196,7 +196,7 @@
 
     # Shortcuts für Flameshot einrichten
     - name: Erstelle /usr/share/khotkeys/flameshot.khotkeys
-      copy:
+      ansible.builtin.copy:
         src: flameshot.khotkeys
         dest: /usr/share/khotkeys/flameshot.khotkeys
     - name: Standard-Hotkeys fuer Spectacle löschen
@@ -205,7 +205,7 @@
         state: absent
 
     - name: Menueeintrag fuer ADFC-Datenbank erstellen
-      copy:
+      ansible.builtin.copy:
         src: adfc-datenbank.desktop
         dest: /usr/share/applications/adfc-datenbank.desktop
 
@@ -245,7 +245,7 @@
       no_log: true
       when: not stat_ucs_mkhomedir.stat.exists
     - name: create password file
-      copy:
+      ansible.builtin.copy:
         content: "{{ UCSAdminPassword.user_input }}"
         dest: /root/ucs-admin-pw.secret
       when: not stat_ucs_mkhomedir.stat.exists

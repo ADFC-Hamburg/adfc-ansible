@@ -5,7 +5,7 @@
   tags: unburden
 
 - name: Copy Config Files
-  copy:
+  ansible.builtin.copy:
     src: "{{ item }}"
     dest: /etc/
     mode: 0644

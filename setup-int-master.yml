@@ -63,7 +63,7 @@
         - /etc/adfc/self-service
       tags: self-service
     - name: Kopiere E-mail Texte
-      copy:
+      ansible.builtin.copy:
         src: int-master-self-service-{{ item }}
         dest: /etc/adfc/self-service/{{ item }}
         mode: "0644"

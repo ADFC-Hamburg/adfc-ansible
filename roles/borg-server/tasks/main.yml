@@ -69,7 +69,7 @@
     group: root
 
 - name: Output Keyscan
-  copy:
+  ansible.builtin.copy:
     content: |
       {% for res in backup_clients_keyscan.results %}
       {% for line in res.stdout_lines |sort %}

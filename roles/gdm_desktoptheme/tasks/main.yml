@@ -20,7 +20,7 @@
   tags: gdm
 
 - name: Copy config for default desktoptheme
-  copy:
+  ansible.builtin.copy:
     src: desktopthemes/kubuntu-default-plasmarc
     dest: /usr/share/kubuntu-default-settings/kf5-settings/plasmarc
     mode: 0644
@@ -49,7 +49,7 @@
   tags: gdm
 
 - name: Copy ADFC Logo
-  copy:
+  ansible.builtin.copy:
     src: ADFC-HH-rgb.jpg
     dest: /usr/local/share/themes/adfc/ADFC-HH-rgb.jpg
     mode: 0644
@@ -76,14 +76,14 @@
   tags: gdm
 
 - name: Copy GDM Config file
-  copy:
+  ansible.builtin.copy:
     src: client-etc-gdm3-greeter.dconf-defaults
     dest: /etc/gdm3/greeter.dconf-defaults
   notify: restart gdm3
   tags: gdm
 
 - name: copy ubuntu.css to client
-  copy:
+  ansible.builtin.copy:
     src: ubuntu-adfc.css
     dest: /usr/share/gnome-shell/theme/ubuntu-adfc.css
     mode: 0644
@@ -99,7 +99,7 @@
   tags: gdm
 
 - name: copy ADFC-Login background
-  copy:
+  ansible.builtin.copy:
     src: ADFC-login-background.png
     dest: /usr/local/share/themes/adfc/ADFC-login-background.png
     mode: 0644

@@ -28,7 +28,7 @@
     cmd: /usr/bin/dpkg -i {{  adfc_share_dir }}/jitsi-meet-web_{{ jitsi_meet_packages[0].version }}_all.deb
 
 - name: Write sha hash to file
-  copy:
+  ansible.builtin.copy:
     content: "{{ sha }}"
     dest: "{{  adfc_share_dir }}/jitsi-web.git_hash"
 

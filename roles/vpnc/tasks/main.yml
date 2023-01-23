@@ -40,7 +40,7 @@
   tags: vpnc
 
 - name: Erstelle /etc/vpnc/vpnc-adfc-gst-custom-script
-  copy:
+  ansible.builtin.copy:
     src: vpnc-adfc-gst-custom-script
     dest: /etc/vpnc/vpnc-adfc-gst-custom-script
     owner: root
@@ -49,7 +49,7 @@
   tags: vpnc
 
 - name: Erstelle /etc/systemd/system/vpnc@.service
-  copy:
+  ansible.builtin.copy:
     src: vpnc@.service
     dest: /etc/systemd/system/vpnc@.service
     owner: root
@@ -73,7 +73,7 @@
   tags: vpnc
 
 - name: Create VPNC-Monitor Skript
-  copy:
+  ansible.builtin.copy:
     src: vpnc-monitor.sh
     dest: /usr/local/sbin/vpnc-monitor
     mode: "0755"

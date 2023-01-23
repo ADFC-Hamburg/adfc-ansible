@@ -18,7 +18,7 @@
   when: ansible_distribution_version == '20.04'
 
 - name: copy logo
-  copy:
+  ansible.builtin.copy:
     src: ADFC-HH-rgb-300px.bmp
     dest: /usr/local/share/xrdp-adfc-logo.bmp
     mode: "0644"
@@ -26,7 +26,7 @@
     group: root
 
 - name: copy xrdp.ini
-  copy:
+  ansible.builtin.copy:
     src: xrdp.ini
     dest: /etc/xrdp/xrdp.ini
     mode: "0644"
@@ -35,7 +35,7 @@
   notify: Restart xrdp
 
 - name: create polkit
-  copy:
+  ansible.builtin.copy:
     src: "{{ item }}"
     dest: /etc/polkit-1/localauthority/50-local.d/{{ item }}
     mode: "0644"
@@ -47,7 +47,7 @@
     - xrdp-disable-network-manager.pkla
 
 - name: Change polkit to disable shutdown on virtual machines
-  copy:
+  ansible.builtin.copy:
     src: xrdp-disable-shutdown.pkla
     dest: /etc/polkit-1/localauthority/50-local.d/xrdp-disable-shutdown.pkla
     mode: "0644"
@@ -69,7 +69,7 @@
     append: true
 
 - name: Make sure a suitable cipher for guacamole is allowed
-  copy:
+  ansible.builtin.copy:
     src: additional_guacamole_cipher.conf
     dest: /etc/ssh/sshd_config.d/
   notify: Restart ssh

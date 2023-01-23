@@ -19,13 +19,13 @@
   delegate_to: ucs-master.gst.hamburg.adfc.de
 
 - name: Setup /etc/vzdump.conf
-  copy:
+  ansible.builtin.copy:
     src: vzdump.conf
     dest: /etc/vzdump.conf
     mode: "0644"
 
 - name: Setup /usr/local/bin/vzdump-hook.sh
-  copy:
+  ansible.builtin.copy:
     src: vzdump-hook.sh
     dest: /usr/local/bin/vzdump-hook.sh
     mode: "0755"

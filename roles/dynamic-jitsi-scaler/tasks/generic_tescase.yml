@@ -1,56 +1,56 @@
 ---
 - name: dynamic-jitsi-sclaer |  test {{ testcase.name }} | set meet participants
-  copy:
+  ansible.builtin.copy:
     dest: /tmp/dyn_jitsi_query_participants-meet.txt
     content: "{{ testcase.participants.meet }}"
 
 - name: dynamic-jitsi-sclaer |  test {{ testcase.name }} | set vbh participants
-  copy:
+  ansible.builtin.copy:
     dest: /tmp/dyn_jitsi_query_participants-vbdh01.txt
     content: "{{ testcase.participants.vbdh01 }}"
 
 - name: dynamic-jitsi-sclaer |  test {{ testcase.name }} | set vbh participants
-  copy:
+  ansible.builtin.copy:
     dest: /tmp/dyn_jitsi_query_participants-vbdh02.txt
     content: "{{ testcase.participants.vbdh02 }}"
 
 - name: dynamic-jitsi-sclaer |  test {{ testcase.name }} | set vbh participants
-  copy:
+  ansible.builtin.copy:
     dest: /tmp/dyn_jitsi_query_participants-vbdh03.txt
     content: "{{ testcase.participants.vbdh03 }}"
 
 - name: dynamic-jitsi-sclaer |  test {{ testcase.name }} | set vbh participants
-  copy:
+  ansible.builtin.copy:
     dest: /tmp/dyn_jitsi_query_participants-vbdh04.txt
     content: "{{ testcase.participants.vbdh04 }}"
 
 - name: dynamic-jitsi-sclaer |  test {{ testcase.name }} | set meet conferences
-  copy:
+  ansible.builtin.copy:
     dest: /tmp/dyn_jitsi_query_conferences-meet.txt
     content: "{{ testcase.conferences.meet }}"
 
 - name: dynamic-jitsi-sclaer |  test {{ testcase.name }} | set vbh participants
-  copy:
+  ansible.builtin.copy:
     dest: /tmp/dyn_jitsi_query_conferences-vbdh01.txt
     content: "{{ testcase.conferences.vbdh01 }}"
 
 - name: dynamic-jitsi-sclaer |  test {{ testcase.name }} | set vbh participants
-  copy:
+  ansible.builtin.copy:
     dest: /tmp/dyn_jitsi_query_conferences-vbdh02.txt
     content: "{{ testcase.conferences.vbdh02 }}"
 
 - name: dynamic-jitsi-sclaer |  test {{ testcase.name }} | set vbh participants
-  copy:
+  ansible.builtin.copy:
     dest: /tmp/dyn_jitsi_query_conferences-vbdh03.txt
     content: "{{ testcase.conferences.vbdh03 }}"
 
 - name: dynamic-jitsi-sclaer |  test {{ testcase.name }} | set vbh participants
-  copy:
+  ansible.builtin.copy:
     dest: /tmp/dyn_jitsi_query_conferences-vbdh04.txt
     content: "{{ testcase.conferences.vbdh04 }}"
 
 - name: dynamic-jitsi-sclaer |  test {{ testcase.name }} | set hetzner result
-  copy:
+  ansible.builtin.copy:
     dest: /tmp/dyn_jitsi_query_hetzner_server.txt
     content: "{{ testcase.hcloud_api }}"
 

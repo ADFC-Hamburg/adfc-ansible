@@ -23,7 +23,7 @@
 
 - name: Set listen option
   # Videobridge is connecting via ipv4 only so listen to 0.0.0.0
-  copy:
+  ansible.builtin.copy:
     content: |
       network_backend = "epoll"
       component_interface = "0.0.0.0";

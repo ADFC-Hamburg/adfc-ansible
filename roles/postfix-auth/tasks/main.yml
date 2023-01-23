@@ -34,7 +34,7 @@
   register: smtp_auth
 
 - name: create SMTP client Auth
-  copy:
+  ansible.builtin.copy:
     content: "{{ smtp_auth.content |b64decode }}"
     dest: /etc/postfix/smtp_auth
     mode: 0600

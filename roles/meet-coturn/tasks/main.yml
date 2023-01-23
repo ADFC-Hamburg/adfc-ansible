@@ -18,7 +18,7 @@
     path: /etc/coturn.secret
   register: coturn_secret_stat
 - name: Generate Password file
-  copy:
+  ansible.builtin.copy:
     content: "{{ lookup('password', '/dev/null length=15 chars=ascii_letters') }}"
     dest: /etc/coturn.secret
   when: not coturn_secret_stat.stat.exists
@@ -27,7 +27,7 @@
     src: /etc/coturn.secret
   register: coturn_secret
 - name: Zertifikats copy für coturn
-  copy:
+  ansible.builtin.copy:
     content: |
       #!/bin/bash
       mkdir /etc/coturn

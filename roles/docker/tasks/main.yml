@@ -11,7 +11,7 @@
   register: docker_fetch_gpg
 
 - name: Create Repo File
-  copy:
+  ansible.builtin.copy:
     content: >
       deb [arch=amd64 signed-by={{ docker_repo_gpg_key_dest }}]
       {{ docker_repo_url }} {{ ansible_distribution_release }} stable

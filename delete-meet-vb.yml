@@ -88,7 +88,7 @@
         hetzner_dns_state: absent
 
     - name: Copy to proxmox
-      copy:
+      ansible.builtin.copy:
         src: /tmp/ansible-trans-logs.tar.gz
         dest: /var/remote_logs/{{ inventory_hostname }}{{ lookup('pipe','date +%Y-%m-%d-%H-%M-%S') }}.tar.gz
       ignore_errors: true

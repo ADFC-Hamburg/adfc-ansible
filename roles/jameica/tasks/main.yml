@@ -17,7 +17,7 @@
     group: root
 
 - name: Create starter
-  copy:
+  ansible.builtin.copy:
     src: jameica.desktop
     dest: /usr/share/applications/
     owner: root

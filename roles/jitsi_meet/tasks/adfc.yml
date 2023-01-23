@@ -9,7 +9,7 @@
   tags: jitsi_adfc
 
 - name: Copy files
-  copy:
+  ansible.builtin.copy:
     src: "{{ item.src }}"
     dest: /usr/share/jitsi-meet/{{ item.dest }}
     mode: 0644

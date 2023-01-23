@@ -30,7 +30,7 @@
     mode: 0755
 
 - name: Create /etc/sasl/prosody.conf
-  copy:
+  ansible.builtin.copy:
     content: |
       pwcheck_method: saslauthd
       mech_list: PLAIN
@@ -71,14 +71,14 @@
   tags: saslauthd
 
 - name: Copy Letsencrpyt privkey
-  copy:
+  ansible.builtin.copy:
     src: "{{ saslauthd_ldap_tls_key }}"
     dest: /etc/ssl/saslauth-privkey.pem
     mode: "0600"
     owner: saslauthd
     remote_src: true
 - name: Copy Letsencrpyt cert
-  copy:
+  ansible.builtin.copy:
     src: "{{ saslauthd_ldap_tls_cert }}"
     dest: /etc/ssl/saslauth-cert.pem
     mode: "0644"
@@ -86,7 +86,7 @@
     remote_src: true
 
 - name: Create systemd user config
-  copy:
+  ansible.builtin.copy:
     src: systemd-user.conf
     dest: /etc/systemd/system/saslauthd.service.d/user.conf
     mode: "0644"

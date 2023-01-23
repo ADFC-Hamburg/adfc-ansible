@@ -1,7 +1,7 @@
 ---
 - name: Copy Chrome web browser extension.
   # Build your own with https://github.com/jitsi/jidesha
-  copy:
+  ansible.builtin.copy:
     src: "{{ jitsi_meet_desktop_sharing_chrome_extension_filename }}"
     dest: /usr/share/jitsi-meet/{{ jitsi_meet_desktop_sharing_chrome_extension_filename | basename }}
   notify: restart nginx

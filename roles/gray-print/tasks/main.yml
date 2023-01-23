@@ -9,7 +9,7 @@
   when: ansible_facts.packages['printer-driver-cups-pdf'][0].version is match('^2.*')
 
 - name: setup config file
-  copy:
+  ansible.builtin.copy:
     src: cups-pdf-grayscale.conf
     dest: /etc/cups/cups-pdf-grayscale.conf
     mode: 0644
@@ -23,7 +23,7 @@
     group: root
 
 - name: setup print hook
-  copy:
+  ansible.builtin.copy:
     src: cups-pdf-gray-print.sh
     dest: /usr/local/bin/cups-pdf-gray-print
     mode: 0755

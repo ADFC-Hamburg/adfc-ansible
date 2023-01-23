@@ -5,7 +5,7 @@
   register: machine_secret_stat
 
 - name: Create Password file if empty
-  copy:
+  ansible.builtin.copy:
     content: "{{ lookup('password', '/dev/null length=16') }}"
     dest: /etc/machine.secret
     mode: "0600"
@@ -51,7 +51,7 @@
   delegate_to: "{{ ucs_master }}"
 
 - name: Create UCS CA Cert
-  copy:
+  ansible.builtin.copy:
     content: "{{ ucs_ca.content | b64decode }}"
     dest: /etc/ssl/ucsCAcert.pem
     mode: "0644"

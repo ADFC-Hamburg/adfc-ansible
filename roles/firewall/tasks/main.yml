@@ -1,6 +1,6 @@
 ---
 - name: Create Systemd Target
-  copy:
+  ansible.builtin.copy:
     src: adfc-firewall.service
     dest: /etc/systemd/system/
     mode: 0644

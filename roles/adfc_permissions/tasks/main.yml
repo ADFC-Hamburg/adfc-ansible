@@ -8,7 +8,7 @@
     group: root
 
 - name: Install systemd files
-  copy:
+  ansible.builtin.copy:
     src: "{{ item }}"
     dest: /etc/systemd/system/{{ item }}
     mode: 0644

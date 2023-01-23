@@ -6,7 +6,7 @@
   delegate_to: ucs-master.gst.hamburg.adfc.de
 
 - name: Write file
-  copy:
+  ansible.builtin.copy:
     content: "{{ copy_slurp.content | b64decode }}"
     dest: "{{ item.dst_file }}"
     mode: "{{ item.dst_mode |default('0644') }}"

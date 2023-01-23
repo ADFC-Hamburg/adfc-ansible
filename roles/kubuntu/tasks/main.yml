@@ -8,7 +8,7 @@
       - kubuntu-settings-desktop
       - kubuntu-notification-helper
 - name: Display Manager setzen
-  copy:
+  ansible.builtin.copy:
     dest: /etc/X11/default-display-manager
     content: |
       /usr/bin/sddm

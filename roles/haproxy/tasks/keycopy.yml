@@ -2,7 +2,7 @@
 # Wir muessen das in eine Extra Command packen, da Proxmox die ssh  Keys synchronisert und dann
 # unterschiedliche Commands auf den Nodes sind
 - name: Create cat command
-  copy:
+  ansible.builtin.copy:
     content: |
       #!/bin/bash
       exec {{ ssh_command }}

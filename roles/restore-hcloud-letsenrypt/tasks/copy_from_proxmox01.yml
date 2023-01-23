@@ -13,7 +13,7 @@
   register: letsencrypt_tar
 
 - name: Create tar
-  copy:
+  ansible.builtin.copy:
     content: "{{ letsencrypt_tar.content |b64decode }}"
     dest: /tmp/letsencrypt_ansible.tar
     mode: 0644

@@ -4,7 +4,7 @@
     name: net-tools
 
 - name: Copy script to client
-  copy:
+  ansible.builtin.copy:
     src: inactivity-shutdown
     dest: /etc/cron.hourly/
     mode: "0700"

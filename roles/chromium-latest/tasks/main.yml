@@ -6,7 +6,7 @@
       - unzip
 
 - name: Create chromium-latest-update sudo file
-  copy:
+  ansible.builtin.copy:
     src: update-chromium-latest-sudoers
     dest: /etc/sudoers.d/ansible-chromium-update-sudoers
     owner: root
@@ -15,7 +15,7 @@
     mode: 0440
 
 - name: Create chromium-latest-update
-  copy:
+  ansible.builtin.copy:
     src: update-chromium-latest
     dest: /usr/local/bin/update-chromium-latest
     mode: 0755
@@ -23,7 +23,7 @@
     group: root
 
 - name: Create chromium-latest
-  copy:
+  ansible.builtin.copy:
     src: chromium-latest.sh
     dest: /usr/local/bin/chromium-latest
     mode: 0755
@@ -31,7 +31,7 @@
     group: root
 
 - name: Create chromium-latest.desktop file
-  copy:
+  ansible.builtin.copy:
     src: chromium-latest.desktop
     dest: /usr/local/share/applications/
     mode: 0755

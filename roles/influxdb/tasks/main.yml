@@ -23,7 +23,7 @@
   register: passwd_file_stat
 
 - name: Generate Password if not set
-  copy:
+  ansible.builtin.copy:
     content: "{{  lookup('password', '/dev/null length=16 chars=ascii_letters,digits') }}"
     dest: "{{ influx_admin_password_file }}"
     mode: 0600

@@ -11,7 +11,7 @@
     - skip_ansible_lint
 
 - name: write to /etc/adfc/hcloud/letsencrypt/inventory_hostname.tar
-  copy:
+  ansible.builtin.copy:
     content: "{{ hcloud_lenc.stdout }}"
     dest: /etc/adfc/hcloud/letsencrypt/{{ inventory_hostname }}.tar
   delegate_to: proxmox01.adfc-intern.de

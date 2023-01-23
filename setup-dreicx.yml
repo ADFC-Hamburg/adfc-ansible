@@ -20,7 +20,7 @@
       tags: dreicx_backup
 
     - name: Create rrsync in /usr/local/bin
-      copy:
+      ansible.builtin.copy:
         src: /usr/share/doc/rsync/scripts/rrsync
         dest: /usr/local/bin/rrsync
         mode: 0755

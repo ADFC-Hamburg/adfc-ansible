@@ -52,7 +52,7 @@
       tags: postfix
 
     - name: Copy copy-zertifikat.sh
-      copy:
+      ansible.builtin.copy:
         src: copy-zertifikat.sh
         dest: /usr/lib/univention-ssl-usercert/copy-zertifikat
         mode: "0755"
@@ -65,7 +65,7 @@
       tags: adfc-who
 
     - name: Copy backup-windows.sh
-      copy:
+      ansible.builtin.copy:
         src: backup-windows.sh
         dest: /usr/local/sbin/adfc-backup-win7pro
         mode: "0755"

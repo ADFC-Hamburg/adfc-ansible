@@ -116,7 +116,7 @@
     - skip_ansible_lint
 
 - name: copy keys
-  copy:
+  ansible.builtin.copy:
     content: "{{ hcloud_ssh_keys.stdout }}"
     dest: /etc/adfc_ssh_keys.tar
     mode: "0600"

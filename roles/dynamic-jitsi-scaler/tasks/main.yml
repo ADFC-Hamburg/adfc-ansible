@@ -28,13 +28,13 @@
     path: /root/.ssh/batch
 
 - name: dynamic-jitsi-scaler | install lib
-  copy:
+  ansible.builtin.copy:
     src: dynamic-jitsi-scaler-lib.sh
     dest: /usr/local/bin/dynamic-jitsi-scaler-lib.sh
     mode: 0644
 
 - name: dynamic-jitsi-scaler | install test lib
-  copy:
+  ansible.builtin.copy:
     src: dynamic-jitsi-scaler-lib-test.sh
     dest: /usr/local/bin/dynamic-jitsi-scaler-lib-test.sh
     mode: 0644

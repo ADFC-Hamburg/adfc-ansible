@@ -13,7 +13,7 @@
       delegate_to: "{{ proxmox_host }}"
       tags: pct_run
     - name: Create modify script in /tmp
-      copy:
+      ansible.builtin.copy:
         content: "{{ proxmox_helperscript }}"
         dest: /tmp/ansible_proxmox_helperscript{{ proxmox_id }}.sh
         mode: 0644
