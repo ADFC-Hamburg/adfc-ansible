@@ -5,4 +5,4 @@
   tasks:
     - name: Tasmota Setup durchführen
       include_role:
-        name: tasmota-setup
+        name: tasmota_setup
