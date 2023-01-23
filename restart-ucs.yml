@@ -2,7 +2,7 @@
 - hosts: proxmox02.gst.hamburg.adfc.de
   gather_facts: false
   roles:
-    - ucs-master-start
+    - ucs_master_start
   tasks:
     - name: test
       ansible.builtin.debug:
