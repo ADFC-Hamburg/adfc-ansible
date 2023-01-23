@@ -85,4 +85,4 @@
   pause:
     seconds: "{{ ucs_dns_waittime }}"
   delegate_to: localhost
-  when: ( dyndns_read_entry.status == 404) or (ucs_dns_change_action.changed) # noqa 503
+  when: ( dyndns_read_entry.status == 404) or (ucs_dns_change_action.changed) # noqa no-handler

@@ -231,7 +231,7 @@
         dest: /etc/netplan/02-adfc.yaml
       register: interfaces_create
     - name: Reboot on network interfaces changes
-      reboot: # noqa 503
+      reboot: # noqa no-handler
       when: interfaces_create.changed
 
     - name: Check if join is alread done

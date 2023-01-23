@@ -22,7 +22,7 @@
   file:
     path: "{{ docker_repo_gpg_key_gpg }}"
     state: absent
-  when: docker_fetch_gpg.changed # noqa 503
+  when: docker_fetch_gpg.changed # noqa no-handler
 
 - name: gpg Convert key
   command: >
