@@ -79,7 +79,7 @@
   tags: pjsip_conf
 
 - name: Noload chan_sip
-  blockinfile:
+  ansible.builtin.blockinfile:
     path: /etc/asterisk/modules.conf
     marker: ;  ANSIBLE MANAGED BLOCK {mark}
     insertafter: noload => chan_modem_i4l.so

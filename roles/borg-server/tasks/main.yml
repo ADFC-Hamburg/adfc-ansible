@@ -11,12 +11,12 @@
   tags: borg-server
 
 - name: Install virtualenv via pip
-  pip:
+  ansible.builtin.pip:
     name: virtualenv
     executable: pip3
 
 - name: Install borg
-  pip:
+  ansible.builtin.pip:
     name:
       - wheel
       - cython
@@ -90,7 +90,7 @@
   tags: borg-server,adfc-borg
 
 - name: Setup Cronjob
-  cron:
+  ansible.builtin.cron:
     name: adfc-borg
     minute: "{{ borg_cron_minute }}"
     hour: "{{ borg_cron_hour }}"

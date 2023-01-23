@@ -41,7 +41,7 @@
   delegate_to: "{{ backup_client }}"
 
 - name: Generate SSH Keys for borgbackup
-  include_role:
+  ansible.builtin.include_role:
     name: ssh-keys
   vars:
     authorized_key_user: "{{ borg_client_user }}"
@@ -54,6 +54,6 @@
   delegate_to: "{{ backup_client }}"
 
 - name: Initialize Repo
-  fail:
+  ansible.builtin.fail:
     msg: "Bitte Repo initalisieren mit: /usr/local/sbin/adfc-borg init {{ backup_client }}"
   when: not borg_config.stat.exists

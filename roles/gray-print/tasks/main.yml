@@ -1,6 +1,6 @@
 ---
 - name: get the apt package facts
-  package_facts:
+  ansible.builtin.package_facts:
     manager: apt
 
 - name: install cups-pdf Version 3, die Version 2 hat noch keine unterschiedlichen Config-Dateien

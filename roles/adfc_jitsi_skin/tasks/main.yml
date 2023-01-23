@@ -12,14 +12,14 @@
   ignore_errors: true
 
 - name: Fail if token is not there
-  fail:
+  ansible.builtin.fail:
     msg: >
       Bitte unter https://github.com/settings/tokens einen Token für Workflows erzeugen
       und diesen im {{ inventory_dir }}/gihub_token.txt speichern
   when: github_token_slurp.content  is undefined
 
 - name: Gather the package facts
-  package_facts:
+  ansible.builtin.package_facts:
     manager: apt
 
 - name: Create directory

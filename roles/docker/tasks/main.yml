@@ -4,7 +4,7 @@
     name: "{{ docker_repo_helper_packages }}"
 
 - name: Fetch GPG Key
-  get_url:
+  ansible.builtin.get_url:
     url: "{{ docker_repo_gpg_key }}"
     dest: "{{ docker_repo_gpg_key_dest }}"
     mode: 0644

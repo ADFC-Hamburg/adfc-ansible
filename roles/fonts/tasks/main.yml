@@ -13,13 +13,15 @@
   ansible.builtin.stat:
     path: /usr/share/fonts/truetype/msttcorefonts/Arial.ttf
   register: mssfont
+
 - name: Accecpt mscorefonts-eula
-  debconf:
+  ansible.builtin.debconf:
     name: ttf-mscorefonts-installer
     question: msttcorefonts/accepted-mscorefonts-eula
     value: "true"
     vtype: select # boolean waere besser fuehrt aber immer zu changes, Sven 5.1.2020
   when: not mssfont.stat.exists
+
 - name: Get Debian ttf-mscorefonts-installer package
   ansible.builtin.apt:
     deb: http://ftp.de.debian.org/debian/pool/contrib/m/msttcorefonts/ttf-mscorefonts-installer_3.6_all.deb
