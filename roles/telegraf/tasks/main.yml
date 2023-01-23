@@ -78,7 +78,7 @@
   notify: restart telegraf
 
 - name: Reset systemd
-  ansible.builtin.command:
+  ansible.builtin.command: # noqa command-instead-of-module
     argv:
       - systemctl
       - reset-failed
