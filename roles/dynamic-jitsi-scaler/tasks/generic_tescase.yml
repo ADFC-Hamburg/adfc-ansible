@@ -84,4 +84,4 @@
   failed_when: mystat.stat.exists != testcase.result.playbook_delete_vbdh02
 
 - name: dynamic-jitsi-sclaer |  test {{ testcase.name }} | clean
-  include_tasks: clean_test.yml
+  ansible.builtin.include_tasks: clean_test.yml

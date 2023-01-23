@@ -51,10 +51,10 @@
   when: dynamic_jitis_run_test | default(False)
 
 - name: dynamic-jitsi-sclaer | clean test reult
-  include_tasks: clean_test.yml
+  ansible.builtin.include_tasks: clean_test.yml
 
 - name: dynamic-jitsi-sclaer | generic_test
-  include_tasks: generic_tescase.yml
+  ansible.builtin.include_tasks: generic_tescase.yml
   loop: "{{ dynamic_jitsi_scaler_testcases }}"
   loop_control:
     loop_var: testcase

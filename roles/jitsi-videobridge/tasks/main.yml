@@ -32,7 +32,7 @@
       - jitsi-videobridge2=2.1-681-g3544ed05-1
 
 - name: get password
-  include_tasks: vb_password.yml
+  ansible.builtin.include_tasks: vb_password.yml
   register: vb_passwd_file_stat
 
 - name: Create config

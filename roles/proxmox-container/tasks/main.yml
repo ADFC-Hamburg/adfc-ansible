@@ -16,7 +16,7 @@
   register: ssh_keys
   delegate_to: localhost
 - name: Delete
-  include_tasks: delete.yml
+  ansible.builtin.include_tasks: delete.yml
   when: proxmox_throw_away
 - name: Setup LXC Container
   proxmox:
@@ -47,7 +47,7 @@
   register: lxc_conf_result
   when: proxmox_lxc_conf_change
 - name: Make changes if lxc_conf_result
-  include_tasks: lxc_block.yml
+  ansible.builtin.include_tasks: lxc_block.yml
   when: proxmox_lxc_conf_change and lxc_conf_result.changed
 - name: Start LXC Containter
   proxmox:

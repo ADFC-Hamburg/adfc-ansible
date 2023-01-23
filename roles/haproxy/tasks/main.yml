@@ -22,7 +22,7 @@
   register: keycopy_ssh_keypair
 
 - name: Include keycopy
-  include_tasks: keycopy.yml
+  ansible.builtin.include_tasks: keycopy.yml
   loop: "{{ groups[haproxy_backend_group] }}"
   loop_control:
     loop_var: ha_backend_host
@@ -94,7 +94,7 @@
     - fehler.https.static.html
 
 - name: copy Univention Certificates
-  include_tasks: copy.yml
+  ansible.builtin.include_tasks: copy.yml
   with_items:
     - src_file: /etc/univention/ssl/ucsCA/CAcert.pem
       dst_file: /etc/haproxy/cert_auth/CA.pem

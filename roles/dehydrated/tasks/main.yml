@@ -18,7 +18,7 @@
   when: account_info.matched == 0
 
 - name: Install http_server
-  include_tasks: http_server.yml
+  ansible.builtin.include_tasks: http_server.yml
 
 - name: Create domains.txt
   ansible.builtin.template:

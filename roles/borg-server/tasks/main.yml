@@ -116,7 +116,7 @@
     - backup_client
 
 - name: Setup Backup client
-  include_tasks: setup_client.yml
+  ansible.builtin.include_tasks: setup_client.yml
   loop: "{{ groups['backup_clients'] }}"
   loop_control:
     loop_var: backup_client

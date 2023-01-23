@@ -61,5 +61,5 @@
     group: root
 
 - name: Download and install
-  include_tasks: download_and_install.yml
+  ansible.builtin.include_tasks: download_and_install.yml
   when: jitsi_web_write_sha.changed and (jitsi_meet_packages |length >0)

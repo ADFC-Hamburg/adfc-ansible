@@ -18,5 +18,5 @@
   delegate_to: localhost
 
 - name: Setup new host
-  include_tasks: create_hcloud.yml
+  ansible.builtin.include_tasks: create_hcloud.yml
   when: ( output.hcloud_server_info | selectattr('name', 'match', inventory_hostname ) | list | length) == 0

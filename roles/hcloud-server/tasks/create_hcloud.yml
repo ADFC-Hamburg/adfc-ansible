@@ -77,7 +77,7 @@
     msg: "{{ hcloud_floating_ips  | length > 0 }}"
 
 - name: Include Set Floating IP
-  include_tasks: hcloud_floating_ip.yml
+  ansible.builtin.include_tasks: hcloud_floating_ip.yml
   when: hcloud_floating_ips | length > 0
 
 - name: Create directories

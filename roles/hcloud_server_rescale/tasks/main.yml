@@ -20,5 +20,5 @@
   register: hcloud_server_info
 
 - name: Start Rescale Job
-  include_tasks: rescale.yml
+  ansible.builtin.include_tasks: rescale.yml
   when: hcloud_server_info.hcloud_server_info[0].server_type != hcloud_new_server_type

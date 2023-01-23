@@ -12,6 +12,6 @@
   tags: skype
 
 - name: Install skype for linux
-  include_tasks: install-skype.yml
+  ansible.builtin.include_tasks: install-skype.yml
   when: not skypedesktop.stat.exists
   tags: skype

@@ -1,18 +1,18 @@
 ---
 - name: Create Apache Config
-  include_tasks: setup-apache-config.yml
+  ansible.builtin.include_tasks: setup-apache-config.yml
   loop: "{{ qfm_apache_config }}"
   loop_control:
     loop_var: apache_cfg
 
 - name: Remote password lookup
-  include_tasks: remote_password_lookup.yml
+  ansible.builtin.include_tasks: remote_password_lookup.yml
   loop: "{{ qfm_password_files }}"
   loop_control:
     loop_var: pwd_file
 
 - name: include clean.yml
-  include_tasks: clean.yml
+  ansible.builtin.include_tasks: clean.yml
   when: (qfm_clean | default("false")) | bool
 
 - name: Create mysql wordpress user
@@ -31,4 +31,4 @@
     login_password: "{{ mysql_root_password }}"
 
 - name: Setup Docker
-  include_tasks: setup-qfm-docker.yml
+  ansible.builtin.include_tasks: setup-qfm-docker.yml

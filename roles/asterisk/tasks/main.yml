@@ -11,7 +11,7 @@
   register: test_german_sounds
 
 - name: Install German Sounds
-  include_tasks: german_sounds.yml
+  ansible.builtin.include_tasks: german_sounds.yml
   when: not test_german_sounds.stat.exists
 
 - name: create adfc sounds dir

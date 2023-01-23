@@ -1,4 +1,4 @@
 ---
 - name: change dns
-  include_tasks: changedns.yml
+  ansible.builtin.include_tasks: changedns.yml
   when: ucs_dns_zonename | length > 0

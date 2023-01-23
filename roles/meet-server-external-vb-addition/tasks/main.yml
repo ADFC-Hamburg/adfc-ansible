@@ -8,7 +8,7 @@
       - jvb@auth.{{ jitsi_meet_server_name }}
 
 - name: find all vb server
-  include_tasks: vb_loop.yml
+  ansible.builtin.include_tasks: vb_loop.yml
   when: "'jitsi_meet_server_name' in hostvars[vb_host] and hostvars[vb_host]['jitsi_meet_server_name'] == jitsi_meet_server_name"
   loop_control:
     loop_var: vb_host
