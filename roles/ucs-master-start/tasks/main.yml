@@ -6,14 +6,14 @@
   register: get_password
 
 - name: test if reachable
-  ping:
+  ansible.builtin.ping:
   ignore_errors: true
   ignore_unreachable: true
   register: ping_result
   delegate_to: ucs-master.gst.hamburg.adfc.de
 
 - name: fail if ucs is reachable"
-  fail:
+  ansible.builtin.fail:
     msg: UCS is reachable
   when: not ping_result.unreachable
 - name: stop ucs-master # noqa no-changed-when
@@ -41,5 +41,5 @@
     seconds: 90
 
 - name: test
-  ping:
+  ansible.builtin.ping:
   delegate_to: ucs-master.gst.hamburg.adfc.de

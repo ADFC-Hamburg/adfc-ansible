@@ -24,7 +24,7 @@
     users: '{{ who_var.stdout_lines | reject("match", "^root ") | list }}'
 
 - name: Reboot when no user but root is connected
-  reboot:
+  ansible.builtin.reboot:
   when:
     - reboot_required_file.stat.exists
     - (users is defined) and (users | length == 0)

@@ -80,7 +80,7 @@
   tags: vpnc, vpnc-mon
 
 - name: Call VPNC Monitor every minute
-  cron:
+  ansible.builtin.cron:
     ansible.builtin.user: root
     cron_file: ansible-vpnc
     name: vpnc-monitor

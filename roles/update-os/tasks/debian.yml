@@ -30,7 +30,7 @@
   ignore_errors: "{{ ansible_check_mode }}"
 
 - name: Reboot when no user but root is connected
-  reboot:
+  ansible.builtin.reboot:
   when:
     - reboot_required_file.stat.exists
     - (users is defined) and (users | length == 0)

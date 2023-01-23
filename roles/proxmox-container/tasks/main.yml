@@ -6,18 +6,22 @@
   tags: pveam
   delegate_to: "{{ proxmox_host }}"
   # entfernen mit pveam remove local:vztmpl/debian-10.0-standard_10.0-1_amd64.tar.gz
+
 - name: Get Password
   ansible.builtin.slurp:
     src: /root/root.secret
   register: root_secret
   delegate_to: "{{ proxmox_host }}"
+
 - name: Get SSH-Keys
   ansible.builtin.command: /usr/bin/ssh-add -L
   register: ssh_keys
   delegate_to: localhost
+
 - name: Delete
   ansible.builtin.include_tasks: delete.yml
   when: proxmox_throw_away
+
 - name: Setup LXC Container
   proxmox:
     vmid: "{{ proxmox_id }}"
@@ -34,11 +38,12 @@
       net0: "{% for key in proxmox_net.net0 %}{{ key }}={{ proxmox_net.net0[key] }},{% endfor %}"
     pubkey: "{{ ssh_keys.stdout_lines[0] }}"
   delegate_to: "{{ proxmox_host }}"
+
 - name: Test if we need to append lines in LXC-Conf
   # only check:  /etc/pve is a non-posix compliant filesystem
   # https://pve.proxmox.com/wiki/Proxmox_Cluster_File_System_(pmxcfs)
   # https://groups.google.com/forum/#!topic/ansible-project/5cA-FLlTQv4
-  blockinfile:
+  ansible.builtin.blockinfile:
     marker: "# ADFC ANSIBLE {mark}"
     path: /etc/pve/lxc/{{ proxmox_id }}.conf
     block: "{{ proxmox_lxc_conf }}"

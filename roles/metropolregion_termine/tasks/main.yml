@@ -12,7 +12,7 @@
     system: true
 
 - name: Git clone
-  git:
+  ansible.builtin.git:
     repo: "{{ metropolregion_termine_git_repo }}"
     dest: /home/metroterm/metropolregion_termine_git
     version: "{{ metropolregion_termine_git_version }}"
@@ -46,7 +46,7 @@
   become_user: metroterm
 
 - name: Cron Job um 23:17 Uhr
-  cron:
+  ansible.builtin.cron:
     name: Metropolregion Termine
     minute: "17"
     hour: "23"

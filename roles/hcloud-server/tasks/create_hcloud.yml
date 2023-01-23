@@ -62,7 +62,7 @@
   when: hcloud_host is failed
 
 - name: Set Dynamic IP
-  include_role:
+  ansible.builtin.include_role:
     name: hetzner_dns
   vars:
     hetzner_dns_ip4: "{{ hcloud_ipv4_address }}"

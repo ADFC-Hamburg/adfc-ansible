@@ -63,4 +63,4 @@
     - tasmota_state.json.POWER == "OFF" or wakeonlan_result is failed
 
 - name: 08_Fakten einlesen
-  setup:
+  ansible.builtin.setup:

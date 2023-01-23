@@ -20,7 +20,7 @@
 
 # Both stable and unstable repos use the same signing key.
 - name: Configure signing key for Jitsi repository.
-  get_url:
+  ansible.builtin.get_url:
     url: "{{ jitsi_meet_apt_key_url }}"
     dest: /etc/apt/trusted.gpg.d/jitsi.asc
 
@@ -34,7 +34,7 @@
   with_dict: "{{ jitsi_meet_apt_repos }}"
 
 - name: Set debconf options for jitsi-meet.
-  debconf:
+  ansible.builtin.debconf:
     name: "{{ item.name }}"
     question: "{{ item.question }}"
     value: "{{ item.value }}"

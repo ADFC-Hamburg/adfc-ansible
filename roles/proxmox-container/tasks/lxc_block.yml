@@ -8,12 +8,14 @@
     src: /etc/pve/lxc/{{ proxmox_id }}.conf
     remote_src: true
   delegate_to: "{{ proxmox_host }}"
+
 - name: Test if we need to append lines in LXC-Conf
-  blockinfile:
+  ansible.builtin.blockinfile:
     marker: "# ADFC ANSIBLE {mark}"
     path: /tmp/ansible_adfc{{ proxmox_id }}.conf
     block: "{{ proxmox_lxc_conf }}"
   delegate_to: "{{ proxmox_host }}"
+
 - name: copy from tmp
   ansible.builtin.command: cp /tmp/ansible_adfc{{ proxmox_id }}.conf /etc/pve/lxc/{{ proxmox_id }}.conf
   delegate_to: "{{ proxmox_host }}"
