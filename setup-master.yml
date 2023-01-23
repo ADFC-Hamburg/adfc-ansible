@@ -5,7 +5,7 @@
     - tasmota_start_menu
     - ssh_keys
     - gray-print
-    - systemd-max-memory
+    - systemd_max_memory
     - links-on-desktop
     - borg-server
     - external_https
