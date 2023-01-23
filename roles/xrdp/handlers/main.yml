@@ -1,15 +1,15 @@
 ---
 - name: Restart xrdp
-  systemd:
+  ansible.builtin.systemd:
     name: xrdp
     state: restarted
 
 - name: Restart polkit
-  systemd:
+  ansible.builtin.systemd:
     name: polkit
     state: restarted
 
 - name: Restart ssh
-  systemd:
+  ansible.builtin.systemd:
     name: ssh
     state: restarted

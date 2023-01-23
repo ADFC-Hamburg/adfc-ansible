@@ -1,6 +1,6 @@
 ---
 - name: Restart turnserver
-  systemd:
+  ansible.builtin.systemd:
     name: coturn
     state: restarted
 - name: Coturn Certcopy

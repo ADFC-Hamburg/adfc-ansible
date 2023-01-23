@@ -10,7 +10,7 @@
       changed_when: true
 
     - name: Stop VB on Meet
-      systemd:
+      ansible.builtin.systemd:
         name: jitsi-videobridge2
         state: stopped
         enabled: false

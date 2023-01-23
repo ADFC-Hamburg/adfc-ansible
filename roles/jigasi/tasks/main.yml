@@ -41,7 +41,7 @@
   notify: restart jigasi
 
 - name: Start jigasi
-  systemd:
+  ansible.builtin.systemd:
     name: jigasi
     state: started
 - name: Allow firewall for ipv4 sip

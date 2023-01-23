@@ -17,7 +17,7 @@
       notify: restart postfix
 
     - name: restart postfix
-      systemd:
+      ansible.builtin.systemd:
         name: postfix
         state: restarted
 

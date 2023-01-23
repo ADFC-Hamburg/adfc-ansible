@@ -18,22 +18,22 @@
     mode: 0755
 
 - name: Prevent sleep
-  systemd:
+  ansible.builtin.systemd:
     name: sleep.target
     masked: true
 
 - name: Prevent suspend
-  systemd:
+  ansible.builtin.systemd:
     name: suspend.target
     masked: true
 
 - name: Prevent hibernate
-  systemd:
+  ansible.builtin.systemd:
     name: hibernate.target
     masked: true
 
 - name: Prevent hybrid-sleep
-  systemd:
+  ansible.builtin.systemd:
     name: hybrid-sleep.target
     masked: true
 

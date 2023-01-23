@@ -17,7 +17,7 @@
   notify: restart adfc firewall
 
 - name: systemd enable
-  systemd:
+  ansible.builtin.systemd:
     name: adfc-firewall
     daemon_reload: "{{ adfc_firewall_service.changed }}"
     enabled: true

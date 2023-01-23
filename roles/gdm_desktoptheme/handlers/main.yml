@@ -1,5 +1,5 @@
 ---
 - name: restart gdm3
-  systemd:
+  ansible.builtin.systemd:
     state: restarted
     name: gdm3

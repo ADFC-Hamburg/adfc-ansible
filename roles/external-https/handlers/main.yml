@@ -1,9 +1,9 @@
 - name: restart apache2
-  systemd:
+  ansible.builtin.systemd:
     name: apache2
     state: restarted
 
 - name: restart univention-firewall
-  systemd:
+  ansible.builtin.systemd:
     name: univention-firewall
     state: restarted

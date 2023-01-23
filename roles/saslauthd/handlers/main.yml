@@ -1,6 +1,6 @@
 ---
 - name: Restart saslauthd
-  systemd:
+  ansible.builtin.systemd:
     name: saslauthd
     daemon_reload: true
     state: restarted

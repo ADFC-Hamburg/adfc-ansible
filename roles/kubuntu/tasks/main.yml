@@ -16,12 +16,12 @@
     owner: root
     group: root
 - name: stop gdm
-  systemd:
+  ansible.builtin.systemd:
     name: gdm.service
     state: stopped
     enabled: false
 - name: Make sure sddm is started
-  systemd:
+  ansible.builtin.systemd:
     name: sddm.service
     state: started
     enabled: true

@@ -6,7 +6,7 @@
     - backup-hcloud-letsencrypt
   tasks:
     - name: make sure videobride on meet is running
-      systemd:
+      ansible.builtin.systemd:
         name: jitsi-videobridge2
         state: started
       vars:
@@ -34,7 +34,7 @@
         seconds: 60
 
     - name: stop videobride
-      systemd:
+      ansible.builtin.systemd:
         name: jitsi-videobridge2
         state: stopped
       ignore_errors: true

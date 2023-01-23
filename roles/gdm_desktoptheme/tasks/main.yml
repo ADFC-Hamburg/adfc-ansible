@@ -107,7 +107,7 @@
   tags: gdm
 
 - name: enable service gdm3
-  systemd:
+  ansible.builtin.systemd:
     state: started
     enabled: true
     name: gdm3

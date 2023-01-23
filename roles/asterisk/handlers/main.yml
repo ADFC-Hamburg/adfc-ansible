@@ -6,6 +6,6 @@
   ansible.builtin.command: /usr/sbin/asterisk -r -x 'dialplan reload'
 
 - name: asterisk restart
-  systemd:
+  ansible.builtin.systemd:
     name: asterisk.service
     state: restarted

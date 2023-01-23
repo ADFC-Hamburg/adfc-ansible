@@ -25,7 +25,7 @@
   notify: restart grafana
 
 - name: Enable grafana
-  systemd:
+  ansible.builtin.systemd:
     name: grafana-server
     state: started
     enabled: true
