@@ -3,7 +3,7 @@
   gather_facts: true
   roles:
     - udelarinterior.jitsi_meet
-    - meet-server-external-vb-addition
+    - meet_server_external_vb_addition
     - telegraf
   tasks:
     - name: test

@@ -12,7 +12,7 @@
     - jitsi_meet
   #    - adfc_jitsi_skin
   #    - meet-coturn
-  #    - meet-server-external-vb-addition
+  #    - meet_server_external_vb_addition
   #    - telegraf
   tasks:
     - name: test
