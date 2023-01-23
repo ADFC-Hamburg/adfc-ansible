@@ -23,6 +23,9 @@
   ansible.builtin.get_url:
     url: "{{ jitsi_meet_apt_key_url }}"
     dest: /etc/apt/trusted.gpg.d/jitsi.asc
+    mode: 0644
+    owner: root
+    group: root
 
 - name: Install Jitsi apt repo.
   ansible.builtin.apt_repository:

@@ -4,6 +4,9 @@
   ansible.builtin.copy:
     src: "{{ jitsi_meet_desktop_sharing_chrome_extension_filename }}"
     dest: /usr/share/jitsi-meet/{{ jitsi_meet_desktop_sharing_chrome_extension_filename | basename }}
+    mode: 0644
+    owner: root
+    group: root
   notify: restart nginx
   when: jitsi_meet_desktop_sharing_chrome_extension_filename is defined and jitsi_meet_desktop_sharing_chrome_extension_filename
 

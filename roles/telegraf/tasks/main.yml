@@ -9,6 +9,9 @@
   ansible.builtin.get_url:
     url: https://repos.influxdata.com/influxdb.key
     dest: /etc/apt/trusted.gpg.d/influxdb.asc
+    mode: 0644
+    owner: root
+    group: root
   when: ansible_distribution_release == 'bullseye'
 
 - name: Add InfluxDB repository

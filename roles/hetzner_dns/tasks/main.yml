@@ -13,7 +13,7 @@
     ttl: 60
     value: "{{ hetzner_dns_ip4 }}"
     on_existing: replace
-    hetzner_token: "{{ hcloud_dns_token.content | b64decode |trim }}"
+    hetzner_token: "{{ hcloud_dns_token.content | b64decode | trim }}"
     state: "{{ hetzner_dns_state }}"
   delegate_to: localhost
   register: hdns_ip4_set
@@ -26,7 +26,7 @@
     ttl: 60
     value: "{{ hetzner_dns_ip6 }}"
     on_existing: replace
-    hetzner_token: "{{ hcloud_dns_token.content | b64decode |trim }}"
+    hetzner_token: "{{ hcloud_dns_token.content | b64decode | trim }}"
     state: "{{ hetzner_dns_state }}"
   delegate_to: localhost
   register: hdns_ip6_set

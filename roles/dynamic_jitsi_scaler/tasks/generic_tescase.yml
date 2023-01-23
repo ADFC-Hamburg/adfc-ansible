@@ -1,56 +1,57 @@
 ---
+# Der test läuft im Context des Users, nicht root, deshalb risky-file-permission
 - name: Dynamic-jitsi-sclaer | set meet participants
-  ansible.builtin.copy:
+  ansible.builtin.copy: # noqa risky-file-permissions
     dest: /tmp/dyn_jitsi_query_participants-meet.txt
     content: "{{ testcase.participants.meet }}"
 
 - name: Dynamic-jitsi-sclaer | set vbh participants
-  ansible.builtin.copy:
+  ansible.builtin.copy: # noqa risky-file-permissions
     dest: /tmp/dyn_jitsi_query_participants-vbdh01.txt
     content: "{{ testcase.participants.vbdh01 }}"
 
 - name: Dynamic-jitsi-sclaer | set vbh participants
-  ansible.builtin.copy:
+  ansible.builtin.copy: # noqa risky-file-permissions
     dest: /tmp/dyn_jitsi_query_participants-vbdh02.txt
     content: "{{ testcase.participants.vbdh02 }}"
 
 - name: Dynamic-jitsi-sclaer | set vbh participants
-  ansible.builtin.copy:
+  ansible.builtin.copy: # noqa risky-file-permissions
     dest: /tmp/dyn_jitsi_query_participants-vbdh03.txt
     content: "{{ testcase.participants.vbdh03 }}"
 
 - name: Dynamic-jitsi-sclaer | set vbh participants
-  ansible.builtin.copy:
+  ansible.builtin.copy: # noqa risky-file-permissions
     dest: /tmp/dyn_jitsi_query_participants-vbdh04.txt
     content: "{{ testcase.participants.vbdh04 }}"
 
 - name: Dynamic-jitsi-sclaer | set meet conferences
-  ansible.builtin.copy:
+  ansible.builtin.copy: # noqa risky-file-permissions
     dest: /tmp/dyn_jitsi_query_conferences-meet.txt
     content: "{{ testcase.conferences.meet }}"
 
 - name: Dynamic-jitsi-sclaer | set vbh participants
-  ansible.builtin.copy:
+  ansible.builtin.copy: # noqa risky-file-permissions
     dest: /tmp/dyn_jitsi_query_conferences-vbdh01.txt
     content: "{{ testcase.conferences.vbdh01 }}"
 
 - name: Dynamic-jitsi-sclaer | set vbh participants
-  ansible.builtin.copy:
+  ansible.builtin.copy: # noqa risky-file-permissions
     dest: /tmp/dyn_jitsi_query_conferences-vbdh02.txt
     content: "{{ testcase.conferences.vbdh02 }}"
 
 - name: Dynamic-jitsi-sclaer | set vbh participants
-  ansible.builtin.copy:
+  ansible.builtin.copy: # noqa risky-file-permissions
     dest: /tmp/dyn_jitsi_query_conferences-vbdh03.txt
     content: "{{ testcase.conferences.vbdh03 }}"
 
 - name: Dynamic-jitsi-sclaer | set vbh participants
-  ansible.builtin.copy:
+  ansible.builtin.copy: # noqa risky-file-permissions
     dest: /tmp/dyn_jitsi_query_conferences-vbdh04.txt
     content: "{{ testcase.conferences.vbdh04 }}"
 
 - name: Dynamic-jitsi-sclaer | set hetzner result
-  ansible.builtin.copy:
+  ansible.builtin.copy: # noqa risky-file-permissions
     dest: /tmp/dyn_jitsi_query_hetzner_server.txt
     content: "{{ testcase.hcloud_api }}"
 
