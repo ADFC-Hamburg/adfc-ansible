@@ -30,7 +30,7 @@
     seconds: 10
 
 - name: install wordpress
-  uri:
+  ansible.builtin.uri:
     url: https://{{ quartierefuermenschen_domain }}/wp-admin/install.php?step=2
     method: POST
     body_format: form-urlencoded

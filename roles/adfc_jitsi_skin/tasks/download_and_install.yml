@@ -1,11 +1,11 @@
 ---
 - name: Get arifacts
-  uri:
+  ansible.builtin.uri:
     url: "{{ adfc_repo_url }}/actions/runs/{{ job_id }}/artifacts"
   register: github_artifacts
 
 - name: Get Zip URL of Package
-  uri:
+  ansible.builtin.uri:
     headers:
       Authorization: token {{ github_token }}
     url: "{{ adfc_repo_url }}/actions/artifacts/{{ github_artifacts.json.artifacts[0].id }}/zip"

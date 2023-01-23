@@ -29,12 +29,12 @@
     state: directory
 
 - name: Get SHA1 Hash for Branch
-  uri:
+  ansible.builtin.uri:
     url: "{{ jitsi_branch_ref_url }}"
   register: github_sha
 
 - name: Get Jobs
-  uri:
+  ansible.builtin.uri:
     url: "{{ jitsi_completed_workflow_jobs_url }}"
   register: github_jobs
 

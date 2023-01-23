@@ -11,7 +11,7 @@
 
 - name: activate oneshot
   delegate_to: ucs-master.gst.hamburg.adfc.de
-  uri:
+  ansible.builtin.uri:
     url: http://{{ hostvars[inventory_hostname]['ansible_host'] }}/cm?cmnd=Rule1%205
   when:
     - command == "setrules"
@@ -19,7 +19,7 @@
 
 - name: disable stop-on-error
   delegate_to: ucs-master.gst.hamburg.adfc.de
-  uri:
+  ansible.builtin.uri:
     url: http://{{ hostvars[inventory_hostname]['ansible_host'] }}/cm?cmnd=Rule1%208
   when:
     - command == "setrules"
@@ -27,7 +27,7 @@
 
 - name: activate rule
   delegate_to: ucs-master.gst.hamburg.adfc.de
-  uri:
+  ansible.builtin.uri:
     url: http://{{ hostvars[inventory_hostname]['ansible_host'] }}/cm?cmnd=Rule1%201
   when:
     - command == "setrules"
@@ -42,7 +42,7 @@
 
 - name: set rule to poweroff if <auto_off_thres watts drawn
   delegate_to: ucs-master.gst.hamburg.adfc.de
-  uri:
+  ansible.builtin.uri:
     url: http://{{ hostvars[inventory_hostname]['ansible_host'] }}/cm?cmnd=Rule1%20{{ rule|urlencode }}
   when:
     - command == "setrules"
@@ -50,7 +50,7 @@
 
 - name: delete all rules
   delegate_to: ucs-master.gst.hamburg.adfc.de
-  uri:
+  ansible.builtin.uri:
     url: http://{{ hostvars[inventory_hostname]['ansible_host'] }}/cm?cmnd=Rule0%20"
   when:
     - command == "deleterules" or not hostvars[inventory_hostname]['use_auto_off']

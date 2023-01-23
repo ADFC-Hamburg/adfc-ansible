@@ -1,7 +1,7 @@
 ---
 - name: 00_Prüfen ob die Steckdose eingeschaltet ist
   delegate_to: ucs-master.gst.hamburg.adfc.de
-  uri:
+  ansible.builtin.uri:
     url: http://{{ tasmota_wireless_ip }}/cm?cmnd=Power
   register: tasmota_state
 
@@ -68,7 +68,7 @@
 
 - name: 07_Steckdose ausschalten
   delegate_to: ucs-master.gst.hamburg.adfc.de
-  uri:
+  ansible.builtin.uri:
     url: http://{{ tasmota_wireless_ip }}/cm?cmnd=Power+OFF
   when:
     - tasmota_state.json.POWER == "ON"

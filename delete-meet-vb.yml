@@ -21,7 +21,7 @@
       when: delete_start_meet_vb |default('yes') and vb_start.changed # noqa no-handler
 
     - name: Perfom graceful shutdown
-      uri:
+      ansible.builtin.uri:
         url: http://127.0.0.1:8080/colibri/shutdown
         method: POST
         body: '{ "graceful-shutdown": "true" }'

@@ -16,7 +16,7 @@
   delegate_to: localhost
 
 - name: Get entry
-  uri:
+  ansible.builtin.uri:
     headers:
       Accept: application/json
     url: https://{{ ucs_dns_dnsserver }}/univention/udm/dns/host_record/{{ ucs_dns_entry_dn |urlencode }}
@@ -29,7 +29,7 @@
   delegate_to: localhost
 
 - name: Change entry
-  uri:
+  ansible.builtin.uri:
     headers:
       Accept: application/json
     url: https://{{ ucs_dns_dnsserver }}/univention/udm/dns/host_record/{{ ucs_dns_entry_dn |urlencode }}
@@ -57,7 +57,7 @@
   changed_when: true
 
 - name: Create entry
-  uri:
+  ansible.builtin.uri:
     headers:
       Accept: application/json
     url: https://{{ ucs_dns_dnsserver }}/univention/udm/dns/host_record/
