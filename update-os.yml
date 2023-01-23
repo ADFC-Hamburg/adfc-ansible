@@ -7,7 +7,7 @@
     - tools.adfc-hamburg.de
   gather_facts: false
   roles:
-    - update-os
+    - update_os
 
   pre_tasks:
     - name: Power on clients

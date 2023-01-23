@@ -15,7 +15,7 @@
   gather_facts: true
   roles:
     - ssh_keys
-    - update-os
+    - update_os
     - lxc-logrotate
     - geerlingguy.certbot
     - ucs-ip-managed-client

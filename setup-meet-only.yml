@@ -3,9 +3,9 @@
   gather_facts: true
   roles:
     #    - ssh_keys
-    #    - update-os
+    #    - update_os
     #    - basic_setup
-    #    - update-os
+    #    - update_os
     #    - ucs-ip-managed-client
     #    - geerlingguy.certbot
     #    - saslauthd

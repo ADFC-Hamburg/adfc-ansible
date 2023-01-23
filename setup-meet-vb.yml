@@ -12,7 +12,7 @@
   gather_facts: true
   roles:
     - ssh_keys
-    - update-os
+    - update_os
     - restore-hcloud-letsenrypt
     - geerlingguy.certbot
     - certbot_renew
