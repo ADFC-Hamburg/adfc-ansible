@@ -4,7 +4,7 @@
     manager: apt
 
 - name: install cups-pdf Version 3, die Version 2 hat noch keine unterschiedlichen Config-Dateien
-  apt:
+  ansible.builtin.apt:
     deb: http://ftp.de.debian.org/debian/pool/main/c/cups-pdf/printer-driver-cups-pdf_3.0.1-5_amd64.deb
   when: ansible_facts.packages['printer-driver-cups-pdf'][0].version is match('^2.*')
 

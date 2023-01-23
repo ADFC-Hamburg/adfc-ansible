@@ -1,6 +1,6 @@
 ---
 - name: Installiere netstat
-  apt:
+  ansible.builtin.apt:
     name: net-tools
 
 - name: Copy script to client

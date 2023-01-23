@@ -1,6 +1,6 @@
 ---
 - name: Install Font Packages
-  apt:
+  ansible.builtin.apt:
     name:
       - libfreetype6
       - libfreetype6-dev
@@ -21,6 +21,6 @@
     vtype: select # boolean waere besser fuehrt aber immer zu changes, Sven 5.1.2020
   when: not mssfont.stat.exists
 - name: Get Debian ttf-mscorefonts-installer package
-  apt:
+  ansible.builtin.apt:
     deb: http://ftp.de.debian.org/debian/pool/contrib/m/msttcorefonts/ttf-mscorefonts-installer_3.6_all.deb
   when: not mssfont.stat.exists

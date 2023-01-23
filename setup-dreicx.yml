@@ -5,7 +5,7 @@
     - ssh-keys
   tasks:
     - name: Installiere Pakete
-      apt:
+      ansible.builtin.apt:
         name:
           - apt-transport-https
       tags: software

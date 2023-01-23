@@ -1,11 +1,11 @@
 ---
 - name: Install jigasi
-  apt:
+  ansible.builtin.apt:
     name:
       - jigasi
 
 - name: Install old opnenjdk on debian bullseye
-  apt:
+  ansible.builtin.apt:
     name:
       - openjdk-11-jre-headless
   when: ansible_distribution_release == 'bullseye'

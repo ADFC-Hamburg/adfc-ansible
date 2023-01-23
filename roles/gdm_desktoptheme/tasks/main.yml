@@ -1,6 +1,6 @@
 ---
 - name: Installiere gdm3
-  apt:
+  ansible.builtin.apt:
     name:
       - gdm3
 

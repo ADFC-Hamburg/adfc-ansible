@@ -1,6 +1,6 @@
 ---
 - name: Install jigasi
-  apt:
+  ansible.builtin.apt:
     name: jigasi
     state: present
 

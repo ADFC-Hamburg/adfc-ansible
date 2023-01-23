@@ -1,6 +1,6 @@
 ---
 - name: Install saslauthd
-  apt:
+  ansible.builtin.apt:
     name:
       - sasl2-bin
       - libsasl2-modules-ldap
@@ -100,6 +100,6 @@
     update_cache: true
 
 - name: Install lua-cyrussasl
-  apt:
+  ansible.builtin.apt:
     name: lua-cyrussasl
     default_release: "{{ ansible_distribution_release }}-backports"

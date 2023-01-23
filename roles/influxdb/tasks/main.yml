@@ -10,7 +10,7 @@
     state: present
 
 - name: Install InfluxDB packages
-  apt:
+  ansible.builtin.apt:
     name:
       - influxdb
       - python-influxdb

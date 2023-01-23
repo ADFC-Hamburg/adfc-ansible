@@ -2,19 +2,19 @@
 # Remove specified packages. "with_items"-method depreciated. Warning: "This feature will be removed in version 2.11"
 
 - name: Remove unwanted packages
-  apt:
+  ansible.builtin.apt:
     pkg: "{{ unwanted_packages }}"
     state: absent
     purge: true
   tags: software
 
 - name: Remove useless packages from the cache
-  apt:
+  ansible.builtin.apt:
     autoclean: true
   tags: software
 
 - name: Remove dependencies that are no longer required
-  apt:
+  ansible.builtin.apt:
     autoremove: true
   tags: software
 

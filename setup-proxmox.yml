@@ -34,7 +34,7 @@
         state: present
 
     - name: Sicherstellen das bsd-mailx installiert ist
-      apt:
+      ansible.builtin.apt:
         name: bsd-mailx
 
     - name: Kopiere check_ips Skript

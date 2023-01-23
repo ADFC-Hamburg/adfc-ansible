@@ -1,6 +1,6 @@
 ---
 - name: Install base apt packages.
-  apt:
+  ansible.builtin.apt:
     name: "{{ jitsi_meet_base_packages }}"
     state: present
     update_cache: true
@@ -42,7 +42,7 @@
   with_items: "{{ jitsi_meet_debconf_settings }}"
 
 - name: Install Jitsi Meet
-  apt:
+  ansible.builtin.apt:
     name: jitsi-meet
     state: present
     install_recommends: "{{ jitsi_meet_install_recommends }}"

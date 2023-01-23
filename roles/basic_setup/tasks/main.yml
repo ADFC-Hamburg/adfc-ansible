@@ -1,7 +1,7 @@
 ---
 # benötigte Programme installieren
 - name: Installiere Pakete
-  apt:
+  ansible.builtin.apt:
     name: "{{ basic_setup_base_packages }}"
 
 - name: Setup Journald Settings

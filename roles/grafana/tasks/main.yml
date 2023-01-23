@@ -10,7 +10,7 @@
     state: present
 
 - name: Install Grafana packages
-  apt:
+  ansible.builtin.apt:
     name:
       - grafana
     state: present

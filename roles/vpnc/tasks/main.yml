@@ -1,7 +1,7 @@
 ---
 # vpnc-Konfiguration
 - name: Installiere VPNC und Jq
-  apt:
+  ansible.builtin.apt:
     name:
       - vpnc
       - jq

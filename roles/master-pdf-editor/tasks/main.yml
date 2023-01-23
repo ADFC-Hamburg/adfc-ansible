@@ -2,9 +2,9 @@
 # master PDF Editor installieren
 
 - name: Installing requirements for Master PDF Editor
-  apt:
+  ansible.builtin.apt:
     name: libqt5printsupport5
 
 - name: Install master pdf editor
-  apt:
+  ansible.builtin.apt:
     deb: https://code-industry.net/public/master-pdf-editor-5.8.20-qt5.x86_64.deb

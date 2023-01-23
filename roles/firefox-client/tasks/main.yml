@@ -1,6 +1,6 @@
 ---
 - name: Installiere Firefox
-  apt:
+  ansible.builtin.apt:
     name: "{{ packages }}"
   vars:
     packages:

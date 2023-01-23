@@ -1,6 +1,6 @@
 ---
 - name: Install haproxy
-  apt:
+  ansible.builtin.apt:
     name: haproxy
 
 - name: Generate directories

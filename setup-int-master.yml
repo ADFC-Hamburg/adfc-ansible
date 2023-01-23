@@ -15,7 +15,7 @@
         - /root/ansible_proxmox_helperscript.sh
         - /root/univention-docker-dev_0.1.0-105A~4.4.0.202003272017_all.deb
     - name: Installiere das Portal
-      apt:
+      ansible.builtin.apt:
         name: univention-portal
     - name: teste ob univention-letsencrypt installiert ist
       stat:

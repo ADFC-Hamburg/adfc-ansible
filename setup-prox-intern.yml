@@ -19,7 +19,7 @@
         filename: proxmox
         state: present
     - name: Sicherstellen das div. Pakete installiert sind
-      apt:
+      ansible.builtin.apt:
         name:
           - bsd-mailx
           - python-pip

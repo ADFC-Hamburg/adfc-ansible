@@ -1,6 +1,6 @@
 ---
 - name: Download Pyhton Packages
-  apt:
+  ansible.builtin.apt:
     name: "{{ metropolregion_termine_packages }}"
 
 - name: Create user

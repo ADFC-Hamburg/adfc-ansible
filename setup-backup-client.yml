@@ -13,7 +13,7 @@
       tags: software
 
     - name: Installiere Pakete
-      apt:
+      ansible.builtin.apt:
         name: "{{ packages }}"
       vars:
         packages:

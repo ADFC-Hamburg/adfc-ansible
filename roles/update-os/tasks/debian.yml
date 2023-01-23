@@ -5,12 +5,12 @@
     state: absent
 
 - name: Update all packages to the latest version
-  apt:
+  ansible.builtin.apt:
     upgrade: dist
     update_cache: true
 
 - name: Remove useless packages from the cache
-  apt:
+  ansible.builtin.apt:
     autoclean: true
 
 - name: Check if a reboot is required

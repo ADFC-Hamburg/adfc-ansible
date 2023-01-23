@@ -1,6 +1,6 @@
 ---
 - name: Install asterisk
-  apt:
+  ansible.builtin.apt:
     name:
       - asterisk
       - unzip

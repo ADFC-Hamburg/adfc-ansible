@@ -1,6 +1,6 @@
 ---
 - name: dynamic-jitsi-scaler | install dependencies
-  apt:
+  ansible.builtin.apt:
     name:
       - jq
       - curl

@@ -1,6 +1,6 @@
 ---
 - name: Install base apt packages.
-  apt:
+  ansible.builtin.apt:
     name: "{{ jitsi_meet_base_packages }}"
     state: present
     update_cache: true
@@ -26,7 +26,7 @@
   with_dict: "{{ jitsi_meet_apt_repos }}"
 
 - name: Install Debian Pakackage
-  apt:
+  ansible.builtin.apt:
     name:
       - openjdk-11-jre-headless
       - jitsi-videobridge2=2.1-681-g3544ed05-1

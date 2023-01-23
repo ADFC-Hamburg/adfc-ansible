@@ -2,7 +2,7 @@
 # slack role
 
 - name: install necessary packages
-  apt:
+  ansible.builtin.apt:
     name:
       - snapd
 

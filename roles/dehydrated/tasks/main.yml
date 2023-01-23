@@ -1,6 +1,6 @@
 ---
 - name: Install dehyrated
-  apt:
+  ansible.builtin.apt:
     name: dehydrated
 
 - name: Search for account info

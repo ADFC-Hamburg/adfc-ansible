@@ -25,14 +25,14 @@
     - chromium-latest
   handlers:
     - name: XnViewMP manuell installieren
-      apt:
+      ansible.builtin.apt:
         deb: /usr/local/share/ansible_downloads/XnViewMP-linux-x64.deb
 
     - name: PDF-Editor manuell installieren
-      apt:
+      ansible.builtin.apt:
         deb: /usr/local/share/ansible_downloads/{{ deb_name_master_pdf_editor }}
     - name: apt-get update ausführen
-      apt:
+      ansible.builtin.apt:
         update_cache: true
       tags: software
 
@@ -45,7 +45,7 @@
     - name: Fakten einlesen
       setup:
     - name: apt-get update
-      apt:
+      ansible.builtin.apt:
         update_cache: true
       tags: software
 
@@ -109,7 +109,7 @@
       meta: flush_handlers
 
     - name: Installiere Pakete
-      apt:
+      ansible.builtin.apt:
         name:
           - apt-transport-https
           - emacs
@@ -150,7 +150,7 @@
       tags: software
 
     - name: uninstall hibiscus-ppa
-      apt:
+      ansible.builtin.apt:
         name: hibiscus-ppa
         state: absent
       tags: hibiscus
@@ -163,7 +163,7 @@
         name: hibiscus
 
     - name: Kein KDE Update Icon mehr anzeigen
-      apt:
+      ansible.builtin.apt:
         name: plasma-discover
         state: absent
       tags: plasma-discover

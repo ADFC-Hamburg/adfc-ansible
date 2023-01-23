@@ -101,7 +101,7 @@
         job: univention-app shell guacamole find /usr/local/tomcat/logs -mtime +3 -delete
 
     - name: Wake On LAN installieren
-      apt:
+      ansible.builtin.apt:
         name: wakeonlan
         state: present
         update_cache: true

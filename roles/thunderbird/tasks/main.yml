@@ -1,6 +1,6 @@
 ---
 - name: Install Thunderbid + Lighting
-  apt:
+  ansible.builtin.apt:
     name:
       - thunderbird
       - thunderbird-locale-de

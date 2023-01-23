@@ -2,7 +2,7 @@
 # Playbook to implement a remote startup script for users
 
 - name: install script dependencies
-  apt:
+  ansible.builtin.apt:
     name:
       - dialog
       - curl

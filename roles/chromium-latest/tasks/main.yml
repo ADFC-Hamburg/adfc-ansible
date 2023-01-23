@@ -1,6 +1,6 @@
 ---
 - name: Install curl und unzip
-  apt:
+  ansible.builtin.apt:
     name:
       - curl
       - unzip

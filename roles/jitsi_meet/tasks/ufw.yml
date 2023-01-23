@@ -1,6 +1,6 @@
 ---
 - name: Install ufw package.
-  apt:
+  ansible.builtin.apt:
     name: ufw
     state: present
 

@@ -1,6 +1,6 @@
 ---
 - name: Installiere Chromium
-  apt:
+  ansible.builtin.apt:
     name: "{{ packages }}"
   vars:
     packages:

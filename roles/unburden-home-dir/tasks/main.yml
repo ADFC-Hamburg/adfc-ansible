@@ -1,6 +1,6 @@
 ---
 - name: Install Package
-  apt:
+  ansible.builtin.apt:
     name: unburden-home-dir
   tags: unburden
 

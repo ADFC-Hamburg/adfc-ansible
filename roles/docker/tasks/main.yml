@@ -1,6 +1,6 @@
 ---
 - name: Install Repo Helper Packages
-  apt:
+  ansible.builtin.apt:
     name: "{{ docker_repo_helper_packages }}"
 
 - name: Fetch GPG Key
@@ -33,6 +33,6 @@
     creates: "{{ docker_repo_gpg_key_gpg }}"
 
 - name: Install Docker Software
-  apt:
+  ansible.builtin.apt:
     name: "{{ docker_packages }}"
     update_cache: true

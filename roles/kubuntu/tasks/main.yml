@@ -1,6 +1,6 @@
 ---
 - name: Install Kubuntu Packages
-  apt:
+  ansible.builtin.apt:
     name:
       - kubuntu-desktop
       - kubuntu-notification-helper

@@ -5,7 +5,7 @@
     - proxmox-container
   tasks:
     - name: Installiere Pakete
-      apt:
+      ansible.builtin.apt:
         name:
           - python-apt
           - htop

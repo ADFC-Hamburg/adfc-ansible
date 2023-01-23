@@ -1,6 +1,6 @@
 ---
 - name: Install nginx
-  apt:
+  ansible.builtin.apt:
     name: nginx
 
 - name: Copy Nginx config for Jitsi Meet domain.
