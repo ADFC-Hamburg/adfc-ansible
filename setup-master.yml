@@ -8,7 +8,7 @@
     - systemd-max-memory
     - links-on-desktop
     - borg-server
-    - external-https
+    - external_https
     - self-service-sms
 
   handlers:
