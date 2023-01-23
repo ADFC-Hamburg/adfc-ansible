@@ -2,7 +2,7 @@
 - hosts: meet
   gather_facts: true
   roles:
-    - lxc-logrotate
+    - lxc_logrotate
   tasks:
     - name: test
       ansible.builtin.debug:
