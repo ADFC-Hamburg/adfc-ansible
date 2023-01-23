@@ -49,7 +49,7 @@
     - haproxy-fetch-crl
 
 - name: Search for certs
-  find:
+  ansible.builtin.find:
     path:
       - /etc/haproxy/certs
     patterns:

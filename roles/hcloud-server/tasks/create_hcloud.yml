@@ -1,6 +1,6 @@
 ---
 - name: search for included files
-  find:
+  ansible.builtin.find:
     paths: "{{ inventory_dir + '/' + key_path + item  }}"
     recurse: true
     file_type: file

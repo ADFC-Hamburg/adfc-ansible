@@ -102,7 +102,7 @@
       delegate_to: localhost
 
     - name: find all files that are older than 14 days
-      find:
+      ansible.builtin.find:
         paths: /var/remote_logs/
         age: 14d
         recurse: false

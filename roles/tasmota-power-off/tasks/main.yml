@@ -6,7 +6,7 @@
   register: tasmota_state
 
 - name: 01_Check ob Client eingeschaltet
-  wait_for_connection:
+  ansible.builtin.wait_for_connection:
     timeout: 10
   register: connect_result
   ignore_errors: true
@@ -22,7 +22,7 @@
     - connect_result is failed
 
 - name: 03_Check ob Client eingeschaltet
-  wait_for_connection:
+  ansible.builtin.wait_for_connection:
     timeout: 30
   register: wakeonlan_result
   ignore_errors: true

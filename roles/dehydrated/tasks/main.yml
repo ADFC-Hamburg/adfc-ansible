@@ -4,7 +4,7 @@
     name: dehydrated
 
 - name: Search for account info
-  find:
+  ansible.builtin.find:
     path:
       - /var/lib/dehydrated/accounts/
     patterns:

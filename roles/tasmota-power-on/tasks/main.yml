@@ -1,6 +1,6 @@
 ---
 - name: 00_Check ob Client eingeschaltet
-  wait_for_connection:
+  ansible.builtin.wait_for_connection:
     timeout: 10
   register: connect_result
   ignore_errors: true
@@ -22,7 +22,7 @@
     - tasmota_state.json.POWER == "ON"
 
 - name: 03_Check ob Client nach WOL eingeschaltet
-  wait_for_connection:
+  ansible.builtin.wait_for_connection:
     timeout: 30
   register: wakeonlan_result
   ignore_errors: true
@@ -54,7 +54,7 @@
     - tasmota_state.json.POWER == "OFF" or wakeonlan_result is failed
 
 - name: 07_Warten bis Rechner gestartet ist
-  wait_for_connection:
+  ansible.builtin.wait_for_connection:
     sleep: 10
     timeout: 120
   register: after_start_connect_result

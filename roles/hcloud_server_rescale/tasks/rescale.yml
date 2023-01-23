@@ -35,7 +35,7 @@
   delegate_to: localhost
 
 - name: Wait for connection
-  wait_for_connection:
+  ansible.builtin.wait_for_connection:
     delay: 30
     sleep: 10
     timeout: 300
