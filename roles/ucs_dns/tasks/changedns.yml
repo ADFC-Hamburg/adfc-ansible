@@ -1,6 +1,6 @@
 ---
 - name: Read Admin Password from file
-  slurp:
+  ansible.builtin.slurp:
     path: "{{ ucs_dns_dnsserver_password_file }}"
   register: ucs_dns_root_secret
   delegate_to: "{{ ucs_dns_dnsserver_password_file_server }}"

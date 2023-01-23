@@ -23,7 +23,7 @@
     dest: /etc/coturn.secret
   when: not coturn_secret_stat.stat.exists
 - name: Generate Password file
-  slurp:
+  ansible.builtin.slurp:
     src: /etc/coturn.secret
   register: coturn_secret
 - name: Zertifikats copy für coturn

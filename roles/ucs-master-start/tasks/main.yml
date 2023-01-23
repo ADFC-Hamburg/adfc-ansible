@@ -1,6 +1,6 @@
 ---
 - name: read password from file
-  slurp:
+  ansible.builtin.slurp:
     src: ~/adfc-ucs-master.secret
   delegate_to: localhost
   register: get_password

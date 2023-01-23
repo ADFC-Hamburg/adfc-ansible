@@ -53,7 +53,7 @@
   tags: saslauthd
 
 - name: read machine secret
-  slurp:
+  ansible.builtin.slurp:
     path: /etc/machine.secret
   register: machine_secret
 

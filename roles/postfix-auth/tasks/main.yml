@@ -28,7 +28,7 @@
     mode: 0640
 
 - name: get client Auth from master
-  slurp:
+  ansible.builtin.slurp:
     src: /etc/ansible/secrets/smtp_client_auth
   delegate_to: ucs-master.gst.hamburg.adfc.de
   register: smtp_auth
@@ -43,7 +43,7 @@
   notify: postfix postmap smtp_auth
 
 - name: get notfication-emailaddress
-  slurp:
+  ansible.builtin.slurp:
     src: /etc/ansible/secrets/mailingliste.txt
   delegate_to: ucs-master.gst.hamburg.adfc.de
   register: mailingliste

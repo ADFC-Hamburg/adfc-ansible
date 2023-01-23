@@ -107,7 +107,7 @@
   tags: borg-server
 
 - name: Get Borgbackup key
-  slurp:
+  ansible.builtin.slurp:
     src: /root/.ssh/borgbackup-server.pub
   register: borgbackupkey
   tags:

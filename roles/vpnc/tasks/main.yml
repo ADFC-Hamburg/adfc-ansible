@@ -9,14 +9,14 @@
 # jq wird für das Monitor Skript gebraucht.
 
 - name: Get vpnc.conf shared secret from master
-  slurp:
+  ansible.builtin.slurp:
     src: "{{ adfc_secret_folder + 'vpnc/' + inventory_hostname + '_vpnc_shared_secret' }}"
   delegate_to: "{{ adfc_vpnc_source }}"
   register: vpnc_shared_secret
   tags: vpnc
 
 - name: Get vpnc.conf password from master
-  slurp:
+  ansible.builtin.slurp:
     src: "{{ adfc_secret_folder + 'vpnc/' + inventory_hostname + '_vpnc_password' }}"
   delegate_to: "{{ adfc_vpnc_source }}"
   register: vpnc_password

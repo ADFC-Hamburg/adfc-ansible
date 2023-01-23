@@ -1,6 +1,6 @@
 ---
 - name: Read secret
-  slurp:
+  ansible.builtin.slurp:
     path: /etc/hetzner-dns-api-token.secret
   delegate_to: proxmox01.adfc-intern.de
   register: hcloud_dns_token

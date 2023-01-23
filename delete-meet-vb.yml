@@ -58,7 +58,7 @@
       ignore_unreachable: true
 
     - name: Get hcloud API Token
-      slurp:
+      ansible.builtin.slurp:
         path: /root/hetzner-cloud.key
       register: hcloud_key_slurp
       delegate_to: proxmox01.adfc-intern.de
@@ -117,7 +117,7 @@
       with_items: "{{ filesOlderThan.files }}"
 
     - name: Read Influx Password
-      slurp:
+      ansible.builtin.slurp:
         path: /etc/influx.secrect
       register: influx_pw
       delegate_to: proxmox01.adfc-intern.de

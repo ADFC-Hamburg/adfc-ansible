@@ -5,7 +5,7 @@
       - unzip
 
 - name: Get Github Token
-  slurp:
+  ansible.builtin.slurp:
     src: "{{ inventory_dir }}/github_token.txt"
   delegate_to: localhost
   register: github_token_slurp

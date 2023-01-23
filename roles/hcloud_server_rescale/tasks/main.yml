@@ -1,6 +1,6 @@
 ---
 - name: Get hcloud API Token
-  slurp:
+  ansible.builtin.slurp:
     path: /root/hetzner-cloud.key
   register: hcloud_key_slurp
   delegate_to: proxmox01.adfc-intern.de

@@ -1,6 +1,6 @@
 ---
 - name: Fetch File
-  slurp:
+  ansible.builtin.slurp:
     path: "{{ item.src_file }}"
   register: copy_slurp
   delegate_to: ucs-master.gst.hamburg.adfc.de

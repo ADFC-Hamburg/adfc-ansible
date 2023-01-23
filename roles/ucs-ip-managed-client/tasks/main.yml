@@ -13,7 +13,7 @@
   when: not machine_secret_stat.stat.exists
 
 - name: read machine secret
-  slurp:
+  ansible.builtin.slurp:
     path: /etc/machine.secret
   register: machine_secret
 
@@ -45,7 +45,7 @@
   ignore_errors: "{{ ansible_check_mode }}"
 
 - name: read UCS CA Cert
-  slurp:
+  ansible.builtin.slurp:
     path: /etc/univention/ssl/ucsCA/CAcert.pem
   register: ucs_ca
   delegate_to: "{{ ucs_master }}"

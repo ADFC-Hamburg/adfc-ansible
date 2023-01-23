@@ -5,7 +5,7 @@
     creates: /root/.ssh/proxmox-backup
 
 - name: Get Public Key
-  slurp:
+  ansible.builtin.slurp:
     src: /root/.ssh/proxmox-backup.pub
   register: proxmoxbackupub
 

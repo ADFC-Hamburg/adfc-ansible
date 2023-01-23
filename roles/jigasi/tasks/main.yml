@@ -24,7 +24,7 @@
   when: not jigasi_sip_secret_stat.stat.exists
 
 - name: read jigasi_sip secret
-  slurp:
+  ansible.builtin.slurp:
     path: /etc/jigasi-sip.secret
   register: jigasi_sip_secret
 

@@ -6,7 +6,7 @@
     state: directory
 
 - name: read tar file
-  slurp:
+  ansible.builtin.slurp:
     src: /etc/adfc/hcloud/letsencrypt/{{ inventory_hostname }}.tar
   delegate_to: proxmox01.adfc-intern.de
   ignore_errors: true

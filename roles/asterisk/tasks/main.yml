@@ -27,7 +27,7 @@
     mode: "0644"
   loop: "{{ install_asterisk_sounds }}"
 - name: get sipgate secret and SIP-Id
-  slurp:
+  ansible.builtin.slurp:
     src: /root/sipgate.secret
   register: sipgate_secret_b64
   delegate_to: proxmox01.adfc-intern.de
@@ -58,7 +58,7 @@
   when: not jigasi_sip_secret_stat.stat.exists
 
 - name: read jigasi_sip secret
-  slurp:
+  ansible.builtin.slurp:
     path: /etc/jigasi-sip.secret
   register: jigasi_sip_secret
 

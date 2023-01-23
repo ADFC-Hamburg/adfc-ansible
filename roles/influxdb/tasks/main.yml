@@ -30,7 +30,7 @@
   when: not passwd_file_stat.stat.exists
 
 - name: Read Password
-  slurp:
+  ansible.builtin.slurp:
     src: "{{ influx_admin_password_file }}"
   register: password_file_slurp
 
