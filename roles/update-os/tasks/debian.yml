@@ -19,12 +19,12 @@
     get_md5: false
   register: reboot_required_file
 
-- name: check logged on users
+- name: Check logged on users
   ansible.builtin.command: who
   register: who_var
   changed_when: false
 
-- name: parse output
+- name: Parse output
   ansible.builtin.set_fact:
     users: '{{ who_var.stdout_lines | reject("match", "^root ") | list }}'
   ignore_errors: "{{ ansible_check_mode }}"

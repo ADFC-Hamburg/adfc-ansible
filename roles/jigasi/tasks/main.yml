@@ -10,7 +10,7 @@
       - openjdk-11-jre-headless
   when: ansible_distribution_release == 'bullseye'
 
-- name: check if password file is there
+- name: Check if password file is there
   ansible.builtin.stat:
     path: /etc/jigasi-sip.secret
   register: jigasi_sip_secret_stat
@@ -23,7 +23,7 @@
     owner: root
   when: not jigasi_sip_secret_stat.stat.exists
 
-- name: read jigasi_sip secret
+- name: Read jigasi_sip secret
   ansible.builtin.slurp:
     path: /etc/jigasi-sip.secret
   register: jigasi_sip_secret

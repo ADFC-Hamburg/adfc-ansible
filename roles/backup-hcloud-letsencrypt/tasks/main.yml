@@ -10,7 +10,7 @@
   tags:
     - skip_ansible_lint
 
-- name: write to /etc/adfc/hcloud/letsencrypt/inventory_hostname.tar
+- name: Write to /etc/adfc/hcloud/letsencrypt/inventory_hostname.tar
   ansible.builtin.copy:
     content: "{{ hcloud_lenc.stdout }}"
     dest: /etc/adfc/hcloud/letsencrypt/{{ inventory_hostname }}.tar

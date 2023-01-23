@@ -1,5 +1,5 @@
 ---
-- name: set standard action
+- name: Set standard action
   ansible.builtin.set_fact:
     ansible.builtin.command: setrules
 
@@ -9,7 +9,7 @@
 #  when:
 #    - command == "fwsetup"
 
-- name: activate oneshot
+- name: Activate oneshot
   delegate_to: ucs-master.gst.hamburg.adfc.de
   ansible.builtin.uri:
     url: http://{{ hostvars[inventory_hostname]['ansible_host'] }}/cm?cmnd=Rule1%205
@@ -17,7 +17,7 @@
     - command == "setrules"
     - hostvars[inventory_hostname]['use_auto_off']
 
-- name: disable stop-on-error
+- name: Disable stop-on-error
   delegate_to: ucs-master.gst.hamburg.adfc.de
   ansible.builtin.uri:
     url: http://{{ hostvars[inventory_hostname]['ansible_host'] }}/cm?cmnd=Rule1%208
@@ -25,7 +25,7 @@
     - command == "setrules"
     - hostvars[inventory_hostname]['use_auto_off']
 
-- name: activate rule
+- name: Activate rule
   delegate_to: ucs-master.gst.hamburg.adfc.de
   ansible.builtin.uri:
     url: http://{{ hostvars[inventory_hostname]['ansible_host'] }}/cm?cmnd=Rule1%201
@@ -33,14 +33,14 @@
     - command == "setrules"
     - hostvars[inventory_hostname]['use_auto_off']
 
-- name: create rule variable
+- name: Create rule variable
   ansible.builtin.set_fact:
     rule: "{{ 'ON Energy#Power<'+hostvars[inventory_hostname]['auto_off_thresh']|string+' DO Power OFF ENDON' }}"
   when:
     - command == "setrules"
     - hostvars[inventory_hostname]['use_auto_off']
 
-- name: set rule to poweroff if <auto_off_thres watts drawn
+- name: Set rule to poweroff if <auto_off_thres watts drawn
   delegate_to: ucs-master.gst.hamburg.adfc.de
   ansible.builtin.uri:
     url: http://{{ hostvars[inventory_hostname]['ansible_host'] }}/cm?cmnd=Rule1%20{{ rule|urlencode }}
@@ -48,7 +48,7 @@
     - command == "setrules"
     - hostvars[inventory_hostname]['use_auto_off']
 
-- name: delete all rules
+- name: Delete all rules
   delegate_to: ucs-master.gst.hamburg.adfc.de
   ansible.builtin.uri:
     url: http://{{ hostvars[inventory_hostname]['ansible_host'] }}/cm?cmnd=Rule0%20"

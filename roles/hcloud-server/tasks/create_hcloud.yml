@@ -1,5 +1,5 @@
 ---
-- name: search for included files
+- name: Search for included files
   ansible.builtin.find:
     paths: "{{ inventory_dir + '/' + key_path + item  }}"
     recurse: true
@@ -9,7 +9,7 @@
   with_items: "{{ ssh_users_admins }}"
   register: add_keys_files
 
-- name: add_key
+- name: Add_key
   hetzner.hcloud.hcloud_ssh_key:
     api_token: "{{ hcloud_api_token }}"
     name: adfc-ansible-{{ item | relpath(inventory_dir + '/' + key_path) }}
@@ -49,13 +49,13 @@
   register: hcloud_failure_host
   when: hcloud_host is failed
 
-- name: set ip address
+- name: Set ip address
   ansible.builtin.set_fact:
     hcloud_ipv4_address: "{{ hcloud_host.hcloud_server.ipv4_address }}"
     hcloud_ipv6_address: "{{ hcloud_host.hcloud_server.ipv6 | replace('/64','1') }}"
   when: not hcloud_host is failed
 
-- name: set ip address on failure
+- name: Set ip address on failure
   ansible.builtin.set_fact:
     hcloud_ipv4_address: "{{ hcloud_failure_host.hcloud_server.ipv4_address }}"
     hcloud_ipv6_address: "{{ hcloud_failure_host.hcloud_server.ipv6 | replace('/64','1') }}"
@@ -94,7 +94,7 @@
     - /etc/adfc/hcloud/ssh-host-keys
     - /etc/adfc/hcloud/ssh-host-keys/{{ inventory_hostname }}
 
-- name: create ssh_key files
+- name: Create ssh_key files
   community.crypto.openssh_keypair:
     path: /etc/adfc/hcloud/ssh-host-keys/{{ inventory_hostname }}/ssh_host_{{ item }}_key
     type: "{{ item }}"
@@ -115,7 +115,7 @@
   tags:
     - skip_ansible_lint
 
-- name: copy keys
+- name: Copy keys
   ansible.builtin.copy:
     content: "{{ hcloud_ssh_keys.stdout }}"
     dest: /etc/adfc_ssh_keys.tar
@@ -126,7 +126,7 @@
     ansible_host: "{{ hcloud_ipv4_address }}"
     ansible_ssh_extra_args: -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null
 
-- name: extract keys
+- name: Extract keys
   ansible.builtin.unarchive:
     src: /etc/adfc_ssh_keys.tar
     remote_src: true
@@ -135,7 +135,7 @@
     ansible_host: "{{ hcloud_ipv4_address }}"
     ansible_ssh_extra_args: -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null
 
-- name: restart ssh
+- name: Restart ssh
   ansible.builtin.systemd:
     name: ssh
     state: restarted

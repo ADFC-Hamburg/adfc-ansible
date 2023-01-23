@@ -1,5 +1,5 @@
 ---
-- name: restart influxdb
+- name: Restart influxdb
   ansible.builtin.systemd:
     name: influxdb
     state: restarted

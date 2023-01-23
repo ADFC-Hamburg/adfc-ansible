@@ -11,7 +11,7 @@
   loop_control:
     loop_var: pwd_file
 
-- name: include clean.yml
+- name: Include clean.yml
   ansible.builtin.include_tasks: clean.yml
   when: (qfm_clean | default("false")) | bool
 

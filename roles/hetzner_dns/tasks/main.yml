@@ -5,7 +5,7 @@
   delegate_to: proxmox01.adfc-intern.de
   register: hcloud_dns_token
 
-- name: setze ipv4 address
+- name: Setze ipv4 address
   community.dns.hetzner_dns_record_set:
     zone: adfc-intern.de
     record: "{{ inventory_hostname }}"
@@ -18,7 +18,7 @@
   delegate_to: localhost
   register: hdns_ip4_set
 
-- name: setze ipv6 address
+- name: Setze ipv6 address
   community.dns.hetzner_dns_record_set:
     zone: adfc-intern.de
     record: "{{ inventory_hostname }}"

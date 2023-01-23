@@ -15,7 +15,7 @@
     ssh_command: /bin/cat {{ hostvars[ha_backend_host]['haproxy_cert_and_key_files'] |join(' ') }}
   when: hostvars[ha_backend_host]['haproxy_cert_and_key_files'] | default([]) |length >0
 
-- name: add ssh key for haproxy ssl key transfer
+- name: Add ssh key for haproxy ssl key transfer
   ansible.posix.authorized_key:
     user: root
     comment: ADFC-Ansible haproxy role

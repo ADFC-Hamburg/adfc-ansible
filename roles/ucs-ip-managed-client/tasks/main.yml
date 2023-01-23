@@ -1,5 +1,5 @@
 ---
-- name: check if password file is there
+- name: Check if password file is there
   ansible.builtin.stat:
     path: /etc/machine.secret
   register: machine_secret_stat
@@ -12,18 +12,18 @@
     owner: root
   when: not machine_secret_stat.stat.exists
 
-- name: read machine secret
+- name: Read machine secret
   ansible.builtin.slurp:
     path: /etc/machine.secret
   register: machine_secret
 
-- name: check if object exists
+- name: Check if object exists
   ansible.builtin.command: univention-ldapsearch -LLLLL -b {{ ucs_computer_position }} cn={{ inventory_hostname.split('.')[0] |lower }} dn
   register: computer_ldapsearch
   delegate_to: "{{ ucs_master }}"
   changed_when: false
 
-- name: generate client
+- name: Generate client
   ansible.builtin.command:
     argv:
       - udm
@@ -44,7 +44,7 @@
   delegate_to: "{{ ucs_master }}"
   ignore_errors: "{{ ansible_check_mode }}"
 
-- name: read UCS CA Cert
+- name: Read UCS CA Cert
   ansible.builtin.slurp:
     path: /etc/univention/ssl/ucsCA/CAcert.pem
   register: ucs_ca

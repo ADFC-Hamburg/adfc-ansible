@@ -51,7 +51,7 @@
     owner: root
   tags: jitsi_adfc
 
-- name: unzip robto font
+- name: Unzip robto font
   ansible.builtin.unarchive:
     src: roboto.zip
     dest: /usr/share/jitsi-meet/static/fonts/

@@ -15,7 +15,7 @@
     mode: 0644
     owner: root
     group: root
-- name: stop gdm
+- name: Stop gdm
   ansible.builtin.systemd:
     name: gdm.service
     state: stopped

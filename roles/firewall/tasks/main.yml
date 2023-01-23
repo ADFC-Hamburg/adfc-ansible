@@ -16,7 +16,7 @@
     ip6tables_bin: /usr/sbin/ip6tables
   notify: restart adfc firewall
 
-- name: systemd enable
+- name: Systemd enable
   ansible.builtin.systemd:
     name: adfc-firewall
     daemon_reload: "{{ adfc_firewall_service.changed }}"

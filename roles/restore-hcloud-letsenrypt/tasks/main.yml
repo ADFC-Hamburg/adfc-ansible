@@ -1,9 +1,9 @@
 ---
-- name: create lestsencrypt
+- name: Create lestsencrypt
   ansible.builtin.stat:
     path: /etc/letsencrypt
   register: stat_le_dir
 
-- name: include copy_from_proxmox01.yml
+- name: Include copy_from_proxmox01.yml
   ansible.builtin.include_tasks: copy_from_proxmox01.yml
   when: not stat_le_dir.stat.exists

@@ -1,24 +1,24 @@
 ---
-- name: restart jitsi-videobridge
+- name: Restart jitsi-videobridge
   ansible.builtin.service:
     name: jitsi-videobridge2
     state: restarted
 
-- name: restart jicofo
+- name: Restart jicofo
   ansible.builtin.service:
     name: jicofo
     state: restarted
 
-- name: restart prosody
+- name: Restart prosody
   ansible.builtin.service:
     name: prosody
     state: restarted
 
-- name: restart nginx
+- name: Restart nginx
   ansible.builtin.service:
     name: nginx
     state: restarted
 
-- name: reload systemctl
+- name: Reload systemctl
   ansible.builtin.systemd:
     daemon_reload: true

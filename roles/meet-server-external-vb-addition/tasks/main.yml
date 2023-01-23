@@ -7,14 +7,14 @@
       - focus@auth.{{ jitsi_meet_server_name }}
       - jvb@auth.{{ jitsi_meet_server_name }}
 
-- name: find all vb server
+- name: Find all vb server
   ansible.builtin.include_tasks: vb_loop.yml
   when: "'jitsi_meet_server_name' in hostvars[vb_host] and hostvars[vb_host]['jitsi_meet_server_name'] == jitsi_meet_server_name"
   loop_control:
     loop_var: vb_host
   loop: "{{ groups['all'] }}"
 
-- name: change admins
+- name: Change admins
   ansible.builtin.lineinfile:
     path: /etc/prosody/prosody.cfg.lua
     regexp: ^admins = {

@@ -1,14 +1,14 @@
 ---
 # Playbook to implement a remote startup script for users
 
-- name: install script dependencies
+- name: Install script dependencies
   ansible.builtin.apt:
     name:
       - dialog
       - curl
     state: present
 
-- name: generate password for startup_script user
+- name: Generate password for startup_script user
   ansible.builtin.set_fact:
     user_pass: "{{ lookup('password', '/dev/null length=16') }}"
 
@@ -22,7 +22,7 @@
     create_home: false
     system: true
 
-- name: copy the template over
+- name: Copy the template over
   ansible.builtin.template:
     src: tasmota_start_menu.sh
     dest: /usr/local/bin/tasmota_start_menu.sh
@@ -31,7 +31,7 @@
     mode: 0755
     force: true
 
-- name: check if udm configuration is correct
+- name: Check if udm configuration is correct
   ansible.builtin.command:
     argv:
       - /usr/sbin/udm

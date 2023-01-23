@@ -30,7 +30,7 @@
   ansible.builtin.pause:
     seconds: 10
 
-- name: install wordpress
+- name: Install wordpress
   ansible.builtin.uri:
     url: https://{{ quartierefuermenschen_domain }}/wp-admin/install.php?step=2
     method: POST

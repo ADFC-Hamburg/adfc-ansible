@@ -1,7 +1,7 @@
 ---
 # Playbook to configure Postfix on a server to be able to send emails to admins
 
-- name: install libsasl2-modules to prevent "no mechanisms found error"
+- name: Install libsasl2-modules to prevent "no mechanisms found error"
   ansible.builtin.apt:
     name:
       - libsasl2-modules
@@ -14,26 +14,26 @@
     state: directory
     mode: 0644
 
-- name: copy postfix configuration file
+- name: Copy postfix configuration file
   ansible.builtin.template:
     src: postfix-main.cf
     dest: /etc/postfix/main.cf
     mode: 0644
   notify: reload postfix
 
-- name: copy sender_canonical
+- name: Copy sender_canonical
   ansible.builtin.template:
     src: sender-canonical
     dest: /etc/postfix/sender_canonical
     mode: 0640
 
-- name: get client Auth from master
+- name: Get client Auth from master
   ansible.builtin.slurp:
     src: /etc/ansible/secrets/smtp_client_auth
   delegate_to: ucs-master.gst.hamburg.adfc.de
   register: smtp_auth
 
-- name: create SMTP client Auth
+- name: Create SMTP client Auth
   ansible.builtin.copy:
     content: "{{ smtp_auth.content |b64decode }}"
     dest: /etc/postfix/smtp_auth
@@ -42,7 +42,7 @@
     group: root
   notify: postfix postmap smtp_auth
 
-- name: get notfication-emailaddress
+- name: Get notfication-emailaddress
   ansible.builtin.slurp:
     src: /etc/ansible/secrets/mailingliste.txt
   delegate_to: ucs-master.gst.hamburg.adfc.de

@@ -1,87 +1,87 @@
 ---
-- name: dynamic-jitsi-sclaer |  test {{ testcase.name }} | set meet participants
+- name: Dynamic-jitsi-sclaer |  test {{ testcase.name }} | set meet participants
   ansible.builtin.copy:
     dest: /tmp/dyn_jitsi_query_participants-meet.txt
     content: "{{ testcase.participants.meet }}"
 
-- name: dynamic-jitsi-sclaer |  test {{ testcase.name }} | set vbh participants
+- name: Dynamic-jitsi-sclaer |  test {{ testcase.name }} | set vbh participants
   ansible.builtin.copy:
     dest: /tmp/dyn_jitsi_query_participants-vbdh01.txt
     content: "{{ testcase.participants.vbdh01 }}"
 
-- name: dynamic-jitsi-sclaer |  test {{ testcase.name }} | set vbh participants
+- name: Dynamic-jitsi-sclaer |  test {{ testcase.name }} | set vbh participants
   ansible.builtin.copy:
     dest: /tmp/dyn_jitsi_query_participants-vbdh02.txt
     content: "{{ testcase.participants.vbdh02 }}"
 
-- name: dynamic-jitsi-sclaer |  test {{ testcase.name }} | set vbh participants
+- name: Dynamic-jitsi-sclaer |  test {{ testcase.name }} | set vbh participants
   ansible.builtin.copy:
     dest: /tmp/dyn_jitsi_query_participants-vbdh03.txt
     content: "{{ testcase.participants.vbdh03 }}"
 
-- name: dynamic-jitsi-sclaer |  test {{ testcase.name }} | set vbh participants
+- name: Dynamic-jitsi-sclaer |  test {{ testcase.name }} | set vbh participants
   ansible.builtin.copy:
     dest: /tmp/dyn_jitsi_query_participants-vbdh04.txt
     content: "{{ testcase.participants.vbdh04 }}"
 
-- name: dynamic-jitsi-sclaer |  test {{ testcase.name }} | set meet conferences
+- name: Dynamic-jitsi-sclaer |  test {{ testcase.name }} | set meet conferences
   ansible.builtin.copy:
     dest: /tmp/dyn_jitsi_query_conferences-meet.txt
     content: "{{ testcase.conferences.meet }}"
 
-- name: dynamic-jitsi-sclaer |  test {{ testcase.name }} | set vbh participants
+- name: Dynamic-jitsi-sclaer |  test {{ testcase.name }} | set vbh participants
   ansible.builtin.copy:
     dest: /tmp/dyn_jitsi_query_conferences-vbdh01.txt
     content: "{{ testcase.conferences.vbdh01 }}"
 
-- name: dynamic-jitsi-sclaer |  test {{ testcase.name }} | set vbh participants
+- name: Dynamic-jitsi-sclaer |  test {{ testcase.name }} | set vbh participants
   ansible.builtin.copy:
     dest: /tmp/dyn_jitsi_query_conferences-vbdh02.txt
     content: "{{ testcase.conferences.vbdh02 }}"
 
-- name: dynamic-jitsi-sclaer |  test {{ testcase.name }} | set vbh participants
+- name: Dynamic-jitsi-sclaer |  test {{ testcase.name }} | set vbh participants
   ansible.builtin.copy:
     dest: /tmp/dyn_jitsi_query_conferences-vbdh03.txt
     content: "{{ testcase.conferences.vbdh03 }}"
 
-- name: dynamic-jitsi-sclaer |  test {{ testcase.name }} | set vbh participants
+- name: Dynamic-jitsi-sclaer |  test {{ testcase.name }} | set vbh participants
   ansible.builtin.copy:
     dest: /tmp/dyn_jitsi_query_conferences-vbdh04.txt
     content: "{{ testcase.conferences.vbdh04 }}"
 
-- name: dynamic-jitsi-sclaer |  test {{ testcase.name }} | set hetzner result
+- name: Dynamic-jitsi-sclaer |  test {{ testcase.name }} | set hetzner result
   ansible.builtin.copy:
     dest: /tmp/dyn_jitsi_query_hetzner_server.txt
     content: "{{ testcase.hcloud_api }}"
 
-- name: dynamic-jitsi-sclaer |  test {{ testcase.name }} | run
+- name: Dynamic-jitsi-sclaer |  test {{ testcase.name }} | run
   ansible.builtin.command: /usr/local/bin/dynamic-jitsi-scaler-test
   register: djs_testcase
   failed_when: (djs_testcase.rc != 0)  or (djs_testcase.stderr |length >0)
 
-- name: dynamic-jitsi-sclaer |  test {{ testcase.name }} | check vbdh01 setup playbook is {{ testcase.result.playbook_setup_vbh01 }}
+- name: Dynamic-jitsi-sclaer |  test {{ testcase.name }} | check vbdh01 setup playbook is {{ testcase.result.playbook_setup_vbh01 }}
   ansible.builtin.stat:
     path: /tmp/dyn_jitsi_playbook-vbdh01.meet.adfc-intern.de-setup-meet-vb.yml
   register: mystat
   failed_when: mystat.stat.exists != testcase.result.playbook_setup_vbdh01
 
-- name: dynamic-jitsi-sclaer |  test {{ testcase.name }} | check vbdh01 delete playbook is {{ testcase.result.playbook_delete_vbh01 }}
+- name: Dynamic-jitsi-sclaer |  test {{ testcase.name }} | check vbdh01 delete playbook is {{ testcase.result.playbook_delete_vbh01 }}
   ansible.builtin.stat:
     path: /tmp/dyn_jitsi_playbook-vbdh01.meet.adfc-intern.de-delete-meet-vb.yml
   register: mystat
   failed_when: mystat.stat.exists != testcase.result.playbook_delete_vbdh01
 
-- name: dynamic-jitsi-sclaer |  test {{ testcase.name }} | check vbdh02 setup playbook is {{ testcase.result.playbook_setup_vbh01 }}
+- name: Dynamic-jitsi-sclaer |  test {{ testcase.name }} | check vbdh02 setup playbook is {{ testcase.result.playbook_setup_vbh01 }}
   ansible.builtin.stat:
     path: /tmp/dyn_jitsi_playbook-vbdh02.meet.adfc-intern.de-setup-meet-vb.yml
   register: mystat
   failed_when: mystat.stat.exists != testcase.result.playbook_setup_vbdh02
 
-- name: dynamic-jitsi-sclaer |  test {{ testcase.name }} | check vbdh02 delete playbook is {{ testcase.result.playbook_delete_vbh01 }}
+- name: Dynamic-jitsi-sclaer |  test {{ testcase.name }} | check vbdh02 delete playbook is {{ testcase.result.playbook_delete_vbh01 }}
   ansible.builtin.stat:
     path: /tmp/dyn_jitsi_playbook-vbdh02.meet.adfc-intern.de-delete-meet-vb.yml
   register: mystat
   failed_when: mystat.stat.exists != testcase.result.playbook_delete_vbdh02
 
-- name: dynamic-jitsi-sclaer |  test {{ testcase.name }} | clean
+- name: Dynamic-jitsi-sclaer |  test {{ testcase.name }} | clean
   ansible.builtin.include_tasks: clean_test.yml

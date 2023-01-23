@@ -24,7 +24,7 @@
     state: absent
   when: docker_fetch_gpg.changed # noqa no-handler
 
-- name: gpg Convert key
+- name: Gpg Convert key
   ansible.builtin.command: >
     gpg2 --batch --dearmor --output
     {{ docker_repo_gpg_key_gpg }}

@@ -1,11 +1,11 @@
 ---
-- name: shutdown
+- name: Shutdown
   community.general.shutdown: # noqa ignore-errors
   when: hcloud_server_info.hcloud_server_info[0].status | default('unknown') != 'off'
   failed_when: false
   ignore_unreachable: true
 
-- name: wait for shutdown
+- name: Wait for shutdown
   hetzner.hcloud.hcloud_server_info:
     api_token: "{{ hcloud_api_token }}"
     name: "{{ inventory_hostname }}"

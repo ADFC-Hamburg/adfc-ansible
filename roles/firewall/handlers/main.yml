@@ -1,5 +1,5 @@
 ---
-- name: restart adfc firewall
+- name: Restart adfc firewall
   ansible.builtin.systemd:
     name: adfc-firewall
     state: restarted

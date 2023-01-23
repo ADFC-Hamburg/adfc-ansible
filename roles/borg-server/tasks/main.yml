@@ -42,7 +42,7 @@
     creates: /root/.ssh/borgbackup-server
   tags: borg-server
 
-- name: install borg-script
+- name: Install borg-script
   ansible.builtin.template:
     src: adfc-borg
     dest: /usr/local/sbin/adfc-borg
@@ -82,7 +82,7 @@
     group: root
   tags: borg-server,adfc-borg,borg-keyscan
 
-- name: install ssh-config
+- name: Install ssh-config
   ansible.builtin.template:
     src: ssh-config
     dest: /usr/local/share/adfc-borg/ssh-config
@@ -99,7 +99,7 @@
     cron_file: ansible_adfc-borg
   tags: borg-server
 
-- name: install logrotate script
+- name: Install logrotate script
   ansible.builtin.template:
     src: logrotate
     dest: /etc/logrotate.d/adfc-borg

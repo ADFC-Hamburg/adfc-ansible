@@ -7,12 +7,12 @@
   register: stat_result
   when: ansible_hostname == "ucs-master"
 
-- name: show results
+- name: Show results
   ansible.builtin.debug:
     msg: Path {{ adfc_link_path }} exists
   when: ansible_hostname == "ucs-master" and stat_result.stat.exists
 
-- name: create links folder on UCS-Master
+- name: Create links folder on UCS-Master
   ansible.builtin.file:
     path: "{{ adfc_link_path }}"
     state: directory
@@ -22,14 +22,14 @@
   delegate_to: ucs-master.gst.hamburg.adfc.de
   when: ansible_hostname == "ucs-master" and not stat_result.stat.exists
 
-- name: copy Cloud-Link to UCS-Master
+- name: Copy Cloud-Link to UCS-Master
   ansible.builtin.copy:
     src: ADFC-Cloud(webdav)
     dest: "{{ adfc_link_path }}/ADFC-Cloud(webdav)"
     mode: 0644
   when: ansible_hostname == "ucs-master"
 
-- name: copy all users autostart to client
+- name: Copy all users autostart to client
   ansible.builtin.template:
     src: forallusers.desktop
     dest: /etc/xdg/autostart/forallusers.desktop

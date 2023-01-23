@@ -1,5 +1,5 @@
 ---
-- name: restart dehydrated http
+- name: Restart dehydrated http
   ansible.builtin.systemd:
     name: dehydrated-http.service
     daemon_reload: true

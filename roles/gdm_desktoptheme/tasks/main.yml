@@ -82,7 +82,7 @@
   notify: restart gdm3
   tags: gdm
 
-- name: copy ubuntu.css to client
+- name: Copy ubuntu.css to client
   ansible.builtin.copy:
     src: ubuntu-adfc.css
     dest: /usr/share/gnome-shell/theme/ubuntu-adfc.css
@@ -98,7 +98,7 @@
   notify: restart gdm3
   tags: gdm
 
-- name: copy ADFC-Login background
+- name: Copy ADFC-Login background
   ansible.builtin.copy:
     src: ADFC-login-background.png
     dest: /usr/local/share/themes/adfc/ADFC-login-background.png
@@ -106,7 +106,7 @@
   notify: restart gdm3
   tags: gdm
 
-- name: enable service gdm3
+- name: Enable service gdm3
   ansible.builtin.systemd:
     state: started
     enabled: true

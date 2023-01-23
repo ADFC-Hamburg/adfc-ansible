@@ -1,5 +1,5 @@
 ---
-- name: test floating_ips
+- name: Test floating_ips
   hetzner.hcloud.hcloud_floating_ip_info:
     api_token: "{{ hcloud_api_token }}"
   register: hcloud_floating_ip_info
@@ -34,7 +34,7 @@
   ansible.builtin.pause:
     seconds: 30
 
-- name: create floating_ip config
+- name: Create floating_ip config
   ansible.builtin.template:
     src: floating_ip.cfg.j2
     dest: /etc/network/interfaces.d/60-my-floating-ip.cfg
@@ -43,7 +43,7 @@
     ansible_host: "{{ hcloud_ipv4_address }}"
     ansible_ssh_extra_args: -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null
 
-- name: restart network
+- name: Restart network
   ansible.builtin.systemd:
     name: networking
     state: restarted

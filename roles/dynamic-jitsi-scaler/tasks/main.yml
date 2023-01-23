@@ -1,5 +1,5 @@
 ---
-- name: dynamic-jitsi-scaler | install dependencies
+- name: Dynamic-jitsi-scaler | install dependencies
   ansible.builtin.apt:
     name:
       - jq
@@ -17,30 +17,30 @@
       - python-jmespath
       - python-dnspython
 
-- name: install ansible
+- name: Install ansible
   ansible.builtin.pip:
     name:
       - ansible==2.9.9
       - hcloud
 
-- name: ssh keygen
+- name: Ssh keygen
   community.crypto.openssh_keypair:
     path: /root/.ssh/batch
 
-- name: dynamic-jitsi-scaler | install lib
+- name: Dynamic-jitsi-scaler | install lib
   ansible.builtin.copy:
     src: dynamic-jitsi-scaler-lib.sh
     dest: /usr/local/bin/dynamic-jitsi-scaler-lib.sh
     mode: 0644
 
-- name: dynamic-jitsi-scaler | install test lib
+- name: Dynamic-jitsi-scaler | install test lib
   ansible.builtin.copy:
     src: dynamic-jitsi-scaler-lib-test.sh
     dest: /usr/local/bin/dynamic-jitsi-scaler-lib-test.sh
     mode: 0644
   when: dynamic_jitis_run_test | default(False)
 
-- name: dynamic-jitsi-scaler | install script test
+- name: Dynamic-jitsi-scaler | install script test
   ansible.builtin.template:
     src: dynamic-jitsi-scaler.sh.j2
     dest: /usr/local/bin/dynamic-jitsi-scaler-test
@@ -50,17 +50,17 @@
     dynamic_admin_mail: "{{ test_admin_mail }}"
   when: dynamic_jitis_run_test | default(False)
 
-- name: dynamic-jitsi-sclaer | clean test reult
+- name: Dynamic-jitsi-sclaer | clean test reult
   ansible.builtin.include_tasks: clean_test.yml
 
-- name: dynamic-jitsi-sclaer | generic_test
+- name: Dynamic-jitsi-sclaer | generic_test
   ansible.builtin.include_tasks: generic_tescase.yml
   loop: "{{ dynamic_jitsi_scaler_testcases }}"
   loop_control:
     loop_var: testcase
   when: dynamic_jitis_run_test | default(False)
 
-- name: dynamic-jitsi-scaler |install script
+- name: Dynamic-jitsi-scaler |install script
   ansible.builtin.template:
     src: dynamic-jitsi-scaler.sh.j2
     dest: /usr/local/bin/dynamic-jitsi-scaler
@@ -69,7 +69,7 @@
     dynamic_lib: /usr/local/bin/dynamic-jitsi-scaler-lib.sh
     dynamic_admin_mail: "{{ admin_mail }}"
 
-- name: dynamic-jitsi-scaler | Create system timer and service
+- name: Dynamic-jitsi-scaler | Create system timer and service
   ansible.builtin.template:
     src: systemd-{{ item }}.j2
     dest: /lib/systemd/system/{{ item }}

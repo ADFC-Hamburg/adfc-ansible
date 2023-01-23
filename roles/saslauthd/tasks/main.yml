@@ -52,7 +52,7 @@
     mode: "0755"
   tags: saslauthd
 
-- name: read machine secret
+- name: Read machine secret
   ansible.builtin.slurp:
     path: /etc/machine.secret
   register: machine_secret

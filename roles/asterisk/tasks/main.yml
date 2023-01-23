@@ -14,37 +14,37 @@
   ansible.builtin.include_tasks: german_sounds.yml
   when: not test_german_sounds.stat.exists
 
-- name: create adfc sounds dir
+- name: Create adfc sounds dir
   ansible.builtin.file:
     path: "{{ asterisk_sounds_dir }}/adfc"
     state: directory
     mode: "0755"
 
-- name: copy custom sound files
+- name: Copy custom sound files
   ansible.builtin.copy:
     src: "{{ item }}"
     dest: "{{ asterisk_sounds_dir }}/adfc/"
     mode: "0644"
   loop: "{{ install_asterisk_sounds }}"
-- name: get sipgate secret and SIP-Id
+- name: Get sipgate secret and SIP-Id
   ansible.builtin.slurp:
     src: /root/sipgate.secret
   register: sipgate_secret_b64
   delegate_to: proxmox01.adfc-intern.de
   tags: asterisk-extension
 
-- name: set sipgate fact
+- name: Set sipgate fact
   ansible.builtin.set_fact:
     sipgate_secret: "{{ sipgate_secret_b64.content | b64decode }}"
   tags: asterisk-extension
 
-- name: set facts
+- name: Set facts
   ansible.builtin.set_fact:
     sipgate_adfc_hh_number: "2086851"
     sipgate_adfc_hh_password: "{{ sipgate_secret.split(' ')[4] }}"
   tags: asterisk-extension
 
-- name: check if password file is there
+- name: Check if password file is there
   ansible.builtin.stat:
     path: /etc/jigasi-sip.secret
   register: jigasi_sip_secret_stat
@@ -57,12 +57,12 @@
     owner: root
   when: not jigasi_sip_secret_stat.stat.exists
 
-- name: read jigasi_sip secret
+- name: Read jigasi_sip secret
   ansible.builtin.slurp:
     path: /etc/jigasi-sip.secret
   register: jigasi_sip_secret
 
-- name: create extension.conf
+- name: Create extension.conf
   ansible.builtin.template:
     src: extensions.conf.j2
     dest: /etc/asterisk/extensions.conf
@@ -111,7 +111,7 @@
     owner: root
     group: root
 
-- name: cron entry for monitor
+- name: Cron entry for monitor
   ansible.builtin.cron:
     name: asterisk_restart
     job: /usr/local/sbin/restart_asterisk_on_error.sh

@@ -93,7 +93,7 @@
     - fehler.http.static.html
     - fehler.https.static.html
 
-- name: copy Univention Certificates
+- name: Copy Univention Certificates
   ansible.builtin.include_tasks: copy.yml
   with_items:
     - src_file: /etc/univention/ssl/ucsCA/CAcert.pem

@@ -1,17 +1,17 @@
 ---
-- name: create german sounds dir mkdir
+- name: Create german sounds dir mkdir
   ansible.builtin.file:
     path: "{{ asterisk_sounds_dir }}/de"
     state: directory
     mode: "0755"
 
-- name: unarchive base sounds
+- name: Unarchive base sounds
   ansible.builtin.unarchive:
     src: https://www.asterisksounds.org/de/download/asterisk-sounds-core-de-sln16.zip
     dest: "{{ asterisk_sounds_dir }}/de"
     remote_src: true
 
-- name: unarchive extra sounds
+- name: Unarchive extra sounds
   ansible.builtin.unarchive:
     src: https://www.asterisksounds.org/de/download/asterisk-sounds-extra-de-sln16.zip
     dest: "{{ asterisk_sounds_dir }}/de"

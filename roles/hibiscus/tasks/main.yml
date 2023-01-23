@@ -1,5 +1,5 @@
 ---
-- name: unpack hibiscus
+- name: Unpack hibiscus
   ansible.builtin.unarchive:
     src: "{{ hibiscus_archive_url }}"
     remote_src: true

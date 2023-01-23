@@ -1,5 +1,5 @@
 ---
-- name: restart jigasi
+- name: Restart jigasi
   ansible.builtin.systemd:
     name: jigasi
     state: restarted

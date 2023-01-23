@@ -1,45 +1,45 @@
 ---
-- name: read password from file
+- name: Read password from file
   ansible.builtin.slurp:
     src: ~/adfc-ucs-master.secret
   delegate_to: localhost
   register: get_password
 
-- name: test if reachable
+- name: Test if reachable
   ansible.builtin.ping:
   ignore_errors: true
   ignore_unreachable: true
   register: ping_result
   delegate_to: ucs-master.gst.hamburg.adfc.de
 
-- name: fail if ucs is reachable"
+- name: Fail if ucs is reachable"
   ansible.builtin.fail:
     msg: UCS is reachable
   when: not ping_result.unreachable
-- name: stop ucs-master # noqa no-changed-when
+- name: Stop ucs-master # noqa no-changed-when
   ansible.builtin.command: qm stop 100
-- name: wait
+- name: Wait
   ansible.builtin.pause:
     seconds: 5
 
-- name: start ucs-master # noqa no-changed-when
+- name: Start ucs-master # noqa no-changed-when
   ansible.builtin.command: qm start 100
-- name: wait
+- name: Wait
   ansible.builtin.pause:
     seconds: 30
 
-- name: loop over chars
+- name: Loop over chars
   ansible.builtin.include_tasks: sendkey.yml
   vars:
     char: "{{ item }}"
   with_items: "{{ get_password.content |b64decode |list }}"
 
-- name: send return # noqa no-changed-when
+- name: Send return # noqa no-changed-when
   ansible.builtin.command: qm sendkey 100 kp_enter
-- name: wait
+- name: Wait
   ansible.builtin.pause:
     seconds: 90
 
-- name: test
+- name: Test
   ansible.builtin.ping:
   delegate_to: ucs-master.gst.hamburg.adfc.de
