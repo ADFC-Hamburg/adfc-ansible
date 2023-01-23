@@ -12,7 +12,7 @@
   roles:
     - ssh_keys
     - update_os
-    - restore-hcloud-letsenrypt
+    - restore_hcloud_letsenrypt
     - geerlingguy.certbot
     - vb-nginx-proxy
     - jitsi-videobridge
