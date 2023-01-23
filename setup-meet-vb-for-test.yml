@@ -5,7 +5,7 @@
   vars:
     hcloud_test: true
   roles:
-    - hcloud-server
+    - hcloud_server
 - name: Setup Videobridge
   hosts: jitsi_vbs
   gather_facts: true

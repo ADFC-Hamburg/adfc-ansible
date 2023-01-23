@@ -3,7 +3,7 @@
   hosts: event.dyndns.adfc-intern.de
   gather_facts: false
   roles:
-    - hcloud-server
+    - hcloud_server
 
 - name: setup meet only
   import_playbook: setup-meet-only.yml
