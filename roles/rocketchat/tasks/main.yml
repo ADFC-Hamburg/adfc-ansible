@@ -27,6 +27,7 @@
     mode: 0644
     owner: root
     group: root
+  register: docker_env
 
 # use files parameter to use multiple docker-compose.yml files
 - name: deploy Docker Compose stack
@@ -96,3 +97,6 @@
     - restart nginx
   tags:
     - nginx_synlink
+
+- name: Include New Version
+  include_tasks: new_version.yml
