@@ -25,11 +25,11 @@
 - name: Setup LXC Container
   community.general.proxmox:
     vmid: "{{ proxmox_id }}"
-    node: "{{ proxmox_host |regex_replace('\\..*$','') }}"
+    node: "{{ proxmox_host | regex_replace('\\..*$', '') }}"
     api_user: root@pam
-    api_password: "{{ root_secret.content |b64decode |trim }}"
+    api_password: "{{ root_secret.content | b64decode | trim }}"
     api_host: "{{ proxmox_host }}"
-    password: "{{ root_secret.content |b64decode |trim }}"
+    password: "{{ root_secret.content | b64decode | trim }}"
     hostname: "{{ inventory_hostname }}"
     memory: "{{ proxmox_ramsize_in_mb }}"
     cores: "{{ proxmox_cores }}"
@@ -57,9 +57,9 @@
 - name: Start LXC Containter
   community.general.proxmox:
     vmid: "{{ proxmox_id }}"
-    node: "{{ proxmox_host |regex_replace('\\..*$','') }}"
+    node: "{{ proxmox_host | regex_replace('\\..*$', '') }}"
     api_user: root@pam
-    api_password: "{{ root_secret.content |b64decode |trim }}"
+    api_password: "{{ root_secret.content | b64decode | trim }}"
     api_host: "{{ proxmox_host }}"
     state: started
   delegate_to: "{{ proxmox_host }}"
