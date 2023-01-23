@@ -65,7 +65,10 @@ proxmox_helperscript: |
   cp /root/profile /var/cache/univention-system-setup/profile
   /usr/lib/univention-system-setup/scripts/setup-join.sh
   rm /root/profile
-  univention-admin users/user create --position cn=users,$ldap_base --set username=Administrator --set lastname=Administrator --set password=univention --set groups="cn=Domain Admins,cn=groups,$ldap_base" --policy-reference cn=default-admins,cn=admin-settings,cn=users,cn=policies,$ldap_base
+  univention-admin users/user create --position cn=users,$ldap_base --set username=Administrator \
+    --set lastname=Administrator --set password=univention --set \
+    groups="cn=Domain Admins,cn=groups,$ldap_base" --policy-reference \
+    cn=default-admins,cn=admin-settings,cn=users,cn=policies,$ldap_base
   shutdown -r now
   EOF
   chmod 755 runme.sh
@@ -93,5 +96,5 @@ firewall:
     port: 7389
     proto: tcp
     src:
-      - "{{ lookup('dig','event.adfc-intern.de/A') }}"
-      - "{{ lookup('dig','event.adfc-intern.de/AAAA') }}"
+      - "{{ lookup('dig', 'event.adfc-intern.de/A') }}"
+      - "{{ lookup('dig', 'event.adfc-intern.de/AAAA') }}"
