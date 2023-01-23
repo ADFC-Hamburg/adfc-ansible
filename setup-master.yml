@@ -9,7 +9,7 @@
     - links-on-desktop
     - borg-server
     - external_https
-    - self-service-sms
+    - self_service_sms
 
   handlers:
     - name: ucr commit postifx main.cf
