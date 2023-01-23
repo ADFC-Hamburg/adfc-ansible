@@ -14,7 +14,7 @@
     - update_os
     - restore_hcloud_letsenrypt
     - geerlingguy.certbot
-    - vb-nginx-proxy
+    - vb_nginx_proxy
     - jitsi-videobridge
     - telegraf
     - meet_after_vb
