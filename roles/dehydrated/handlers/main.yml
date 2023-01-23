@@ -1,7 +1,7 @@
 - name: restart dehydrated http
   systemd:
     name: dehydrated-http.service
-    reload: true
+    daemon-reload: true
     state: restarted
     enabled: true
 
