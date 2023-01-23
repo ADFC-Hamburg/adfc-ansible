@@ -16,7 +16,7 @@ jobs:
     - name: delete ansible
       run: sudo apt purge ansible
     - name: Install Testresource
-      run: suto apt install python3-testresources
+      run: sudo apt install python3-testresources
     - name: install ansible-lint
       run: |
        pip3 install --upgrade pip
