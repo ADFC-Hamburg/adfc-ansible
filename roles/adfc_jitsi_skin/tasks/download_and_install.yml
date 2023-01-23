@@ -24,7 +24,7 @@
     remote_src: true
 
 - name: install package
-  command:
+  ansible.builtin.command:
     cmd: /usr/bin/dpkg -i {{  adfc_share_dir }}/jitsi-meet-web_{{ jitsi_meet_packages[0].version }}_all.deb
 
 - name: Write sha hash to file

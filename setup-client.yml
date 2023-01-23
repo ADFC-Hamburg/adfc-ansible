@@ -191,7 +191,7 @@
 
     # Freemind als Snap installieren
     - name: Freemind-Snap installieren
-      command: snap install freemind
+      ansible.builtin.command: snap install freemind
       when: not freemind_snap_result.stat.exists
 
     # Shortcuts für Flameshot einrichten
@@ -215,7 +215,7 @@
         dest: /etc/issue
 
     - name: Hostname anpassen
-      command: hostnamectl set-hostname {{ inventory_hostname_short }}
+      ansible.builtin.command: hostnamectl set-hostname {{ inventory_hostname_short }}
       when: ansible_hostname != inventory_hostname_short
 
     - name: Stat Netplan Network-manager-cfg
@@ -223,7 +223,7 @@
         path: /etc/netplan/01-network-manager-all.yaml
       register: netplan_nmgr_stat
     - name: Move Netplan Network-manager-cfg
-      command: mv /etc/netplan/01-network-manager-all.yaml /etc/netplan/01-network-manager-all.yaml.unused
+      ansible.builtin.command: mv /etc/netplan/01-network-manager-all.yaml /etc/netplan/01-network-manager-all.yaml.unused
       when: netplan_nmgr_stat.stat.exists
     - name: Erstelle /etc/netplan/02-adfc.yaml
       ansible.builtin.template:
@@ -250,7 +250,7 @@
         dest: /root/ucs-admin-pw.secret
       when: not stat_ucs_mkhomedir.stat.exists
     - name: Do univention domain join
-      command: /usr/sbin/univention-domain-join-cli --username Administrator --dc-ip ucs-master --password-file /root/ucs-admin-pw.secret
+      ansible.builtin.command: /usr/sbin/univention-domain-join-cli --username Administrator --dc-ip ucs-master --password-file /root/ucs-admin-pw.secret
       when: not stat_ucs_mkhomedir.stat.exists
     - name: delete password file
       file:

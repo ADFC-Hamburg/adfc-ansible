@@ -11,7 +11,7 @@
     - firewall
   handlers:
     - name: Parse Appamor Profiles
-      command: apparmor_parser -r /etc/apparmor.d/lxc-containers
+      ansible.builtin.command: apparmor_parser -r /etc/apparmor.d/lxc-containers
   tasks:
     - name: Nutze Proxmox Community Repo
       ansible.builtin.apt_repository:
@@ -68,7 +68,7 @@
         dest: /etc/pve-status.cfg
         mode: "0644"
     - name: Copy to pve
-      command: cp /etc/pve-status.cfg /etc/pve/status.cfg
+      ansible.builtin.command: cp /etc/pve-status.cfg /etc/pve/status.cfg
     - name: Setze Videobridge Network Settings
       ansible.builtin.copy:
         content: |

@@ -1,10 +1,10 @@
 ---
 - name: set standard action
   set_fact:
-    command: setrules
+    ansible.builtin.command: setrules
 
 #- name: Execute tasmota fw setup script
-#  command: tasmota_fw-update.sh {{ hostvars[inventory_hostname]['ansible_host'] }}
+#  ansible.builtin.command: tasmota_fw-update.sh {{ hostvars[inventory_hostname]['ansible_host'] }}
 #  delegate_to: ucs-master.gst.hamburg.adfc.de
 #  when:
 #    - command == "fwsetup"

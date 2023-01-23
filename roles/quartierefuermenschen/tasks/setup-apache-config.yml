@@ -11,7 +11,7 @@
   register: cert_stat
 
 - name: Enable apache-reverse-proxy site
-  command: a2ensite {{ apache_cfg.site_name }}
+  ansible.builtin.command: a2ensite {{ apache_cfg.site_name }}
   args:
     creates: /etc/apache2/sites-enabled/{{ apache_cfg.site_name }}.conf
   notify:

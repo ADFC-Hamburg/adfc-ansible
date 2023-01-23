@@ -1,6 +1,6 @@
 ---
 - name: Read Jitsi Videobridge secret var.
-  command: >
+  ansible.builtin.command: >
     perl -lane '/^JVB_SECRET=(.*)$/ && print $1'
     /etc/jitsi/videobridge/config
   register: jitsi_meet_videobridge_secret_result
@@ -15,7 +15,7 @@
   when: jitsi_meet_videobridge_secret is not defined or not jitsi_meet_videobridge_secret
 
 - name: Read Jicofo secret var.
-  command: >
+  ansible.builtin.command: >
     perl -lane '/^JICOFO_AUTH_PASSWORD=(.*)$/ && print $1'
     /etc/jitsi/jicofo/config
   register: jitsi_meet_jicofo_secret_result
@@ -30,7 +30,7 @@
   when: jitsi_meet_jicofo_secret is not defined or not jitsi_meet_jicofo_secret
 
 - name: Read Jicofo user auth password var.
-  command: >
+  ansible.builtin.command: >
     perl -lane '/^JICOFO_AUTH_PASSWORD=(.*)$/ && print $1'
     /etc/jitsi/jicofo/config
   register: jitsi_meet_jicofo_password_result
@@ -45,7 +45,7 @@
   when: jitsi_meet_jicofo_password is not defined or not jitsi_meet_jicofo_password
 
 - name: Read Jitsi Videobridge MUC UUID
-  command: >
+  ansible.builtin.command: >
     perl -lane '/shard.MUC_NICKNAME=(.*)$/ && print $1'
     /etc/jitsi/videobridge/sip-communicator.properties
   register: jitsi_meet_videobridge_muc_uuid_result

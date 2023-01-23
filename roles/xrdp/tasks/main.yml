@@ -77,7 +77,7 @@
 
 - name: Check if guacamole config for the client is correct
   delegate_to: ucs-master.gst.hamburg.adfc.de
-  command:
+  ansible.builtin.command:
     argv:
       - /usr/sbin/udm
       - guacamole/config
@@ -93,7 +93,7 @@
 
 - name: Create guacamole config for the client
   delegate_to: ucs-master.gst.hamburg.adfc.de
-  command:
+  ansible.builtin.command:
     argv:
       - /usr/sbin/udm
       - guacamole/config

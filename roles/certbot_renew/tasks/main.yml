@@ -1,6 +1,6 @@
 ---
 - name: Renew certificates if needed
-  command:
+  ansible.builtin.command:
     argv:
       - /usr/bin/certbot
       - renew

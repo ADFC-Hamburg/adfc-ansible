@@ -20,7 +20,7 @@
   register: reboot_required_file
 
 - name: check logged on users
-  command: who
+  ansible.builtin.command: who
   register: who_var
   changed_when: false
 

@@ -6,7 +6,7 @@
     - firewall
   tasks:
     - name: Decrement CPU Limit of meet
-      command: pct set 101 -cores 4 -cpulimit 4 -cpuunits 9000
+      ansible.builtin.command: pct set 101 -cores 4 -cpulimit 4 -cpuunits 9000
       changed_when: true
 
     - name: Stop VB on Meet

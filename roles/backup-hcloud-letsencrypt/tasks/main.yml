@@ -1,6 +1,6 @@
 ---
 - name: read /etc/letsencrypt
-  command: tar cf /dev/stdout .
+  ansible.builtin.command: tar cf /dev/stdout .
   args:
     chdir: /etc/letsencrypt
   register: hcloud_lenc

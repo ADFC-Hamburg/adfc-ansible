@@ -3,7 +3,7 @@
   gather_facts: true
   tasks:
     - name: Decrement CPU Limit of meet
-      command: pct set 101 -cores 10 -cpulimit 10 -cpuunits 20000
+      ansible.builtin.command: pct set 101 -cores 10 -cpulimit 10 -cpuunits 20000
       changed_when: true
 
     - name: Start VB on Proxmomox

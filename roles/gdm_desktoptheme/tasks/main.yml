@@ -56,7 +56,7 @@
   tags: gdm
 
 - name: Remove Gnome Desktop file ubuntu.desktop
-  command:
+  ansible.builtin.command:
     argv:
       - /bin/mv
       - /usr/share/xsessions/ubuntu.desktop
@@ -66,7 +66,7 @@
   tags: gdm
 
 - name: Remove Gnome Desktop file ubuntu-communitheme-snap.desktop
-  command:
+  ansible.builtin.command:
     argv:
       - /bin/mv
       - /usr/share/xsessions/ubuntu-communitheme-snap.desktop

@@ -32,7 +32,7 @@
     force: true
 
 - name: check if udm configuration is correct
-  command:
+  ansible.builtin.command:
     argv:
       - /usr/sbin/udm
       - guacamole/config
@@ -44,7 +44,7 @@
   failed_when: false
 
 - name: Create guacamole config for tasmota-start-menu
-  command:
+  ansible.builtin.command:
     argv:
       - /usr/sbin/udm
       - guacamole/config

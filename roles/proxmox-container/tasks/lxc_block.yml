@@ -15,5 +15,5 @@
     block: "{{ proxmox_lxc_conf }}"
   delegate_to: "{{ proxmox_host }}"
 - name: copy from tmp
-  command: cp /tmp/ansible_adfc{{ proxmox_id }}.conf /etc/pve/lxc/{{ proxmox_id }}.conf
+  ansible.builtin.command: cp /tmp/ansible_adfc{{ proxmox_id }}.conf /etc/pve/lxc/{{ proxmox_id }}.conf
   delegate_to: "{{ proxmox_host }}"

@@ -17,13 +17,13 @@
     msg: UCS is reachable
   when: not ping_result.unreachable
 - name: stop ucs-master # noqa no-changed-when
-  command: qm stop 100
+  ansible.builtin.command: qm stop 100
 - name: wait
   pause:
     seconds: 5
 
 - name: start ucs-master # noqa no-changed-when
-  command: qm start 100
+  ansible.builtin.command: qm start 100
 - name: wait
   pause:
     seconds: 30
@@ -35,7 +35,7 @@
   with_items: "{{ get_password.content |b64decode |list }}"
 
 - name: send return # noqa no-changed-when
-  command: qm sendkey 100 kp_enter
+  ansible.builtin.command: qm sendkey 100 kp_enter
 - name: wait
   pause:
     seconds: 90

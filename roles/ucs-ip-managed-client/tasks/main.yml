@@ -18,13 +18,13 @@
   register: machine_secret
 
 - name: check if object exists
-  command: univention-ldapsearch -LLLLL -b {{ ucs_computer_position }} cn={{ inventory_hostname.split('.')[0] |lower }} dn
+  ansible.builtin.command: univention-ldapsearch -LLLLL -b {{ ucs_computer_position }} cn={{ inventory_hostname.split('.')[0] |lower }} dn
   register: computer_ldapsearch
   delegate_to: "{{ ucs_master }}"
   changed_when: false
 
 - name: generate client
-  command:
+  ansible.builtin.command:
     argv:
       - udm
       - computers/ubuntu

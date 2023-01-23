@@ -1,9 +1,9 @@
 ---
 - name: asterisk pjsip reload
-  command: /usr/sbin/asterisk -r -x 'pjsip reload'
+  ansible.builtin.command: /usr/sbin/asterisk -r -x 'pjsip reload'
 
 - name: asterisk extensions reload
-  command: /usr/sbin/asterisk -r -x 'dialplan reload'
+  ansible.builtin.command: /usr/sbin/asterisk -r -x 'dialplan reload'
 
 - name: asterisk restart
   systemd:

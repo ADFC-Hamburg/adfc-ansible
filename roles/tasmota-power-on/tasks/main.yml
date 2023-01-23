@@ -14,7 +14,7 @@
     - connect_result is failed
 
 - name: 02_Versuchen den client mit wakeonlan aufzuwecken
-  command: wakeonlan {{ ansible_host_macaddress }}
+  ansible.builtin.command: wakeonlan {{ ansible_host_macaddress }}
   delegate_to: ucs-master.gst.hamburg.adfc.de
   changed_when: false
   when:

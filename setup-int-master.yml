@@ -22,14 +22,14 @@
         path: /usr/share/doc/univention-letsencrypt/copyright
       register: ucs_letsencrypt
     - name: Installiere univention-letsencrypt
-      command: /usr/bin/univention-app install letsencrypt
+      ansible.builtin.command: /usr/bin/univention-app install letsencrypt
       when: not ucs_letsencrypt.stat.exists
     - name: teste ob univention-self-service installiert ist
       stat:
         path: /usr/share/doc/univention-self-service/copyright
       register: ucs_self_service
     - name: Installiere univention-self-service
-      command: /usr/bin/univention-app install self-service
+      ansible.builtin.command: /usr/bin/univention-app install self-service
       when: not ucs_self_service.stat.exists
     # Siehe: https://help.univention.com/t/configure-saml-single-sign-on-as-single-server-solution/6681
     - name: UCR Enable User Registration and auth

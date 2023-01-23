@@ -13,7 +13,7 @@
 
   handlers:
     - name: ucr commit postifx main.cf
-      command: ucr commit /etc/postfix/main.cf
+      ansible.builtin.command: ucr commit /etc/postfix/main.cf
       notify: restart postfix
 
     - name: restart postfix
@@ -34,7 +34,7 @@
         path: /usr/lib/univention-directory-listener/system/homedir-autocreate.py
       register: stat_homedir_listener
     - name: install module for autocreation of home dirs
-      command: univention-install univention-homedir-autocreate
+      ansible.builtin.command: univention-install univention-homedir-autocreate
       when: not stat_homedir_listener.stat.exists
       tags: cool_solutions
 

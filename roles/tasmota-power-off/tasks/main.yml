@@ -14,7 +14,7 @@
     - tasmota_state.json.POWER == "ON"
 
 - name: 02_Versuchen den client mit wakeonlan aufzuwecken
-  command: wakeonlan {{ ansible_host_macaddress }}
+  ansible.builtin.command: wakeonlan {{ ansible_host_macaddress }}
   delegate_to: ucs-master.gst.hamburg.adfc.de
   changed_when: false
   when:
@@ -31,7 +31,7 @@
     - connect_result is failed
 
 - name: 04_Angemeldete User ueberpruefen
-  command: who
+  ansible.builtin.command: who
   register: who_var
   changed_when: false
   when:

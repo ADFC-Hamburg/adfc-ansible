@@ -1,6 +1,6 @@
 ---
 - name: Download Image
-  command: /usr/bin/pveam download local {{ proxmox_template }}
+  ansible.builtin.command: /usr/bin/pveam download local {{ proxmox_template }}
   args:
     creates: /var/lib/vz/template/cache/{{ proxmox_template }}
   tags: pveam
@@ -12,7 +12,7 @@
   register: root_secret
   delegate_to: "{{ proxmox_host }}"
 - name: Get SSH-Keys
-  command: /usr/bin/ssh-add -L
+  ansible.builtin.command: /usr/bin/ssh-add -L
   register: ssh_keys
   delegate_to: localhost
 - name: Delete

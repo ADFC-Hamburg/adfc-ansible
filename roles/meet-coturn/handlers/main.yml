@@ -4,4 +4,4 @@
     name: coturn
     state: restarted
 - name: Coturn Certcopy
-  command: /etc/cron.daily/coturn-cert.sh
+  ansible.builtin.command: /etc/cron.daily/coturn-cert.sh

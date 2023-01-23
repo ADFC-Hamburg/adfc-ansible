@@ -37,7 +37,7 @@
   tags: borg-server
 
 - name: Create Borgbackup Server Key
-  command: ssh-keygen -t rsa -b 4096 -f /root/.ssh/borgbackup-server -N '' -C 'borgbackup-server-key adfc gst'
+  ansible.builtin.command: ssh-keygen -t rsa -b 4096 -f /root/.ssh/borgbackup-server -N '' -C 'borgbackup-server-key adfc gst'
   args:
     creates: /root/.ssh/borgbackup-server
   tags: borg-server
@@ -50,7 +50,7 @@
   tags: borg-server,adfc-borg
 
 - name: Keyscan of clients
-  command:
+  ansible.builtin.command:
     argv:
       - ssh-keyscan
       - localhost

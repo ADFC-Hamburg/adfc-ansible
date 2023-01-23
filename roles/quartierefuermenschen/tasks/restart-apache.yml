@@ -1,6 +1,6 @@
 ---
 - name: Check Syntax
-  command: apache2ctl configtest
+  ansible.builtin.command: apache2ctl configtest
   changed_when: false
 
 - name: Restart Apache

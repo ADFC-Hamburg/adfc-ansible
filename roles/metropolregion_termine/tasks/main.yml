@@ -41,7 +41,7 @@
     state: absent
 
 - name: Test call
-  command: /home/metroterm/run_daily.sh
+  ansible.builtin.command: /home/metroterm/run_daily.sh
   become: true
   become_user: metroterm
 

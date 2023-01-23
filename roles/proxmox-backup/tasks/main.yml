@@ -1,6 +1,6 @@
 ---
 - name: Generate SSH Key
-  command: ssh-keygen -t rsa -b 4096 -f /root/.ssh/proxmox-backup -N '' -C 'backup key {{ ansible_host }}'
+  ansible.builtin.command: ssh-keygen -t rsa -b 4096 -f /root/.ssh/proxmox-backup -N '' -C 'backup key {{ ansible_host }}'
   args:
     creates: /root/.ssh/proxmox-backup
 

@@ -13,7 +13,7 @@
   register: account_info
 
 - name: Register
-  command:
+  ansible.builtin.command:
     cmd: dehydrated --register --accept-terms
   when: account_info.matched == 0
 

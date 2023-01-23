@@ -106,7 +106,7 @@
     - rsa
 
 - name: Read ssh_keys
-  command: tar cf /dev/stdout .
+  ansible.builtin.command: tar cf /dev/stdout .
   args:
     chdir: /etc/adfc/hcloud/ssh-host-keys/{{ inventory_hostname }}
   delegate_to: proxmox01.adfc-intern.de
