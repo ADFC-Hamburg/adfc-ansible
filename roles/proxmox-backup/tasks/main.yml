@@ -11,7 +11,7 @@
 
 - name: Set authorized_keys to ucs-master
   ansible.posix.authorized_key:
-    ansible.builtin.user: root
+    user: root
     comment: ADFC-Ansible proxmox-backup role
     key: "{{ proxmoxbackupub.content |b64decode }}"
     state: present

@@ -50,6 +50,6 @@
     name: Metropolregion Termine
     minute: "17"
     hour: "23"
-    ansible.builtin.user: metroterm
+    user: metroterm
     cron_file: metropolregion_termine
     job: /home/metroterm/run_daily.sh

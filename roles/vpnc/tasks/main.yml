@@ -57,7 +57,7 @@
     mode: "0644"
   tags: vpnc
 
-- name: start vpnc dameon
+- name: Start vpnc dameon
   ansible.builtin.systemd:
     state: started
     enabled: true
@@ -81,7 +81,7 @@
 
 - name: Call VPNC Monitor every minute
   ansible.builtin.cron:
-    ansible.builtin.user: root
+    user: root
     cron_file: ansible-vpnc
     name: vpnc-monitor
     minute: "*"

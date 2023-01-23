@@ -2,7 +2,7 @@
 - name: restart dehydrated http
   ansible.builtin.systemd:
     name: dehydrated-http.service
-    reload: true
+    daemon_reload: true
     state: restarted
     enabled: true
 

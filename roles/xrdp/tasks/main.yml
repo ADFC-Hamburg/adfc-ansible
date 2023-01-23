@@ -17,7 +17,7 @@
     path: /usr/bin/startplasma-x11
   when: ansible_distribution_version == '20.04'
 
-- name: copy logo
+- name: Copy logo
   ansible.builtin.copy:
     src: ADFC-HH-rgb-300px.bmp
     dest: /usr/local/share/xrdp-adfc-logo.bmp
@@ -25,7 +25,7 @@
     owner: root
     group: root
 
-- name: copy xrdp.ini
+- name: Copy xrdp.ini
   ansible.builtin.copy:
     src: xrdp.ini
     dest: /etc/xrdp/xrdp.ini
@@ -34,7 +34,7 @@
     group: root
   notify: Restart xrdp
 
-- name: create polkit
+- name: Create polkit
   ansible.builtin.copy:
     src: "{{ item }}"
     dest: /etc/polkit-1/localauthority/50-local.d/{{ item }}
@@ -88,8 +88,9 @@
   changed_when: false
   failed_when: false
 
-- name: set as a fact what we are searching for
-  ansible.builtin.set_fact: udm_hostname='hostname={{ inventory_hostname }}'
+- name: Set as a fact what we are searching for
+  ansible.builtin.set_fact:
+    udm_hostname: 'hostname={{ inventory_hostname }}'
 
 - name: Create guacamole config for the client
   delegate_to: ucs-master.gst.hamburg.adfc.de

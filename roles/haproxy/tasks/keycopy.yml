@@ -17,7 +17,7 @@
 
 - name: add ssh key for haproxy ssl key transfer
   ansible.posix.authorized_key:
-    ansible.builtin.user: root
+    user: root
     comment: ADFC-Ansible haproxy role
     key: "{{ keycopy_ssh_keypair.public_key }}"
     state: present

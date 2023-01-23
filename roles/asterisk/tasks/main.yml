@@ -116,5 +116,5 @@
     name: asterisk_restart
     job: /usr/local/sbin/restart_asterisk_on_error.sh
     minute: 12,32,52
-    ansible.builtin.user: root
+    user: root
     cron_file: ansible_asterisk

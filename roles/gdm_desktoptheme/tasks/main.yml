@@ -16,7 +16,7 @@
     src: desktopthemes/ADFC
     dest: /usr/share/plasma/desktoptheme/
     recursive: true
-    use_ssh_args: true
+    ssh_args: true
   tags: gdm
 
 - name: Copy config for default desktoptheme
@@ -38,7 +38,7 @@
     src: wallpapers/ADFC
     dest: /usr/share/wallpapers/
     recursive: true
-    use_ssh_args: true
+    ssh_args: true
   tags: gdm
 
 - name: Create Themes Directory

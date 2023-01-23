@@ -14,23 +14,23 @@
 - name: Download
   ansible.builtin.get_url:
     url: "{{ github_zip.url }}"
-    dest: "{{  adfc_share_dir }}/jitsi-web.zip"
+    dest: "{{ adfc_share_dir }}/jitsi-web.zip"
     mode: 0644
 
 - name: Unpack
   ansible.builtin.unarchive:
-    src: "{{  adfc_share_dir }}/jitsi-web.zip"
-    dest: "{{  adfc_share_dir }}"
+    src: "{{ adfc_share_dir }}/jitsi-web.zip"
+    dest: "{{ adfc_share_dir }}"
     remote_src: true
 
-- name: install package
+- name: Install package
   ansible.builtin.command:
-    cmd: /usr/bin/dpkg -i {{  adfc_share_dir }}/jitsi-meet-web_{{ jitsi_meet_packages[0].version }}_all.deb
+    cmd: /usr/bin/dpkg -i {{ adfc_share_dir }}/jitsi-meet-web_{{ jitsi_meet_packages[0].version }}_all.deb
 
 - name: Write sha hash to file
   ansible.builtin.copy:
     content: "{{ sha }}"
-    dest: "{{  adfc_share_dir }}/jitsi-web.git_hash"
+    dest: "{{ adfc_share_dir }}/jitsi-web.git_hash"
 
 - name: Run Role
   ansible.builtin.include_role:
