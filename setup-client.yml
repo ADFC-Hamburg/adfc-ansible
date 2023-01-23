@@ -19,7 +19,7 @@
     - libreoffice
     - slack
     - links-on-desktop
-    - client-apt-remove
+    - client_apt_remove
     - master-pdf-editor
     - gdm_desktoptheme
     - chromium-latest
@@ -293,4 +293,4 @@
 
     - name: Remove unwanted packages
       include_role:
-        name: client-apt-remove
+        name: client_apt_remove
