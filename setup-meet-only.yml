@@ -6,7 +6,7 @@
     #    - update_os
     #    - basic_setup
     #    - update_os
-    #    - ucs-ip-managed-client
+    #    - ucs_ip_managed_client
     #    - geerlingguy.certbot
     #    - saslauthd
     - jitsi_meet

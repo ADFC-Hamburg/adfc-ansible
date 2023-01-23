@@ -18,5 +18,5 @@
     - update_os
     - lxc_logrotate
     - geerlingguy.certbot
-    - ucs-ip-managed-client
+    - ucs_ip_managed_client
     - jitsi-videobridge
