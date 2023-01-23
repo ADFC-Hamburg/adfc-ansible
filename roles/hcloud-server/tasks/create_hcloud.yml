@@ -1,10 +1,10 @@
 ---
 - name: Search for included files
   ansible.builtin.find:
-    paths: "{{ inventory_dir + '/' + key_path + item  }}"
+    paths: "{{ inventory_dir + '/' + key_path + item }}"
     recurse: true
     file_type: file
-    excludes: "{{ ssh_users_admins |join(',') }}"
+    excludes: "{{ ssh_users_admins | join(',') }}"
   delegate_to: localhost
   with_items: "{{ ssh_users_admins }}"
   register: add_keys_files
@@ -15,7 +15,7 @@
     name: adfc-ansible-{{ item | relpath(inventory_dir + '/' + key_path) }}
     public_key: "{{ lookup('file', item) }}"
     state: present
-  with_items: "{{ add_keys_files  |json_query('results[*].files[*].path') }}"
+  with_items: "{{ add_keys_files | json_query('results[*].files[*].path') }}"
   delegate_to: localhost
   register: ssh_hcloud_add_key
 
@@ -52,13 +52,13 @@
 - name: Set ip address
   ansible.builtin.set_fact:
     hcloud_ipv4_address: "{{ hcloud_host.hcloud_server.ipv4_address }}"
-    hcloud_ipv6_address: "{{ hcloud_host.hcloud_server.ipv6 | replace('/64','1') }}"
+    hcloud_ipv6_address: "{{ hcloud_host.hcloud_server.ipv6 | replace('/64', '1') }}"
   when: not hcloud_host is failed
 
 - name: Set ip address on failure
   ansible.builtin.set_fact:
     hcloud_ipv4_address: "{{ hcloud_failure_host.hcloud_server.ipv4_address }}"
-    hcloud_ipv6_address: "{{ hcloud_failure_host.hcloud_server.ipv6 | replace('/64','1') }}"
+    hcloud_ipv6_address: "{{ hcloud_failure_host.hcloud_server.ipv6 | replace('/64', '1') }}"
   when: hcloud_host is failed
 
 - name: Set Dynamic IP
@@ -74,7 +74,7 @@
 
 - name: Debug2
   ansible.builtin.debug:
-    msg: "{{ hcloud_floating_ips  | length > 0 }}"
+    msg: "{{ hcloud_floating_ips | length > 0 }}"
 
 - name: Include Set Floating IP
   ansible.builtin.include_tasks: hcloud_floating_ip.yml

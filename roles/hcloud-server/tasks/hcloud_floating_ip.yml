@@ -7,13 +7,13 @@
 
 - name: Set Floating Ip fact
   ansible.builtin.set_fact:
-    hc_ipv4_floating_ip: "{{ hcloud_floating_ip_info.hcloud_floating_ip_info |selectattr('ip', 'match', lookup('dig', inventory_hostname, 'qtype=A') ) | list |first\
+    hc_ipv4_floating_ip: "{{ hcloud_floating_ip_info.hcloud_floating_ip_info | selectattr('ip', 'match', lookup('dig', inventory_hostname, 'qtype=A') ) | list | first\
       \  }}"
-    hc_ipv6_floating_ip: "{{ hcloud_floating_ip_info.hcloud_floating_ip_info |selectattr('ip', 'match', lookup('dig', inventory_hostname, 'qtype=AAAA') | regex_replace('::1$','::/64')\
-      \ ) |list |first  }}"
+    hc_ipv6_floating_ip: "{{ hcloud_floating_ip_info.hcloud_floating_ip_info | selectattr('ip', 'match', lookup('dig', inventory_hostname, 'qtype=AAAA') | regex_replace('::1$','::/64')\
+      \ ) |list | first  }}"
 
 - name: Assign floating IPv4 to a server
-  hcloud_floating_ip:
+  hetzner.hcloud.hcloud_floating_ip:
     api_token: "{{ hcloud_api_token }}"
     id: "{{ hc_ipv4_floating_ip.id }}"
     server: "{{ inventory_hostname }}"
@@ -22,7 +22,7 @@
   delegate_to: localhost
 
 - name: Assign floating IPv6 to a server
-  hcloud_floating_ip:
+  hetzner.hcloud.hcloud_floating_ip:
     api_token: "{{ hcloud_api_token }}"
     id: "{{ hc_ipv6_floating_ip.id }}"
     server: "{{ inventory_hostname }}"

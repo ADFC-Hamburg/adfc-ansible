@@ -38,7 +38,7 @@
     dest: /usr/share/jitsi-meet/lang-new/main-{{ i18n_item.key }}.json
     operations: "{{ i18n_item.value }}"
   when: i18n_item.key != 'en'
-  loop: "{{ jtisi_rewrite_i18n  | dict2items }}"
+  loop: "{{ jtisi_rewrite_i18n | dict2items }}"
   loop_control:
     loop_var: i18n_item
   tags: jitsi_adfc

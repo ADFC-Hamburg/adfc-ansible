@@ -18,7 +18,7 @@ dynamic_jitsi_scaler_testcases:
         "id": 42,
         "name": "vbdh01.meet.adfc-intern.de",
         "status": "running",
-        "created": "{{ lookup('pipe','date -d "-50 min" +%Y-%m-%dT%H:%M:%S%:z') }}",
+        "created": "{{ lookup('pipe', 'date -d "-50 min" +%Y-%m-%dT%H:%M:%S%:z') }}",
         "labels": {},
         "volumes": []
       }]
@@ -74,7 +74,7 @@ dynamic_jitsi_scaler_testcases:
         "id": 42,
         "name": "vbdh01.meet.adfc-intern.de",
         "status": "running",
-        "created": "{{ lookup('pipe','date -d "-20 min" +%Y-%m-%dT%H:%M:%S%:z') }}",
+        "created": "{{ lookup('pipe', 'date -d "-20 min" +%Y-%m-%dT%H:%M:%S%:z') }}",
         "labels": {},
         "volumes": []
       }]
@@ -130,7 +130,7 @@ dynamic_jitsi_scaler_testcases:
         "id": 42,
         "name": "vbdh01.meet.adfc-intern.de",
         "status": "running",
-        "created": "{{ lookup('pipe','date -d "-50 min" +%Y-%m-%dT%H:%M:%S%:z') }}",
+        "created": "{{ lookup('pipe', 'date -d "-50 min" +%Y-%m-%dT%H:%M:%S%:z') }}",
         "labels": {},
         "volumes": []
       }]

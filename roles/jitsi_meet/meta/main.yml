@@ -7,7 +7,7 @@ galaxy_info:
     - "@freedomofpress"
     - "@UdelaRInterior"
   license: MIT
-  min_ansible_version: 2.7
+  min_ansible_version: "2.7"
   platforms:
     - name: Debian
       versions:
