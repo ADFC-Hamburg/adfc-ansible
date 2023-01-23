@@ -30,7 +30,7 @@
       tags: dreicx_backup
 
     - name: Safe Dreicx Backup key
-      authorized_key:
+      ansible.posix.authorized_key:
         ansible.builtin.user: phonesystem
         state: present
         key: "{{ dreicx_backup_ssh_key.public_key }}"

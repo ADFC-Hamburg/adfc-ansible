@@ -12,7 +12,7 @@
     - backup_client
 
 - name: Create Authorized_keys for borguser append
-  authorized_key:
+  ansible.posix.authorized_key:
     ansible.builtin.user: "{{ borg_client_user }}"
     key: "{{ borgbackupkey.content |b64decode }}"
     state: present

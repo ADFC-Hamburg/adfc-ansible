@@ -27,7 +27,7 @@
   register: add_keys_files
 
 - name: add ssh keys of the admins
-  authorized_key:
+  ansible.posix.authorized_key:
     ansible.builtin.user: "{{ authorized_key_user }}"
     comment: ADFC-Ansible {{ item | relpath(inventory_dir + '/' + key_path) }}
     key: "{{ lookup('file', item) }}"
@@ -36,7 +36,7 @@
   with_items: "{{ add_keys_files |json_query('results[*].files[*].path')  }}"
 
 - name: remove all ssh keys that don't belong to the admins list
-  authorized_key:
+  ansible.posix.authorized_key:
     ansible.builtin.user: "{{ authorized_key_user }}"
     key: "{{ lookup('file', item.path) }}"
     state: absent

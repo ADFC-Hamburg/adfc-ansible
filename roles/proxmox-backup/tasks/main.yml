@@ -10,7 +10,7 @@
   register: proxmoxbackupub
 
 - name: Set authorized_keys to ucs-master
-  authorized_key:
+  ansible.posix.authorized_key:
     ansible.builtin.user: root
     comment: ADFC-Ansible proxmox-backup role
     key: "{{ proxmoxbackupub.content |b64decode }}"

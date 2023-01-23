@@ -11,7 +11,7 @@
         name: tools-backup
         comment: tools Server Backup
     - name: Kopiere SSH Public Key fuer Tools-Server Backup
-      authorized_key:
+      ansible.posix.authorized_key:
         ansible.builtin.user: tools-backup
         state: present
         key: "{{ lookup('file', 'ssh-tools-server-backup.pub') }}"
