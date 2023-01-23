@@ -2,7 +2,7 @@
 - hosts: int-master.adfc-intern.de
   gather_facts: false
   roles:
-    - proxmox-container
+    - proxmox_container
   tasks:
     - name: Achtung, dieses Skript soll nur einmal ausgeführt werden, danach ist der Master gejoint
       ansible.builtin.pause:
