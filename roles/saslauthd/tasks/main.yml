@@ -94,7 +94,7 @@
   tags: saslauthd
 
 - name: Add Debian Backports
-  apt_repository:
+  ansible.builtin.apt_repository:
     repo: deb http://http.debian.net/debian {{ ansible_distribution_release }}-backports main contrib non-free
     state: present
     update_cache: true

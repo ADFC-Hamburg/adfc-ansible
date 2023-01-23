@@ -64,13 +64,13 @@
 
     # spezielle Repositories hinzufügen
     - name: ucs domain join repository
-      apt_repository:
+      ansible.builtin.apt_repository:
         repo: ppa:univention-dev/ppa
         update-cache: false
       notify: apt-get update ausführen
 
     - name: keepassxc ppa
-      apt_repository:
+      ansible.builtin.apt_repository:
         repo: ppa:phoerious/keepassxc
         update-cache: false
       notify: apt-get update ausführen
@@ -83,7 +83,7 @@
       tags: etc_hosts
 
     - name: ubuntu-mozilla-security-ppa
-      apt_repository:
+      ansible.builtin.apt_repository:
         repo: ppa:ubuntu-mozilla-security/ppa
         update-cache: false
       notify: apt-get update ausführen
@@ -91,13 +91,13 @@
 
     - name: ppa fuer hibiskus entfernen
       tags: software
-      apt_repository:
+      ansible.builtin.apt_repository:
         repo: ppa:marko-preuss/hibiscus
         update-cache: false
         state: absent
 
     - name: ppa für Nextcloud hinzufügen
-      apt_repository:
+      ansible.builtin.apt_repository:
         repo: ppa:nextcloud-devs/client
         update-cache: false
       notify: apt-get update ausführen

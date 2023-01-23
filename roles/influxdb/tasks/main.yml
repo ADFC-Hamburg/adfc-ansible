@@ -5,7 +5,7 @@
     state: present
 
 - name: Add InfluxDB repository
-  apt_repository:
+  ansible.builtin.apt_repository:
     repo: deb https://repos.influxdata.com/debian buster stable
     state: present
 

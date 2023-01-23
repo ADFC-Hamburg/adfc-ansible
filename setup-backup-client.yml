@@ -8,7 +8,7 @@
   tasks:
     # benötigte Programme installieren
     - name: Borgbackup ppa
-      apt_repository:
+      ansible.builtin.apt_repository:
         repo: ppa:costamagnagianfranco/borgbackup/
       tags: software
 

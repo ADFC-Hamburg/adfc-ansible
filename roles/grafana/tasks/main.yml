@@ -5,7 +5,7 @@
     state: present
 
 - name: Add repository
-  apt_repository:
+  ansible.builtin.apt_repository:
     repo: deb https://packages.grafana.com/oss/deb stable main
     state: present
 

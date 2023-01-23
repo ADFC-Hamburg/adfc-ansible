@@ -19,7 +19,7 @@
   tags: software
 
 # Remove specified repository from sources list. Example for future use.
-# - apt_repository:
+# - ansible.builtin.apt_repository:
 #     repo: deb http://archive.canonical.com/ubuntu hardy partner
 #     state: absent
 #   tags: software

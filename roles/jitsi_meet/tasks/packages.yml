@@ -25,7 +25,7 @@
     dest: /etc/apt/trusted.gpg.d/jitsi.asc
 
 - name: Install Jitsi apt repo.
-  apt_repository:
+  ansible.builtin.apt_repository:
     repo: "{{ item.value.repo_url }}"
     state: "{{ 'present' if jitsi_strategy == item.key else 'absent' }}"
     # Ansible will automatically add the ".list" suffix.
