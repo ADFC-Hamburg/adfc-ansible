@@ -49,6 +49,9 @@
   ansible.builtin.copy:
     content: "{{ sha }}"
     dest: "{{ adfc_share_dir }}/jitsi-web.git_hash"
+    mode: 0644
+    owner: root
+    group: root
   register: jitsi_web_write_sha
   check_mode: true
 

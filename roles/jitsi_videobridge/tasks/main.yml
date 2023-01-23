@@ -15,6 +15,9 @@
   ansible.builtin.get_url:
     url: "{{ jitsi_meet_apt_key_url }}"
     dest: /etc/apt/trusted.gpg.d/jitsi.asc
+    mode: 0644
+    owner: root
+    group: root
 
 - name: Install Jitsi apt repo.
   ansible.builtin.apt_repository:
@@ -65,7 +68,7 @@
 - name: Setup jitsi main server firewall for ipv6
   community.general.ufw:
     rule: allow
-    port: "{{ jitsi_meet_jvb_cfg_port |string }}"
+    port: "{{ jitsi_meet_jvb_cfg_port | string }}"
     from: "{{ ansible_default_ipv6.address }}"
     proto: tcp
   vars:

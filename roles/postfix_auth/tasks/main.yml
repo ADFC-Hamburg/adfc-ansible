@@ -35,7 +35,7 @@
 
 - name: Create SMTP client Auth
   ansible.builtin.copy:
-    content: "{{ smtp_auth.content |b64decode }}"
+    content: "{{ smtp_auth.content | b64decode }}"
     dest: /etc/postfix/smtp_auth
     mode: 0600
     owner: root

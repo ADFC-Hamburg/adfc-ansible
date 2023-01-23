@@ -31,6 +31,9 @@
   ansible.builtin.copy:
     content: "{{ sha }}"
     dest: "{{ adfc_share_dir }}/jitsi-web.git_hash"
+    mode: 0644
+    owner: root
+    group: root
 
 - name: Run Role
   ansible.builtin.include_role:

@@ -17,10 +17,14 @@
   ansible.builtin.stat:
     path: /etc/coturn.secret
   register: coturn_secret_stat
+
 - name: Generate Password file
   ansible.builtin.copy:
     content: "{{ lookup('password', '/dev/null length=15 chars=ascii_letters') }}"
     dest: /etc/coturn.secret
+    mode: 0600
+    owner: root
+    group: root
   when: not coturn_secret_stat.stat.exists
 - name: Generate Password file
   ansible.builtin.slurp:
@@ -62,7 +66,7 @@
     dest: /etc/turnserver.conf
     mode: "0644"
   vars:
-    turn_secret: "{{  coturn_secret.content |b64decode }}"
+    turn_secret: "{{ coturn_secret.content | b64decode }}"
   notify: Restart turnserver
   tags: coturn
 - name: Allow Turn Server

@@ -13,7 +13,7 @@
   ansible.posix.authorized_key:
     user: root
     comment: ADFC-Ansible proxmox-backup role
-    key: "{{ proxmoxbackupub.content |b64decode }}"
+    key: "{{ proxmoxbackupub.content | b64decode }}"
     state: present
     key_options: restrict,from="192.168.123.3",command="/usr/bin/scp -t /adfc/Computer/Datensicherung/Proxmox/"
   delegate_to: ucs-master.gst.hamburg.adfc.de

@@ -79,6 +79,9 @@
   ansible.builtin.copy:
     src: client-etc-gdm3-greeter.dconf-defaults
     dest: /etc/gdm3/greeter.dconf-defaults
+    mode: 0644
+    owner: root
+    group: root
   notify: restart gdm3
   tags: gdm
 

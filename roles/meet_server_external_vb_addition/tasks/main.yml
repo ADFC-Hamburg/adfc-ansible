@@ -33,6 +33,9 @@
         component_secret = "{{ jitsi_meet_videobridge_secret }}"
 
     dest: /etc/prosody/conf.d/00-ansible-listen-for-vb.cfg.lua
+    mode: 0644
+    owner: root
+    group: root
   notify: restart prosody
 
 - name: Allow prosody firewall for ipv4

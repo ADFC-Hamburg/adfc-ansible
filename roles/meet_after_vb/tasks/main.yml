@@ -5,7 +5,7 @@
 - name: Setup cron vb restart
   ansible.builtin.cron:
     name: vb-restart
-    minute: "{{ lookup('pipe','date -d -9min +%M') }}"
+    minute: "{{ lookup('pipe', 'date -d -9min +%M') }}"
     hour: 21-23
     user: root
     job: /usr/bin/systemctl restart jitsi-videobridge2.service
@@ -52,7 +52,7 @@
     hostname: localhost
     database_name: telegraf
     username: admin
-    password: "{{ influx_pw.content |b64decode }}"
+    password: "{{ influx_pw.content | b64decode }}"
     data_points:
       - measurement: jitsi_stats
         tags:

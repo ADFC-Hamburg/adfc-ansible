@@ -29,7 +29,7 @@
   hetzner.hcloud.hcloud_server:
     name: "{{ inventory_hostname }}"
     api_token: "{{ hcloud_api_token }}"
-    server_type: "{{ hcloud_new_server_type  }}"
+    server_type: "{{ hcloud_new_server_type }}"
     upgrade_disk: false
     state: present
   delegate_to: localhost

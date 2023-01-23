@@ -8,7 +8,7 @@
 
 - name: Setze hcloud_api_token
   ansible.builtin.set_fact:
-    hcloud_api_token: "{{ hcloud_key_slurp.content | b64decode |trim }}"
+    hcloud_api_token: "{{ hcloud_key_slurp.content | b64decode | trim }}"
   no_log: true
 
 - name: Gather hcloud server infos

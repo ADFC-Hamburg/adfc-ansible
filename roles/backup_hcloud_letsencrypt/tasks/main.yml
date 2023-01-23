@@ -14,5 +14,8 @@
   ansible.builtin.copy:
     content: "{{ hcloud_lenc.stdout }}"
     dest: /etc/adfc/hcloud/letsencrypt/{{ inventory_hostname }}.tar
+    mode: 0644
+    owner: root
+    group: root
   delegate_to: proxmox01.adfc-intern.de
   when: "'stdout' in hcloud_lenc"

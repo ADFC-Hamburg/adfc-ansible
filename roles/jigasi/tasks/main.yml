@@ -32,12 +32,18 @@
   ansible.builtin.template:
     src: jigasi_sip-communicator.properties.j2
     dest: /etc/jitsi/jigasi/sip-communicator.properties
+    mode: 0644
+    owner: root
+    group: root
   notify: restart jigasi
 
 - name: Create jigasi/config
   ansible.builtin.template:
     src: jigasi_config.j2
     dest: /etc/jitsi/jigasi/config
+    mode: 0644
+    owner: root
+    group: root
   notify: restart jigasi
 
 - name: Start jigasi
