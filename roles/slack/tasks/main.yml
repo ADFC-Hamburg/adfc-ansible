@@ -8,6 +8,6 @@
 
 # snap requires ansible 2.8 or later
 - name: install slack via snap
-  snap:
+  community.general.snap:
     name: slack
     classic: true

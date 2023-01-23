@@ -6,13 +6,13 @@
     name: xrdp
 
 - name: Set correct path for 18.04 KDE start
-  alternatives:
+  community.general.alternatives:
     name: x-session-manager
     path: /usr/bin/startkde
   when: ansible_distribution_version == '18.04'
 
 - name: Set correct path for 20.04 KDE start
-  alternatives:
+  community.general.alternatives:
     name: x-session-manager
     path: /usr/bin/startplasma-x11
   when: ansible_distribution_version == '20.04'

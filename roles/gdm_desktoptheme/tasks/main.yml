@@ -12,7 +12,7 @@
   tags: gdm
 
 - name: Sync Theme folder
-  synchronize:
+  ansible.posix.synchronize:
     src: desktopthemes/ADFC
     dest: /usr/share/plasma/desktoptheme/
     recursive: true
@@ -34,7 +34,7 @@
   tags: gdm
 
 - name: Sync wallpaper directory
-  synchronize:
+  ansible.posix.synchronize:
     src: wallpapers/ADFC
     dest: /usr/share/wallpapers/
     recursive: true

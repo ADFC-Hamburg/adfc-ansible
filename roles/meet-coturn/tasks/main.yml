@@ -50,7 +50,7 @@
   tags: coturn
 
 - name: Create DH File
-  openssl_dhparam:
+  community.crypto.openssl_dhparam:
     path: /etc/coturn/dhparams.pem
     size: 2066
   notify: Restart turnserver

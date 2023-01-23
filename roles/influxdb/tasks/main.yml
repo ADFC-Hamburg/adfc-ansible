@@ -41,19 +41,19 @@
   notify: restart influxdb
 
 - name: Create a user on localhost using default login credentials
-  influxdb_user:
+  community.general.influxdb_user:
     user_name: admin
     admin: true
     user_password: "{{ password_file_slurp.content | b64decode }}"
   when: influxdb_install
 
 - name: Create telegraf influxdb
-  influxdb_database:
+  community.general.influxdb_database:
     database_name: telegraf
   when: influxdb_install
 
 - name: Create proxmox influxdb
-  influxdb_database:
+  community.general.influxdb_database:
     database_name: proxmox
   when: influxdb_install
 

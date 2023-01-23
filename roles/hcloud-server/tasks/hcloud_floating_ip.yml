@@ -1,6 +1,6 @@
 ---
 - name: test floating_ips
-  hcloud_floating_ip_info:
+  hetzner.hcloud.hcloud_floating_ip_info:
     api_token: "{{ hcloud_api_token }}"
   register: hcloud_floating_ip_info
   delegate_to: localhost

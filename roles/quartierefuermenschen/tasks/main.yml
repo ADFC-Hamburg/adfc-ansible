@@ -16,7 +16,7 @@
   when: (qfm_clean | default("false")) | bool
 
 - name: Create mysql wordpress user
-  mysql_user:
+  community.mysql.mysql_user:
     name: "{{ qfm_mysql_user }}"
     password: "{{ qfm_mysql_user_password }}"
     login_user: root
@@ -25,7 +25,7 @@
     state: present
 
 - name: Create DB
-  mysql_db:
+  community.mysql.mysql_db:
     name: "{{ qfm_mysql_db }}"
     login_user: root
     login_password: "{{ mysql_root_password }}"

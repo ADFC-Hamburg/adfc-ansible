@@ -1,10 +1,11 @@
 ---
 - name: Setup Wordpress Docker Volume
-  docker_volume:
+  community.docker.docker_volume:
     name: "{{ qfm_docker_volume }}"
   register: docker_vol
+
 - name: Start Wordpress Conatiner
-  docker_container:
+  community.docker.docker_container:
     name: wp_quartierefuermenschen
     image: "{{ qfm_docker_image }}:{{ qfm_docker_version }}"
     pull: true

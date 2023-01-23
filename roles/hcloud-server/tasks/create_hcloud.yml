@@ -10,7 +10,7 @@
   register: add_keys_files
 
 - name: add_key
-  hcloud_ssh_key:
+  hetzner.hcloud.hcloud_ssh_key:
     api_token: "{{ hcloud_api_token }}"
     name: adfc-ansible-{{ item | relpath(inventory_dir + '/' + key_path) }}
     public_key: "{{ lookup('file', item) }}"
@@ -95,7 +95,7 @@
     - /etc/adfc/hcloud/ssh-host-keys/{{ inventory_hostname }}
 
 - name: create ssh_key files
-  openssh_keypair:
+  community.crypto.openssh_keypair:
     path: /etc/adfc/hcloud/ssh-host-keys/{{ inventory_hostname }}/ssh_host_{{ item }}_key
     type: "{{ item }}"
   delegate_to: proxmox01.adfc-intern.de

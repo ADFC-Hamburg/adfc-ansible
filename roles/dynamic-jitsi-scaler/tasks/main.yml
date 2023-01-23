@@ -24,7 +24,7 @@
       - hcloud
 
 - name: ssh keygen
-  openssh_keypair:
+  community.crypto.openssh_keypair:
     path: /root/.ssh/batch
 
 - name: dynamic-jitsi-scaler | install lib
