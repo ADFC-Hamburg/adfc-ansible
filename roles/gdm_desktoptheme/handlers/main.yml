@@ -1,3 +1,4 @@
+---
 - name: restart gdm3
   systemd:
     state: restarted

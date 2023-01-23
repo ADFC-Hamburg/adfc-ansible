@@ -1,8 +1,9 @@
+---
 - name: Create borgbackup user
   user:
     name: "{{ borg_client_user }}"
-    comment: "Borg Backup User for {{ inventory_hostname_short }}"
-    system: yes
+    comment: Borg Backup User for {{ inventory_hostname_short }}
+    system: true
     password: "*"
   delegate_to: "{{ backup_client }}"
   tags:
@@ -24,7 +25,7 @@
       - no-port-forwarding
       - no-X11-forwarding
       - no-user-rc
-      - 'command="borg serve --append-only --restrict-to-path {{ adfc_borg_repo }}"'
+      - command="borg serve --append-only --restrict-to-path {{ adfc_borg_repo }}"
       - from="{{ public_ipv4 }}"
   tags:
     - borg-server

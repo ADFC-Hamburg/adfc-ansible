@@ -1,3 +1,4 @@
+---
 - name: restart haproxy
   systemd:
     name: haproxy.service

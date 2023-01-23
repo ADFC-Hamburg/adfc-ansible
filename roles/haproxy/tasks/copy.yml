@@ -1,8 +1,9 @@
+---
 - name: Fetch File
   slurp:
     path: "{{ item.src_file }}"
   register: copy_slurp
-  delegate_to: "ucs-master.gst.hamburg.adfc.de"
+  delegate_to: ucs-master.gst.hamburg.adfc.de
 
 - name: Write file
   copy:

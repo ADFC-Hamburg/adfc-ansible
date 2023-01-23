@@ -1,16 +1,17 @@
+---
 - name: Update all packages to the latest version
   apt:
     upgrade: dist
-    update_cache: yes
+    update_cache: true
 
 - name: Remove useless packages from the cache
   apt:
-    autoclean: yes
+    autoclean: true
 
 - name: Check if a reboot is required
   stat:
     path: /var/run/reboot-required
-    get_md5: no
+    get_md5: false
   register: reboot_required_file
 
 - name: check logged on users

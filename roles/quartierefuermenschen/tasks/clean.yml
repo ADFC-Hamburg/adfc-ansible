@@ -1,6 +1,7 @@
+---
 - name: Delete Wordpress Conatiner
   docker_container:
-    name: "wp_quartierefuermenschen"
+    name: wp_quartierefuermenschen
     state: absent
 
 - name: Setup Wordpress Docker Volume

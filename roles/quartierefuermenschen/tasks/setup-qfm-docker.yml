@@ -1,19 +1,20 @@
+---
 - name: Setup Wordpress Docker Volume
   docker_volume:
     name: "{{ qfm_docker_volume }}"
   register: docker_vol
 - name: Start Wordpress Conatiner
   docker_container:
-    name: "wp_quartierefuermenschen"
+    name: wp_quartierefuermenschen
     image: "{{ qfm_docker_image }}:{{ qfm_docker_version }}"
     pull: true
     ports:
-     - "127.0.0.1:{{ qfm_docker_port }}:80"
+      - 127.0.0.1:{{ qfm_docker_port }}:80
     volumes:
       - "{{ qfm_docker_volume }}:/var/www/html"
-      - "/var/run/mysqld:/var/run/mysqld"
+      - /var/run/mysqld:/var/run/mysqld
     env:
-      WORDPRESS_DB_HOST:  "localhost:/var/run/mysqld/mysqld.sock"
+      WORDPRESS_DB_HOST: localhost:/var/run/mysqld/mysqld.sock
       WORDPRESS_DB_USER: "{{ qfm_mysql_user }}"
       WORDPRESS_DB_PASSWORD: "{{ qfm_mysql_user_password }}"
       WORDPRESS_DB_NAME: "{{ qfm_mysql_db }}"
@@ -30,7 +31,7 @@
 
 - name: install wordpress
   uri:
-    url: "https://{{ quartierefuermenschen_domain }}/wp-admin/install.php?step=2"
+    url: https://{{ quartierefuermenschen_domain }}/wp-admin/install.php?step=2
     method: POST
     body_format: form-urlencoded
     body:

@@ -51,6 +51,6 @@
 - name: Make sure mail for root is redirected
   lineinfile:
     path: /etc/aliases
-    regexp: '^root:'
+    regexp: "^root:"
     line: "root: {{ mailingliste.content |b64decode  |replace('\n', '') }}"
   notify: Postfix newaliases

@@ -1,6 +1,6 @@
 ---
 - hosts: tasmota
-  gather_facts: no
+  gather_facts: false
 
   tasks:
     - name: Tasmota Setup durchführen

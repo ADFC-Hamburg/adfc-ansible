@@ -1,5 +1,6 @@
+---
 proxmox_id: 142
-proxmox_host: "proxmox01.adfc-intern.de"
+proxmox_host: proxmox01.adfc-intern.de
 proxmox_net:
   net0:
     name: eth0

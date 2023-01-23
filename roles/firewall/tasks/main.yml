@@ -1,3 +1,4 @@
+---
 - name: Create Systemd Target
   copy:
     src: adfc-firewall.service
@@ -19,6 +20,5 @@
   systemd:
     name: adfc-firewall
     daemon_reload: "{{ adfc_firewall_service.changed }}"
-    enabled: yes
+    enabled: true
     state: started
-

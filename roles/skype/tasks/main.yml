@@ -1,6 +1,7 @@
+---
 - name: remove skype repository
   apt_repository:
-    repo: 'deb https://repo.skype.com/deb stable main'
+    repo: deb https://repo.skype.com/deb stable main
     state: absent
   tags: skype
 

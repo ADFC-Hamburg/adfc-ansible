@@ -1,11 +1,11 @@
 ---
 galaxy_info:
   role_name: jitsi_meet
-  author: '@freedomofpress (@ageis and @conorsch) now maintained by @UdelaRInterior (@santiagomr)'
+  author: "@freedomofpress (@ageis and @conorsch) now maintained by @UdelaRInterior (@santiagomr)"
   description: Installs Jitsi Meet videoconferencing software
   company:
-    - '@freedomofpress'
-    - '@UdelaRInterior'
+    - "@freedomofpress"
+    - "@UdelaRInterior"
   license: MIT
   min_ansible_version: 2.7
   platforms:

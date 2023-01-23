@@ -1,6 +1,7 @@
+---
 proxmox_id: "109"
 proxmox_template: ucs-generic-amd64-4.4-4.tar.gz
-proxmox_host: "proxmox01.adfc-intern.de"
+proxmox_host: proxmox01.adfc-intern.de
 proxmox_net:
   net0:
     name: eth0
@@ -11,13 +12,13 @@ proxmox_net:
     bridge: vmbr0
 proxmox_ramsize_in_mb: 10240
 proxmox_cores: 4
-proxmox_lxc_conf_change: yes
+proxmox_lxc_conf_change: true
 proxmox_lxc_conf: |
   lxc.environment: domainname=adfc-intern.de
   lxc.environment: hostname=int-master
   lxc.environment: nameserver1=213.133.98.98
   lxc.environment: appcenter/docker=false
-proxmox_throw_away: yes
+proxmox_throw_away: true
 proxmox_helperscript: |
   #!/bin/bash
   touch /etc/.pve-ignore.hosts /etc/network/.pve-ignore.interfaces /etc/.pve-ignore.resolv.conf

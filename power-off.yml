@@ -1,6 +1,6 @@
 ---
 - hosts: arbeitsplatz
-  gather_facts: no
+  gather_facts: false
   tasks:
     - name: Tasmota Power Rolle starten
       include_role:

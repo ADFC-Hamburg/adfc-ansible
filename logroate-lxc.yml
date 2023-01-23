@@ -1,8 +1,9 @@
+---
 - hosts: meet
-  gather_facts: yes
+  gather_facts: true
   roles:
     - lxc-logrotate
   tasks:
     - name: test
       debug:
-        msg: "Hello world"
+        msg: Hello world

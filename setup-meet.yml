@@ -1,5 +1,6 @@
+---
 - hosts: meet_server
-  gather_facts: no
+  gather_facts: false
   roles:
     - proxmox-container
   tasks:
@@ -10,4 +11,3 @@
           - htop
 #- name: setup meet only
 #  import_playbook: setup-meet-only.yml
-

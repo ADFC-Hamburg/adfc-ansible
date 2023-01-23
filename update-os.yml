@@ -1,12 +1,13 @@
+---
 - hosts:
-   - backup_clients
-   - arbeitsplatz
-   - proxmox01.adfc-intern.de
-   - meet
-   - tools.adfc-hamburg.de
-  gather_facts: no
+    - backup_clients
+    - arbeitsplatz
+    - proxmox01.adfc-intern.de
+    - meet
+    - tools.adfc-hamburg.de
+  gather_facts: false
   roles:
-   - update-os
+    - update-os
 
   pre_tasks:
     - name: Power on clients

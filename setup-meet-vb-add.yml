@@ -1,5 +1,6 @@
+---
 - hosts: meet.adfc-intern.de
-  gather_facts: yes
+  gather_facts: true
   roles:
     - udelarinterior.jitsi_meet
     - meet-server-external-vb-addition
@@ -7,4 +8,4 @@
   tasks:
     - name: test
       debug:
-        msg: "Hello world"
+        msg: Hello world

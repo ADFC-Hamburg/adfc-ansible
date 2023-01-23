@@ -10,7 +10,7 @@
 - name: Unpack jameica
   unarchive:
     src: "{{ jameica_archive_url }}"
-    remote_src: yes
+    remote_src: true
     dest: /opt
     creates: /opt/jameica
     owner: root

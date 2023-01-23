@@ -1,5 +1,4 @@
 ---
-
 - name: restart jitsi-videobridge
   service:
     name: jitsi-videobridge2

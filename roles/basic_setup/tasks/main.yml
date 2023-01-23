@@ -1,46 +1,47 @@
+---
 # benötigte Programme installieren
-  - name: Installiere Pakete
-    apt:
-      name: "{{ basic_setup_base_packages }}"
+- name: Installiere Pakete
+  apt:
+    name: "{{ basic_setup_base_packages }}"
 
-  - name: Setup Journald Settings
-    template:
-      src: base-journald.conf
-      dest: /etc/systemd/journald.conf
-      mode: "0644"
-    notify: restart journald
+- name: Setup Journald Settings
+  template:
+    src: base-journald.conf
+    dest: /etc/systemd/journald.conf
+    mode: "0644"
+  notify: restart journald
 
-  - name: Downloadverzeichnis für deb-Pakete erstellen
-    file:
-      path: /usr/local/share/ansible_downloads/
-      state: directory
-      mode: 0755
+- name: Downloadverzeichnis für deb-Pakete erstellen
+  file:
+    path: /usr/local/share/ansible_downloads/
+    state: directory
+    mode: 0755
 
-  - name: Prevent sleep
-    systemd:
-      name: sleep.target
-      masked: true
+- name: Prevent sleep
+  systemd:
+    name: sleep.target
+    masked: true
 
-  - name: Prevent suspend
-    systemd:
-      name: suspend.target
-      masked: true
+- name: Prevent suspend
+  systemd:
+    name: suspend.target
+    masked: true
 
-  - name: Prevent hibernate
-    systemd:
-      name: hibernate.target
-      masked: true
+- name: Prevent hibernate
+  systemd:
+    name: hibernate.target
+    masked: true
 
-  - name: Prevent hybrid-sleep
-    systemd:
-      name: hybrid-sleep.target
-      masked: true
+- name: Prevent hybrid-sleep
+  systemd:
+    name: hybrid-sleep.target
+    masked: true
 
-  - name: Setze die Umask auf 0007
-    copy:
-      content: "umask 0007"
-      dest: /etc/profile.d/ansibe_adfc.sh
-      owner: root
-      group: root
-      mode: "0755"
-    tags: umask
+- name: Setze die Umask auf 0007
+  copy:
+    content: umask 0007
+    dest: /etc/profile.d/ansibe_adfc.sh
+    owner: root
+    group: root
+    mode: "0755"
+  tags: umask

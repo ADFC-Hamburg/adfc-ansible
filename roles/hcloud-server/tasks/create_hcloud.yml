@@ -1,9 +1,10 @@
+---
 - name: search for included files
   find:
-     paths: "{{ inventory_dir + '/' + key_path + item  }}"
-     recurse: yes
-     file_type: file
-     excludes: "{{ ssh_users_admins |join(',') }}"
+    paths: "{{ inventory_dir + '/' + key_path + item  }}"
+    recurse: true
+    file_type: file
+    excludes: "{{ ssh_users_admins |join(',') }}"
   delegate_to: localhost
   with_items: "{{ ssh_users_admins }}"
   register: add_keys_files
@@ -11,7 +12,7 @@
 - name: add_key
   hcloud_ssh_key:
     api_token: "{{ hcloud_api_token }}"
-    name: "adfc-ansible-{{ item | relpath(inventory_dir + '/' + key_path) }}"
+    name: adfc-ansible-{{ item | relpath(inventory_dir + '/' + key_path) }}
     public_key: "{{ lookup('file', item) }}"
     state: present
   with_items: "{{ add_keys_files  |json_query('results[*].files[*].path') }}"
@@ -48,7 +49,6 @@
   register: hcloud_failure_host
   when: hcloud_host is failed
 
-
 - name: set ip address
   set_fact:
     hcloud_ipv4_address: "{{ hcloud_host.hcloud_server.ipv4_address }}"
@@ -60,7 +60,6 @@
     hcloud_ipv4_address: "{{ hcloud_failure_host.hcloud_server.ipv4_address }}"
     hcloud_ipv6_address: "{{ hcloud_failure_host.hcloud_server.ipv6 | replace('/64','1') }}"
   when: hcloud_host is failed
-
 
 - name: Set Dynamic IP
   include_role:
@@ -79,25 +78,25 @@
 
 - name: Include Set Floating IP
   include_tasks: hcloud_floating_ip.yml
-  when: "hcloud_floating_ips | length > 0"
+  when: hcloud_floating_ips | length > 0
 
 - name: Create directories
   file:
     path: "{{ item }}"
     state: directory
     mode: "0700"
-    owner: "root"
-    group: "root"
+    owner: root
+    group: root
   delegate_to: proxmox01.adfc-intern.de
   with_items:
-    - "/etc/adfc"
-    - "/etc/adfc/hcloud"
-    - "/etc/adfc/hcloud/ssh-host-keys"
-    - "/etc/adfc/hcloud/ssh-host-keys/{{ inventory_hostname }}"
+    - /etc/adfc
+    - /etc/adfc/hcloud
+    - /etc/adfc/hcloud/ssh-host-keys
+    - /etc/adfc/hcloud/ssh-host-keys/{{ inventory_hostname }}
 
 - name: create ssh_key files
   openssh_keypair:
-    path: "/etc/adfc/hcloud/ssh-host-keys/{{ inventory_hostname }}/ssh_host_{{ item }}_key"
+    path: /etc/adfc/hcloud/ssh-host-keys/{{ inventory_hostname }}/ssh_host_{{ item }}_key
     type: "{{ item }}"
   delegate_to: proxmox01.adfc-intern.de
   with_items:
@@ -107,34 +106,34 @@
     - rsa
 
 - name: Read ssh_keys
-  command: "tar cf /dev/stdout ."
+  command: tar cf /dev/stdout .
   args:
-    chdir: "/etc/adfc/hcloud/ssh-host-keys/{{ inventory_hostname }}"
+    chdir: /etc/adfc/hcloud/ssh-host-keys/{{ inventory_hostname }}
   delegate_to: proxmox01.adfc-intern.de
   register: hcloud_ssh_keys
-  no_log: True
+  no_log: true
   tags:
     - skip_ansible_lint
 
 - name: copy keys
   copy:
     content: "{{ hcloud_ssh_keys.stdout }}"
-    dest: "/etc/adfc_ssh_keys.tar"
+    dest: /etc/adfc_ssh_keys.tar
     mode: "0600"
     owner: root
     group: root
   vars:
     ansible_host: "{{ hcloud_ipv4_address }}"
-    ansible_ssh_extra_args: "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+    ansible_ssh_extra_args: -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null
 
 - name: extract keys
   unarchive:
-    src: "/etc/adfc_ssh_keys.tar"
-    remote_src: yes
+    src: /etc/adfc_ssh_keys.tar
+    remote_src: true
     dest: /etc/ssh
   vars:
     ansible_host: "{{ hcloud_ipv4_address }}"
-    ansible_ssh_extra_args: "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+    ansible_ssh_extra_args: -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null
 
 - name: restart ssh
   systemd:
@@ -142,12 +141,12 @@
     state: restarted
   vars:
     ansible_host: "{{ hcloud_ipv4_address }}"
-    ansible_ssh_extra_args: "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+    ansible_ssh_extra_args: -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null
 
 - name: Dig until address set
   debug:
-     msg: "IPv4: {{ lookup('dig', inventory_hostname, 'qtype=A') }} IPv6: {{ lookup('dig', inventory_hostname, 'qtype=AAAA') }}"
-  until: "lookup('dig', inventory_hostname, 'qtype=A') == hcloud_ipv4_address"
+    msg: "IPv4: {{ lookup('dig', inventory_hostname, 'qtype=A') }} IPv6: {{ lookup('dig', inventory_hostname, 'qtype=AAAA') }}"
+  until: lookup('dig', inventory_hostname, 'qtype=A') == hcloud_ipv4_address
   # retries and delay are in seconds TTL is maximal 600
   retries: 30
   delay: 20

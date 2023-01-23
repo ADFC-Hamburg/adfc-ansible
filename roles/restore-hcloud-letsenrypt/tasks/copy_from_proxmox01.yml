@@ -1,17 +1,18 @@
-- name: "create lestsencrypt"
+---
+- name: create lestsencrypt
   file:
     path: /etc/letsencrypt
     mode: "0755"
     state: directory
 
-- name: "read tar file"
+- name: read tar file
   slurp:
-    src: "/etc/adfc/hcloud/letsencrypt/{{ inventory_hostname }}.tar"
+    src: /etc/adfc/hcloud/letsencrypt/{{ inventory_hostname }}.tar
   delegate_to: proxmox01.adfc-intern.de
-  ignore_errors: yes
+  ignore_errors: true
   register: letsencrypt_tar
 
-- name: "Create tar"
+- name: Create tar
   copy:
     content: "{{ letsencrypt_tar.content |b64decode }}"
     dest: /tmp/letsencrypt_ansible.tar
@@ -19,14 +20,14 @@
   when: "'content' in letsencrypt_tar"
   register: create_tar
 
-- name: "untar letsencrypt.tar"
+- name: untar letsencrypt.tar
   unarchive:
     src: /tmp/letsencrypt_ansible.tar
     dest: /etc/letsencrypt/
-    remote_src: yes
+    remote_src: true
   when: "'content' in letsencrypt_tar and create_tar.size>0"
 
-- name: "delete tar file"
+- name: delete tar file
   file:
     path: /tmp/letsencrypt_ansible.tar
     state: absent

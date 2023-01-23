@@ -1,3 +1,4 @@
+---
 ansible_host: 192.168.123.59
 use_auto_off: true
 auto_off_thresh: 2

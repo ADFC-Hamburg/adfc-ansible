@@ -35,42 +35,36 @@
   register: who_var
   changed_when: false
   when:
-    - connect_result is not failed
-      or wakeonlan_result is not failed
+    - connect_result is not failed or wakeonlan_result is not failed
 
 - name: 04_Den Output parsen
   set_fact:
     users: '{{ who_var.stdout_lines | reject("match", "^root ") | list }}'
   when:
-    - connect_result is not failed
-      or wakeonlan_result is not failed
+    - connect_result is not failed or wakeonlan_result is not failed
 
 - name: 04_Die angemeldeten Nutzer melden
   debug:
     var: users
   when:
-    - connect_result is not failed
-      or wakeonlan_result is not failed
+    - connect_result is not failed or wakeonlan_result is not failed
 
 - name: 05_Ausschalten
   community.general.shutdown:
   when:
-    - connect_result is not failed
-      or wakeonlan_result is not failed
+    - connect_result is not failed or wakeonlan_result is not failed
 
 - name: 06_Warten auf ausgeschaltet
   delegate_to: localhost
   wait_for: host={{ ansible_host }} port=22 state=stopped
   when:
-    - connect_result is not failed
-      or wakeonlan_result is not failed
+    - connect_result is not failed or wakeonlan_result is not failed
 
 - name: 06_Warte bis richtig heruntergefahren
   pause:
     seconds: 30
   when:
-    - connect_result is not failed
-      or wakeonlan_result is not failed
+    - connect_result is not failed or wakeonlan_result is not failed
 
 - name: 07_Steckdose ausschalten
   delegate_to: ucs-master.gst.hamburg.adfc.de

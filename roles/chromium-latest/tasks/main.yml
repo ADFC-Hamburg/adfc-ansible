@@ -1,3 +1,4 @@
+---
 - name: Install curl und unzip
   apt:
     name:
@@ -10,7 +11,7 @@
     dest: /etc/sudoers.d/ansible-chromium-update-sudoers
     owner: root
     group: root
-    validate: '/usr/sbin/visudo -cf %s'
+    validate: /usr/sbin/visudo -cf %s
     mode: 0440
 
 - name: Create chromium-latest-update

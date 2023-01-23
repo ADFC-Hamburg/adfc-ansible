@@ -1,3 +1,4 @@
+---
 - name: Import InfluxDB GPG signing key
   ansible.builtin.apt_key:
     url: https://repos.influxdata.com/influxdb.key
@@ -6,13 +7,13 @@
 
 - name: Import Influxdb GPG siging key
   ansible.builtin.get_url:
-    url: "https://repos.influxdata.com/influxdb.key"
+    url: https://repos.influxdata.com/influxdb.key
     dest: /etc/apt/trusted.gpg.d/influxdb.asc
   when: ansible_distribution_release == 'bullseye'
 
 - name: Add InfluxDB repository
   ansible.builtin.apt_repository:
-    repo: 'deb https://repos.influxdata.com/debian {{ ansible_distribution_release }} stable'
+    repo: deb https://repos.influxdata.com/debian {{ ansible_distribution_release }} stable
     state: present
 
 - name: Install Telegraf packages
@@ -29,8 +30,8 @@
 - name: Disable defautl output.influxdb entry in /etc/telegraf.conf
   ansible.builtin.lineinfile:
     path: /etc/telegraf/telegraf.conf
-    regexp: '^.*\[\[outputs.influxdb\]\]'
-    line: '# [[outputs.influxdb]]'
+    regexp: ^.*\[\[outputs.influxdb\]\]
+    line: "# [[outputs.influxdb]]"
   notify: restart telegraf
 
 - name: Create output info
@@ -38,8 +39,8 @@
     src: output-influx.conf.j2
     dest: /etc/telegraf/telegraf.d/output-influx.conf
     mode: "0644"
-    owner: "root"
-    group: "root"
+    owner: root
+    group: root
   vars:
     influxdb_password: "{{ influx_password_file_slurp.content | b64decode }}"
   notify: restart telegraf
@@ -49,8 +50,8 @@
     src: inputs-net.conf.j2
     dest: /etc/telegraf/telegraf.d/inputs-net.conf
     mode: "0644"
-    owner: "root"
-    group: "root"
+    owner: root
+    group: root
   when: telegraf_net
   notify: restart telegraf
 
@@ -65,8 +66,8 @@
     src: input-jitsi-stats.conf.j2
     dest: /etc/telegraf/telegraf.d/input-jitsi-stats.conf
     mode: "0644"
-    owner: "root"
-    group: "root"
+    owner: root
+    group: root
   when: telegraf_jitsi
   notify: restart telegraf
 

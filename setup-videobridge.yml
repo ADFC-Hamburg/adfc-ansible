@@ -1,6 +1,7 @@
+---
 - name: Setup Videobridge
   hosts: meet_vb
-  gather_facts: no
+  gather_facts: false
   roles:
     - proxmox-container
   tasks:
@@ -11,7 +12,7 @@
           - htop
 - name: Setup Videobridge
   hosts: meet_vb
-  gather_facts: yes
+  gather_facts: true
   roles:
     - ssh-keys
     - update-os

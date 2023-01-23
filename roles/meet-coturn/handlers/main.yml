@@ -1,3 +1,4 @@
+---
 - name: Restart turnserver
   systemd:
     name: coturn

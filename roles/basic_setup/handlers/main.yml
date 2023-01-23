@@ -1,3 +1,4 @@
+---
 - name: restart journald
   systemd:
     name: systemd-journald.service

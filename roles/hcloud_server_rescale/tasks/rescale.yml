@@ -1,16 +1,17 @@
+---
 - name: shutdown
   community.general.shutdown: # noqa ignore-errors
-  when: "hcloud_server_info.hcloud_server_info[0].status | default('unknown') != 'off'"
+  when: hcloud_server_info.hcloud_server_info[0].status | default('unknown') != 'off'
   failed_when: false
-  ignore_unreachable: yes
+  ignore_unreachable: true
 
 - name: wait for shutdown
   hcloud_server_info:
     api_token: "{{ hcloud_api_token }}"
     name: "{{ inventory_hostname }}"
   register: hcloud_server_info
-  until: "hcloud_server_info.hcloud_server_info[0].status == 'off'"
-  when: "hcloud_server_info.hcloud_server_info[0].status != 'off'"
+  until: hcloud_server_info.hcloud_server_info[0].status == 'off'
+  when: hcloud_server_info.hcloud_server_info[0].status != 'off'
   retries: 8
   delay: 20
   failed_when: false
@@ -21,7 +22,7 @@
     name: "{{ inventory_hostname }}"
     api_token: "{{ hcloud_api_token }}"
     state: stopped
-  when: "hcloud_server_info.hcloud_server_info[0].status | default('unknown') != 'off'"
+  when: hcloud_server_info.hcloud_server_info[0].status | default('unknown') != 'off'
   delegate_to: localhost
 
 - name: Resize Server
@@ -29,7 +30,7 @@
     name: "{{ inventory_hostname }}"
     api_token: "{{ hcloud_api_token }}"
     server_type: "{{ hcloud_new_server_type  }}"
-    upgrade_disk: no
+    upgrade_disk: false
     state: present
   delegate_to: localhost
 

@@ -1,3 +1,4 @@
+---
 - name: restart prosody
   service:
     name: prosody

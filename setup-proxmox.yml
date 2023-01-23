@@ -1,5 +1,6 @@
+---
 - hosts: proxmox01.gst.hamburg.adfc.de
-  gather_facts: yes
+  gather_facts: true
   roles:
     - ssh-keys
     - postfix-auth
@@ -11,10 +12,10 @@
         comment: tools Server Backup
     - name: Kopiere SSH Public Key fuer Tools-Server Backup
       authorized_key:
-         user: tools-backup
-         state: present
-         key: "{{ lookup('file', 'ssh-tools-server-backup.pub') }}"
-         key_options: 'no-port-forwarding'
+        user: tools-backup
+        state: present
+        key: "{{ lookup('file', 'ssh-tools-server-backup.pub') }}"
+        key_options: no-port-forwarding
     - name: Loesche Proxy Enterprice Repo
       # Sven 2019-02-17:
       # geht nicht mit apt_repository state: absent, weil da apt magic gemacht wird und
@@ -23,13 +24,13 @@
       #  repo: "deb https://enterprise.proxmox.com/debian/pve stretch pve-enterprise"
       #  state: absent
       file:
-        path: "/etc/apt/sources.list.d/pve-enterprise.list"
+        path: /etc/apt/sources.list.d/pve-enterprise.list
         state: absent
 
     - name: Nutze Proxmox Community Repo
       apt_repository:
-        repo: "deb http://download.proxmox.com/debian/pve {{ ansible_distribution_release }} pve-no-subscription"
-        filename: "proxmox"
+        repo: deb http://download.proxmox.com/debian/pve {{ ansible_distribution_release }} pve-no-subscription
+        filename: proxmox
         state: present
 
     - name: Sicherstellen das bsd-mailx installiert ist
@@ -43,8 +44,8 @@
         mode: 0755
     - name: Erstelle cron Eintrag für check_ips
       cron:
-        name: "check_ips"
+        name: check_ips
         minute: "0"
-        job: "/usr/local/bin/check_ips.sh"
-        cron_file: "adfc_ansible"
+        job: /usr/local/bin/check_ips.sh
+        cron_file: adfc_ansible
         user: root

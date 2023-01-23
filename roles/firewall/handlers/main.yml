@@ -1,3 +1,4 @@
+---
 - name: restart adfc firewall
   systemd:
     name: adfc-firewall

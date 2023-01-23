@@ -1,3 +1,4 @@
+---
 - hosts: backup_clients
   roles:
     - load-contacts
@@ -8,7 +9,7 @@
     # benötigte Programme installieren
     - name: Borgbackup ppa
       apt_repository:
-        repo: "ppa:costamagnagianfranco/borgbackup/"
+        repo: ppa:costamagnagianfranco/borgbackup/
       tags: software
 
     - name: Installiere Pakete

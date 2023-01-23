@@ -1,3 +1,4 @@
+---
 # See: https://www.hiroom2.com/2018/04/29/ubuntu-1804-xrdp-gnome-en/
 #
 - name: Installiere xrdp
@@ -21,25 +22,25 @@
     src: ADFC-HH-rgb-300px.bmp
     dest: /usr/local/share/xrdp-adfc-logo.bmp
     mode: "0644"
-    owner: "root"
-    group: "root"
+    owner: root
+    group: root
 
 - name: copy xrdp.ini
   copy:
     src: xrdp.ini
     dest: /etc/xrdp/xrdp.ini
     mode: "0644"
-    owner: "root"
-    group: "root"
+    owner: root
+    group: root
   notify: Restart xrdp
 
 - name: create polkit
   copy:
     src: "{{ item }}"
-    dest: "/etc/polkit-1/localauthority/50-local.d/{{ item }}"
+    dest: /etc/polkit-1/localauthority/50-local.d/{{ item }}
     mode: "0644"
-    owner: "root"
-    group: "root"
+    owner: root
+    group: root
   notify: Restart polkit
   with_items:
     - xrdp-color-manager.pkla
@@ -48,24 +49,24 @@
 - name: Change polkit to disable shutdown on virtual machines
   copy:
     src: xrdp-disable-shutdown.pkla
-    dest: "/etc/polkit-1/localauthority/50-local.d/xrdp-disable-shutdown.pkla"
+    dest: /etc/polkit-1/localauthority/50-local.d/xrdp-disable-shutdown.pkla
     mode: "0644"
-    owner: "root"
-    group: "root"
+    owner: root
+    group: root
   notify: Restart polkit
   when: enable_user_shutdown is defined and not enable_user_shutdown
 
 - name: Make sure polkit is set to enable shutdown on physical machines
   file:
     state: absent
-    path: "/etc/polkit-1/localauthority/50-local.d/xrdp-disable-shutdown.pkla"
+    path: /etc/polkit-1/localauthority/50-local.d/xrdp-disable-shutdown.pkla
   when: enable_user_shutdown is undefined
 
 - name: Make sure the xrdp user is in the ssl-cert group
   user:
     name: xrdp
     groups: ssl-cert
-    append: yes
+    append: true
 
 - name: Make sure a suitable cipher for guacamole is allowed
   copy:
@@ -84,8 +85,8 @@
       - --position
       - cn={{ inventory_hostname_short }},cn=guacamole,dc=hamburg,dc=adfc,dc=de
   register: udm_config
-  changed_when: False
-  failed_when: False
+  changed_when: false
+  failed_when: false
 
 - name: set as a fact what we are searching for
   set_fact: udm_hostname='hostname={{ inventory_hostname }}'

@@ -1,3 +1,4 @@
+---
 - name: Generate SSH Key
   command: ssh-keygen -t rsa -b 4096 -f /root/.ssh/proxmox-backup -N '' -C 'backup key {{ ansible_host }}'
   args:
@@ -10,11 +11,11 @@
 
 - name: Set authorized_keys to ucs-master
   authorized_key:
-    user: "root"
-    comment: "ADFC-Ansible proxmox-backup role"
+    user: root
+    comment: ADFC-Ansible proxmox-backup role
     key: "{{ proxmoxbackupub.content |b64decode }}"
     state: present
-    key_options: 'restrict,from="192.168.123.3",command="/usr/bin/scp -t /adfc/Computer/Datensicherung/Proxmox/"'
+    key_options: restrict,from="192.168.123.3",command="/usr/bin/scp -t /adfc/Computer/Datensicherung/Proxmox/"
   delegate_to: ucs-master.gst.hamburg.adfc.de
 
 - name: Setup /etc/vzdump.conf

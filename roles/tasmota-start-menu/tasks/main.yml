@@ -19,8 +19,8 @@
     state: present
     password: "{{ user_pass | password_hash('sha512') }}"
     update_password: on_create
-    create_home: no
-    system: yes
+    create_home: false
+    system: true
 
 - name: copy the template over
   template:
@@ -29,7 +29,7 @@
     owner: root
     group: root
     mode: 0755
-    force: yes
+    force: true
 
 - name: check if udm configuration is correct
   command:
@@ -40,8 +40,8 @@
       - --position
       - cn=Client-Remote-Start,cn=guacamole,dc=hamburg,dc=adfc,dc=de
   register: udm_config
-  changed_when: False
-  failed_when: False
+  changed_when: false
+  failed_when: false
 
 - name: Create guacamole config for tasmota-start-menu
   command:

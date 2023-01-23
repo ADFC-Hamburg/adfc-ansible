@@ -1,6 +1,7 @@
+---
 - name: Setup Hetzner Server
   hosts: event.dyndns.adfc-intern.de
-  gather_facts: no
+  gather_facts: false
   roles:
     - hcloud-server
 

@@ -1,17 +1,16 @@
 ---
-
 - name: Set Prosody authentification
   replace:
-    path: "/etc/prosody/conf.avail/{{ jitsi_meet_server_name }}.cfg.lua"
+    path: /etc/prosody/conf.avail/{{ jitsi_meet_server_name }}.cfg.lua
     regexp: "(VirtualHost \"{{ jitsi_meet_server_name }}\"\n *--.*\n *)authentication = .*\n"
     replace: "\\1authentication = \"{{ jitsi_meet_authentication }}\"\n"
   notify: restart prosody
 
 - name: Set guest Prosody vhost
   blockinfile:
-    path: "/etc/prosody/conf.avail/{{ jitsi_meet_server_name }}.cfg.lua"
-    insertbefore: "Component \"focus.{{ jitsi_meet_server_name }}\""
-    marker: "-- Ansible managed block {mark}"
+    path: /etc/prosody/conf.avail/{{ jitsi_meet_server_name }}.cfg.lua
+    insertbefore: Component "focus.{{ jitsi_meet_server_name }}"
+    marker: -- Ansible managed block {mark}
     block: |
       VirtualHost "guest.{{ jitsi_meet_server_name }}"
           authentication = "anonymous"

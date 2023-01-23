@@ -1,3 +1,4 @@
+---
 - name: Read secret
   slurp:
     path: /etc/hetzner-dns-api-token.secret
@@ -34,4 +35,4 @@
   pause:
     seconds: 60
   delegate_to: localhost
-  when: "(hetzner_dns_state== 'present') and ( hdns_ip6_set.changed or hdns_ip4_set.changed)" # noqa 503
+  when: (hetzner_dns_state== 'present') and ( hdns_ip6_set.changed or hdns_ip4_set.changed) # noqa 503

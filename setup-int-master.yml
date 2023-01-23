@@ -1,5 +1,6 @@
+---
 - hosts: int-master.adfc-intern.de
-  gather_facts: yes
+  gather_facts: true
   roles:
     - ssh-keys
     - telegraf
@@ -33,19 +34,19 @@
     # Siehe: https://help.univention.com/t/configure-saml-single-sign-on-as-single-server-solution/6681
     - name: UCR Enable User Registration and auth
       ucr:
-       values:
-         umc/self-service/account-registration/frontend/enabled: "true"
-         umc/self-service/account-registration/backend/enabled: "true"
-         umc/web/piwik: "false"
-         ucs/server/sso/autoregistraton: no
-         umc/saml/entityID: https://auth.adfc-intern.de/simplesamlphp/saml2/idp/metadata.php
-         saml/idp/certificate/privatekey: "/etc/simplesamlphp/auth.adfc-intern.de-idp-certificate.key"
-         saml/idp/certificate/certificate: "/etc/simplesamlphp/auth.adfc-intern.de-idp-certificate.crt"
-         ucs/server/sso/fqdn: auth.adfc-intern.de
-         ucs/server/sso/virtualhost: "true"
-         letsencrypt/domains: "int-master.adfc-intern.de auth.adfc-intern.de portal.adfc-intern.de"
-         letsencrypt/services/apache2: "false"
-         letsencrypt/services/postfix: "true"
+        values:
+          umc/self-service/account-registration/frontend/enabled: "true"
+          umc/self-service/account-registration/backend/enabled: "true"
+          umc/web/piwik: "false"
+          ucs/server/sso/autoregistraton: false
+          umc/saml/entityID: https://auth.adfc-intern.de/simplesamlphp/saml2/idp/metadata.php
+          saml/idp/certificate/privatekey: /etc/simplesamlphp/auth.adfc-intern.de-idp-certificate.key
+          saml/idp/certificate/certificate: /etc/simplesamlphp/auth.adfc-intern.de-idp-certificate.crt
+          ucs/server/sso/fqdn: auth.adfc-intern.de
+          ucs/server/sso/virtualhost: "true"
+          letsencrypt/domains: int-master.adfc-intern.de auth.adfc-intern.de portal.adfc-intern.de
+          letsencrypt/services/apache2: "false"
+          letsencrypt/services/postfix: "true"
     - name: Run SSO-Scripts
       shell: |
         univention-run-join-scripts --force --run-scripts 91univention-saml.inst
@@ -58,13 +59,13 @@
         state: directory
         mode: "0755"
       with_items:
-        - "/etc/adfc"
-        - "/etc/adfc/self-service"
+        - /etc/adfc
+        - /etc/adfc/self-service
       tags: self-service
     - name: Kopiere E-mail Texte
       copy:
-        src: "int-master-self-service-{{ item }}"
-        dest: "/etc/adfc/self-service/{{ item }}"
+        src: int-master-self-service-{{ item }}
+        dest: /etc/adfc/self-service/{{ item }}
         mode: "0644"
       with_items:
         - sending_email_body.txt
@@ -74,9 +75,9 @@
     - name: Self-Serivice Setze UCR Variablen
       ucr:
         values:
-          umc/self-service/passwordreset/email/text_file: "/etc/adfc/self-service/sending_email_body.txt"
-          umc/self-service/account-verification/email/text_file:  "/etc/adfc/self-service/sending_verification_email_body.txt"
-          umc/self-service/email-change-notification/email/text_file: "/etc/adfc/self-service/change_notification_email_body.txt"
+          umc/self-service/passwordreset/email/text_file: /etc/adfc/self-service/sending_email_body.txt
+          umc/self-service/account-verification/email/text_file: /etc/adfc/self-service/sending_verification_email_body.txt
+          umc/self-service/email-change-notification/email/text_file: /etc/adfc/self-service/change_notification_email_body.txt
           umc/self-service/account-verification/next-steps/de: |
             Du erh&auml;lst eine E-Mail wenn wir deinen Account freigeschaltet haben. Weiter zum <a href='/univention/portal'>Univention Portal</a>.
           umc/self-service/account-verification/next-steps: |

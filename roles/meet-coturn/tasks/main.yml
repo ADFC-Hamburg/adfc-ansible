@@ -1,10 +1,11 @@
+---
 # Hat nichts mit coturn zu tun, muss aber irgendwo hin
 - name: Fixe WASM Mime Type
   lineinfile:
     path: /etc/nginx/mime.types
-    insertafter: "^.*vnd.openxmlformats-officedocument.presentationml.presentation.*"
+    insertafter: ^.*vnd.openxmlformats-officedocument.presentationml.presentation.*
     line: "    application/wasm wasm;"
-    regexp: "application/wasm"
+    regexp: application/wasm
   tags: wasm
 - name: Installiere coturn
   apt:
@@ -28,13 +29,13 @@
 - name: Zertifikats copy für coturn
   copy:
     content: |
-          #!/bin/bash
-          mkdir /etc/coturn
-          cp /etc/letsencrypt/live/{{ inventory_hostname }}/fullchain.pem /etc/coturn/cert.pem
-          cp /etc/letsencrypt/live/{{ inventory_hostname }}/privkey.pem /etc/coturn/
-          chmod 644 /etc/coturn/cert.pem
-          chmod 600 /etc/coturn/privkey.pem
-          chown turnserver /etc/coturn/privkey.pem
+      #!/bin/bash
+      mkdir /etc/coturn
+      cp /etc/letsencrypt/live/{{ inventory_hostname }}/fullchain.pem /etc/coturn/cert.pem
+      cp /etc/letsencrypt/live/{{ inventory_hostname }}/privkey.pem /etc/coturn/
+      chmod 644 /etc/coturn/cert.pem
+      chmod 600 /etc/coturn/privkey.pem
+      chown turnserver /etc/coturn/privkey.pem
     dest: /etc/cron.daily/coturn-cert.sh
     mode: 0755
   register: coturn_cert_cron
@@ -57,8 +58,8 @@
 
 - name: Erstelle trunserver.conf
   template:
-    src: "turnserver.conf.j2"
-    dest: "/etc/turnserver.conf"
+    src: turnserver.conf.j2
+    dest: /etc/turnserver.conf
     mode: "0644"
   vars:
     turn_secret: "{{  coturn_secret.content |b64decode }}"

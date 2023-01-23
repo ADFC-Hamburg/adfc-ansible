@@ -9,7 +9,7 @@
 
 - name: show results
   debug:
-    msg: "Path {{ adfc_link_path }} exists"
+    msg: Path {{ adfc_link_path }} exists
   when: ansible_hostname == "ucs-master" and stat_result.stat.exists
 
 - name: create links folder on UCS-Master

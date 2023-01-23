@@ -1,3 +1,4 @@
+---
 - name: Import InfluxDB GPG signing key
   apt_key:
     url: https://repos.influxdata.com/influxdb.key
@@ -5,7 +6,7 @@
 
 - name: Add InfluxDB repository
   apt_repository:
-    repo: 'deb https://repos.influxdata.com/debian buster stable'
+    repo: deb https://repos.influxdata.com/debian buster stable
     state: present
 
 - name: Install InfluxDB packages
@@ -39,28 +40,26 @@
     dest: /etc/influxdb/influxdb.conf
   notify: restart influxdb
 
-
 - name: Create a user on localhost using default login credentials
   influxdb_user:
     user_name: admin
-    admin: yes
+    admin: true
     user_password: "{{ password_file_slurp.content | b64decode }}"
   when: influxdb_install
 
 - name: Create telegraf influxdb
   influxdb_database:
-      database_name: "telegraf"
+    database_name: telegraf
   when: influxdb_install
 
 - name: Create proxmox influxdb
   influxdb_database:
-      database_name: "proxmox"
+    database_name: proxmox
   when: influxdb_install
 
 - name: Empty list
   set_fact:
     firewall_in: []
-
 - name: find all telegraf server
   set_fact:
     firewall_in: "{{ firewall_in + [ lookup('dig', tele_host + '.', 'qtype=A') ] + [ lookup('dig', tele_host + '.', 'qtype=AAAA') ]  }}"
@@ -76,19 +75,17 @@
 - name: set firewall tcp
   ufw:
     rule: allow
-    src: '{{ item }}'
+    src: "{{ item }}"
     port: "8086"
     proto: tcp
   when: item != "NXDOMAIN"
-  with_items:
-    "{{ firewall_in }}"
+  with_items: "{{ firewall_in }}"
 
 - name: set firewall udp
   ufw:
     rule: allow
-    src: '{{ item }}'
+    src: "{{ item }}"
     port: "8089"
     proto: udp
   when: item != "NXDOMAIN"
-  with_items:
-    "{{ firewall_in }}"
+  with_items: "{{ firewall_in }}"

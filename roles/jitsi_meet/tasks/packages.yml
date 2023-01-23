@@ -1,10 +1,9 @@
 ---
-
 - name: Install base apt packages.
   apt:
     name: "{{ jitsi_meet_base_packages }}"
     state: present
-    update_cache: yes
+    update_cache: true
     cache_valid_time: 3600
 
 # Prior versions of the role were writing to this file, let's
@@ -31,7 +30,7 @@
     state: "{{ 'present' if jitsi_strategy == item.key else 'absent' }}"
     # Ansible will automatically add the ".list" suffix.
     filename: /etc/apt/sources.list.d/jitsi_meet
-    update_cache: yes
+    update_cache: true
   with_dict: "{{ jitsi_meet_apt_repos }}"
 
 - name: Set debconf options for jitsi-meet.

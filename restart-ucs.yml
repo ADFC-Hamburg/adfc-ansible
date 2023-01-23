@@ -1,5 +1,6 @@
+---
 - hosts: proxmox02.gst.hamburg.adfc.de
-  gather_facts: no
+  gather_facts: false
   roles:
     - ucs-master-start
   tasks:

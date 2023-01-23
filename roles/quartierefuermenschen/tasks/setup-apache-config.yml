@@ -1,3 +1,4 @@
+---
 - name: Create Apache HTTP Config
   template:
     src: "{{ apache_cfg.template_src }}"
@@ -6,7 +7,7 @@
 
 - name: Check if Certificate is there
   stat:
-    path: "/etc/ssl/letsencrypt/{{ quartierefuermenschen_domain }}.crt"
+    path: /etc/ssl/letsencrypt/{{ quartierefuermenschen_domain }}.crt
   register: cert_stat
 
 - name: Enable apache-reverse-proxy site
@@ -14,5 +15,5 @@
   args:
     creates: /etc/apache2/sites-enabled/{{ apache_cfg.site_name }}.conf
   notify:
-   - Restart Apache
+    - Restart Apache
   when: not (apache_cfg.is_https | bool) or cert_stat.stat.exists

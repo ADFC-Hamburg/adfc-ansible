@@ -1,8 +1,7 @@
 ---
-
 - name: Copy Jitsi Meet JS config file.
   template:
-    dest: "/etc/jitsi/meet/{{ jitsi_meet_server_name }}-config.js"
+    dest: /etc/jitsi/meet/{{ jitsi_meet_server_name }}-config.js
     src: "{{ jitsi_meet_config_js_template }}"
     owner: root
     group: root

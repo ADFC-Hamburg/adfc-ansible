@@ -1,6 +1,7 @@
+---
 - name: Restart saslauthd
   systemd:
     name: saslauthd
-    daemon_reload: yes
+    daemon_reload: true
     state: restarted
-    enabled: yes
+    enabled: true

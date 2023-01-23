@@ -2,7 +2,7 @@
 - name: search for excluded direcories
   find:
     path: "{{ inventory_dir + '/' + key_path }}"
-    recurse: no
+    recurse: false
     file_type: directory
     excludes: "{{ ssh_users_admins |join(',') }}"
   delegate_to: localhost
@@ -11,7 +11,7 @@
 - name: search for files in excluded dirs
   find:
     path: "{{ remove_keys_path| json_query('files[*].path') }}"
-    recurse: yes
+    recurse: true
     file_type: file
   delegate_to: localhost
   register: remove_keys_files
@@ -19,7 +19,7 @@
 - name: search for included files
   find:
     paths: "{{ inventory_dir + '/' + key_path + item  }}"
-    recurse: yes
+    recurse: true
     file_type: file
     excludes: "{{ ssh_users_admins |join(',') }}"
   with_items: "{{ ssh_users_admins }}"
@@ -29,7 +29,7 @@
 - name: add ssh keys of the admins
   authorized_key:
     user: "{{ authorized_key_user }}"
-    comment: "ADFC-Ansible {{ item | relpath(inventory_dir + '/' + key_path) }}"
+    comment: ADFC-Ansible {{ item | relpath(inventory_dir + '/' + key_path) }}
     key: "{{ lookup('file', item) }}"
     state: present
   delegate_to: "{{ authorized_key_delegate |default(omit) }}"

@@ -1,5 +1,5 @@
-
-- name: "dynamic-jitsi-scaler |cleanup"
+---
+- name: dynamic-jitsi-scaler |cleanup
   file:
     path: "{{ item }}"
     state: absent

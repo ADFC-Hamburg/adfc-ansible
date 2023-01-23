@@ -1,3 +1,4 @@
+---
 docker_repo_helper_packages:
   - apt-transport-https
   - ca-certificates
@@ -5,12 +6,12 @@ docker_repo_helper_packages:
   - gnupg-agent
   - software-properties-common
 docker_packages:
- - docker-ce
- - docker-ce-cli
- - containerd.io
- - docker-compose
- - python-docker
- - python3-docker
+  - docker-ce
+  - docker-ce-cli
+  - containerd.io
+  - docker-compose
+  - python-docker
+  - python3-docker
 docker_repo_gpg_key: https://download.docker.com/linux/debian/gpg
 docker_repo_gpg_key_dest: /etc/apt/trusted.gpg.d/docker.asc
 docker_repo_gpg_key_gpg: /etc/apt/trusted.gpg.d/docker.gpg

@@ -1,3 +1,4 @@
+---
 - name: read password from file
   slurp:
     src: ~/adfc-ucs-master.secret
@@ -6,24 +7,24 @@
 
 - name: test if reachable
   ping:
-  ignore_errors: yes
-  ignore_unreachable: yes
+  ignore_errors: true
+  ignore_unreachable: true
   register: ping_result
   delegate_to: ucs-master.gst.hamburg.adfc.de
 
 - name: fail if ucs is reachable"
   fail:
-   msg: "UCS is reachable"
+    msg: UCS is reachable
   when: not ping_result.unreachable
-- name: "stop ucs-master" # noqa 301
-  command: "qm stop 100"
-- name: "wait"
+- name: stop ucs-master # noqa 301
+  command: qm stop 100
+- name: wait
   pause:
     seconds: 5
 
-- name: "start ucs-master" # noqa 301
-  command: "qm start 100"
-- name: "wait"
+- name: start ucs-master # noqa 301
+  command: qm start 100
+- name: wait
   pause:
     seconds: 30
 
@@ -34,8 +35,8 @@
   with_items: "{{ get_password.content |b64decode |list }}"
 
 - name: send return # noqa 301
-  command: "qm sendkey 100 kp_enter"
-- name: "wait"
+  command: qm sendkey 100 kp_enter
+- name: wait
   pause:
     seconds: 90
 

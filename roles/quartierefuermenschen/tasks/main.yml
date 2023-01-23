@@ -1,3 +1,4 @@
+---
 - name: Create Apache Config
   include_tasks: setup-apache-config.yml
   loop: "{{ qfm_apache_config }}"
@@ -30,6 +31,4 @@
     login_password: "{{ mysql_root_password }}"
 
 - name: Setup Docker
-  include_tasks:
-    setup-qfm-docker.yml
-
+  include_tasks: setup-qfm-docker.yml

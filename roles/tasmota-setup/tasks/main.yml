@@ -1,8 +1,7 @@
 ---
-
 - name: set standard action
   set_fact:
-    command: "setrules"
+    command: setrules
 
 #- name: Execute tasmota fw setup script
 #  command: tasmota_fw-update.sh {{ hostvars[inventory_hostname]['ansible_host'] }}

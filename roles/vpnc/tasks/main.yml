@@ -1,9 +1,10 @@
+---
 # vpnc-Konfiguration
 - name: Installiere VPNC und Jq
   apt:
     name:
-     - vpnc
-     - jq
+      - vpnc
+      - jq
   tags: vpnc, vpnc-mon
 # jq wird für das Monitor Skript gebraucht.
 
@@ -35,7 +36,7 @@
     dest: /etc/vpnc/adfc-gst.conf
     owner: root
     group: root
-    mode: '0600'
+    mode: "0600"
   tags: vpnc
 
 - name: Erstelle /etc/vpnc/vpnc-adfc-gst-custom-script
@@ -44,7 +45,7 @@
     dest: /etc/vpnc/vpnc-adfc-gst-custom-script
     owner: root
     group: root
-    mode: '0755'
+    mode: "0755"
   tags: vpnc
 
 - name: Erstelle /etc/systemd/system/vpnc@.service
@@ -53,14 +54,14 @@
     dest: /etc/systemd/system/vpnc@.service
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
   tags: vpnc
 
 - name: start vpnc dameon
   systemd:
     state: started
-    enabled: yes
-    daemon_reload: yes
+    enabled: true
+    daemon_reload: true
     name: vpnc@adfc-gst
   tags: vpnc
 
@@ -68,7 +69,7 @@
   file:
     path: /etc/vpnc/post-connect.d/
     state: directory
-    mode: '0755'
+    mode: "0755"
   tags: vpnc
 
 - name: Create VPNC-Monitor Skript
@@ -82,7 +83,7 @@
   cron:
     user: root
     cron_file: ansible-vpnc
-    name: "vpnc-monitor"
+    name: vpnc-monitor
     minute: "*"
-    job: "/usr/local/sbin/vpnc-monitor vpnc@adfc-gst 192.168.123.1"
+    job: /usr/local/sbin/vpnc-monitor vpnc@adfc-gst 192.168.123.1
   tags: vpnc, vpnc-mon

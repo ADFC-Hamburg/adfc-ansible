@@ -1,6 +1,7 @@
+---
 - name: Setup Hetzner Server
   hosts: jitsi_vbs
-  gather_facts: no
+  gather_facts: false
   roles:
     - hcloud-server
   vars:
@@ -8,7 +9,7 @@
 
 - name: Setup Videobridge
   hosts: jitsi_vbs
-  gather_facts: yes
+  gather_facts: true
   roles:
     - ssh-keys
     - update-os

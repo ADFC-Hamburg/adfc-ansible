@@ -1,3 +1,4 @@
+---
 - name: Install saslauthd
   apt:
     name:
@@ -9,7 +10,7 @@
 - name: Enable saslauthd
   lineinfile:
     path: /etc/default/saslauthd
-    regexp: '^START='
+    regexp: ^START=
     line: START=yes
   notify: Restart saslauthd
   tags: saslauthd
@@ -17,8 +18,8 @@
 - name: Set Ldap Mechanism
   lineinfile:
     path: /etc/default/saslauthd
-    regexp: '^MECHANISMS='
-    line: "MECHANISMS=\"ldap\""
+    regexp: ^MECHANISMS=
+    line: MECHANISMS="ldap"
   notify: Restart saslauthd
   tags: saslauthd
 
@@ -40,7 +41,7 @@
   user:
     name: saslauthd
     comment: Saslauthd
-    system: yes
+    system: true
     group: sasl
   tags: saslauthd
 
@@ -53,7 +54,7 @@
 
 - name: read machine secret
   slurp:
-    path: "/etc/machine.secret"
+    path: /etc/machine.secret
   register: machine_secret
 
 - name: Create config file
@@ -63,26 +64,26 @@
     mode: 0644
     owner: root
   vars:
-    saslauthd_bind_dn: "cn={{ inventory_hostname.split('.')[0] |lower  }},{{ ucs_computer_position }}"
+    saslauthd_bind_dn: cn={{ inventory_hostname.split('.')[0] |lower  }},{{ ucs_computer_position }}
     saslauthd_bind_pw: "{{ machine_secret.content |b64decode }}"
-    saslauthd_tls_cacert_file: "/etc/ssl/ucsCAcert.pem"
+    saslauthd_tls_cacert_file: /etc/ssl/ucsCAcert.pem
   notify: Restart saslauthd
   tags: saslauthd
 
 - name: Copy Letsencrpyt privkey
   copy:
-    src:  "{{ saslauthd_ldap_tls_key }}"
+    src: "{{ saslauthd_ldap_tls_key }}"
     dest: /etc/ssl/saslauth-privkey.pem
     mode: "0600"
     owner: saslauthd
-    remote_src: yes
+    remote_src: true
 - name: Copy Letsencrpyt cert
   copy:
-    src:  "{{ saslauthd_ldap_tls_cert }}"
+    src: "{{ saslauthd_ldap_tls_cert }}"
     dest: /etc/ssl/saslauth-cert.pem
     mode: "0644"
     owner: saslauthd
-    remote_src: yes
+    remote_src: true
 
 - name: Create systemd user config
   copy:
@@ -94,9 +95,9 @@
 
 - name: Add Debian Backports
   apt_repository:
-    repo: "deb http://http.debian.net/debian {{ ansible_distribution_release }}-backports main contrib non-free"
+    repo: deb http://http.debian.net/debian {{ ansible_distribution_release }}-backports main contrib non-free
     state: present
-    update_cache: yes
+    update_cache: true
 
 - name: Install lua-cyrussasl
   apt:

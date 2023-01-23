@@ -1,3 +1,4 @@
+---
 # Borg ist im Moment haendisch unt
 - name: Installiere pakete
   apt:
@@ -27,8 +28,8 @@
 
 - name: Sysmlink borg executable
   file:
-    src: "/usr/local/share/borg-venv/bin/{{ item }}"
-    dest: "/usr/local/bin/{{ item }}"
+    src: /usr/local/share/borg-venv/bin/{{ item }}
+    dest: /usr/local/bin/{{ item }}
     state: link
   with_items:
     - borg

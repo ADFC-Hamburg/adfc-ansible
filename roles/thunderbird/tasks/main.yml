@@ -1,3 +1,4 @@
+---
 - name: Install Thunderbid + Lighting
   apt:
     name:
@@ -8,7 +9,7 @@
 
 - name: Setup Thunderbid Settings
   copy:
-    src:  sysprefs.js
+    src: sysprefs.js
     dest: /etc/thunderbird/syspref.js
     mode: "0644"
   tags: software, thunderbird

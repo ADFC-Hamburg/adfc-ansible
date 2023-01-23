@@ -1,7 +1,8 @@
+---
 - name: Installiere gdm3
   apt:
     name:
-    - gdm3
+      - gdm3
 
 - name: Create Desktop Theme Directory
   file:
@@ -14,8 +15,8 @@
   synchronize:
     src: desktopthemes/ADFC
     dest: /usr/share/plasma/desktoptheme/
-    recursive: yes
-    use_ssh_args: yes
+    recursive: true
+    use_ssh_args: true
   tags: gdm
 
 - name: Copy config for default desktoptheme
@@ -36,8 +37,8 @@
   synchronize:
     src: wallpapers/ADFC
     dest: /usr/share/wallpapers/
-    recursive: yes
-    use_ssh_args: yes
+    recursive: true
+    use_ssh_args: true
   tags: gdm
 
 - name: Create Themes Directory
@@ -57,9 +58,9 @@
 - name: Remove Gnome Desktop file ubuntu.desktop
   command:
     argv:
-      - "/bin/mv"
-      - "/usr/share/xsessions/ubuntu.desktop"
-      - "/usr/share/xsessions/ubuntu.desktop.dontuse"
+      - /bin/mv
+      - /usr/share/xsessions/ubuntu.desktop
+      - /usr/share/xsessions/ubuntu.desktop.dontuse
     creates: /usr/share/xsessions/ubuntu.desktop.dontuse
     removes: /usr/share/xsessions/ubuntu.desktop
   tags: gdm
@@ -67,9 +68,9 @@
 - name: Remove Gnome Desktop file ubuntu-communitheme-snap.desktop
   command:
     argv:
-      - "/bin/mv"
-      - "/usr/share/xsessions/ubuntu-communitheme-snap.desktop"
-      - "/usr/share/xsessions/ubuntu-communitheme-snap.desktop.dontuse"
+      - /bin/mv
+      - /usr/share/xsessions/ubuntu-communitheme-snap.desktop
+      - /usr/share/xsessions/ubuntu-communitheme-snap.desktop.dontuse
     creates: /usr/share/xsessions/ubuntu-communitheme-snap.desktop.dontuse
     removes: /usr/share/xsessions/ubuntu-communitheme-snap.desktop
   tags: gdm
@@ -108,6 +109,6 @@
 - name: enable service gdm3
   systemd:
     state: started
-    enabled: yes
+    enabled: true
     name: gdm3
   tags: gdm

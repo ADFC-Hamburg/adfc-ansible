@@ -1,6 +1,7 @@
+---
 - name: Create Direcotry
   file:
-    path: "/etc/systemd/system/{{ item.service_name }}.service.d"
+    path: /etc/systemd/system/{{ item.service_name }}.service.d
     state: directory
     mode: 0755
     owner: root
@@ -9,7 +10,7 @@
 - name: Setup Memory extension template
   template:
     src: systemd-memory-extension.conf
-    dest: "/etc/systemd/system/{{ item.service_name }}.service.d/ansible_max_menory.conf"
+    dest: /etc/systemd/system/{{ item.service_name }}.service.d/ansible_max_menory.conf
     mode: 0644
     owner: root
     group: root

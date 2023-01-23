@@ -1,3 +1,4 @@
+---
 - name: Install Kubuntu Packages
   apt:
     name:
@@ -8,7 +9,7 @@
       - kubuntu-notification-helper
 - name: Display Manager setzen
   copy:
-    dest: "/etc/X11/default-display-manager"
+    dest: /etc/X11/default-display-manager
     content: |
       /usr/bin/sddm
     mode: 0644

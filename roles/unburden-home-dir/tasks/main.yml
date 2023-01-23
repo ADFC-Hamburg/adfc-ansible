@@ -1,3 +1,4 @@
+---
 - name: Install Package
   apt:
     name: unburden-home-dir
@@ -19,6 +20,6 @@
   lineinfile:
     path: /etc/default/unburden-home-dir
     regexp: UNBURDEN_HOME
-    line: "UNBURDEN_HOME=true"
+    line: UNBURDEN_HOME=true
     insertafter: EOF
   tags: unburden

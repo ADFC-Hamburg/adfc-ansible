@@ -1,3 +1,4 @@
+---
 basic_setup_base_packages:
   - emacs
   - vim
@@ -5,4 +6,4 @@ basic_setup_base_packages:
   - htop
   - mc
   - ncdu
-basic_setup_journald_max_use: "512M"
+basic_setup_journald_max_use: 512M

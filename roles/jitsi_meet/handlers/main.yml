@@ -1,5 +1,4 @@
 ---
-
 - name: restart jitsi-videobridge
   service:
     name: jitsi-videobridge2
@@ -22,4 +21,4 @@
 
 - name: reload systemctl
   systemd:
-    daemon_reload: yes
+    daemon_reload: true

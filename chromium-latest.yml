@@ -1,8 +1,9 @@
+---
 - hosts: arbeitsplatz
   gather_facts: false
   serial: 1
   roles:
-  - chromium-latest
+    - chromium-latest
   pre_tasks:
     - name: Power on clients
       include_role:

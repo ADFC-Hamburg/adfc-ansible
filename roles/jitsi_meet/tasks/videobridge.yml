@@ -1,5 +1,4 @@
 ---
-
 - name: Copy Jitsi Videobridge config file.
   template:
     src: "{{ jitsi_meet_videobridge_config_template }}"
@@ -12,8 +11,8 @@
 - name: Set jitsi-videobridge log level.
   lineinfile:
     dest: /etc/jitsi/videobridge/logging.properties
-    regexp: '^\.level'
-    line: ".level={{ jitsi_meet_videobridge_loglevel }}"
+    regexp: ^\.level
+    line: .level={{ jitsi_meet_videobridge_loglevel }}
     state: present
   notify: restart jitsi-videobridge
 

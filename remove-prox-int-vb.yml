@@ -1,5 +1,6 @@
+---
 - hosts: proxmox01.adfc-intern.de
-  gather_facts: yes
+  gather_facts: true
   tasks:
     - name: Decrement CPU Limit of meet
       command: pct set 101 -cores 10 -cpulimit 10 -cpuunits 20000

@@ -1,3 +1,4 @@
+---
 - name: restart influxdb
   systemd:
     name: influxdb

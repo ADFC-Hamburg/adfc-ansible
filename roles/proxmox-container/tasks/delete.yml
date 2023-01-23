@@ -1,3 +1,4 @@
+---
 - name: Stop LXC Containter
   proxmox:
     vmid: "{{ proxmox_id }}"

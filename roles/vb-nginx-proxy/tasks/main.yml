@@ -5,8 +5,8 @@
 
 - name: Copy Nginx config for Jitsi Meet domain.
   template:
-    dest: "/etc/nginx/sites-available/{{ inventory_hostname }}.conf"
-    src: "vb-proxy-nginx.conf.j2"
+    dest: /etc/nginx/sites-available/{{ inventory_hostname }}.conf
+    src: vb-proxy-nginx.conf.j2
     owner: root
     group: root
     mode: "0644"
@@ -24,7 +24,7 @@
 
 - name: Activate custom Jitsi Meet Nginx site.
   file:
-    path: "/etc/nginx/sites-enabled/{{ inventory_hostname }}.conf"
-    src: "/etc/nginx/sites-available/{{ inventory_hostname }}.conf"
+    path: /etc/nginx/sites-enabled/{{ inventory_hostname }}.conf
+    src: /etc/nginx/sites-available/{{ inventory_hostname }}.conf
     state: link
   notify: restart nginx

@@ -1,3 +1,4 @@
+---
 - name: Install haproxy
   apt:
     name: haproxy
@@ -35,7 +36,7 @@
     group: root
   register: fetch_certs_templ
   tags:
-   - haproxy-fetch-certs
+    - haproxy-fetch-certs
 
 - name: Write fetch-crl command
   ansible.builtin.copy:
@@ -45,7 +46,7 @@
     owner: root
     group: root
   tags:
-   - haproxy-fetch-crl
+    - haproxy-fetch-crl
 
 - name: Search for certs
   find:
@@ -59,7 +60,7 @@
   command: # noqa no-handler
     cmd: /usr/local/share/harpoxy-key-copy/fetch-certs
   changed_when: true
-  when: "find_certs.matched == 0 or fetch_certs_templ.changed"
+  when: find_certs.matched == 0 or fetch_certs_templ.changed
 
 - name: Put Keycopy in cron
   ansible.builtin.cron:
@@ -67,24 +68,24 @@
     hour: "3"
     minute: "{{ 59 |random(seed=inventory_hostname) }}"
     user: root
-    job: "/usr/local/share/harpoxy-key-copy/fetch-certs"
+    job: /usr/local/share/harpoxy-key-copy/fetch-certs
     cron_file: ansible_haproxy_fetch_certs
 
 - name: Put CRL Fetch in cron
   ansible.builtin.cron:
     name: crlfetch
-    hour: "4-23"
+    hour: 4-23
     minute: "{{ 59 |random(seed=inventory_hostname) }}"
     user: root
-    job: "/usr/local/share/harpoxy-key-copy/fetch-crl"
+    job: /usr/local/share/harpoxy-key-copy/fetch-crl
     cron_file: ansible_haproxy_fetch_certs
   tags:
-   - haproxy-fetch-crl
+    - haproxy-fetch-crl
 
 - name: Copy Static files
   copy:
     src: "{{ item }}"
-    dest: "/etc/haproxy/static/{{ item }}"
+    dest: /etc/haproxy/static/{{ item }}
     mode: 0644
     owner: root
     group: root

@@ -1,8 +1,7 @@
 ---
-
 - name: Application configuration file
   template:
-    dest: "/usr/share/jitsi-meet/interface_config.js"
+    dest: /usr/share/jitsi-meet/interface_config.js
     src: "{{ jitsi_meet_interface_config_js_template }}"
     owner: root
     group: root
@@ -15,7 +14,7 @@
 
 - name: Title configuration file
   template:
-    dest: "/usr/share/jitsi-meet/title.html"
+    dest: /usr/share/jitsi-meet/title.html
     src: "{{ jitsi_meet_title_template }}"
     owner: root
     group: root
@@ -45,8 +44,7 @@
     owner: root
     group: root
     mode: "0644"
-  when: jitsi_meet_watermark_file is defined
-        and jitsi_meet_watermark_file
+  when: jitsi_meet_watermark_file is defined and jitsi_meet_watermark_file
 
 - name: Replace logo for a customized one
   copy:
@@ -55,8 +53,7 @@
     owner: root
     group: root
     mode: "0644"
-  when: jitsi_meet_logo_file is defined
-        and jitsi_meet_logo_file
+  when: jitsi_meet_logo_file is defined and jitsi_meet_logo_file
 
 - name: Replace favicon for a customized one
   copy:
@@ -65,5 +62,4 @@
     owner: root
     group: root
     mode: "0644"
-  when: jitsi_meet_favicon_file is defined
-        and jitsi_meet_favicon_file
+  when: jitsi_meet_favicon_file is defined and jitsi_meet_favicon_file

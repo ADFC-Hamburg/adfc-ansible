@@ -1,6 +1,7 @@
+---
 - name: Remove Videobridge
   hosts: jitsi_vbs
-  gather_facts: no
+  gather_facts: false
   roles:
     - backup-hcloud-letsencrypt
   tasks:
@@ -21,23 +22,23 @@
 
     - name: Perfom graceful shutdown
       uri:
-        url: "http://127.0.0.1:8080/colibri/shutdown"
+        url: http://127.0.0.1:8080/colibri/shutdown
         method: POST
         body: '{ "graceful-shutdown": "true" }'
         body_format: json
-      ignore_errors: yes
-      ignore_unreachable: yes
+      ignore_errors: true
+      ignore_unreachable: true
 
     - name: Pause
       pause:
         seconds: 60
 
-    - name: "stop videobride"
+    - name: stop videobride
       systemd:
         name: jitsi-videobridge2
         state: stopped
-      ignore_errors: yes
-      ignore_unreachable: yes
+      ignore_errors: true
+      ignore_unreachable: true
       register: jitsi_stop
 
     - name: compress logfiles
@@ -45,16 +46,16 @@
         path: /var/log
         dest: /tmp/ansible-trans-logs.tar.gz
       ignore_errors: true
-      ignore_unreachable: yes
+      ignore_unreachable: true
 
     - name: Fetch Remote
       fetch:
         mode: pull
         src: /tmp/ansible-trans-logs.tar.gz
         dest: /tmp/
-        flat: yes
+        flat: true
       ignore_errors: true
-      ignore_unreachable: yes
+      ignore_unreachable: true
 
     - name: Get hcloud API Token
       slurp:
@@ -82,14 +83,14 @@
       include_role:
         name: hetzner_dns
       vars:
-        hetzner_dns_ip4: "127.0.0.1"
-        hetzner_dns_ip6: "::1"
+        hetzner_dns_ip4: 127.0.0.1
+        hetzner_dns_ip6: ::1
         hetzner_dns_state: absent
 
     - name: Copy to proxmox
       copy:
         src: /tmp/ansible-trans-logs.tar.gz
-        dest: "/var/remote_logs/{{ inventory_hostname }}{{ lookup('pipe','date +%Y-%m-%d-%H-%M-%S') }}.tar.gz"
+        dest: /var/remote_logs/{{ inventory_hostname }}{{ lookup('pipe','date +%Y-%m-%d-%H-%M-%S') }}.tar.gz
       ignore_errors: true
       delegate_to: proxmox01.adfc-intern.de
 
@@ -102,9 +103,9 @@
 
     - name: find all files that are older than 14 days
       find:
-        paths: "/var/remote_logs/"
+        paths: /var/remote_logs/
         age: 14d
-        recurse: no
+        recurse: false
       delegate_to: proxmox01.adfc-intern.de
       register: filesOlderThan
 
@@ -123,14 +124,14 @@
 
     - name: Write 0 Value to influx
       influxdb_write:
-        hostname: "localhost"
-        database_name: "telegraf"
+        hostname: localhost
+        database_name: telegraf
         username: admin
         password: "{{ influx_pw.content |b64decode }}"
         data_points:
           - measurement: jitsi_stats
             tags:
               host: "{{ inventory_hostname_short }}"
-              ansible: yes
+              ansible: true
             fields: "{{ influx_null_values }}"
       delegate_to: proxmox01.adfc-intern.de

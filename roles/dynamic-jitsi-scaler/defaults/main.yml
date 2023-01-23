@@ -1,17 +1,18 @@
+---
 dynamic_jitsi_scaler_testcases:
   - name: Leave on vbdh01
     participants:
       meet: 10
       vbdh01: 8
-      vbdh02: null
-      vbdh03: null
-      vbdh04: null
+      vbdh02:
+      vbdh03:
+      vbdh04:
     conferences:
       meet: 1
       vbdh01: 1
-      vbdh02: null
-      vbdh03: null
-      vbdh04: null
+      vbdh02:
+      vbdh03:
+      vbdh04:
     hcloud_api: |
       [ {
         "id": 42,
@@ -34,16 +35,16 @@ dynamic_jitsi_scaler_testcases:
   - name: Leave off
     participants:
       meet: 4
-      vbdh01: null
-      vbdh02: null
-      vbdh03: null
-      vbdh04: null
+      vbdh01:
+      vbdh02:
+      vbdh03:
+      vbdh04:
     conferences:
       meet: 1
-      vbdh01: null
-      vbdh02: null
-      vbdh03: null
-      vbdh04: null
+      vbdh01:
+      vbdh02:
+      vbdh03:
+      vbdh04:
     hcloud_api: []
     result:
       playbook_setup_vbdh01: false
@@ -59,15 +60,15 @@ dynamic_jitsi_scaler_testcases:
     participants:
       meet: 2
       vbdh01: 2
-      vbdh02: null
-      vbdh03: null
-      vbdh04: null
+      vbdh02:
+      vbdh03:
+      vbdh04:
     conferences:
       meet: 1
       vbdh01: 1
-      vbdh02: null
-      vbdh03: null
-      vbdh04: null
+      vbdh02:
+      vbdh03:
+      vbdh04:
     hcloud_api: |
       [ {
         "id": 42,
@@ -90,16 +91,16 @@ dynamic_jitsi_scaler_testcases:
   - name: Switch on
     participants:
       meet: 16
-      vbdh01: null
-      vbdh02: null
-      vbdh03: null
-      vbdh04: null
+      vbdh01:
+      vbdh02:
+      vbdh03:
+      vbdh04:
     conferences:
       meet: 3
-      vbdh01: null
-      vbdh02: null
-      vbdh03: null
-      vbdh04: null
+      vbdh01:
+      vbdh02:
+      vbdh03:
+      vbdh04:
     hcloud_api: []
     result:
       playbook_setup_vbdh01: true
@@ -115,15 +116,15 @@ dynamic_jitsi_scaler_testcases:
     participants:
       meet: 2
       vbdh01: 0
-      vbdh02: null
-      vbdh03: null
-      vbdh04: null
+      vbdh02:
+      vbdh03:
+      vbdh04:
     conferences:
       meet: 1
       vbdh01: 0
-      vbdh02: null
-      vbdh03: null
-      vbdh04: null
+      vbdh02:
+      vbdh03:
+      vbdh04:
     hcloud_api: |
       [ {
         "id": 42,

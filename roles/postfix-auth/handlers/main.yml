@@ -1,4 +1,4 @@
-
+---
 - name: postfix postmap smtp_auth
   command: /usr/sbin/postmap /etc/postfix/smtp_auth
   notify: reload postfix

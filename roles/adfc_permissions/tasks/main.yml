@@ -1,3 +1,4 @@
+---
 - name: Create fix_adfc_perms.sh
   template:
     src: fix_adfc_perms.sh.j2
@@ -9,7 +10,7 @@
 - name: Install systemd files
   copy:
     src: "{{ item }}"
-    dest: "/etc/systemd/system/{{ item }}"
+    dest: /etc/systemd/system/{{ item }}
     mode: 0644
     owner: root
     group: root

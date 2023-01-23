@@ -1,3 +1,4 @@
+---
 - name: Download Pyhton Packages
   apt:
     name: "{{ metropolregion_termine_packages }}"
@@ -7,15 +8,15 @@
     name: metroterm
     comment: Metropolregion Termin
     shell: /bin/bash
-    password: '*'
-    system: yes
+    password: "*"
+    system: true
 
 - name: Git clone
   git:
     repo: "{{ metropolregion_termine_git_repo }}"
-    dest: "/home/metroterm/metropolregion_termine_git"
+    dest: /home/metroterm/metropolregion_termine_git
     version: "{{ metropolregion_termine_git_version }}"
-  become: yes
+  become: true
   become_user: metroterm
 
 - name: Create Dest Dir
@@ -29,7 +30,7 @@
 - name: Create command
   template:
     src: metropol_run.sh.j2
-    dest: "/home/metroterm/run_daily.sh"
+    dest: /home/metroterm/run_daily.sh
     mode: "0700"
     owner: metroterm
     group: metroterm
@@ -40,16 +41,15 @@
     state: absent
 
 - name: Test call
-  command: "/home/metroterm/run_daily.sh"
-  become: yes
+  command: /home/metroterm/run_daily.sh
+  become: true
   become_user: metroterm
-
 
 - name: Cron Job um 23:17 Uhr
   cron:
-    name: "Metropolregion Termine"
+    name: Metropolregion Termine
     minute: "17"
     hour: "23"
     user: metroterm
     cron_file: metropolregion_termine
-    job: "/home/metroterm/run_daily.sh"
+    job: /home/metroterm/run_daily.sh

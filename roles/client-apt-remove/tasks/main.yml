@@ -5,23 +5,21 @@
   apt:
     pkg: "{{ unwanted_packages }}"
     state: absent
-    purge: yes
+    purge: true
   tags: software
 
 - name: Remove useless packages from the cache
   apt:
-    autoclean: yes
+    autoclean: true
   tags: software
 
 - name: Remove dependencies that are no longer required
   apt:
-    autoremove: yes
+    autoremove: true
   tags: software
-
 
 # Remove specified repository from sources list. Example for future use.
 # - apt_repository:
 #     repo: deb http://archive.canonical.com/ubuntu hardy partner
 #     state: absent
 #   tags: software
-

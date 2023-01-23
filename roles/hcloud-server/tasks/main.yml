@@ -4,12 +4,12 @@
     path: /root/hetzner-cloud.key
   register: hcloud_key_slurp
   delegate_to: proxmox01.adfc-intern.de
-  no_log: yes
+  no_log: true
 
 - name: Setze hcloud_api_token
   set_fact:
     hcloud_api_token: "{{ hcloud_key_slurp.content | b64decode |trim }}"
-  no_log: yes
+  no_log: true
 
 - name: Gather hcloud server infos
   hcloud_server_info:

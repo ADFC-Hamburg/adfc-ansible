@@ -1,6 +1,7 @@
+---
 - name: reload systemd
   systemd:
-    daemon_reload: yes
+    daemon_reload: true
     name: adfc-fix-perms.timer
     state: started
-    enabled: yes
+    enabled: true

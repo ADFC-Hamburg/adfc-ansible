@@ -1,7 +1,8 @@
+---
 ansible_user: root
 vpnc_user: backup2
 
 ansible_host: intranet.volkerkraeft.de
 ansible_port: 2299
 
-backup_disk_src: "UUID=c1b6bd58-8aa3-41fb-ad63-e2984134d187"
+backup_disk_src: UUID=c1b6bd58-8aa3-41fb-ad63-e2984134d187

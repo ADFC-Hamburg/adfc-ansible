@@ -1,8 +1,9 @@
+---
 - name: Setup Telegraf
   hosts:
     - meet.adfc-intern.de
     - int-master.adfc-intern.de
     - proxmox01.adfc-intern.de
-  gather_facts: yes
+  gather_facts: true
   roles:
     - telegraf

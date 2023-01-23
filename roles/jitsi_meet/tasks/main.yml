@@ -1,10 +1,9 @@
 ---
-
 - include: packages.yml
   tags: jitsi_packages
 
-  # Read Jitsi Meet config files and extract secrets for use in template configs.
-  # Import to run these tasks after package installation, but before config tasks.
+# Read Jitsi Meet config files and extract secrets for use in template configs.
+# Import to run these tasks after package installation, but before config tasks.
 - include: dynamic_vars.yml
   tags: always
 
@@ -39,7 +38,7 @@
   tags: jitsi_clean
   when: jitsi_meet_server_name != 'localhost'
 
-  # Official recommended tweaks
+# Official recommended tweaks
 - include: systemd.yml
   tags: jitsi_systemd
 
@@ -47,9 +46,9 @@
   tags: jitsi_ui
   when: jitsi_meet_customize_the_ui | bool
 
-  # Placing the browser extensions last so the associated debugging tasks
-  # that display URLs are visible near the end of the play.
-  # Build your own with https://github.com/jitsi/jidesha
+# Placing the browser extensions last so the associated debugging tasks
+# that display URLs are visible near the end of the play.
+# Build your own with https://github.com/jitsi/jidesha
 - include: browser_extensions.yml
   tags: jitsi_browser_extensions
 

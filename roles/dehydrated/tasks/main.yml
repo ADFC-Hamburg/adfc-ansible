@@ -1,3 +1,4 @@
+---
 - name: Install dehyrated
   apt:
     name: dehydrated
@@ -13,8 +14,8 @@
 
 - name: Register
   command:
-    cmd: "dehydrated --register --accept-terms"
-  when: "account_info.matched == 0"
+    cmd: dehydrated --register --accept-terms
+  when: account_info.matched == 0
 
 - name: Install http_server
   include_tasks: http_server.yml
@@ -40,10 +41,10 @@
   ansible.builtin.cron:
     name: dehydrated
     minute: "{{ 59 |random(seed=inventory_hostname) }}"
-    day: "1,15"
+    day: 1,15
     hour: "9"
     user: root
-    job: "/usr/bin/dehydrated --cron >/dev/null"
+    job: /usr/bin/dehydrated --cron >/dev/null
     cron_file: ansible_dehydrated
 
 - name: Set hook

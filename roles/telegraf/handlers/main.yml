@@ -1,3 +1,4 @@
+---
 - name: restart telegraf
   ansible.builtin.systemd:
     name: telegraf

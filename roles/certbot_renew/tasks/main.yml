@@ -1,3 +1,4 @@
+---
 - name: Renew certificates if needed
   command:
     argv:

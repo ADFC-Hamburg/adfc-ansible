@@ -1,1 +1,2 @@
-adfc_link_path: '/adfc/links'
+---
+adfc_link_path: /adfc/links

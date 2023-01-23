@@ -1,3 +1,4 @@
+---
 proxmox_id: "101"
 proxmox_net:
   net0:
@@ -71,9 +72,9 @@ asterisk_sip_ips:
 jitsi_meet_configure_sip_gateway: true
 jitsi_meet_jigasi_account: jigasi@meet.adfc-intern.de
 jitsi_meet_jigasi_port: 5061
-stop_jitsi_vb_on_main: yes
+stop_jitsi_vb_on_main: true
 
-jitsi_meet_octo: yes
+jitsi_meet_octo: true
 jitsi_meet_octo_probability: 1
 jitsi_meet_region: region1
 jitsi_jicofo_bridge_selector: split
@@ -81,7 +82,7 @@ jitsi_jicofo_bridge_selector: split
 asterisk_rooms:
   1043:
     name: admin
-    pin: yes
+    pin: true
   1001:
     name: adfc-berlin
   1002:
@@ -102,7 +103,7 @@ asterisk_rooms:
     name: Berlin36
   1042:
     name: StadtteilgruppeTempelhof
-# 1043 ist für admin reserviert
+  # 1043 ist für admin reserviert
   1044:
     name: StadtteilgruppeTempelhofPolitik
   1061:
@@ -202,7 +203,7 @@ asterisk_rooms:
 
 jitsi_meet_server_name: "{{ inventory_hostname }}"
 
-jitsi_meet_apt_key_url: "https://keys.openpgp.org/vks/v1/by-fingerprint/FFD65A0DA2BEBDEB73D44C8BB4D2D216F1FD7806"
+jitsi_meet_apt_key_url: https://keys.openpgp.org/vks/v1/by-fingerprint/FFD65A0DA2BEBDEB73D44C8BB4D2D216F1FD7806
 jitsi_meet_base_packages:
   - apt-transport-https
   - debconf
@@ -214,56 +215,56 @@ jitsi_meet_base_packages:
 jitis_meet_static_override:
   - src: adfc_jitsi_meet_welcomePageAdditionalCard.html.j2
     dest: static/welcomePageAdditionalCard.html
-    is_template: yes
+    is_template: true
   - src: adfc_jitsi_meet_close3.html.j2
     dest: static/close3.html
-    is_template: yes
+    is_template: true
   - src: adfc_jitsi.css.j2
     dest: static/adfc.css
-    is_template: yes
+    is_template: true
   - src: jitsi_watermark.png
     dest: images/watermark.png
-    is_template: no
+    is_template: false
   - src: adfc_jitsi_background.png
     dest: images/welcome-background.png
-    is_template: no
+    is_template: false
   - src: jitsi_favicon.ico
     dest: favicon.ico
-    is_template: no
+    is_template: false
   - src: jitsi_meet_head.html.j2
     dest: head.html
-    is_template: yes
+    is_template: true
   - src: jitsi_favicon.ico
     dest: images/favicon.ico
-    is_template: no
+    is_template: false
 
-jitsi_meet_nginx_config_template:  "adfc_jitsi_meet_nginx.conf.j2"
+jitsi_meet_nginx_config_template: adfc_jitsi_meet_nginx.conf.j2
 
 jtisi_rewrite_i18n:
   de:
     - op: replace
-      path: "/welcomepage/headerTitle"
-      value: "ADFC Meet"
+      path: /welcomepage/headerTitle
+      value: ADFC Meet
     - op: replace
-      path: "/welcomepage/headerSubtitle"
-      value: "Das Onlinekonferenzsystem vom ADFC"
+      path: /welcomepage/headerSubtitle
+      value: Das Onlinekonferenzsystem vom ADFC
   en:
     - op: replace
-      path: "/welcomepage/headerTitle"
-      value: "ADFC Meet"
+      path: /welcomepage/headerTitle
+      value: ADFC Meet
     - op: replace
-      path: "/welcomepage/headerSubtitle"
-      value: "The online conference system of the ADFC"
+      path: /welcomepage/headerSubtitle
+      value: The online conference system of the ADFC
   es:
     - op: replace
-      path: "/welcomepage/headerTitle"
-      value: "ADFC Meet"
+      path: /welcomepage/headerTitle
+      value: ADFC Meet
     - op: replace
-      path: "/welcomepage/headerSubtitle"
-      value: "El sistema de conferencias en línea de ADFC"
+      path: /welcomepage/headerSubtitle
+      value: El sistema de conferencias en línea de ADFC
 
-jitsi_font_download_url: "https://google-webfonts-helper.herokuapp.com/api/fonts/roboto?download=zip&subsets=latin&variants=100,300,500,700,900,regular&formats=woff,woff2"
+jitsi_font_download_url: https://google-webfonts-helper.herokuapp.com/api/fonts/roboto?download=zip&subsets=latin&variants=100,300,500,700,900,regular&formats=woff,woff2
 
-jitsi_meet_default_remote_display_name: "Unbekannte Radfahrer*in"
-jitsi_meet_default_local_display_name: "ich"
+jitsi_meet_default_remote_display_name: Unbekannte Radfahrer*in
+jitsi_meet_default_local_display_name: ich
 jitsi_meet_generate_roomnames_on_welcome_page: false

@@ -1,6 +1,7 @@
+---
 - name: Check Syntax
   command: apache2ctl configtest
-  changed_when: False
+  changed_when: false
 
 - name: Restart Apache
   service:

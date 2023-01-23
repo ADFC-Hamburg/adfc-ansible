@@ -1,5 +1,6 @@
+---
 - hosts: proxmox01.adfc-intern.de
-  gather_facts: yes
+  gather_facts: true
   roles:
     - ssh-keys
     - geerlingguy.certbot
@@ -14,8 +15,8 @@
   tasks:
     - name: Nutze Proxmox Community Repo
       apt_repository:
-        repo: "deb http://download.proxmox.com/debian/pve {{ ansible_distribution_release }} pve-no-subscription"
-        filename: "proxmox"
+        repo: deb http://download.proxmox.com/debian/pve {{ ansible_distribution_release }} pve-no-subscription
+        filename: proxmox
         state: present
     - name: Sicherstellen das div. Pakete installiert sind
       apt:
@@ -40,7 +41,7 @@
     - name: Setze Hostname
       copy:
         content: "{{ inventory_hostname | regex_replace('\\..*$','') }}"
-        dest: "/etc/hostname"
+        dest: /etc/hostname
         mode: "0644"
     - name: Setze /etc/hosts
       template:

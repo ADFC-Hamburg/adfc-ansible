@@ -1,10 +1,11 @@
+---
 - name: Empty list
   set_fact:
     videobridges: []
     vb_comp: ""
     prosody_admins:
-      - "focus@auth.{{ jitsi_meet_server_name }}"
-      - "jvb@auth.{{ jitsi_meet_server_name }}"
+      - focus@auth.{{ jitsi_meet_server_name }}
+      - jvb@auth.{{ jitsi_meet_server_name }}
 
 - name: find all vb server
   include_tasks: vb_loop.yml
@@ -15,9 +16,9 @@
 
 - name: change admins
   lineinfile:
-    path: "/etc/prosody/prosody.cfg.lua"
-    regexp: "^admins = {"
-    line: "admins = { \"{{ videobridges | join('\", \"') }}\" }"
+    path: /etc/prosody/prosody.cfg.lua
+    regexp: ^admins = {
+    line: admins = { "{{ videobridges | join('", "') }}" }
   notify: restart prosody
 
 - name: Set listen option
@@ -31,7 +32,7 @@
       Component "jitsi-videobridge.{{ jitsi_meet_server_name }}"
         component_secret = "{{ jitsi_meet_videobridge_secret }}"
 
-    dest: "/etc/prosody/conf.d/00-ansible-listen-for-vb.cfg.lua"
+    dest: /etc/prosody/conf.d/00-ansible-listen-for-vb.cfg.lua
   notify: restart prosody
 
 - name: Allow prosody firewall for ipv4
@@ -39,4 +40,3 @@
     rule: allow
     port: "5222"
     proto: tcp
-

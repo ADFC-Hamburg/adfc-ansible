@@ -2,7 +2,7 @@
 - name: unpack hibiscus
   unarchive:
     src: "{{ hibiscus_archive_url }}"
-    remote_src: yes
+    remote_src: true
     dest: /opt/jameica/plugins
     creates: /opt/jameica/plugins/hibiscus
     owner: root

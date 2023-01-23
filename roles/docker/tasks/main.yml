@@ -1,3 +1,4 @@
+---
 - name: Install Repo Helper Packages
   apt:
     name: "{{ docker_repo_helper_packages }}"
@@ -34,4 +35,4 @@
 - name: Install Docker Software
   apt:
     name: "{{ docker_packages }}"
-    update_cache: yes
+    update_cache: true

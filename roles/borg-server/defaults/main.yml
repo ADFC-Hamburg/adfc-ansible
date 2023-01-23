@@ -1,1 +1,2 @@
+---
 adfc_borg_repo: /adfc-backup/{{ inventory_hostname }}
