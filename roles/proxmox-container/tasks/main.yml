@@ -23,7 +23,7 @@
   when: proxmox_throw_away
 
 - name: Setup LXC Container
-  proxmox:
+  community.general.proxmox:
     vmid: "{{ proxmox_id }}"
     node: "{{ proxmox_host |regex_replace('\\..*$','') }}"
     api_user: root@pam
@@ -55,7 +55,7 @@
   ansible.builtin.include_tasks: lxc_block.yml
   when: proxmox_lxc_conf_change and lxc_conf_result.changed
 - name: Start LXC Containter
-  proxmox:
+  community.general.proxmox:
     vmid: "{{ proxmox_id }}"
     node: "{{ proxmox_host |regex_replace('\\..*$','') }}"
     api_user: root@pam

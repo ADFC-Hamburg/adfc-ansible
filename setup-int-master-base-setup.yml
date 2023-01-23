@@ -35,7 +35,7 @@
         seconds: 12
       when: modify_md5sum.stdout is not search(proxmox_helperscript |hash('md5'))
     - name: Start LXC Containter
-      proxmox:
+      community.general.proxmox:
         vmid: "{{ proxmox_id }}"
         node: "{{ proxmox_host |regex_replace('\\..*$','') }}"
         api_user: root@pam

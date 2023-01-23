@@ -1,6 +1,6 @@
 ---
 - name: Stop LXC Containter
-  proxmox:
+  community.general.proxmox:
     vmid: "{{ proxmox_id }}"
     node: "{{ proxmox_host |regex_replace('\\..*$','') }}"
     api_user: root@pam
@@ -9,7 +9,7 @@
     state: stopped
   delegate_to: "{{ proxmox_host }}"
 - name: Delete LXC Containter
-  proxmox:
+  community.general.proxmox:
     vmid: "{{ proxmox_id }}"
     node: "{{ proxmox_host |regex_replace('\\..*$','') }}"
     api_user: root@pam
