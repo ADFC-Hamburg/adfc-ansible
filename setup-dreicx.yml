@@ -2,7 +2,7 @@
 - hosts: dreicx.gst.hamburg.adfc.de
   gather_facts: false
   roles:
-    - ssh-keys
+    - ssh_keys
   tasks:
     - name: Installiere Pakete
       ansible.builtin.apt:

@@ -10,7 +10,7 @@
   hosts: jitsi_vbs
   gather_facts: true
   roles:
-    - ssh-keys
+    - ssh_keys
     - update-os
     - restore-hcloud-letsenrypt
     - geerlingguy.certbot

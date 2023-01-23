@@ -2,7 +2,7 @@
 - hosts: proxmox01.gst.hamburg.adfc.de
   gather_facts: true
   roles:
-    - ssh-keys
+    - ssh_keys
     - postfix-auth
     - proxmox-backup
   tasks:

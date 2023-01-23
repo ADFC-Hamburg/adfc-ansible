@@ -3,7 +3,7 @@
   gather_facts: true
   roles:
     - tasmota-start-menu
-    - ssh-keys
+    - ssh_keys
     - gray-print
     - systemd-max-memory
     - links-on-desktop

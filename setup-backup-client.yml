@@ -2,7 +2,7 @@
 - hosts: backup_clients
   roles:
     - load-contacts
-    - ssh-keys
+    - ssh_keys
     - postfix-auth
     - basic_setup
   tasks:

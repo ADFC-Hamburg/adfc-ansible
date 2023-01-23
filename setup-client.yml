@@ -4,7 +4,7 @@
   roles:
     - basic_setup
     - kubuntu
-    - ssh-keys
+    - ssh_keys
     - inactivity-shutdown
     - jnv.unattended-upgrades
     - load-contacts

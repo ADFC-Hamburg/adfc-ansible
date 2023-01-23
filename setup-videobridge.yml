@@ -14,7 +14,7 @@
   hosts: meet_vb
   gather_facts: true
   roles:
-    - ssh-keys
+    - ssh_keys
     - update-os
     - lxc-logrotate
     - geerlingguy.certbot

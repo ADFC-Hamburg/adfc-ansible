@@ -2,7 +2,7 @@
 - hosts: int-master.adfc-intern.de
   gather_facts: true
   roles:
-    - ssh-keys
+    - ssh_keys
     - telegraf
   tasks:
     - name: unlink runme.sh

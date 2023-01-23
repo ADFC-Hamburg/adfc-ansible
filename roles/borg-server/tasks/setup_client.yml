@@ -42,7 +42,7 @@
 
 - name: Generate SSH Keys for borgbackup
   ansible.builtin.include_role:
-    name: ssh-keys
+    name: ssh_keys
   vars:
     authorized_key_user: "{{ borg_client_user }}"
     authorized_key_delegate: "{{ backup_client }}"

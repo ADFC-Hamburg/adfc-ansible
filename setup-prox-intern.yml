@@ -2,7 +2,7 @@
 - hosts: proxmox01.adfc-intern.de
   gather_facts: true
   roles:
-    - ssh-keys
+    - ssh_keys
     - geerlingguy.certbot
     - nginxinc.nginx
     - influxdb

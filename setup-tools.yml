@@ -1,7 +1,7 @@
 ---
 - hosts: tools.adfc-hamburg.de
   roles:
-    - ssh-keys
+    - ssh_keys
     - docker
     - quartierefuermenschen
   tasks:
