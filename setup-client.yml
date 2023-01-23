@@ -5,7 +5,7 @@
     - basic_setup
     - kubuntu
     - ssh_keys
-    - inactivity-shutdown
+    - inactivity_shutdown
     - jnv.unattended-upgrades
     - load-contacts
     - postfix_auth
