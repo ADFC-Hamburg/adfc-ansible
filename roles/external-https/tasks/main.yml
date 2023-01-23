@@ -1,5 +1,5 @@
-- name: copy Apache sites
-  copy:
+- name: Copy Apache sites
+  ansible.builtin.copy:
     src: "{{ item }}"
     dest: "/etc/apache2/sites-available/{{ item }}"
     mode: "0644"
@@ -7,8 +7,8 @@
   notify: restart apache2
   tags: external-https
 
-- name: enable Apache Site
-  command: "a2ensite {{ item }}"
+- name: Enable Apache Site
+  ansible.builtin.command: "a2ensite {{ item }}"
   args:
     creates: "/etc/apache2/sites-enabled/{{ item }}"
   with_items: "{{ apache_sites }}"
@@ -17,8 +17,8 @@
 
 - name: Set UCR Variable
   ucr:
-     values:
-       security/packetfilter/package/univention-apache/tcp/8443/all: ACCEPT
-       security/packetfilter/package/univention-apache/tcp/8080/all: ACCEPT
+    values:
+      security/packetfilter/package/univention-apache/tcp/8443/all: ACCEPT
+      security/packetfilter/package/univention-apache/tcp/8080/all: ACCEPT
   notify: restart univention-firewall
   tags: external-https
