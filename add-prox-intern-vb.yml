@@ -2,7 +2,7 @@
 - hosts: proxmox01.adfc-intern.de
   gather_facts: true
   roles:
-    - jitsi-videobridge
+    - jitsi_videobridge
     - firewall
   tasks:
     - name: Decrement CPU Limit of meet
@@ -11,7 +11,7 @@
 
     - name: Stop VB on Meet
       ansible.builtin.systemd:
-        name: jitsi-videobridge2
+        name: jitsi_videobridge2
         state: stopped
         enabled: false
       delegate_to: "{{ jitsi_meet_server_name }}"

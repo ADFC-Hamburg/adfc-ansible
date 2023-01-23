@@ -7,7 +7,7 @@
   tasks:
     - name: make sure videobride on meet is running
       ansible.builtin.systemd:
-        name: jitsi-videobridge2
+        name: jitsi_videobridge2
         state: started
       vars:
         ansible_user: root
@@ -35,7 +35,7 @@
 
     - name: stop videobride
       ansible.builtin.systemd:
-        name: jitsi-videobridge2
+        name: jitsi_videobridge2
         state: stopped
       ignore_errors: true
       ignore_unreachable: true

@@ -17,6 +17,6 @@
     - geerlingguy.certbot
     - certbot_renew
     - vb_nginx_proxy
-    - jitsi-videobridge
+    - jitsi_videobridge
     - telegraf
     - meet_after_vb

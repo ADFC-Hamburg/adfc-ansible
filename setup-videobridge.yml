@@ -19,4 +19,4 @@
     - lxc_logrotate
     - geerlingguy.certbot
     - ucs_ip_managed_client
-    - jitsi-videobridge
+    - jitsi_videobridge
