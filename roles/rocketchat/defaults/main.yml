@@ -1,4 +1,4 @@
 docker_rocketchat_dir: /srv/docker-rocket
-rocketchat_version: 5.4.1
+rocketchat_version: 5.4.2
 rocketchat_mongo_version: 5.0
 rocketchat_server_name: chat.hamburg.adfc.de
