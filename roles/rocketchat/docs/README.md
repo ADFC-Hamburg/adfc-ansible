@@ -21,3 +21,19 @@ docker compose down
 docker compose up
 ```
 
+# Notiz vom Umzug 2023-01-28
+* Eine Wartungsseite auf neuen RocketChat (Chat2) schalten
+* Borgbackup auf alten abschalten
+
+* DNS Record zum Server Chat2 ändern
+
+* Wartungsseite auf alten RocketChat schalten
+
+* Ein letztes DB Backup auf dem alten machen
+* Das DB Backup einspielen
+
+* Rocketchat auf dem neuen starten
+* Testen via Port 3000
+* Lets Encrypt Zertifikat
+* Wartungsseite entfernen
+* Borgbackup Keys auf neuen kopieren und Backup einschalten
