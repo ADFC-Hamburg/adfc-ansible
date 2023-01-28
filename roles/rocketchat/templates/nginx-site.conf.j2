@@ -26,16 +26,7 @@ server {
     ssl_certificate_key /var/lib/dehydrated/certs/chat2.hamburg.adfc.de/privkey.pem;
     ssl_certificate /var/lib/dehydrated/certs/chat2.hamburg.adfc.de/fullchain.pem;
 
-    ssl_session_timeout 1d;
-    ssl_session_cache shared:MozSSL:10m;  # about 40000 sessions
-    ssl_session_tickets off;
-
-    # modern configuration
-    ssl_protocols TLSv1.3;
-    ssl_prefer_server_ciphers off;
-
-    # HSTS (ngx_http_headers_module is required) (63072000 seconds)
-    add_header Strict-Transport-Security "max-age=63072000" always;
+    {{ rocketchat_ssl_params | indent(4) }}
 
     location / {
         proxy_pass http://127.0.0.1:3000;

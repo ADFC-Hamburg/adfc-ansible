@@ -38,6 +38,12 @@
   tags:
     - compose
 
+- name: Generate Diffie-Hellman parameters with the default size (4096 bits)
+  community.crypto.openssl_dhparam:
+    path: /etc/ssl/dhparams.pem
+  tags:
+    - nginx
+
 - name: Create a directory if it does not exist
   ansible.builtin.file:
     path: "{{ item }}"
