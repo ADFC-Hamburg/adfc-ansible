@@ -1,0 +1,22 @@
+- name: disalbe systemd-resolve conf
+  systemd:
+    name: systemd-resolved
+    state: stopped
+    enabled: false
+
+- name: Network Manager main section dns=default
+  template:
+    src: NetworkManager.conf.j2
+    dest: /etc/NetworkManager/NetworkManager.conf
+    mode: 0644
+    owner: root
+    group: root
+  notify: Restart NetworkManager
+
+- name: Write resolv.conf
+  template:
+    src: resolv.conf.j2
+    dest: /etc/resolv.conf
+    mode: 0644
+    owner: root
+    group: root
