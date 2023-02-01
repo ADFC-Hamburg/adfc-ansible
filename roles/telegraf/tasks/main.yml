@@ -1,18 +1,28 @@
-- name: Import InfluxDB GPG signing key
+- name: Import InfluxDB GPG signing key with apt_key
   ansible.builtin.apt_key:
-    url: https://repos.influxdata.com/influxdb.key
+    url: "{{ influx_repo_gpg_key_url }}"
     state: present
   when: ansible_distribution_release != 'bullseye'
 
-- name: Import Influxdb GPG siging key
+- name: Import Influxdb GPG siging key with store
   ansible.builtin.get_url:
-    url: "https://repos.influxdata.com/influxdb.key"
-    dest: /etc/apt/trusted.gpg.d/influxdb.asc
+    url: "{{ influx_repo_gpg_key_url }}"
+    dest: /etc/apt/trusted.gpg.d/influxdb.key
+    checksum: "sha256:{{ influx_repo_gpg_key_sha256 }}"
+  when: ansible_distribution_release == 'bullseye'
+
+- name: Convert key on 'bullseye'
+  ansible.builtin.command:
+    argv:
+      - gpg
+      - --dearmor
+      - /etc/apt/trusted.gpg.d/influxdb.key
+    creates: /etc/apt/trusted.gpg.d/influxdb.key.gpg
   when: ansible_distribution_release == 'bullseye'
 
 - name: Add InfluxDB repository
   ansible.builtin.apt_repository:
-    repo: "deb https://repos.influxdata.com/debian {{ ansible_distribution_release }} stable"
+    repo: "deb {{ infulx_repo_url }} {{ ansible_distribution_release }} stable"
     state: present
 
 - name: Install Telegraf packages
