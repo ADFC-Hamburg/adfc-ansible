@@ -43,7 +43,7 @@
 - name: Disable defautl output.influxdb entry in /etc/telegraf.conf
   ansible.builtin.lineinfile:
     path: /etc/telegraf/telegraf.conf
-    regexp: ^.*\[\[outputs.influxdb\]\]
+    regexp: '^.*\[\[outputs.influxdb\]\]'
     line: "# [[outputs.influxdb]]"
   notify: restart telegraf
 

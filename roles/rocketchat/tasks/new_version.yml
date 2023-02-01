@@ -1,0 +1,77 @@
+- name: Create Sysmlink to wartung
+  file:
+    src: /etc/nginx/sites-available/{{ rocketchat_server_name }}-wartung.conf
+    dest: /etc/nginx/sites-enabled/{{ rocketchat_server_name }}-wartung.conf
+    state: link
+
+- name: Delete normal chat site
+  file:
+    path: /etc/nginx/sites-enabled/{{ rocketchat_server_name }}.conf
+    state: absent
+
+- name: restart nginx
+  systemd:
+    name: nginx.service
+    state: restarted
+
+- name: Stop Docker Compose stack
+  docker_compose:
+    project_src: "{{ docker_rocketchat_dir }}"
+    state: absent
+    files:
+      - compose.yml
+  tags:
+    - compose
+
+- name: Create LVM Snapshot
+  command:
+    argv:
+      - lvcreate
+      - -L
+      - 2G
+      - -s
+      - -n
+      - var-lib-docker-snap-ansible
+      - /dev/chat2vg/var-lib-docker
+
+- name: Start Docker Compose stack
+  docker_compose:
+    project_src: "{{ docker_rocketchat_dir }}"
+    files:
+      - compose.yml
+  tags:
+    - compose
+
+- name: Test Rocketchat
+  pause:
+    prompt: |
+      Bitte Rocketchat testen:
+      Portforward:
+        ssh -L 3000:127.0.0.1:3000 root@{{ inventory_hostname }}
+      Und dann auf
+        http://127.0.0.1:3000
+      Wenn etwas nicht klappt, kann das hier mit Strg-C abgebrochen
+      und auf den LVM Snapshot var-lib-docker-snap-ansible zurück gegangen werden
+
+- name: Delete LVM Snapshot
+  command:
+    argv:
+      - lvremove
+      - -f
+      - /dev/chat2vg/var-lib-docker-snap-ansible
+
+- name: Create Sysmlink to main site
+  file:
+    src: /etc/nginx/sites-available/{{ rocketchat_server_name }}.conf
+    dest: /etc/nginx/sites-enabled/{{ rocketchat_server_name }}.conf
+    state: link
+
+- name: Delete wartung  site
+  file:
+    path: /etc/nginx/sites-enabled/{{ rocketchat_server_name }}-wartung.conf
+    state: absent
+
+- name: restart nginx
+  systemd:
+    name: nginx.service
+    state: restarted

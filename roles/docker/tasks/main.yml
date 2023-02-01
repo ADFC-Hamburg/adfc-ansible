@@ -25,8 +25,8 @@
   when: docker_fetch_gpg.changed # noqa no-handler
 
 - name: Gpg Convert key
-  ansible.builtin.command: >
-    gpg2 --batch --dearmor --output
+  command: >
+    gpg --batch --dearmor --output
     {{ docker_repo_gpg_key_gpg }}
     {{ docker_repo_gpg_key_dest }}
   args:
@@ -36,3 +36,9 @@
   ansible.builtin.apt:
     name: "{{ docker_packages }}"
     update_cache: true
+
+- name: Install Pip Packages
+  pip:
+    name:
+      - docker
+      - docker-compose
