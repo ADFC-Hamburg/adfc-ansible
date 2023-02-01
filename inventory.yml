@@ -79,8 +79,12 @@ all:
       hosts:
         status.adfc-intern.de:
     hetzner:
+      children:
+        rocket_chat:
+    rocket_chat:
       hosts:
-        chat.hamburg.adfc.de:
+        chat1.hamburg.adfc.de:
+        chat2.hamburg.adfc.de:
     tasmota:
       hosts:
         tasmota-0673.gst.hamburg.adfc.de:

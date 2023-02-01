@@ -22,7 +22,7 @@
 
 - name: Add InfluxDB repository
   ansible.builtin.apt_repository:
-    repo: 'deb {{ infulx_repo_url }} {{ ansible_distribution_release }} stable'
+    repo: "deb {{ infulx_repo_url }} {{ ansible_distribution_release }} stable"
     state: present
 
 - name: Install Telegraf packages
@@ -40,7 +40,7 @@
   ansible.builtin.lineinfile:
     path: /etc/telegraf/telegraf.conf
     regexp: '^.*\[\[outputs.influxdb\]\]'
-    line: '# [[outputs.influxdb]]'
+    line: "# [[outputs.influxdb]]"
   notify: restart telegraf
 
 - name: Create output info
@@ -88,7 +88,7 @@
   notify: restart telegraf
 
 - name: Reset systemd
-  ansible.builtin.command:
+  ansible.builtin.command: # noqa command-instead-of-module
     argv:
       - systemctl
       - reset-failed

@@ -4,3 +4,4 @@
 *.code-workspace
 github_token.txt
 report
+megalinter-reports/
