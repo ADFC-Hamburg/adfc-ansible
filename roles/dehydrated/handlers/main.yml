@@ -7,5 +7,5 @@
     enabled: true
 
 - name: Domains abholen
-  command:
+  ansible.builtin.command:
     cmd: "dehydrated --cron"
