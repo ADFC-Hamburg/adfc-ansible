@@ -16,8 +16,8 @@
   tags: external-https
 
 - name: Set UCR Variable
-  ucr:
-    values:
+  univention.ucs_modules.univention_config_registry:
+    keys:
       security/packetfilter/package/univention-apache/tcp/8443/all: ACCEPT
       security/packetfilter/package/univention-apache/tcp/8080/all: ACCEPT
   notify: restart univention-firewall

@@ -9,8 +9,8 @@
     group: root
 
 - name: Enable SMS sending
-  ucr:
-    values:
+  univention.ucs_modules.univention_config_registry:
+    keys:
       umc/self-service/passwordreset/sms/command: /usr/local/sbin/sipgate-sms.py
       umc/self-service/passwordreset/sms/country_code: 49
       umc/self-service/passwordreset/sms/enabled: "yes"
