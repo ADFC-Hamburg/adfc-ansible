@@ -65,7 +65,7 @@
     firewall_in: []
 
 - name: Find all telegraf server
-  ansible.builtin.set_fact:
+  ansible.builtin.set_fact: # noqa jinja[spacing]
     firewall_in: "{{ firewall_in + [ lookup('dig', tele_host + '.', 'qtype=A') ] + [ lookup('dig', tele_host + '.', 'qtype=AAAA') ] }}"
   when: "'influxdb_host' in hostvars[tele_host] and hostvars[tele_host]['influxdb_host'] == inventory_hostname"
   loop_control:

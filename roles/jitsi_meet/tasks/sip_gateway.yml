@@ -5,7 +5,7 @@
     state: present
 
 - name: Set debconf options for jigasi
-  ansible.builtin.debconf:
+  ansible.builtin.debconf: # noqa args[module]
     name: "{{ item.name }}"
     question: "{{ item.question }}"
     value: "{{ item.value }}"

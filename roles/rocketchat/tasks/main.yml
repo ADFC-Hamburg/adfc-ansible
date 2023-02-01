@@ -1,5 +1,5 @@
 - name: Setup packages
-  apt:
+  ansible.builtin.apt:
     name:
       - nginx
     state: present
@@ -13,7 +13,7 @@
     mode: "0755"
 
 - name: Copy rocketchat docker-compose.yml
-  copy:
+  ansible.builtin.copy:
     src: compose.yml
     dest: "{{ docker_rocketchat_dir }}/compose.yml"
     mode: 0644
@@ -21,7 +21,7 @@
     group: root
 
 - name: Create env file
-  template:
+  ansible.builtin.template:
     src: docker-env.j2
     dest: "{{ docker_rocketchat_dir }}/.env"
     mode: 0644
@@ -30,8 +30,8 @@
   register: docker_env
 
 # use files parameter to use multiple docker-compose.yml files
-- name: deploy Docker Compose stack
-  docker_compose:
+- name: Deploy Docker Compose stack
+  community.docker.docker_compose:
     project_src: "{{ docker_rocketchat_dir }}"
     files:
       - compose.yml
@@ -68,25 +68,31 @@
     - nginx
 
 - name: Setup nginx Site
-  template:
+  ansible.builtin.template:
     src: nginx-site.conf.j2
     dest: /etc/nginx/sites-available/{{ rocketchat_server_name }}.conf
+    mode: 0644
+    owner: root
+    group: root
   notify:
     - restart nginx
   tags:
     - nginx
 
 - name: Setup nginx Wartung Site
-  template:
+  ansible.builtin.template:
     src: nginx-site-wartung.conf.j2
     dest: /etc/nginx/sites-available/{{ rocketchat_server_name }}-wartung.conf
+    mode: 0644
+    owner: root
+    group: root
   notify:
     - restart nginx
   tags:
     - nginx
 
 - name: Delete default site
-  file:
+  ansible.builtin.file:
     path: /etc/nginx/sites-enabled/default.conf
     state: absent
   notify:
@@ -95,7 +101,7 @@
     - nginx
 
 - name: Create Sysmlink
-  file:
+  ansible.builtin.file:
     src: /etc/nginx/sites-available/{{ rocketchat_server_name }}.conf
     dest: /etc/nginx/sites-enabled/{{ rocketchat_server_name }}.conf
     state: link
@@ -105,4 +111,4 @@
     - nginx_synlink
 
 - name: Include New Version
-  include_tasks: new_version.yml
+  ansible.builtin.include_tasks: new_version.yml

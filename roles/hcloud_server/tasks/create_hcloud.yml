@@ -94,7 +94,7 @@
     - /etc/adfc/hcloud/ssh-host-keys
     - /etc/adfc/hcloud/ssh-host-keys/{{ inventory_hostname }}
 
-- name: Create ssh_key files
+- name: Create ssh_key files # noqa args[module]
   community.crypto.openssh_keypair:
     path: /etc/adfc/hcloud/ssh-host-keys/{{ inventory_hostname }}/ssh_host_{{ item }}_key
     type: "{{ item }}"

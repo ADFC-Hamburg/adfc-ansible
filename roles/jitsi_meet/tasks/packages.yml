@@ -28,7 +28,7 @@
     group: root
 
 - name: Install Jitsi apt repo.
-  ansible.builtin.apt_repository:
+  ansible.builtin.apt_repository: # noqa args[module]
     repo: "{{ item.value.repo_url }}"
     state: "{{ 'present' if jitsi_strategy == item.key else 'absent' }}"
     # Ansible will automatically add the ".list" suffix.
@@ -37,7 +37,7 @@
   with_dict: "{{ jitsi_meet_apt_repos }}"
 
 - name: Set debconf options for jitsi-meet.
-  ansible.builtin.debconf:
+  ansible.builtin.debconf: # noqa args[module]
     name: "{{ item.name }}"
     question: "{{ item.question }}"
     value: "{{ item.value }}"

@@ -6,7 +6,7 @@
   register: hcloud_dns_token
 
 - name: Setze ipv4 address
-  community.dns.hetzner_dns_record_set:
+  community.dns.hetzner_dns_record_set: # noqa args[module]
     zone: adfc-intern.de
     record: "{{ inventory_hostname }}"
     type: A
@@ -19,7 +19,7 @@
   register: hdns_ip4_set
 
 - name: Setze ipv6 address
-  community.dns.hetzner_dns_record_set:
+  community.dns.hetzner_dns_record_set: # noqa args[module]
     zone: adfc-intern.de
     record: "{{ inventory_hostname }}"
     type: AAAA
