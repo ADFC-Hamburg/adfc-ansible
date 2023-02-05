@@ -126,6 +126,7 @@
       - language-pack-de
       - language-pack-de-base
       - language-pack-kde-de
+      - libccid
       - gnome-user-docs-de
       - gnupg2
       - gimp
@@ -139,6 +140,7 @@
       - pavucontrol
       - pdfmod
       - pdfarranger
+      - pcscd
       - keepassxc
       - nextcloud-client
       - nextcloud-client-dolphin
