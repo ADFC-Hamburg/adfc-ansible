@@ -12,7 +12,7 @@
   - fonts
   - xrdp
   - unburden-home-dir
-  - firefox-client
+  ##- firefox-client
   - chromium
   - thunderbird
   - libreoffice
@@ -27,9 +27,6 @@
     apt:
       deb: "/usr/local/share/ansible_downloads/XnViewMP-linux-x64.deb"
 
-  - name: PDF-Editor manuell installieren
-    apt:
-      deb: "/usr/local/share/ansible_downloads/{{ deb_name_master_pdf_editor }}"
   - name: apt-get update ausführen
     apt:
       update_cache: yes
@@ -141,7 +138,7 @@
       - krdc
       - pavucontrol
       - pdfmod
-      - pdfshuffler
+      - pdfarranger
       - keepassxc
       - nextcloud-client
       - nextcloud-client-dolphin
@@ -179,13 +176,6 @@
     notify: XnViewMP manuell installieren
     tags: xnviewmp, software
 
-# Master-PDF-Editor installieren
-  - name: PDF-Editor manuell runterladen
-    get_url:
-      url: https://code-industry.net/public/{{ deb_name_master_pdf_editor }}
-      dest: /usr/local/share/ansible_downloads/{{ deb_name_master_pdf_editor }}
-    notify: PDF-Editor manuell installieren
-    tags: pdfeditor, software
 
   - name: Pruefe Freemind-snap
     stat:

@@ -8,6 +8,14 @@
      - wget
      - bsd-mailx
 
+- name: "Create /etc/firefox dir"
+  ansible.builtin.file:
+    path: /etc/firefox
+    mode: 0755
+    state: directory
+    owner: root
+    group: root
+
 - name: "Set Firefox sysprefs.js"
   template:
     src: sysprefs.js
