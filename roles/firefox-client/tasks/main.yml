@@ -3,10 +3,18 @@
     name: "{{ packages }}"
   vars:
     packages:
-     - firefox
-     - firefox-locale-de
-     - wget
-     - bsd-mailx
+      - firefox
+      - firefox-locale-de
+      - wget
+      - bsd-mailx
+
+- name: "Create /etc/firefox dir"
+  ansible.builtin.file:
+    path: /etc/firefox
+    mode: 0755
+    state: directory
+    owner: root
+    group: root
 
 - name: "Set Firefox sysprefs.js"
   template:
@@ -27,4 +35,4 @@
     dest: "/usr/share/mozilla/extensions/{ec8030f7-c20a-464f-9b0e-13a3a9e97384}/{{ item.id }}"
     state: link
     force: yes
-  with_items:  "{{ firefox_extensions }}"
+  with_items: "{{ firefox_extensions }}"

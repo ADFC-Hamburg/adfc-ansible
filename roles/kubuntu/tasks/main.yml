@@ -14,11 +14,14 @@
     mode: 0644
     owner: root
     group: root
+
 - name: stop gdm
   systemd:
     name: gdm.service
     state: stopped
     enabled: false
+  ignore_errors: true
+
 - name: Make sure sddm is started
   systemd:
     name: sddm.service

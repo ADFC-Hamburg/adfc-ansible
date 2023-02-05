@@ -1,2 +1,2 @@
-ansible_host: 192.168.123.22
+ansible_host: 192.168.123.100
 tasmota_wireless_ip: 192.168.123.60
