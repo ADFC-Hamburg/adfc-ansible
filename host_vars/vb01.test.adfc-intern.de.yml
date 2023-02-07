@@ -16,7 +16,6 @@ proxmox_lxc_conf_change: true
 proxmox_lxc_conf: |
   lxc.apparmor.profile: lxc-adfc-meet
 
-
 ucs_master: int-master.adfc-intern.de
 ucs_network: cn=default,cn=networks,dc=adfc-intern,dc=de
 ucs_computer_position: cn=computers,dc=adfc-intern,dc=de
@@ -24,5 +23,4 @@ ucs_computer_position: cn=computers,dc=adfc-intern,dc=de
 jitsi_meet_jvb_cfg_java_jvb_props:
   - --subdomain=vb01
   - --apis=rest
-
 # jitsi_meet_jvb_sipcfg_authorized_source_regexp: "focus@auth.test.adfc-intern.de/.*"

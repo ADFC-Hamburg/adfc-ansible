@@ -28,20 +28,20 @@
 
 AKTION=$1
 
-if [ $AKTION = "backup-end" ] ; then
-    ART=$2
-    VZID=$3
-    if [ $VZID != "100" ] ; then
-        scp -q -i /root/.ssh/proxmox-backup $TARFILE root@192.168.123.32:/adfc/Computer/Datensicherung/Proxmox/
-    fi
+if [ $AKTION = "backup-end" ]; then
+	ART=$2
+	VZID=$3
+	if [ $VZID != "100" ]; then
+		scp -q -i /root/.ssh/proxmox-backup $TARFILE root@192.168.123.32:/adfc/Computer/Datensicherung/Proxmox/
+	fi
 fi
-if [ $AKTION = "log-end" ] ; then
-    ART=$2
-    VZID=$3
-    if [ $VZID != "100" ] ; then
-        tar cfz /tmp/backup-etc.tgz -C /etc .
-        scp -q -i /root/.ssh/proxmox-backup $LOGFILE root@192.168.123.32:/adfc/Computer/Datensicherung/Proxmox/
-        scp -q -i /root/.ssh/proxmox-backup /tmp/backup-etc.tgz root@192.168.123.32:/adfc/Computer/Datensicherung/Proxmox/
-        rm /tmp/backup-etc.tgz
-    fi
+if [ $AKTION = "log-end" ]; then
+	ART=$2
+	VZID=$3
+	if [ $VZID != "100" ]; then
+		tar cfz /tmp/backup-etc.tgz -C /etc .
+		scp -q -i /root/.ssh/proxmox-backup $LOGFILE root@192.168.123.32:/adfc/Computer/Datensicherung/Proxmox/
+		scp -q -i /root/.ssh/proxmox-backup /tmp/backup-etc.tgz root@192.168.123.32:/adfc/Computer/Datensicherung/Proxmox/
+		rm /tmp/backup-etc.tgz
+	fi
 fi

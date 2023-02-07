@@ -22,5 +22,4 @@ jitsi_meet_octo: true
 jitsi_meet_octo_probability: 1
 jitsi_meet_region: region1
 jitsi_jicofo_bridge_selector: split
-
 # jitsi_meet_use_nightly_apt_repo: yes

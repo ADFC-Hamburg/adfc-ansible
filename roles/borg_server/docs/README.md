@@ -1,4 +1,4 @@
-# Borg Backup umziehen und dabei das Repo erhalten.
+# Borg Backup umziehen und dabei das Repo erhalten
 
 # Backup deaktivieren
 

@@ -93,7 +93,7 @@
 
 - name: Set as a fact what we are searching for
   ansible.builtin.set_fact:
-    udm_hostname: 'hostname={{ inventory_hostname }}'
+    udm_hostname: "hostname={{ inventory_hostname }}"
 
 - name: Create guacamole config for the client
   delegate_to: ucs-master.gst.hamburg.adfc.de

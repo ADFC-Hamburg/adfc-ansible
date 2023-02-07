@@ -52,7 +52,7 @@
   when:
     - ( dyndns_read_entry.status == 200)
     - (( dyndns_read_entry.json.properties.a | map('ipaddr','int') | list | sort | join(',') )
-        != ( ucs_dns_ips  | map('ipaddr','int') | list | sort | join(',') )) or
+      != ( ucs_dns_ips  | map('ipaddr','int') | list | sort | join(',') )) or
       ( usc_dns_ttl_in_seconds != dyndns_read_entry.json.properties.zonettl)
   delegate_to: localhost
   changed_when: true

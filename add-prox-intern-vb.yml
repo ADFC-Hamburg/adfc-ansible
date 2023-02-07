@@ -15,7 +15,6 @@
         state: stopped
         enabled: false
       delegate_to: "{{ jitsi_meet_server_name }}"
-
 # TODO
 #  DJS Ändern damit er die richtigen Zahlen abruft.
 #  Jitsi-Meet Rolle und VB Rolle trennen damit auf dem Meet die VB nicht hochfährt

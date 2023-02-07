@@ -266,8 +266,9 @@ jitsi_meet_default_background: "#474747"
 jitsi_meet_show_video_background: true
 jitsi_meet_default_remote_display_name: Fellow Jitster
 jitsi_meet_default_local_display_name: me
-jitsi_meet_generate_roomnames_on_welcome_page: true
+jitsi_meet_generate_roomnames_on_welcome_page:
+  true
 
- # Allow i18n to detect the system language:
+  # Allow i18n to detect the system language:
 jitsi_meet_lang_detection: false
 jitsi_meet_jicofo_jicofo_template: jicofo.conf.j2

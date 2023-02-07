@@ -1,6 +1,6 @@
 #!/bin/bash
 #  Ansible Managed
-A=$(kdialog --title "Installation" --progressbar "Check for a new version of chromium" )
+A=$(kdialog --title "Installation" --progressbar "Check for a new version of chromium")
 qdbus $A showCancelButton false
 qdbus $A Set "" "value" 10
 /usr/local/bin/update-chromium-latest

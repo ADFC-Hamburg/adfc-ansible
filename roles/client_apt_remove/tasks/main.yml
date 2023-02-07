@@ -17,7 +17,6 @@
   ansible.builtin.apt:
     autoremove: true
   tags: software
-
 # Remove specified repository from sources list. Example for future use.
 # - ansible.builtin.apt_repository:
 #     repo: deb http://archive.canonical.com/ubuntu hardy partner
