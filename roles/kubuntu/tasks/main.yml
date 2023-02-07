@@ -15,11 +15,14 @@
     mode: 0644
     owner: root
     group: root
+
 - name: Stop gdm
   ansible.builtin.systemd:
     name: gdm.service
     state: stopped
     enabled: false
+  ignore_errors: true
+
 - name: Make sure sddm is started
   ansible.builtin.systemd:
     name: sddm.service
