@@ -17,7 +17,7 @@ reply = rpc_srv.samurai.ClientIdentify({
 "ClientVersion": "1.0",
 "ClientVendor": "https://www.univention.com/"
 })
-print "Login success. Server reply to ClientIdentify(): ‚{}‘.".format(reply)
+print("Login success. Server reply to ClientIdentify(): ‚{}‘.".format(reply))
 
 # create text message
 msg = "Password reset token: {token}".format(token=env["selfservice_token"])
@@ -38,8 +38,8 @@ args = {"RemoteUri": "sip:%s@sipgate.net" % num, "TOS": "text", "Content": msg}
 reply = rpc_srv.samurai.SessionInitiate(args)
 
 if reply.get("StatusCode") == 200:
-  print "Success sending token to user {}.".format(env["selfservice_username"])
+  print("Success sending token to user {}.".format(env["selfservice_username"]))
   sys.exit(0)
 else:
-  print "Error sending token to user {}. Sipgate returned: {}".format(env["selfservice_username"], reply)
+  print("Error sending token to user {}. Sipgate returned: {}".format(env["selfservice_username"], reply))
   sys.exit(1)

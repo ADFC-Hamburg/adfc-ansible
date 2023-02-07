@@ -5,7 +5,7 @@ Borg Backup umziehen und dabei das Repo erhalten.
 siehe `/etc/cron.d/ansible_adfc-borg` löschen oder auskommentieren
 
 # Borg Keys kopieren
-```
+```bash
 scp -p -r root@alter-rechner:/root/.config/borg /root/.config/
 ```
 
@@ -17,7 +17,7 @@ in `setup-borg.yml` die Hostnamen anpassen
 
 # Ansible Playbook aufrufen
 
-```
+```bash
 ansible-playbook -v -l neuer-rechner setup-borg.yml
 ```
 
@@ -27,7 +27,7 @@ scp -q -r root@alter-rechner:/usr/local/share/adfc-borg/* /usr/local/share/adfc-
 
 # Testen
 
-```
+```bash
 adfc-borg status
 adfc-borg list
 # Sichern:

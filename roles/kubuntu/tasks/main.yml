@@ -21,7 +21,7 @@
     name: gdm.service
     state: stopped
     enabled: false
-  ignore_errors: true
+  failed_when: false
 
 - name: Make sure sddm is started
   ansible.builtin.systemd:
