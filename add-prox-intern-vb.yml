@@ -11,7 +11,7 @@
 
     - name: Stop VB on Meet
       ansible.builtin.systemd:
-        name: jitsi_videobridge2
+        name: jitsi-videobridge2
         state: stopped
         enabled: false
       delegate_to: "{{ jitsi_meet_server_name }}"
