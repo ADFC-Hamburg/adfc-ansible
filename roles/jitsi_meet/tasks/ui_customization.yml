@@ -1,8 +1,7 @@
 ---
-
 - name: Application configuration file
-  template:
-    dest: "/usr/share/jitsi-meet/interface_config.js"
+  ansible.builtin.template:
+    dest: /usr/share/jitsi-meet/interface_config.js
     src: "{{ jitsi_meet_interface_config_js_template }}"
     owner: root
     group: root
@@ -14,15 +13,15 @@
     - restart nginx
 
 - name: Title configuration file
-  template:
-    dest: "/usr/share/jitsi-meet/title.html"
+  ansible.builtin.template:
+    dest: /usr/share/jitsi-meet/title.html
     src: "{{ jitsi_meet_title_template }}"
     owner: root
     group: root
     mode: "0644"
 
 - name: Welcome Page Additions
-  template:
+  ansible.builtin.template:
     src: "{{ jitsi_meet_welcome_page_additions_file }}"
     dest: /usr/share/jitsi-meet/static/welcomePageAdditionalContent.html
     owner: root
@@ -30,7 +29,7 @@
     mode: "0644"
 
 - name: Site CSS
-  template:
+  ansible.builtin.template:
     src: "{{ jitsi_meet_css_file }}"
     dest: /usr/share/jitsi-meet/css/all.css
     owner: root
@@ -39,31 +38,28 @@
   when: jitsi_meet_css_file | length > 0
 
 - name: Replace watermark for a customized one
-  copy:
+  ansible.builtin.copy:
     src: "{{ jitsi_meet_watermark_file }}"
     dest: /usr/share/jitsi-meet/images/watermark.png
     owner: root
     group: root
     mode: "0644"
-  when: jitsi_meet_watermark_file is defined
-        and jitsi_meet_watermark_file
+  when: jitsi_meet_watermark_file is defined and jitsi_meet_watermark_file
 
 - name: Replace logo for a customized one
-  copy:
+  ansible.builtin.copy:
     src: "{{ jitsi_meet_logo_file }}"
     dest: /usr/share/jitsi-meet/images/jitsilogo.png
     owner: root
     group: root
     mode: "0644"
-  when: jitsi_meet_logo_file is defined
-        and jitsi_meet_logo_file
+  when: jitsi_meet_logo_file is defined and jitsi_meet_logo_file
 
 - name: Replace favicon for a customized one
-  copy:
+  ansible.builtin.copy:
     src: "{{ jitsi_meet_favicon_file }}"
     dest: /usr/share/jitsi-meet/images/favicon.ico
     owner: root
     group: root
     mode: "0644"
-  when: jitsi_meet_favicon_file is defined
-        and jitsi_meet_favicon_file
+  when: jitsi_meet_favicon_file is defined and jitsi_meet_favicon_file

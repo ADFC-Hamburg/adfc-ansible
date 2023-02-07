@@ -1,0 +1,46 @@
+---
+jitsi_meet_base_packages:
+  - apt-transport-https
+  - debconf
+  - debconf-utils
+  - ufw
+  - gpg
+  - jq
+
+jitsi_meet_apt_repos:
+  stable:
+    repo_url: deb https://download.jitsi.org/ stable/
+  unstable:
+    repo_url: deb https://download.jitsi.org unstable/
+
+jitsi_meet_apt_key_url: https://download.jitsi.org/jitsi-key.gpg.key
+jitsi_meet_apt_key_id: 66A9CD0595D6AFA247290D3BEF8B479E2DC1389C
+jitsi_meet_use_nightly_apt_repo: false
+
+jitsi_meet_vb_password_file: /etc/jitsi_jvb{{ inventory_hostname }}.secret
+
+jitsi_meet_jvb_cfg_hostname: localhost
+
+jitsi_meet_jvb_cfg_host: ""
+
+jitsi_meet_jvb_cfg_port: 5347
+
+jitsi_meet_jvb_cfg_java_jvb_props: []
+jitsi_meet_jvb_cfg_java_sys_props:
+  - -Dconfig.file=/etc/jitsi/videobridge/jvb.conf
+  - -Dnet.java.sip.communicator.SC_HOME_DIR_LOCATION=/etc/jitsi
+  - -Dnet.java.sip.communicator.SC_HOME_DIR_NAME=videobridge
+  - -Dnet.java.sip.communicator.SC_LOG_DIR_LOCATION=/var/log/jitsi
+  - -Djava.util.logging.config.file=/etc/jitsi/videobridge/logging.properties
+  - --add-opens
+  - jdk.management/com.sun.management.internal=ALL-UNNAMED
+
+jitsi_meet_jvb_cfg_java_sys_props_addition: []
+jitsi_meet_jvb_sipcfg_authorized_source_regexp: focus@auth.localhost/.*
+
+jitsi_meet_videobridge_statistics_enable: false
+jitsi_meet_jvb_sipcfg_statistics_interval: 1000
+jitsi_meet_jvb_sipcfg_statistics_transport: muc,colibri,pubsub
+
+jitsi_meet_jvb_sipcfg_pubsub_service: ""
+jitsi_meet_jvb_sipcfg_pubsub_node: ""

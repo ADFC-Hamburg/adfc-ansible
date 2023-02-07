@@ -1,51 +1,58 @@
+---
 - name: Install jigasi
-  apt:
+  ansible.builtin.apt:
     name:
       - jigasi
 
 - name: Install old opnenjdk on debian bullseye
-  apt:
+  ansible.builtin.apt:
     name:
       - openjdk-11-jre-headless
   when: ansible_distribution_release == 'bullseye'
 
-- name: check if password file is there
-  stat:
-    path: "/etc/jigasi-sip.secret"
+- name: Check if password file is there
+  ansible.builtin.stat:
+    path: /etc/jigasi-sip.secret
   register: jigasi_sip_secret_stat
 
 - name: Create Password file if empty
-  copy:
+  ansible.builtin.copy:
     content: "{{ lookup('password', '/dev/null length=16') }}"
-    dest: "/etc/jigasi-sip.secret"
+    dest: /etc/jigasi-sip.secret
     mode: "0600"
     owner: root
   when: not jigasi_sip_secret_stat.stat.exists
 
-- name: read jigasi_sip secret
-  slurp:
-    path: "/etc/jigasi-sip.secret"
+- name: Read jigasi_sip secret
+  ansible.builtin.slurp:
+    path: /etc/jigasi-sip.secret
   register: jigasi_sip_secret
 
 - name: Create sip-communicatior.properties
-  template:
+  ansible.builtin.template:
     src: jigasi_sip-communicator.properties.j2
     dest: /etc/jitsi/jigasi/sip-communicator.properties
+    mode: 0644
+    owner: root
+    group: root
   notify: restart jigasi
 
 - name: Create jigasi/config
-  template:
+  ansible.builtin.template:
     src: jigasi_config.j2
     dest: /etc/jitsi/jigasi/config
+    mode: 0644
+    owner: root
+    group: root
   notify: restart jigasi
 
 - name: Start jigasi
-  systemd:
+  ansible.builtin.systemd:
     name: jigasi
     state: started
 - name: Allow firewall for ipv4 sip
-  ufw:
+  community.general.ufw:
     rule: allow
     port: "5060"
     proto: udp
-    src: "88.198.32.212"
+    src: 88.198.32.212

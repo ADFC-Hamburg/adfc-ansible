@@ -1,0 +1,47 @@
+---
+- name: Install curl und unzip
+  ansible.builtin.apt:
+    name:
+      - curl
+      - unzip
+
+- name: Create chromium-latest-update sudo file
+  ansible.builtin.copy:
+    src: update-chromium-latest-sudoers
+    dest: /etc/sudoers.d/ansible-chromium-update-sudoers
+    owner: root
+    group: root
+    validate: /usr/sbin/visudo -cf %s
+    mode: 0440
+
+- name: Create chromium-latest-update
+  ansible.builtin.copy:
+    src: update-chromium-latest
+    dest: /usr/local/bin/update-chromium-latest
+    mode: 0755
+    owner: root
+    group: root
+
+- name: Create chromium-latest
+  ansible.builtin.copy:
+    src: chromium-latest.sh
+    dest: /usr/local/bin/chromium-latest
+    mode: 0755
+    owner: root
+    group: root
+
+- name: Create chromium-latest.desktop file
+  ansible.builtin.copy:
+    src: chromium-latest.desktop
+    dest: /usr/local/share/applications/
+    mode: 0755
+    owner: root
+    group: root
+
+- name: Generate chromium dir
+  ansible.builtin.file:
+    path: /usr/local/chromium
+    mode: 0755
+    owner: root
+    group: root
+    state: directory

@@ -1,0 +1,37 @@
+---
+# Role to Create Link-Folder on Users Desktops
+
+- name: Check if path exists
+  ansible.builtin.stat:
+    path: "{{ adfc_link_path }}"
+  register: stat_result
+  when: ansible_hostname == "ucs-master"
+
+- name: Show results
+  ansible.builtin.debug:
+    msg: Path {{ adfc_link_path }} exists
+  when: ansible_hostname == "ucs-master" and stat_result.stat.exists
+
+- name: Create links folder on UCS-Master
+  ansible.builtin.file:
+    path: "{{ adfc_link_path }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  delegate_to: ucs-master.gst.hamburg.adfc.de
+  when: ansible_hostname == "ucs-master" and not stat_result.stat.exists
+
+- name: Copy Cloud-Link to UCS-Master
+  ansible.builtin.copy:
+    src: ADFC-Cloud(webdav)
+    dest: "{{ adfc_link_path }}/ADFC-Cloud(webdav)"
+    mode: 0644
+  when: ansible_hostname == "ucs-master"
+
+- name: Copy all users autostart to client
+  ansible.builtin.template:
+    src: forallusers.desktop
+    dest: /etc/xdg/autostart/forallusers.desktop
+    mode: 0644
+  when: "'arbeitsplatz' in group_names"

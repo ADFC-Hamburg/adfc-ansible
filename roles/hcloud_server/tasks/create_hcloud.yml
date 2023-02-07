@@ -1,0 +1,153 @@
+---
+- name: Search for included files
+  ansible.builtin.find:
+    paths: "{{ inventory_dir + '/' + key_path + item }}"
+    recurse: true
+    file_type: file
+    excludes: "{{ ssh_users_admins | join(',') }}"
+  delegate_to: localhost
+  with_items: "{{ ssh_users_admins }}"
+  register: add_keys_files
+
+- name: Add_key
+  hetzner.hcloud.hcloud_ssh_key:
+    api_token: "{{ hcloud_api_token }}"
+    name: adfc-ansible-{{ item | relpath(inventory_dir + '/' + key_path) }}
+    public_key: "{{ lookup('file', item) }}"
+    state: present
+  with_items: "{{ add_keys_files | json_query('results[*].files[*].path') }}"
+  delegate_to: localhost
+  register: ssh_hcloud_add_key
+
+- name: Create_host
+  hetzner.hcloud.hcloud_server:
+    api_token: "{{ hcloud_api_token }}"
+    name: "{{ inventory_hostname }}"
+    server_type: "{{ hcloud_server_type }}"
+    image: "{{ hcloud_image }}"
+    state: started
+    ssh_keys: "{{ ssh_hcloud_add_key | json_query('results[*].hcloud_ssh_key.name') }}"
+    location: "{{ hcloud_server_location }}"
+    # fsn1: falkenstein
+    # nbg1: nürnberg
+  delegate_to: localhost
+  register: hcloud_host
+  ignore_errors: "{{ hcloud_failure_server_location != 'NONE' }}"
+
+- name: Create host on failure
+  hetzner.hcloud.hcloud_server:
+    api_token: "{{ hcloud_api_token }}"
+    name: "{{ inventory_hostname }}"
+    server_type: "{{ hcloud_server_type }}"
+    image: "{{ hcloud_image }}"
+    state: started
+    ssh_keys: "{{ ssh_hcloud_add_key | json_query('results[*].hcloud_ssh_key.name') }}"
+    location: "{{ hcloud_failure_server_location }}"
+    # fsn1: falkenstein
+    # nbg1: nürnberg
+  delegate_to: localhost
+  register: hcloud_failure_host
+  when: hcloud_host is failed
+
+- name: Set ip address
+  ansible.builtin.set_fact:
+    hcloud_ipv4_address: "{{ hcloud_host.hcloud_server.ipv4_address }}"
+    hcloud_ipv6_address: "{{ hcloud_host.hcloud_server.ipv6 | replace('/64', '1') }}"
+  when: not hcloud_host is failed
+
+- name: Set ip address on failure
+  ansible.builtin.set_fact:
+    hcloud_ipv4_address: "{{ hcloud_failure_host.hcloud_server.ipv4_address }}"
+    hcloud_ipv6_address: "{{ hcloud_failure_host.hcloud_server.ipv6 | replace('/64', '1') }}"
+  when: hcloud_host is failed
+
+- name: Set Dynamic IP
+  ansible.builtin.include_role:
+    name: hetzner_dns
+  vars:
+    hetzner_dns_ip4: "{{ hcloud_ipv4_address }}"
+    hetzner_dns_ip6: "{{ hcloud_ipv6_address }}"
+
+- name: Debug1
+  ansible.builtin.debug:
+    msg: "{{ hcloud_floating_ips }}"
+
+- name: Debug2
+  ansible.builtin.debug:
+    msg: "{{ hcloud_floating_ips | length > 0 }}"
+
+- name: Include Set Floating IP
+  ansible.builtin.include_tasks: hcloud_floating_ip.yml
+  when: hcloud_floating_ips | length > 0
+
+- name: Create directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0700"
+    owner: root
+    group: root
+  delegate_to: proxmox01.adfc-intern.de
+  with_items:
+    - /etc/adfc
+    - /etc/adfc/hcloud
+    - /etc/adfc/hcloud/ssh-host-keys
+    - /etc/adfc/hcloud/ssh-host-keys/{{ inventory_hostname }}
+
+- name: Create ssh_key files # noqa args[module]
+  community.crypto.openssh_keypair:
+    path: /etc/adfc/hcloud/ssh-host-keys/{{ inventory_hostname }}/ssh_host_{{ item }}_key
+    type: "{{ item }}"
+  delegate_to: proxmox01.adfc-intern.de
+  with_items:
+    - dsa
+    - ecdsa
+    - ed25519
+    - rsa
+
+- name: Read ssh_keys
+  ansible.builtin.command: tar cf /dev/stdout .
+  args:
+    chdir: /etc/adfc/hcloud/ssh-host-keys/{{ inventory_hostname }}
+  delegate_to: proxmox01.adfc-intern.de
+  register: hcloud_ssh_keys
+  no_log: true
+  tags:
+    - skip_ansible_lint
+
+- name: Copy keys
+  ansible.builtin.copy:
+    content: "{{ hcloud_ssh_keys.stdout }}"
+    dest: /etc/adfc_ssh_keys.tar
+    mode: "0600"
+    owner: root
+    group: root
+  vars:
+    ansible_host: "{{ hcloud_ipv4_address }}"
+    ansible_ssh_extra_args: -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null
+
+- name: Extract keys
+  ansible.builtin.unarchive:
+    src: /etc/adfc_ssh_keys.tar
+    remote_src: true
+    dest: /etc/ssh
+  vars:
+    ansible_host: "{{ hcloud_ipv4_address }}"
+    ansible_ssh_extra_args: -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null
+
+- name: Restart ssh
+  ansible.builtin.systemd:
+    name: ssh
+    state: restarted
+  vars:
+    ansible_host: "{{ hcloud_ipv4_address }}"
+    ansible_ssh_extra_args: -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null
+
+- name: Dig until address set
+  ansible.builtin.debug:
+    msg: "IPv4: {{ lookup('dig', inventory_hostname, 'qtype=A') }} IPv6: {{ lookup('dig', inventory_hostname, 'qtype=AAAA') }}"
+  until: lookup('dig', inventory_hostname, 'qtype=A') == hcloud_ipv4_address
+  # retries and delay are in seconds TTL is maximal 600
+  retries: 30
+  delay: 20
+  delegate_to: localhost

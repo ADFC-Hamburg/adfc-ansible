@@ -1,0 +1,22 @@
+---
+- name: Get hcloud API Token
+  ansible.builtin.slurp:
+    path: /root/hetzner-cloud.key
+  register: hcloud_key_slurp
+  delegate_to: proxmox01.adfc-intern.de
+  no_log: true
+
+- name: Setze hcloud_api_token
+  ansible.builtin.set_fact:
+    hcloud_api_token: "{{ hcloud_key_slurp.content | b64decode | trim }}"
+  no_log: true
+
+- name: Gather hcloud server infos
+  hetzner.hcloud.hcloud_server_info:
+    api_token: "{{ hcloud_api_token }}"
+  register: output
+  delegate_to: localhost
+
+- name: Setup new host
+  ansible.builtin.include_tasks: create_hcloud.yml
+  when: ( output.hcloud_server_info | selectattr('name', 'match', inventory_hostname ) | list | length) == 0

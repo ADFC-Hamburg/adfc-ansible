@@ -7,7 +7,7 @@ molecule:
   serverspec_dir: spec/
 
 verifier:
-    name: serverspec
+  name: serverspec
 
 vagrant:
   platforms:

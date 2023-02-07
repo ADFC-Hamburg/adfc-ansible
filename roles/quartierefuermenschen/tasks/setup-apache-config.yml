@@ -1,18 +1,19 @@
+---
 - name: Create Apache HTTP Config
-  template:
+  ansible.builtin.template:
     src: "{{ apache_cfg.template_src }}"
     dest: /etc/apache2/sites-available/{{ apache_cfg.site_name }}.conf
     mode: 0644
 
 - name: Check if Certificate is there
-  stat:
-    path: "/etc/ssl/letsencrypt/{{ quartierefuermenschen_domain }}.crt"
+  ansible.builtin.stat:
+    path: /etc/ssl/letsencrypt/{{ quartierefuermenschen_domain }}.crt
   register: cert_stat
 
 - name: Enable apache-reverse-proxy site
-  command: a2ensite {{ apache_cfg.site_name }}
+  ansible.builtin.command: a2ensite {{ apache_cfg.site_name }}
   args:
     creates: /etc/apache2/sites-enabled/{{ apache_cfg.site_name }}.conf
   notify:
-   - Restart Apache
+    - Restart Apache
   when: not (apache_cfg.is_https | bool) or cert_stat.stat.exists

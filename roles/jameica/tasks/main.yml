@@ -1,6 +1,6 @@
 ---
 - name: Create required directories
-  file:
+  ansible.builtin.file:
     path: /opt
     state: directory
     owner: root
@@ -8,16 +8,16 @@
     mode: 0755
 
 - name: Unpack jameica
-  unarchive:
+  ansible.builtin.unarchive:
     src: "{{ jameica_archive_url }}"
-    remote_src: yes
+    remote_src: true
     dest: /opt
     creates: /opt/jameica
     owner: root
     group: root
 
 - name: Create starter
-  copy:
+  ansible.builtin.copy:
     src: jameica.desktop
     dest: /usr/share/applications/
     owner: root

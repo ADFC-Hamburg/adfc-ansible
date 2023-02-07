@@ -1,3 +1,0 @@
-proxmox_throw_away: false
-proxmox_lxc_conf: ""
-proxmox_lxc_conf_change: false

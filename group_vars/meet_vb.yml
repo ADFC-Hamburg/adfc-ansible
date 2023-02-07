@@ -1,6 +1,7 @@
+---
 jitsi_meet_videobridge_certifcate_check: false
 jitsi_meet_use_stun_turn: false
 jitsi_meet_jvb_sipcfg_authorized_source_regexp: ""
-jitsi_meet_octo: yes
+jitsi_meet_octo: true
 jitsi_meet_octo_probability: 1
 jitsi_meet_region: region1

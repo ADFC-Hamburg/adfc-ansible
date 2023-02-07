@@ -1,0 +1,81 @@
+---
+# Hat nichts mit coturn zu tun, muss aber irgendwo hin
+- name: Fixe WASM Mime Type
+  ansible.builtin.lineinfile:
+    path: /etc/nginx/mime.types
+    insertafter: ^.*vnd.openxmlformats-officedocument.presentationml.presentation.*
+    line: "    application/wasm wasm;"
+    regexp: application/wasm
+  tags: wasm
+- name: Installiere coturn
+  ansible.builtin.apt:
+    name:
+      - coturn
+      - ufw
+  tags: coturn
+- name: Check if Password file exists
+  ansible.builtin.stat:
+    path: /etc/coturn.secret
+  register: coturn_secret_stat
+
+- name: Generate Password file
+  ansible.builtin.copy:
+    content: "{{ lookup('password', '/dev/null length=15 chars=ascii_letters') }}"
+    dest: /etc/coturn.secret
+    mode: 0600
+    owner: root
+    group: root
+  when: not coturn_secret_stat.stat.exists
+- name: Generate Password file
+  ansible.builtin.slurp:
+    src: /etc/coturn.secret
+  register: coturn_secret
+- name: Zertifikats copy für coturn
+  ansible.builtin.copy:
+    content: |
+      #!/bin/bash
+      mkdir /etc/coturn
+      cp /etc/letsencrypt/live/{{ inventory_hostname }}/fullchain.pem /etc/coturn/cert.pem
+      cp /etc/letsencrypt/live/{{ inventory_hostname }}/privkey.pem /etc/coturn/
+      chmod 644 /etc/coturn/cert.pem
+      chmod 600 /etc/coturn/privkey.pem
+      chown turnserver /etc/coturn/privkey.pem
+    dest: /etc/cron.daily/coturn-cert.sh
+    mode: 0755
+  register: coturn_cert_cron
+  tags: coturn
+  notify: Coturn Certcopy
+
+- name: Create Direcotry
+  ansible.builtin.file:
+    path: /etc/coturn
+    state: directory
+    mode: "0755"
+  tags: coturn
+
+- name: Create DH File
+  community.crypto.openssl_dhparam:
+    path: /etc/coturn/dhparams.pem
+    size: 2066
+  notify: Restart turnserver
+  tags: coturn
+
+- name: Erstelle trunserver.conf
+  ansible.builtin.template:
+    src: turnserver.conf.j2
+    dest: /etc/turnserver.conf
+    mode: "0644"
+  vars:
+    turn_secret: "{{ coturn_secret.content | b64decode }}"
+  notify: Restart turnserver
+  tags: coturn
+- name: Allow Turn Server
+  community.general.ufw:
+    rule: allow
+    port: "4446"
+    proto: udp
+- name: Allow TLS Turn Server
+  community.general.ufw:
+    rule: allow
+    port: "4445"
+    proto: udp
