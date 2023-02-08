@@ -12,7 +12,7 @@
     - fonts
     - xrdp
     - unburden-home-dir
-    ##- firefox-client
+    - firefox-client
     - chromium
     - thunderbird
     - libreoffice

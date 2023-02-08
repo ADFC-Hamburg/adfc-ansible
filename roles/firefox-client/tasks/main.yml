@@ -1,10 +1,39 @@
+- name: "Uninstall Firefox snap package"
+  community.general.snap:
+    name:
+      - firefox
+    state: absent
+
+- name: Add Fireox repo
+  ansible.builtin.apt_repository:
+    repo: ppa:mozillateam/ppa
+
+- name: Pin Package
+  copy:
+    content: |
+      Package: *
+      Pin: release o=LP-PPA-mozillateam
+      Pin-Priority: 1001
+    dest: "/etc/apt/preferences.d/mozilla-firefox"
+    mode: 0644
+    owner: root
+    group: root
+
+- name: Add unattended update file
+  copy:
+    content: |
+      Unattended-Upgrade::Allowed-Origins:: "LP-PPA-mozillateam:${distro_codename}";
+    dest: /etc/apt/apt.conf.d/51unattended-upgrades-firefox
+    mode: 0644
+    owner: root
+    group: root
+
 - name: "Installiere Firefox"
   apt:
     name: "{{ packages }}"
   vars:
     packages:
       - firefox
-      - firefox-locale-de
       - wget
       - bsd-mailx
 
