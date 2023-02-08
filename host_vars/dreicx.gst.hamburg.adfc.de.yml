@@ -1,4 +1,5 @@
-ansible_ssh_common_args: '-o ProxyCommand="ssh -W %h:%p -q root@babelfish.spdns.de -p 922"'
+---
+ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q root@babelfish.spdns.de -p 922"
 ansible_host: 192.168.123.70
 
 haproxy_cert_and_key_files:

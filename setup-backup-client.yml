@@ -1,18 +1,19 @@
+---
 - hosts: backup_clients
   roles:
-    - load-contacts
-    - ssh-keys
-    - postfix-auth
+    - load_contacts
+    - ssh_keys
+    - postfix_auth
     - basic_setup
   tasks:
     # benötigte Programme installieren
     - name: Borgbackup ppa
-      apt_repository:
-        repo: "ppa:costamagnagianfranco/borgbackup/"
+      ansible.builtin.apt_repository:
+        repo: ppa:costamagnagianfranco/borgbackup/
       tags: software
 
     - name: Installiere Pakete
-      apt:
+      ansible.builtin.apt:
         name: "{{ packages }}"
       vars:
         packages:
@@ -23,7 +24,7 @@
       tags: monitoring, software
 
     - name: Create Directory /adfc-backup/
-      file:
+      ansible.builtin.file:
         path: /adfc-backup/
         state: directory
         mode: 0755
@@ -41,7 +42,7 @@
     ################################ Monitoring ####################
 
     - name: Create Local NRPE Config
-      template:
+      ansible.builtin.template:
         src: nrpe_local.cfg
         dest: /etc/nagios/nrpe_local.cfg
         mode: "0644"

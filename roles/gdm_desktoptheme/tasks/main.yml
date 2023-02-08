@@ -1,88 +1,92 @@
+---
 - name: Installiere gdm3
-  apt:
+  ansible.builtin.apt:
     name:
-    - gdm3
+      - gdm3
 
 - name: Create Desktop Theme Directory
-  file:
+  ansible.builtin.file:
     path: /usr/share/plasma/desktoptheme/ADFC
     state: directory
     mode: 0755
   tags: gdm
 
 - name: Sync Theme folder
-  synchronize:
+  ansible.posix.synchronize:
     src: desktopthemes/ADFC
     dest: /usr/share/plasma/desktoptheme/
-    recursive: yes
-    use_ssh_args: yes
+    recursive: true
+    ssh_args: true
   tags: gdm
 
 - name: Copy config for default desktoptheme
-  copy:
+  ansible.builtin.copy:
     src: desktopthemes/kubuntu-default-plasmarc
     dest: /usr/share/kubuntu-default-settings/kf5-settings/plasmarc
     mode: 0644
   tags: gdm
 
 - name: Create wallpaper directory
-  file:
+  ansible.builtin.file:
     path: /usr/share/wallpapers/ADFC
     state: directory
     mode: 0755
   tags: gdm
 
 - name: Sync wallpaper directory
-  synchronize:
+  ansible.posix.synchronize:
     src: wallpapers/ADFC
     dest: /usr/share/wallpapers/
-    recursive: yes
-    use_ssh_args: yes
+    recursive: true
+    ssh_args: true
   tags: gdm
 
 - name: Create Themes Directory
-  file:
+  ansible.builtin.file:
     path: /usr/local/share/themes/adfc/
     state: directory
     mode: 0755
   tags: gdm
 
 - name: Copy ADFC Logo
-  copy:
+  ansible.builtin.copy:
     src: ADFC-HH-rgb.jpg
     dest: /usr/local/share/themes/adfc/ADFC-HH-rgb.jpg
     mode: 0644
   tags: gdm
 
 - name: Remove Gnome Desktop file ubuntu.desktop
-  command:
+  ansible.builtin.command:
     argv:
-      - "/bin/mv"
-      - "/usr/share/xsessions/ubuntu.desktop"
-      - "/usr/share/xsessions/ubuntu.desktop.dontuse"
+      - /bin/mv
+      - /usr/share/xsessions/ubuntu.desktop
+      - /usr/share/xsessions/ubuntu.desktop.dontuse
     creates: /usr/share/xsessions/ubuntu.desktop.dontuse
     removes: /usr/share/xsessions/ubuntu.desktop
   tags: gdm
 
 - name: Remove Gnome Desktop file ubuntu-communitheme-snap.desktop
-  command:
+  ansible.builtin.command:
     argv:
-      - "/bin/mv"
-      - "/usr/share/xsessions/ubuntu-communitheme-snap.desktop"
-      - "/usr/share/xsessions/ubuntu-communitheme-snap.desktop.dontuse"
+      - /bin/mv
+      - /usr/share/xsessions/ubuntu-communitheme-snap.desktop
+      - /usr/share/xsessions/ubuntu-communitheme-snap.desktop.dontuse
     creates: /usr/share/xsessions/ubuntu-communitheme-snap.desktop.dontuse
     removes: /usr/share/xsessions/ubuntu-communitheme-snap.desktop
   tags: gdm
 
 - name: Copy GDM Config file
-  copy:
+  ansible.builtin.copy:
     src: client-etc-gdm3-greeter.dconf-defaults
     dest: /etc/gdm3/greeter.dconf-defaults
+    mode: 0644
+    owner: root
+    group: root
   notify: restart gdm3
   tags: gdm
 
-- name: copy ubuntu.css to client
-  copy:
+- name: Copy ubuntu.css to client
+  ansible.builtin.copy:
     src: ubuntu-adfc.css
     dest: /usr/share/gnome-shell/theme/ubuntu-adfc.css
     mode: 0644
@@ -90,24 +94,24 @@
   tags: gdm
 
 - name: Create Symbolic link to ubuntu-adfc.css
-  file:
+  ansible.builtin.file:
     src: /usr/share/gnome-shell/theme/ubuntu-adfc.css
     dest: /etc/alternatives/gdm3.css
     state: link
   notify: restart gdm3
   tags: gdm
 
-- name: copy ADFC-Login background
-  copy:
+- name: Copy ADFC-Login background
+  ansible.builtin.copy:
     src: ADFC-login-background.png
     dest: /usr/local/share/themes/adfc/ADFC-login-background.png
     mode: 0644
   notify: restart gdm3
   tags: gdm
 
-- name: enable service gdm3
-  systemd:
+- name: Enable service gdm3
+  ansible.builtin.systemd:
     state: started
-    enabled: yes
+    enabled: true
     name: gdm3
   tags: gdm

@@ -1,8 +1,9 @@
-- name: "Installiere Chromium"
-  apt:
+---
+- name: Installiere Chromium
+  ansible.builtin.apt:
     name: "{{ packages }}"
   vars:
     packages:
-     - chromium-browser
-     - chromium-browser-l10n
-     - chromium-codecs-ffmpeg-extra
+      - chromium-browser
+      - chromium-browser-l10n
+      - chromium-codecs-ffmpeg-extra

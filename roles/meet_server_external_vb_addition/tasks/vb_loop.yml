@@ -1,0 +1,36 @@
+---
+- name: Read password
+  ansible.builtin.include_tasks: ../../jitsi-videobridge/tasks/vb_password.yml
+  vars:
+    jitsi_meet_vb_password_file: /etc/jitsi_jvb{{ vb_host }}.secret
+    jitsi_meet_server: "{{ jitsi_meet_server_name }}"
+
+- name: Find all vb server
+  ansible.builtin.set_fact: # noqa jinja[spacing]
+    videobridges: "{{ videobridges + [ vb_host ] }}"
+    vb_comp: |
+      {{ vb_comp }}
+      Component "{{ vb_host }}"
+         component_secret = "{{  jitsi_meet_jvb_cfg_password }}"
+  when: vb_host != inventory_hostname
+
+#  Videobridge is connecting via ipv4 only
+# - name: Setup jitsi main server firewall for ipv6
+#   community.general.ufw:
+#    rule: allow
+#    port: "5347"
+#    from: "{{ lookup('dig', vb_host + '.', 'qtype=AAAA') }}"
+#    proto: tcp
+- name: Setup jitsi main server firewall for ipv4
+  community.general.ufw:
+    rule: allow
+    port: "5347"
+    from: "{{ lookup('dig', vb_host + '.', 'qtype=A') }}"
+    proto: tcp
+
+- name: Setup jitsi main server firewall for ipv6
+  community.general.ufw:
+    rule: allow
+    port: "5347"
+    from: "{{ lookup('dig', vb_host + '.', 'qtype=AAAA') }}"
+    proto: tcp

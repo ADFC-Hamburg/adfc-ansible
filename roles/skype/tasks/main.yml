@@ -1,16 +1,17 @@
-- name: remove skype repository
-  apt_repository:
-    repo: 'deb https://repo.skype.com/deb stable main'
+---
+- name: Remove skype repository
+  ansible.builtin.apt_repository:
+    repo: deb https://repo.skype.com/deb stable main
     state: absent
   tags: skype
 
-- name: check if skype is installed
-  stat:
+- name: Check if skype is installed
+  ansible.builtin.stat:
     path: /usr/share/applications/skypeforlinux.desktop
   register: skypedesktop
   tags: skype
 
 - name: Install skype for linux
-  include_tasks: install-skype.yml
+  ansible.builtin.include_tasks: install-skype.yml
   when: not skypedesktop.stat.exists
   tags: skype

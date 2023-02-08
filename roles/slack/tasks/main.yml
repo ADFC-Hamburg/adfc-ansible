@@ -1,12 +1,13 @@
+---
 # slack role
 
-- name: install necessary packages
-  apt:
+- name: Install necessary packages
+  ansible.builtin.apt:
     name:
-    - snapd
+      - snapd
 
 # snap requires ansible 2.8 or later
-- name: install slack via snap
-  snap:
+- name: Install slack via snap
+  community.general.snap:
     name: slack
-    classic: yes
+    classic: true

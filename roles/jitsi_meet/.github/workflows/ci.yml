@@ -1,11 +1,11 @@
+---
 # GitHub Actions docs
 # https://help.github.com/en/articles/about-github-actions
 # https://help.github.com/en/articles/workflow-syntax-for-github-actions
 
 name: CI
 
-on: [push]
-
+true: [push]
 jobs:
   build:
     # Machine environment:

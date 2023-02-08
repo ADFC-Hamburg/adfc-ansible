@@ -1,5 +1,6 @@
+---
 - name: ADFC Permission
   hosts: ucs-master.gst.hamburg.adfc.de
-  gather_facts: no
+  gather_facts: false
   roles:
     - adfc_permissions

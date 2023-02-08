@@ -1,3 +1,4 @@
+---
 hcloud_image: debian-11
 # cx11 kleinster Server mit einer CPU für Tests
 # ccx31 8 Dedicierte VCPUs 32 GB RAM
@@ -8,12 +9,12 @@ hcloud_failure_server_location: fsn1
 
 ansible_python_interpreter: /usr/bin/python3
 
-ucs_dns_zonename: "dyndns.adfc-intern.de"
-ucs_dns_hostname: "vbdh03.dyndns.adfc-intern.de"
+ucs_dns_zonename: dyndns.adfc-intern.de
+ucs_dns_hostname: vbdh03.dyndns.adfc-intern.de
 
 jitsi_meet_jvb_cfg_java_jvb_props:
-   - "--subdomain=vbdh03"
-   - "--apis=rest"
+  - --subdomain=vbdh03
+  - --apis=rest
 
 dynamic_jitsi_scaler_turn_on:
   participants: 100
@@ -22,4 +23,4 @@ dynamic_jitsi_scaler_turn_on:
 dynamic_jitsi_scaler_turn_off:
   participants: 90
   conferences: 10
-delete_start_meet_vb: no
+delete_start_meet_vb: false

@@ -1,9 +1,9 @@
-- name: install dehydrated http
-  template:
+---
+- name: Install dehydrated http
+  ansible.builtin.template:
     src: dehydrated-http.service.j2
     dest: /etc/systemd/system/dehydrated-http.service
     mode: 0644
     owner: root
     group: root
   notify: restart dehydrated http
--

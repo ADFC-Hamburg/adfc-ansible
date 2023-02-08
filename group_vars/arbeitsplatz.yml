@@ -1,7 +1,5 @@
+---
 firefox_extensions:
-  #- name: "https_everywhere.xpi"
-  #  id: "https-everywhere@eff.org.xpi"
-  #  url: "https://addons.mozilla.org/firefox/downloads/file/3060290/https_everywhere.xpi"
   - name: "ublock_origin.xpi"
     id: "uBlock0@raymondhill.net.xpi"
     url: "https://addons.mozilla.org/firefox/downloads/file/1166954/ublock_origin.xpi"
@@ -21,4 +19,4 @@ unattended_automatic_reboot_time: 03:00
 
 ansible_python_interpreter: /usr/bin/python3
 ansible_host_macaddress: ff:ff:ff:ff:ff:ff
-ansible_ssh_common_args: '-o ProxyCommand="ssh -W %h:%p -q root@babelfish.spdns.de -p 922"'
+ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q root@babelfish.spdns.de -p 922"
