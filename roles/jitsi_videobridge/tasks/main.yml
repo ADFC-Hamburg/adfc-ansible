@@ -28,6 +28,17 @@
     update_cache: true
   with_dict: "{{ jitsi_meet_apt_repos }}"
 
+- name: Create pin for jitsi-videobridge2
+  ansible.builtin.copy:
+    content: |
+      Package: jitsi-videobridge2
+      Pin: version 2.1-681-g3544ed05-1
+      Pin-Priority: 1000
+    dest: /etc/apt/preferences.d/jitsi-videobridge2
+    mode: 0644
+    owner: root
+    group: root
+
 - name: Install Debian Pakackage
   ansible.builtin.apt:
     name:
