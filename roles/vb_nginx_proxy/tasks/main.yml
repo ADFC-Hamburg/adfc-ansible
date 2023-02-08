@@ -10,7 +10,7 @@
     owner: root
     group: root
     mode: "0644"
-  notify: restart nginx
+  notify: Restart nginx
 
 - name: Generate Diffie-Hellman parameters with the default size (4096 bits)
   community.crypto.openssl_dhparam:
@@ -20,11 +20,11 @@
   ansible.builtin.file:
     path: /etc/nginx/sites-enabled/default
     state: absent
-  notify: restart nginx
+  notify: Restart nginx
 
 - name: Activate custom Jitsi Meet Nginx site.
   ansible.builtin.file:
     path: /etc/nginx/sites-enabled/{{ inventory_hostname }}.conf
     src: /etc/nginx/sites-available/{{ inventory_hostname }}.conf
     state: link
-  notify: restart nginx
+  notify: Restart nginx

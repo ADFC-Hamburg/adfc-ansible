@@ -45,7 +45,7 @@
     owner: root
     group: root
     mode: "0644"
-  notify: restart jitsi-videobridge
+  notify: Restart jitsi-videobridge
 
 - name: Create sip-communicator.properties config
   ansible.builtin.template:
@@ -56,14 +56,14 @@
     mode: "0644"
   vars:
     jitsi_meet_jvb_cfg_password: "{{ vb_password_file_slurp.content | b64decode }}"
-  notify: restart jitsi-videobridge
+  notify: Restart jitsi-videobridge
 
 - name: Add videobridge jvb.config
   ansible.builtin.template:
     src: "{{ jitsi_meet_videobridge_jvb_config }}"
     dest: /etc/jitsi/videobridge/jvb.conf
     mode: 0644
-  notify: restart jitsi-videobridge
+  notify: Restart jitsi-videobridge
 
 - name: Setup jitsi main server firewall for ipv6
   community.general.ufw:
