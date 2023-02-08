@@ -115,6 +115,12 @@
   tags:
     - skip_ansible_lint
 
+- name: Wait for connection to net1
+  ansible.builtin.wait_for_connection:
+  vars:
+    ansible_host: "{{ hcloud_ipv4_address }}"
+    ansible_ssh_extra_args: -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null
+
 - name: Copy keys
   ansible.builtin.copy:
     content: "{{ hcloud_ssh_keys.stdout }}"
