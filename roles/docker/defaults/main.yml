@@ -12,6 +12,7 @@ docker_packages:
   - containerd.io
   - docker-compose-plugin
   - python3-docker
+  - apparmor
 docker_repo_gpg_key: https://download.docker.com/linux/debian/gpg
 docker_repo_gpg_key_dest: /etc/apt/trusted.gpg.d/docker.asc
 docker_repo_gpg_key_gpg: /etc/apt/trusted.gpg.d/docker.gpg
