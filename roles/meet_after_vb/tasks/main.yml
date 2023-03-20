@@ -1,23 +1,24 @@
+---
 - name: Alles neu starten etc
-  meta: flush_handlers
+  ansible.builtin.meta: flush_handlers
 
 - name: Setup cron vb restart
   ansible.builtin.cron:
-    name: "vb-restart"
-    minute: "{{ lookup('pipe','date -d -9min +%M') }}"
-    hour: "21-23"
+    name: vb-restart
+    minute: "{{ lookup('pipe', 'date -d -9min +%M') }}"
+    hour: 21-23
     user: root
-    job: "/usr/bin/systemctl restart jitsi-videobridge2.service"
+    job: /usr/bin/systemctl restart jitsi-videobridge2.service
     cron_file: ansible_vb_restart
 
 - name: Wait 10 seconds
-  pause:
+  ansible.builtin.pause:
     seconds: 10
   when: hostvars[jitsi_meet_server_name].stop_jitsi_vb_on_main | default('false')
 
 - name: Perfom graceful shutdown
-  uri: # noqa ignore-errors
-    url: "http://127.0.0.1:8080/colibri/shutdown"
+  ansible.builtin.uri: # noqa ignore-errors
+    url: http://127.0.0.1:8080/colibri/shutdown
     method: POST
     body: '{ "graceful-shutdown": "true" }'
     body_format: json
@@ -26,12 +27,12 @@
   delegate_to: "{{ jitsi_meet_server_name }}"
 
 - name: Wait 20 seconds
-  pause:
+  ansible.builtin.pause:
     seconds: 20
   when: hostvars[jitsi_meet_server_name].stop_jitsi_vb_on_main | default('false')
 
 - name: Stop Jitsi-Meet vb
-  systemd:
+  ansible.builtin.systemd:
     name: jitsi-videobridge2
     state: stopped
   vars:
@@ -40,23 +41,23 @@
   when: hostvars[jitsi_meet_server_name].stop_jitsi_vb_on_main | default('false')
 
 - name: Read Influx Password
-  slurp:
+  ansible.builtin.slurp:
     path: /etc/influx.secrect
   register: influx_pw
   delegate_to: proxmox01.adfc-intern.de
   when: hostvars[jitsi_meet_server_name].stop_jitsi_vb_on_main | default('false')
 
 - name: Write 0 Value to influx
-  influxdb_write:
-    hostname: "localhost"
-    database_name: "telegraf"
+  community.general.influxdb_write:
+    hostname: localhost
+    database_name: telegraf
     username: admin
-    password: "{{ influx_pw.content |b64decode }}"
+    password: "{{ influx_pw.content | b64decode }}"
     data_points:
       - measurement: jitsi_stats
         tags:
           host: "{{ jitsi_meet_server_name.split('.')[0] }}"
-          ansible: yes
+          ansible: true
         fields: "{{ influx_null_values }}"
   delegate_to: proxmox01.adfc-intern.de
   when: hostvars[jitsi_meet_server_name].stop_jitsi_vb_on_main | default('false')

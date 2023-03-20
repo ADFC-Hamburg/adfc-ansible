@@ -1,25 +1,26 @@
+---
 # Wir muessen das in eine Extra Command packen, da Proxmox die ssh  Keys synchronisert und dann
 # unterschiedliche Commands auf den Nodes sind
 - name: Create cat command
-  copy:
-      content: |
-        #!/bin/bash
-        exec {{ ssh_command }}
-      dest: /usr/local/sbin/haproxy_keycat
-      mode: 0700
-      owner: root
-      group: root
+  ansible.builtin.copy:
+    content: |
+      #!/bin/bash
+      exec {{ ssh_command }}
+    dest: /usr/local/sbin/haproxy_keycat
+    mode: 0700
+    owner: root
+    group: root
   delegate_to: "{{ ha_backend_host }}"
   vars:
-    ssh_command: "/bin/cat {{ hostvars[ha_backend_host]['haproxy_cert_and_key_files'] |join(' ') }}"
-  when: "hostvars[ha_backend_host]['haproxy_cert_and_key_files'] | default([]) |length >0"
+    ssh_command: /bin/cat {{ hostvars[ha_backend_host]['haproxy_cert_and_key_files'] | join(' ') }}
+  when: hostvars[ha_backend_host]['haproxy_cert_and_key_files'] | default([]) |length >0
 
-- name: add ssh key for haproxy ssl key transfer
-  authorized_key:
-      user: "root"
-      comment: "ADFC-Ansible haproxy role"
-      key: "{{ keycopy_ssh_keypair.public_key }}"
-      state: present
-      key_options: "restrict,command=\"/usr/local/sbin/haproxy_keycat\""
+- name: Add ssh key for haproxy ssl key transfer
+  ansible.posix.authorized_key:
+    user: root
+    comment: ADFC-Ansible haproxy role
+    key: "{{ keycopy_ssh_keypair.public_key }}"
+    state: present
+    key_options: restrict,command="/usr/local/sbin/haproxy_keycat"
   delegate_to: "{{ ha_backend_host }}"
-  when: "hostvars[ha_backend_host]['haproxy_cert_and_key_files'] | default([]) |length >0"
+  when: hostvars[ha_backend_host]['haproxy_cert_and_key_files'] | default([]) |length >0

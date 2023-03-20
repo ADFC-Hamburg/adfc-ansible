@@ -1,0 +1,13 @@
+---
+- name: Postfix postmap smtp_auth
+  ansible.builtin.command: /usr/sbin/postmap /etc/postfix/smtp_auth
+  notify: reload postfix
+
+- name: Postfix newaliases
+  ansible.builtin.command: /usr/bin/newaliases
+  notify: reload postfix
+
+- name: Reload postfix
+  ansible.builtin.service:
+    name: postfix
+    state: restarted

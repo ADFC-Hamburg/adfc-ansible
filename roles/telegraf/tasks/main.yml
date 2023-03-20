@@ -1,3 +1,4 @@
+---
 - name: Import InfluxDB GPG signing key with apt_key
   ansible.builtin.apt_key:
     url: "{{ influx_repo_gpg_key_url }}"
@@ -9,6 +10,9 @@
     url: "{{ influx_repo_gpg_key_url }}"
     dest: /etc/apt/trusted.gpg.d/influxdb.key
     checksum: "sha256:{{ influx_repo_gpg_key_sha256 }}"
+    mode: 0644
+    owner: root
+    group: root
   when: ansible_distribution_release == 'bullseye'
 
 - name: Convert key on 'bullseye'
@@ -41,28 +45,28 @@
     path: /etc/telegraf/telegraf.conf
     regexp: '^.*\[\[outputs.influxdb\]\]'
     line: "# [[outputs.influxdb]]"
-  notify: restart telegraf
+  notify: Restart telegraf
 
 - name: Create output info
   ansible.builtin.template:
     src: output-influx.conf.j2
     dest: /etc/telegraf/telegraf.d/output-influx.conf
     mode: "0644"
-    owner: "root"
-    group: "root"
+    owner: root
+    group: root
   vars:
     influxdb_password: "{{ influx_password_file_slurp.content | b64decode }}"
-  notify: restart telegraf
+  notify: Restart telegraf
 
 - name: Create network stat
   ansible.builtin.template:
     src: inputs-net.conf.j2
     dest: /etc/telegraf/telegraf.d/inputs-net.conf
     mode: "0644"
-    owner: "root"
-    group: "root"
+    owner: root
+    group: root
   when: telegraf_net
-  notify: restart telegraf
+  notify: Restart telegraf
 
 - name: Remove jtisi stat
   ansible.builtin.file:
@@ -75,17 +79,17 @@
     src: input-jitsi-stats.conf.j2
     dest: /etc/telegraf/telegraf.d/input-jitsi-stats.conf
     mode: "0644"
-    owner: "root"
-    group: "root"
+    owner: root
+    group: root
   when: telegraf_jitsi
-  notify: restart telegraf
+  notify: Restart telegraf
 
 - name: Remove jtisi stat
   ansible.builtin.file:
     path: /etc/telegraf/telegraf.d/input-jitsi-stats.conf
     state: absent
   when: not telegraf_jitsi
-  notify: restart telegraf
+  notify: Restart telegraf
 
 - name: Reset systemd
   ansible.builtin.command: # noqa command-instead-of-module

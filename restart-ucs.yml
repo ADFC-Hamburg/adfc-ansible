@@ -1,8 +1,9 @@
+---
 - hosts: proxmox02.gst.hamburg.adfc.de
-  gather_facts: no
+  gather_facts: false
   roles:
-    - ucs-master-start
+    - ucs_master_start
   tasks:
     - name: test
-      debug:
+      ansible.builtin.debug:
         msg: hello world

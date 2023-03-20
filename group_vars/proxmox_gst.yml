@@ -1,5 +1,5 @@
+---
 haproxy_backend_group: haproxy_gst_backends
-
 
 #  - matratze.gst.hamburg.adfc.de
 haproxy_https_extra_content: |
@@ -38,7 +38,7 @@ haproxy_file_extra_content: |
      mode http
      server haproxy.gst.hamburg.adfc.de 127.0.0.1:2022
 
-dehydrated_deploy_hook: |
+dehydrated_deploy_hook: |-
   cp ${FULLCHAINFILE} /etc/pve/local/pveproxy-ssl.pem
   cp ${KEYFILE} /etc/pve/local/pveproxy-ssl.key
   systemctl restart pveproxy.service

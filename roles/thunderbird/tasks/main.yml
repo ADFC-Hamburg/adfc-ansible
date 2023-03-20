@@ -1,5 +1,6 @@
+---
 - name: Install Thunderbid + Lighting
-  apt:
+  ansible.builtin.apt:
     name:
       - thunderbird
       - thunderbird-locale-de
@@ -7,8 +8,8 @@
   tags: software, thunderbird
 
 - name: Setup Thunderbid Settings
-  copy:
-    src:  sysprefs.js
+  ansible.builtin.copy:
+    src: sysprefs.js
     dest: /etc/thunderbird/syspref.js
     mode: "0644"
   tags: software, thunderbird

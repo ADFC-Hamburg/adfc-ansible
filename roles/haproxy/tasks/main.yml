@@ -1,9 +1,10 @@
+---
 - name: Install haproxy
-  apt:
+  ansible.builtin.apt:
     name: haproxy
 
 - name: Generate directories
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     mode: 0755
@@ -21,13 +22,13 @@
   register: keycopy_ssh_keypair
 
 - name: Include keycopy
-  include_tasks: keycopy.yml
+  ansible.builtin.include_tasks: keycopy.yml
   loop: "{{ groups[haproxy_backend_group] }}"
   loop_control:
     loop_var: ha_backend_host
 
 - name: Write keycopy command
-  template:
+  ansible.builtin.template:
     src: fetch_haproxy_certs.sh.j2
     dest: /usr/local/share/harpoxy-key-copy/fetch-certs
     mode: 0700
@@ -35,7 +36,7 @@
     group: root
   register: fetch_certs_templ
   tags:
-   - haproxy-fetch-certs
+    - haproxy-fetch-certs
 
 - name: Write fetch-crl command
   ansible.builtin.copy:
@@ -45,10 +46,10 @@
     owner: root
     group: root
   tags:
-   - haproxy-fetch-crl
+    - haproxy-fetch-crl
 
 - name: Search for certs
-  find:
+  ansible.builtin.find:
     path:
       - /etc/haproxy/certs
     patterns:
@@ -56,35 +57,35 @@
   register: find_certs
 
 - name: Call keycopy
-  command: # noqa no-handler
+  ansible.builtin.command: # noqa no-handler
     cmd: /usr/local/share/harpoxy-key-copy/fetch-certs
   changed_when: true
-  when: "find_certs.matched == 0 or fetch_certs_templ.changed"
+  when: find_certs.matched == 0 or fetch_certs_templ.changed
 
 - name: Put Keycopy in cron
   ansible.builtin.cron:
     name: keycopy
     hour: "3"
-    minute: "{{ 59 |random(seed=inventory_hostname) }}"
+    minute: "{{ 59 | random(seed=inventory_hostname) }}"
     user: root
-    job: "/usr/local/share/harpoxy-key-copy/fetch-certs"
+    job: /usr/local/share/harpoxy-key-copy/fetch-certs
     cron_file: ansible_haproxy_fetch_certs
 
 - name: Put CRL Fetch in cron
   ansible.builtin.cron:
     name: crlfetch
-    hour: "4-23"
-    minute: "{{ 59 |random(seed=inventory_hostname) }}"
+    hour: 4-23
+    minute: "{{ 59 | random(seed=inventory_hostname) }}"
     user: root
-    job: "/usr/local/share/harpoxy-key-copy/fetch-crl"
+    job: /usr/local/share/harpoxy-key-copy/fetch-crl
     cron_file: ansible_haproxy_fetch_certs
   tags:
-   - haproxy-fetch-crl
+    - haproxy-fetch-crl
 
 - name: Copy Static files
-  copy:
+  ansible.builtin.copy:
     src: "{{ item }}"
-    dest: "/etc/haproxy/static/{{ item }}"
+    dest: /etc/haproxy/static/{{ item }}
     mode: 0644
     owner: root
     group: root
@@ -92,8 +93,8 @@
     - fehler.http.static.html
     - fehler.https.static.html
 
-- name: copy Univention Certificates
-  include_tasks: copy.yml
+- name: Copy Univention Certificates
+  ansible.builtin.include_tasks: copy.yml
   with_items:
     - src_file: /etc/univention/ssl/ucsCA/CAcert.pem
       dst_file: /etc/haproxy/cert_auth/CA.pem
@@ -101,7 +102,7 @@
       dst_file: /etc/haproxy/cert_auth/crl.pem
 
 - name: Generate haproxy template
-  template:
+  ansible.builtin.template:
     src: haproxy.cfg.j2
     dest: /etc/haproxy/haproxy.cfg
     mode: 0644

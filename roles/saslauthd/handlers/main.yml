@@ -1,6 +1,7 @@
+---
 - name: Restart saslauthd
-  systemd:
+  ansible.builtin.systemd:
     name: saslauthd
-    daemon_reload: yes
+    daemon_reload: true
     state: restarted
-    enabled: yes
+    enabled: true

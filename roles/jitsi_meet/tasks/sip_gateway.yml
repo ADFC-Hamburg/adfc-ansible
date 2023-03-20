@@ -1,12 +1,11 @@
 ---
-
 - name: Install jigasi
-  apt:
+  ansible.builtin.apt:
     name: jigasi
     state: present
 
 - name: Set debconf options for jigasi
-  debconf:
+  ansible.builtin.debconf: # noqa args[module]
     name: "{{ item.name }}"
     question: "{{ item.question }}"
     value: "{{ item.value }}"

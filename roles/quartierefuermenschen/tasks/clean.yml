@@ -1,15 +1,16 @@
+---
 - name: Delete Wordpress Conatiner
-  docker_container:
-    name: "wp_quartierefuermenschen"
+  community.docker.docker_container:
+    name: wp_quartierefuermenschen
     state: absent
 
 - name: Setup Wordpress Docker Volume
-  docker_volume:
+  community.docker.docker_volume:
     name: "{{ qfm_docker_volume }}"
     state: absent
 
 - name: Delete mysql user qfm
-  mysql_user:
+  community.mysql.mysql_user:
     name: "{{ qfm_mysql_user }}"
     login_user: root
     login_password: "{{ mysql_root_password }}"
@@ -17,7 +18,7 @@
     state: absent
 
 - name: Delete DB
-  mysql_db:
+  community.mysql.mysql_db:
     name: "{{ qfm_mysql_db }}"
     login_user: root
     login_password: "{{ mysql_root_password }}"

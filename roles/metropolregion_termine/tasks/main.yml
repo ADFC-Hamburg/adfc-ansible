@@ -1,25 +1,26 @@
+---
 - name: Download Pyhton Packages
-  apt:
+  ansible.builtin.apt:
     name: "{{ metropolregion_termine_packages }}"
 
 - name: Create user
-  user:
+  ansible.builtin.user:
     name: metroterm
     comment: Metropolregion Termin
     shell: /bin/bash
-    password: '*'
-    system: yes
+    password: "*"
+    system: true
 
 - name: Git clone
-  git:
+  ansible.builtin.git:
     repo: "{{ metropolregion_termine_git_repo }}"
-    dest: "/home/metroterm/metropolregion_termine_git"
+    dest: /home/metroterm/metropolregion_termine_git
     version: "{{ metropolregion_termine_git_version }}"
-  become: yes
+  become: true
   become_user: metroterm
 
 - name: Create Dest Dir
-  file:
+  ansible.builtin.file:
     path: "{{ metropolregion_termine_www_dest_dir }}"
     mode: 0755
     owner: metroterm
@@ -27,29 +28,28 @@
     state: directory
 
 - name: Create command
-  template:
+  ansible.builtin.template:
     src: metropol_run.sh.j2
-    dest: "/home/metroterm/run_daily.sh"
+    dest: /home/metroterm/run_daily.sh
     mode: "0700"
     owner: metroterm
     group: metroterm
 
 - name: Delete VADB for Test
-  file:
+  ansible.builtin.file:
     path: /home/metroterm/metropolregion_termine_git/venv/src/ADFC-VADB.xml
     state: absent
 
 - name: Test call
-  command: "/home/metroterm/run_daily.sh"
-  become: yes
+  ansible.builtin.command: /home/metroterm/run_daily.sh
+  become: true
   become_user: metroterm
 
-
 - name: Cron Job um 23:17 Uhr
-  cron:
-    name: "Metropolregion Termine"
+  ansible.builtin.cron:
+    name: Metropolregion Termine
     minute: "17"
     hour: "23"
     user: metroterm
     cron_file: metropolregion_termine
-    job: "/home/metroterm/run_daily.sh"
+    job: /home/metroterm/run_daily.sh
