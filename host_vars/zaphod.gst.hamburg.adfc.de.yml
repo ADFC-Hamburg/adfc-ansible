@@ -1,4 +1,3 @@
----
-ansible_host: 192.168.123.97
+ansible_host: 192.168.123.102
 tasmota_wireless_ip: 192.168.123.61
 ansible_host_macaddress: 08:60:6e:c5:91:b5
