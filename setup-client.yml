@@ -296,3 +296,11 @@
     - name: Remove unwanted packages
       include_role:
         name: client_apt_remove
+
+    - name: Pcscd
+      ansible.builtin.systemd:
+        name: pcscd.service
+        state: started
+        enabled: yes
+      tags:
+        - pcscd_start
