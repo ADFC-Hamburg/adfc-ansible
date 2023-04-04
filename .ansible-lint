@@ -1,9 +1,8 @@
+---
 exclude_paths:
   - .cache/
   - .github/
   - ~/.ansible/roles/jnv.unattended-upgrades
 skip_list:
   - no-changed-when
-  - risky-file-permissions
-  - role-name
-offline: true
+  - schema[meta]

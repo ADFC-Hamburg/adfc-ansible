@@ -1,21 +1,22 @@
+---
 - name: Setup Hetzner Server
   hosts: jitsi_vbs
-  gather_facts: no
+  gather_facts: false
   roles:
-    - hcloud-server
+    - hcloud_server
   vars:
     hcloud_test: false
 
 - name: Setup Videobridge
   hosts: jitsi_vbs
-  gather_facts: yes
+  gather_facts: true
   roles:
-    - ssh-keys
-    - update-os
-    - restore-hcloud-letsenrypt
+    - ssh_keys
+    - update_os
+    - restore_hcloud_letsenrypt
     - geerlingguy.certbot
     - certbot_renew
-    - vb-nginx-proxy
-    - jitsi-videobridge
+    - vb_nginx_proxy
+    - jitsi_videobridge
     - telegraf
     - meet_after_vb

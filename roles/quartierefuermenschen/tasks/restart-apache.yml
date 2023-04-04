@@ -1,8 +1,9 @@
+---
 - name: Check Syntax
-  command: apache2ctl configtest
-  changed_when: False
+  ansible.builtin.command: apache2ctl configtest
+  changed_when: false
 
 - name: Restart Apache
-  service:
+  ansible.builtin.service:
     name: apache2
     state: restarted

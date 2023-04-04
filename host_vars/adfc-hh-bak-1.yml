@@ -1,7 +1,8 @@
+---
 ansible_user: root
 vpnc_user: backup1
 
 ansible_host: svelke.anders-hamburg.de
 ansible_port: 922
 
-backup_disk_src: "UUID=d35aa939-f326-418b-9fbd-f65dcfcfca65"
+backup_disk_src: UUID=d35aa939-f326-418b-9fbd-f65dcfcfca65

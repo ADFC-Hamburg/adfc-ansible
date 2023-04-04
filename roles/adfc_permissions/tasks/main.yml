@@ -1,5 +1,6 @@
+---
 - name: Create fix_adfc_perms.sh
-  template:
+  ansible.builtin.template:
     src: fix_adfc_perms.sh.j2
     dest: /usr/local/sbin/fix_adfc_perms.sh
     mode: 0700
@@ -7,9 +8,9 @@
     group: root
 
 - name: Install systemd files
-  copy:
+  ansible.builtin.copy:
     src: "{{ item }}"
-    dest: "/etc/systemd/system/{{ item }}"
+    dest: /etc/systemd/system/{{ item }}
     mode: 0644
     owner: root
     group: root

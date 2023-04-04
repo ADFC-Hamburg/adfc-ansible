@@ -1,22 +1,21 @@
 ---
-
-- name: set DefaultLimitNPROC=65000
-  replace:
+- name: Set DefaultLimitNPROC=65000
+  ansible.builtin.replace:
     path: /etc/systemd/system.conf
-    regexp: '#DefaultLimitNPROC=$'
-    replace: 'DefaultLimitNPROC=65000'
+    regexp: "#DefaultLimitNPROC=$"
+    replace: DefaultLimitNPROC=65000
   notify: reload systemctl
 
-- name: set DefaultTasksMax=65000
-  replace:
+- name: Set DefaultTasksMax=65000
+  ansible.builtin.replace:
     path: /etc/systemd/system.conf
-    regexp: '#DefaultTasksMax=$'
-    replace: 'DefaultTasksMax=65000'
+    regexp: "#DefaultTasksMax=$"
+    replace: DefaultTasksMax=65000
   notify: reload systemctl
 
-- name: set DefaultLimitNOFILE=65000
-  replace:
+- name: Set DefaultLimitNOFILE=65000
+  ansible.builtin.replace:
     path: /etc/systemd/system.conf
-    regexp: '#DefaultLimitNOFILE=$'
-    replace: 'DefaultLimitNOFILE=65000'
+    regexp: "#DefaultLimitNOFILE=$"
+    replace: DefaultLimitNOFILE=65000
   notify: reload systemctl

@@ -1,3 +1,0 @@
----
-- name: "Run firefox extension update"
-  command: /etc/cron.daily/firefox-extension-update.sh

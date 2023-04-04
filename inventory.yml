@@ -1,3 +1,4 @@
+---
 all:
   children:
     server:
@@ -85,6 +86,7 @@ all:
       hosts:
         chat1.hamburg.adfc.de:
         chat2.hamburg.adfc.de:
+        chat3.hamburg.adfc.de:
     tasmota:
       hosts:
         tasmota-0673.gst.hamburg.adfc.de:

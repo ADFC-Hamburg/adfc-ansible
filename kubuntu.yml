@@ -1,3 +1,4 @@
+---
 - hosts: arbeitsplatz
   roles:
-  - kubuntu
+    - kubuntu

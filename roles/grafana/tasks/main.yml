@@ -1,21 +1,22 @@
+---
 - name: Import GPG signing key
-  apt_key:
+  ansible.builtin.apt_key:
     url: https://packages.grafana.com/gpg.key
     state: present
 
 - name: Add repository
-  apt_repository:
-    repo: 'deb https://packages.grafana.com/oss/deb stable main'
+  ansible.builtin.apt_repository:
+    repo: deb https://packages.grafana.com/oss/deb stable main
     state: present
 
 - name: Install Grafana packages
-  apt:
+  ansible.builtin.apt:
     name:
       - grafana
     state: present
 
 - name: Setup Grafana Ini File
-  template:
+  ansible.builtin.template:
     src: grafana.ini.j2
     dest: /etc/grafana/grafana.ini
     mode: "0640"
@@ -24,7 +25,7 @@
   notify: restart grafana
 
 - name: Enable grafana
-  systemd:
+  ansible.builtin.systemd:
     name: grafana-server
     state: started
     enabled: true
