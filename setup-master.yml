@@ -22,21 +22,21 @@
         state: restarted
 
   tasks:
-    - name: enable cool solutions
-      ucr:
-        values:
-          repository/online/component/cool-solutions: true
-          repository/online/component/cool-solutions/version: current
-          repository/online/component/cool-solutions/unmaintained: true
-      tags: cool_solutions
-    - name: check if univention-homedir-autocreate is installed
-      ansible.builtin.stat:
-        path: /usr/lib/univention-directory-listener/system/homedir-autocreate.py
-      register: stat_homedir_listener
-    - name: install module for autocreation of home dirs
-      ansible.builtin.command: univention-install univention-homedir-autocreate
-      when: not stat_homedir_listener.stat.exists
-      tags: cool_solutions
+#    - name: enable cool solutions
+#      ucr:
+#        values:
+#          repository/online/component/cool-solutions: true
+#          repository/online/component/cool-solutions/version: current
+#          repository/online/component/cool-solutions/unmaintained: true
+#      tags: cool_solutions
+#    - name: check if univention-homedir-autocreate is installed
+#      ansible.builtin.stat:
+#        path: /usr/lib/univention-directory-listener/system/homedir-autocreate.py
+#      register: stat_homedir_listener
+#    - name: install module for autocreation of home dirs
+#      ansible.builtin.command: univention-install univention-homedir-autocreate
+#      when: not stat_homedir_listener.stat.exists
+#      tags: cool_solutions
 
     - name: install postfix sender_canonical
       ansible.builtin.template:
@@ -77,7 +77,7 @@
         hour: 10,14,17
         minute: "11"
         cron_file: ansible_backup_win
-        ansible.builtin.user: root
+        user: root
         job: /usr/local/sbin/adfc-backup-win7pro
       tags: backup-windows
 
@@ -105,3 +105,13 @@
         name: wakeonlan
         state: present
         update_cache: true
+
+    - name: Create Delete Scan Script
+      ansible.builtin.cron:
+        name: adfc-scan-delete
+        hour: 12
+        minute: 32
+        cron_file: ansible_scan_delete
+        user: root
+        job: /usr/bin/find /adfc/08_Scans/ -mtime +30 -delete
+      tags: adfc_scan_delete
