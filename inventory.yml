@@ -76,12 +76,19 @@ all:
       hosts:
         adfc-hh-bak-1:
         adfc-hh-bak-2:
+    save_with_borg:
+      hosts:
+        portal.openbikesensor.hamburg:
+        chat2.hamburg.adfc.de:
+        ucs-master.gst.hamburg.adfc.de:
     domain_factory:
       hosts:
         status.adfc-intern.de:
     hetzner:
       children:
         rocket_chat:
+      hosts:
+        portal.openbikesensor.hamburg:
     rocket_chat:
       hosts:
         chat1.hamburg.adfc.de:

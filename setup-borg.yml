@@ -1,7 +1,6 @@
 ---
 - hosts:
-    - ucs-master.gst.hamburg.adfc.de
-    - chat2.hamburg.adfc.de
+    - save_with_borg
   gather_facts: true
   roles:
     - borg_server

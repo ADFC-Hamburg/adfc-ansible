@@ -1,0 +1,13 @@
+ssh_users_admins:
+  - svena
+  - volkerk
+  - georgs
+borg_create_pre_job: >-
+  /root/maintenance/borg-backup-helper
+borg_save_path: "/opt/openbikesensor /etc /root/backups/borg"
+borg_save_exclude_dirs:
+  - /tmp
+public_ipv4: "{{ lookup('dig', inventory_hostname, 'qtype=A') }}"
+borg_cron_hour: "5"
+borg_cron_minute: "9"
+borg_client_user: "borg-obs"
