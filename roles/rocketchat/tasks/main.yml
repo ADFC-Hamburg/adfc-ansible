@@ -75,7 +75,7 @@
     owner: root
     group: root
   notify:
-    - restart nginx
+    - Restart nginx
   tags:
     - nginx
 
@@ -87,7 +87,7 @@
     owner: root
     group: root
   notify:
-    - restart nginx
+    - Restart nginx
   tags:
     - nginx
 
@@ -96,7 +96,7 @@
     path: /etc/nginx/sites-enabled/default.conf
     state: absent
   notify:
-    - restart nginx
+    - Restart nginx
   tags:
     - nginx
 
@@ -106,7 +106,7 @@
     dest: /etc/nginx/sites-enabled/{{ rocketchat_server_name }}.conf
     state: link
   notify:
-    - restart nginx
+    - Restart nginx
   tags:
     - nginx_synlink
 
