@@ -14,9 +14,7 @@ all:
             meet_server:
               hosts:
                 meet.adfc-intern.de:
-                test.adfc-intern.de:
                 test1.dyndns.adfc-intern.de:
-                test2.dyndns.adfc-intern.de:
             jitsi_vbs:
               children:
                 meet_vb:
@@ -33,7 +31,6 @@ all:
                     vbedh03.dyndns.adfc-intern.de:
             meet_test:
               hosts:
-                test.adfc-intern.de:
                 vb01.test.adfc-intern.de:
                 test1.dyndns.adfc-intern.de:
             meet_live:

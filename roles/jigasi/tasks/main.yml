@@ -10,6 +10,7 @@
       - openjdk-11-jre-headless
   when: ansible_distribution_release == 'bullseye'
 
+# jscpd:ignore-start
 - name: Check if password file is there
   ansible.builtin.stat:
     path: /etc/jigasi-sip.secret
@@ -28,6 +29,7 @@
     path: /etc/jigasi-sip.secret
   register: jigasi_sip_secret
 
+# jscpd:ignore-end
 - name: Create sip-communicatior.properties
   ansible.builtin.template:
     src: jigasi_sip-communicator.properties.j2
