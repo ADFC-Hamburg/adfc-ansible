@@ -14,6 +14,7 @@
     path: /etc/apt/sources.list.d/download_jitsi_org_nightly_deb.list
     state: absent
 
+#  jscpd:ignore-start
 - name: Determine repo strategy.
   ansible.builtin.set_fact:
     jitsi_strategy: "{{ 'unstable' if jitsi_meet_use_nightly_apt_repo else 'stable' }}"
@@ -36,6 +37,7 @@
     update_cache: true
   with_dict: "{{ jitsi_meet_apt_repos }}"
 
+#  jscpd:ignore-end
 - name: Set debconf options for jitsi-meet.
   ansible.builtin.debconf: # noqa args[module]
     name: "{{ item.name }}"

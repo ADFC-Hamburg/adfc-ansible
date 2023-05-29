@@ -6,6 +6,7 @@
     update_cache: true
     cache_valid_time: 3600
 
+# jscpd:ignore-start
 - name: Determine repo strategy.
   ansible.builtin.set_fact:
     jitsi_strategy: "{{ 'unstable' if jitsi_meet_use_nightly_apt_repo else 'stable' }}"
@@ -28,6 +29,7 @@
     update_cache: true
   with_dict: "{{ jitsi_meet_apt_repos }}"
 
+# jscpd:ignore-end
 - name: Create pin for jitsi-videobridge2
   ansible.builtin.copy:
     content: |

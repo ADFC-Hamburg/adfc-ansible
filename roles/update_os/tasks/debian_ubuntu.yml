@@ -22,6 +22,7 @@
 - name: Parse output
   ansible.builtin.set_fact:
     users: '{{ who_var.stdout_lines | reject("match", "^root ") | list }}'
+  ignore_errors: "{{ ansible_check_mode }}"
 
 - name: Reboot when no user but root is connected
   ansible.builtin.reboot:

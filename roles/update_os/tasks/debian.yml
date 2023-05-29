@@ -3,34 +3,3 @@
   ansible.builtin.file:
     path: /etc/apt/sources.list.d/hetzner-mirror.list
     state: absent
-
-- name: Update all packages to the latest version
-  ansible.builtin.apt:
-    upgrade: dist
-    update_cache: true
-
-- name: Remove useless packages from the cache
-  ansible.builtin.apt:
-    autoclean: true
-
-- name: Check if a reboot is required
-  ansible.builtin.stat:
-    path: /var/run/reboot-required
-    get_md5: false
-  register: reboot_required_file
-
-- name: Check logged on users
-  ansible.builtin.command: who
-  register: who_var
-  changed_when: false
-
-- name: Parse output
-  ansible.builtin.set_fact:
-    users: '{{ who_var.stdout_lines | reject("match", "^root ") | list }}'
-  ignore_errors: "{{ ansible_check_mode }}"
-
-- name: Reboot when no user but root is connected
-  ansible.builtin.reboot:
-  when:
-    - reboot_required_file.stat.exists
-    - (users is defined) and (users | length == 0)
