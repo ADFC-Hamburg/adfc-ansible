@@ -26,6 +26,7 @@
     dest: "{{ asterisk_sounds_dir }}/adfc/"
     mode: "0644"
   loop: "{{ install_asterisk_sounds }}"
+
 - name: Get sipgate secret and SIP-Id
   ansible.builtin.slurp:
     src: /root/sipgate.secret
@@ -44,6 +45,7 @@
     sipgate_adfc_hh_password: "{{ sipgate_secret.split(' ')[4] }}"
   tags: asterisk-extension
 
+# jscpd:ignore-start
 - name: Check if password file is there
   ansible.builtin.stat:
     path: /etc/jigasi-sip.secret
@@ -62,6 +64,7 @@
     path: /etc/jigasi-sip.secret
   register: jigasi_sip_secret
 
+# jscpd:ignore-end
 - name: Create extension.conf
   ansible.builtin.template:
     src: extensions.conf.j2

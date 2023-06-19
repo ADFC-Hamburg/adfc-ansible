@@ -1,7 +1,8 @@
 ---
-- name: Include Ubuntu
-  ansible.builtin.include_tasks: ubuntu.yml
-  when: ansible_distribution == 'Ubuntu'
 - name: Include Debian
   ansible.builtin.include_tasks: debian.yml
   when: ansible_distribution == 'Debian'
+
+- name: Include Debian + Ubuntu Tasks
+  ansible.builtin.include_tasks: debian_ubuntu.yml
+  when: "ansible_distribution == 'Ubuntu' or ansible_distribution == 'Debian'"
