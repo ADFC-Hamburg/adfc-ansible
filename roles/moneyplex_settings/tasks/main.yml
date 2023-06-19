@@ -1,0 +1,31 @@
+- name: Installiere Pakete
+  ansible.builtin.apt:
+    name:
+      - pcscd
+
+- name: Create pcscd.service.d directory
+  ansible.builtin.file:
+    path:  /etc/systemd/system/pcscd.service.d
+    mode: 0755
+    owner: root
+    group: root
+
+- name: Remove auto-exit from pcscd
+  ansible.builtin.copy:
+    content: |
+      [Service]
+      ExecStart=
+      ExecStart=/usr/sbin/pcscd --foreground $PCSCD_ARGS
+    dest: /etc/systemd/system/pcscd.service.d/ansible_override.conf
+    mode: 0644
+    owner: root
+    group: root
+  notify:
+    - Restart pcscd
+    - Reload systemd
+
+- name: Start pcscd
+  ansible.builtin.systemd:
+    name: pcscd.service
+    state: started
+    enabled: true
