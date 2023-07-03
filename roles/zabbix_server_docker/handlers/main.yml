@@ -1,0 +1,4 @@
+- name: reload firewall
+  systemd:
+    name: univention-firewall.service
+    state: restarted

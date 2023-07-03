@@ -11,3 +11,10 @@ haproxy_ssl_sites:
     port: 5001
     check_user_cert: true
     extra_srv_opt: ssl-min-ver TLSv1.1 force-tlsv12
+
+zabbix_version: "5.2"
+zabbix_agent2: True
+zabbix_agent_server: 127.0.0.1,192.168.123.32
+zabbix_agent_serveractive: 127.0.0.1,192.168.123.32
+zabbix_api_use: false
+zabbix_install_pip_packages: false

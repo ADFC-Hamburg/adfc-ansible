@@ -1,0 +1,5 @@
+#
+# {{ ansible_managed }}
+#
+ProxyPass /zabbix/ http://127.0.0.1:9080/ retry=0
+ProxyPassReverse /zabbix/ http://127.0.0.1:9080/
