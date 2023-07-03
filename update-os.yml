@@ -5,6 +5,8 @@
     - proxmox01.adfc-intern.de
     - meet
     - tools.adfc-hamburg.de
+    - dreicx.gst.hamburg.adfc.de
+    - nextcloud-srv.gst.hamburg.adfc.de
   gather_facts: false
   roles:
     - update_os
