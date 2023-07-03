@@ -1,0 +1,7 @@
+---
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+    name: adfc-fix-perms.timer
+    state: started
+    enabled: true

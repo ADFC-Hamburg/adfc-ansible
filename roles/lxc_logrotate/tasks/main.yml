@@ -1,0 +1,24 @@
+---
+# See:
+#  https://forum.proxmox.com/threads/logrotate-issue-in-buster-lxc.56726/
+# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=920643
+# https://github.com/lxc/lxc/pull/2758
+
+- name: Generate directory
+  ansible.builtin.file:
+    path: /etc/systemd/system/logrotate.service.d
+    state: directory
+    mode: "0755"
+- name: Generate overwrite config
+  ansible.builtin.copy:
+    content: |
+      # {{ ansible_managed | default('File is in Ansible, modify there') }}
+      [Service]
+      PrivateDevices=false
+      PrivateTmp=false
+      ProtectControlGroups=false
+      ProtectKernelModules=false
+      ProtectSystem=false
+    dest: /etc/systemd/system/logrotate.service.d/ansible-adfc.conf
+    mode: "0644"
+  notify: reload systemd

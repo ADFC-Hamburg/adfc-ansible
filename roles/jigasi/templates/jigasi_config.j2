@@ -6,5 +6,11 @@ JIGASI_OPTS="--nocomponent=true "
 JIGASI_HOSTNAME={{ inventory_hostname }}
 JIGASI_HOST=localhost
 
+{% if ansible_distribution_release == 'bullseye' %}
+# See: https://github.com/jitsi/jigasi/issues/378
+PATH="/usr/lib/jvm/java-11-openjdk-amd64/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+{% endif %}
+
 # adds java system props that are passed to jigasi (default are for logging config file)
 JAVA_SYS_PROPS="-Djava.util.logging.config.file=/etc/jitsi/jigasi/logging.properties"

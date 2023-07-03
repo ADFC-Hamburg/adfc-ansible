@@ -1,0 +1,20 @@
+---
+- hosts: proxmox01.adfc-intern.de
+  gather_facts: true
+  roles:
+    - jitsi_videobridge
+    - firewall
+  tasks:
+    - name: Decrement CPU Limit of meet
+      ansible.builtin.command: pct set 101 -cores 4 -cpulimit 4 -cpuunits 9000
+      changed_when: true
+
+    - name: Stop VB on Meet
+      ansible.builtin.systemd:
+        name: jitsi-videobridge2
+        state: stopped
+        enabled: false
+      delegate_to: "{{ jitsi_meet_server_name }}"
+# TODO
+#  DJS Ändern damit er die richtigen Zahlen abruft.
+#  Jitsi-Meet Rolle und VB Rolle trennen damit auf dem Meet die VB nicht hochfährt

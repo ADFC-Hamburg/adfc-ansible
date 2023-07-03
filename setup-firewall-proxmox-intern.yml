@@ -1,3 +1,4 @@
+---
 - hosts: proxmox01.adfc-intern.de
   roles:
-   - firewall
+    - firewall

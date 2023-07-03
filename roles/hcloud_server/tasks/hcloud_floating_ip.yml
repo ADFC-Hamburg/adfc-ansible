@@ -1,0 +1,52 @@
+---
+- name: Test floating_ips
+  hetzner.hcloud.hcloud_floating_ip_info:
+    api_token: "{{ hcloud_api_token }}"
+  register: fl_ip_info
+  delegate_to: localhost
+
+- name: Set Floating Ip fact
+  ansible.builtin.set_fact:
+    hc_ipv4_floating_ip: "{{ fl_ip_info.hcloud_floating_ip_info | selectattr('ip', 'match', ip4_dig) | list | first }}"
+    hc_ipv6_floating_ip: "{{ fl_ip_info.hcloud_floating_ip_info | selectattr('ip', 'match', ip6_dig) | list | first }}"
+  vars:
+    ip4_dig: "{{ lookup('dig', inventory_hostname, 'qtype=A') }}"
+    ip6_dig: "{{ lookup('dig', inventory_hostname, 'qtype=AAAA') | regex_replace('::1$', '::/64') }}"
+- name: Assign floating IPv4 to a server
+  hetzner.hcloud.hcloud_floating_ip:
+    api_token: "{{ hcloud_api_token }}"
+    id: "{{ hc_ipv4_floating_ip.id }}"
+    server: "{{ inventory_hostname }}"
+    state: present
+  when: hc_ipv4_floating_ip.server != inventory_hostname
+  delegate_to: localhost
+
+- name: Assign floating IPv6 to a server
+  hetzner.hcloud.hcloud_floating_ip:
+    api_token: "{{ hcloud_api_token }}"
+    id: "{{ hc_ipv6_floating_ip.id }}"
+    server: "{{ inventory_hostname }}"
+    state: present
+  when: hc_ipv6_floating_ip.server != inventory_hostname
+  delegate_to: localhost
+
+- name: Pause
+  ansible.builtin.pause:
+    seconds: 30
+
+- name: Create floating_ip config
+  ansible.builtin.template:
+    src: floating_ip.cfg.j2
+    dest: /etc/network/interfaces.d/60-my-floating-ip.cfg
+    mode: "0644"
+  vars:
+    ansible_host: "{{ hcloud_ipv4_address }}"
+    ansible_ssh_extra_args: -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null
+
+- name: Restart network
+  ansible.builtin.systemd:
+    name: networking
+    state: restarted
+  vars:
+    ansible_host: "{{ hcloud_ipv4_address }}"
+    ansible_ssh_extra_args: -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null

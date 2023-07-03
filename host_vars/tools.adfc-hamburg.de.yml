@@ -1,5 +1,6 @@
+---
 proxmox_id: 142
-proxmox_host: "proxmox01.adfc-intern.de"
+proxmox_host: proxmox01.adfc-intern.de
 proxmox_net:
   net0:
     name: eth0
@@ -12,7 +13,6 @@ otrs_version: 6.0.25
 # https://community.otrs.com/de/download/
 otrs_md5sum_tar_gz: 3b78844bc3cd1459ec0d7328518f7ccf
 ssh_users_admins:
-  - matthiasr
   - svena
   - tobiasd
   - volkerk

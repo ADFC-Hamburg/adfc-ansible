@@ -1,0 +1,16 @@
+---
+ansible_host: 192.168.123.91
+ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q root@babelfish.spdns.de -p 825"
+
+haproxy_lets_encrypt_domains: []
+haproxy_dehydrated_domains:
+  - matratze02.gst.hamburg.adfc.de
+
+haproxy_cert_and_key_files:
+  - /var/lib/dehydrated/certs/matratze02.gst.hamburg.adfc.de/fullchain.pem
+  - /var/lib/dehydrated/certs/matratze02.gst.hamburg.adfc.de/privkey.pem
+
+haproxy_ssl_sites:
+  - domain: matratze02.gst.hamburg.adfc.de
+    port: 8006
+    check_user_cert: true

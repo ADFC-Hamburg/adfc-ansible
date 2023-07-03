@@ -1,0 +1,8 @@
+---
+- name: Renew certificates if needed
+  ansible.builtin.command:
+    argv:
+      - /usr/bin/certbot
+      - renew
+  register: certbot_renew
+  changed_when: "'success' in certbot_renew.stdout"

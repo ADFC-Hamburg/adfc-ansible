@@ -1,0 +1,16 @@
+[Desktop Entry]
+Version=1.0
+Name=Chromium Latest Web Browser (ADFC Edition)
+GenericName=Web Browser
+Comment=Internetzugriff
+
+Exec=/usr/local/bin/chromium-latest %U
+Terminal=false
+X-MultipleArgs=false
+Type=Application
+Icon=chromium-browser
+Categories=Network;WebBrowser;
+MimeType=text/html;text/xml;application/xhtml_xml;application/x-mimearchive;x-scheme-handler/http;x-scheme-handler/https;
+StartupWMClass=chromium
+StartupNotify=true
+Keywords=browser

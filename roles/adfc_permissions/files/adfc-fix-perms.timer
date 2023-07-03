@@ -1,0 +1,11 @@
+[Unit]
+Description=Fix Permissions periodical
+
+[Timer]
+OnBootSec=30min
+OnUnitInactiveSec=10min
+Persistent=true
+Unit=adfc-fix-perms.service
+
+[Install]
+WantedBy=timers.target

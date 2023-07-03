@@ -1,0 +1,38 @@
+---
+- name: Read secret
+  ansible.builtin.slurp:
+    path: /etc/hetzner-dns-api-token.secret
+  delegate_to: proxmox01.adfc-intern.de
+  register: hcloud_dns_token
+
+- name: Setze ipv4 address
+  community.dns.hetzner_dns_record_set: # noqa args[module]
+    zone: adfc-intern.de
+    record: "{{ inventory_hostname }}"
+    type: A
+    ttl: 60
+    value: "{{ hetzner_dns_ip4 }}"
+    on_existing: replace
+    hetzner_token: "{{ hcloud_dns_token.content | b64decode | trim }}"
+    state: "{{ hetzner_dns_state }}"
+  delegate_to: localhost
+  register: hdns_ip4_set
+
+- name: Setze ipv6 address
+  community.dns.hetzner_dns_record_set: # noqa args[module]
+    zone: adfc-intern.de
+    record: "{{ inventory_hostname }}"
+    type: AAAA
+    ttl: 60
+    value: "{{ hetzner_dns_ip6 }}"
+    on_existing: replace
+    hetzner_token: "{{ hcloud_dns_token.content | b64decode | trim }}"
+    state: "{{ hetzner_dns_state }}"
+  delegate_to: localhost
+  register: hdns_ip6_set
+
+- name: Wait TTL
+  ansible.builtin.pause:
+    seconds: 60
+  delegate_to: localhost
+  when: (hetzner_dns_state== 'present') and ( hdns_ip6_set.changed or hdns_ip4_set.changed) # noqa no-handler

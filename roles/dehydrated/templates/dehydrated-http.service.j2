@@ -1,0 +1,13 @@
+[Unit]
+Description=Dehydrated http Server
+After=network.target
+
+[Service]
+Type=simple
+Restart=always
+User=root
+WorkingDirectory=/var/lib/dehydrated/acme-challenges
+ExecStart=/usr/bin/python3 -m http.server 180 --bind {{ ansible_host }}
+
+[Install]
+WantedBy=multi-user.target

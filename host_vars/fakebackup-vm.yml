@@ -1,3 +1,4 @@
+---
 ansible_user: root
 vpnc_user: backup1
 local_borg_repo: /srv/borgbackup

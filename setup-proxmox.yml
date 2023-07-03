@@ -1,51 +1,51 @@
-- hosts: proxmox02.gst.hamburg.adfc.de
-  gather_facts: yes
+- hosts: proxmox01.gst.hamburg.adfc.de
+  gather_facts: true
   roles:
+    - ssh_keys
     - community.zabbix.zabbix_agent
-    - ssh-keys
-    - postfix-auth
-    - proxmox-backup
+    - postfix_auth
+    - proxmox_backup
   tasks:
     - name: Erstellen eine Unix User fuer Tools-Server Backup
-      user:
+      ansible.builtin.user:
         name: tools-backup
         comment: tools Server Backup
     - name: Kopiere SSH Public Key fuer Tools-Server Backup
-      authorized_key:
-         user: tools-backup
-         state: present
-         key: "{{ lookup('file', 'ssh-tools-server-backup.pub') }}"
-         key_options: 'no-port-forwarding'
+      ansible.posix.authorized_key:
+        ansible.builtin.user: tools-backup
+        state: present
+        key: "{{ lookup('file', 'ssh-tools-server-backup.pub') }}"
+        key_options: no-port-forwarding
     - name: Loesche Proxy Enterprice Repo
       # Sven 2019-02-17:
       # geht nicht mit apt_repository state: absent, weil da apt magic gemacht wird und
       # die fehlschlägt wegen, nicht nutzbaren repo
-      # apt_repository:
+      # ansible.builtin.apt_repository:
       #  repo: "deb https://enterprise.proxmox.com/debian/pve stretch pve-enterprise"
       #  state: absent
-      file:
-        path: "/etc/apt/sources.list.d/pve-enterprise.list"
+      ansible.builtin.file:
+        path: /etc/apt/sources.list.d/pve-enterprise.list
         state: absent
 
     - name: Nutze Proxmox Community Repo
-      apt_repository:
-        repo: "deb http://download.proxmox.com/debian/pve {{ ansible_distribution_release }} pve-no-subscription"
-        filename: "proxmox"
+      ansible.builtin.apt_repository:
+        repo: deb http://download.proxmox.com/debian/pve {{ ansible_distribution_release }} pve-no-subscription
+        filename: proxmox
         state: present
 
     - name: Sicherstellen das bsd-mailx installiert ist
-      apt:
+      ansible.builtin.apt:
         name: bsd-mailx
 
     - name: Kopiere check_ips Skript
-      template:
+      ansible.builtin.template:
         src: check_ips.sh
         dest: /usr/local/bin/check_ips.sh
         mode: 0755
     - name: Erstelle cron Eintrag für check_ips
       cron:
-        name: "check_ips"
+        name: check_ips
         minute: "0"
-        job: "/usr/local/bin/check_ips.sh"
-        cron_file: "adfc_ansible"
-        user: root
+        job: /usr/local/bin/check_ips.sh
+        cron_file: adfc_ansible
+        ansible.builtin.user: root

@@ -1,21 +1,22 @@
+---
 - name: Setup Videobridge
   hosts: meet_vb
-  gather_facts: no
+  gather_facts: false
   roles:
-    - proxmox-container
+    - proxmox_container
   tasks:
     - name: Installiere Pakete
-      apt:
+      ansible.builtin.apt:
         name:
           - python-apt
           - htop
 - name: Setup Videobridge
   hosts: meet_vb
-  gather_facts: yes
+  gather_facts: true
   roles:
-    - ssh-keys
-    - update-os
-    - lxc-logrotate
+    - ssh_keys
+    - update_os
+    - lxc_logrotate
     - geerlingguy.certbot
-    - ucs-ip-managed-client
-    - jitsi-videobridge
+    - ucs_ip_managed_client
+    - jitsi_videobridge

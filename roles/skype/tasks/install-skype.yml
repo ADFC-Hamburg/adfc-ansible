@@ -1,15 +1,16 @@
+---
 - name: Installiere apt-transport-https
-  apt:
+  ansible.builtin.apt:
     name: apt-transport-https
   tags: skype
 
 - name: Skype-Repo und GPG-Key hinzu
-  apt_key:
+  ansible.builtin.apt_key:
     url: https://repo.skype.com/data/SKYPE-GPG-KEY
     state: present
   tags: skype
 
 - name: Install skype for linux
-  apt:
+  ansible.builtin.apt:
     deb: https://repo.skype.com/latest/skypeforlinux-64.deb
   tags: skype

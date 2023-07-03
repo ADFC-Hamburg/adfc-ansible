@@ -1,0 +1,1 @@
+%domain\ users ALL=(ALL) NOPASSWD: /usr/local/bin/update-chromium-latest

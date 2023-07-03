@@ -1,0 +1,30 @@
+---
+- name: Install Kubuntu Packages
+  ansible.builtin.apt:
+    name:
+      - kubuntu-desktop
+      - kubuntu-notification-helper
+      - kubuntu-restricted-addons
+      - kubuntu-settings-desktop
+      - kubuntu-notification-helper
+- name: Display Manager setzen
+  ansible.builtin.copy:
+    dest: /etc/X11/default-display-manager
+    content: |
+      /usr/bin/sddm
+    mode: 0644
+    owner: root
+    group: root
+
+- name: Stop gdm
+  ansible.builtin.systemd:
+    name: gdm.service
+    state: stopped
+    enabled: false
+  failed_when: false
+
+- name: Make sure sddm is started
+  ansible.builtin.systemd:
+    name: sddm.service
+    state: started
+    enabled: true

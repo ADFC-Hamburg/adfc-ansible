@@ -9,6 +9,8 @@ echo stop $(date) >>run.log
 if [ "$EXIT" == "0" ] ; then
     cp run.log adfc.log unknown_locs.json ADFC-VADB.xml "{{ metropolregion_termine_www_dest_dir }}"
     date > "{{ metropolregion_termine_www_dest_dir }}/lastrun.txt"
+else
+    mutt -s 'VADB-Metropolregion Fehler' $(cat /etc/michael-mail.txt )  < run.log
 fi
 rm -rf /tmp/tpjson/
 

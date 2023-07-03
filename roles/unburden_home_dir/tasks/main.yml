@@ -1,0 +1,25 @@
+---
+- name: Install Package
+  ansible.builtin.apt:
+    name: unburden-home-dir
+  tags: unburden
+
+- name: Copy Config Files
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: /etc/
+    mode: 0644
+    owner: root
+    group: root
+  with_items:
+    - unburden-home-dir
+    - unburden-home-dir.list
+  tags: unburden
+
+- name: Enable unburden
+  ansible.builtin.lineinfile:
+    path: /etc/default/unburden-home-dir
+    regexp: UNBURDEN_HOME
+    line: UNBURDEN_HOME=true
+    insertafter: EOF
+  tags: unburden

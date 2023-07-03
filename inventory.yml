@@ -1,23 +1,20 @@
+---
 all:
   children:
     server:
       hosts:
-        proxmox01.gst.hamburg.adfc.de:
-        proxmox02.gst.hamburg.adfc.de:
-        ucs-master.gst.hamburg.adfc.de:
         tools.adfc-hamburg.de:
         proxmox01.adfc-intern.de:
         int-master.adfc-intern.de:
-        dreicx.gst.hamburg.adfc.de:
+        chat.hamburg.adfc.de:
       children:
+        gsthh_server:
         meet:
           children:
             meet_server:
               hosts:
                 meet.adfc-intern.de:
-                test.adfc-intern.de:
                 test1.dyndns.adfc-intern.de:
-                event.dyndns.adfc-intern.de:
             jitsi_vbs:
               children:
                 meet_vb:
@@ -26,6 +23,7 @@ all:
                     vbdh02.meet.adfc-intern.de:
                     vbdh03.meet.adfc-intern.de:
                     vbdh04.meet.adfc-intern.de:
+                    proxmox01.adfc-intern.de:
                 event_vb:
                   hosts:
                     vbedh01.dyndns.adfc-intern.de:
@@ -33,7 +31,6 @@ all:
                     vbedh03.dyndns.adfc-intern.de:
             meet_test:
               hosts:
-                test.adfc-intern.de:
                 vb01.test.adfc-intern.de:
                 test1.dyndns.adfc-intern.de:
             meet_live:
@@ -43,24 +40,58 @@ all:
                 vbdh02.meet.adfc-intern.de:
                 vbdh03.meet.adfc-intern.de:
                 vbdh04.meet.adfc-intern.de:
-    arbeitsplatz:
-      hosts:
-        adfc-testclient.gst.hamburg.adfc.de:
-        kubuntu-vm.gst.hamburg.adfc.de:
-        bob.gst.hamburg.adfc.de:
-        marvin.gst.hamburg.adfc.de:
-        trillian.gst.hamburg.adfc.de:
-        zaphod.gst.hamburg.adfc.de:
-        humma.gst.hamburg.adfc.de:
-        kavula.gst.hamburg.adfc.de:
-        kwaltz.gst.hamburg.adfc.de:
+                proxmox01.adfc-intern.de:
+    gsthh:
+      children:
+        arbeitsplatz:
+          hosts:
+            kubuntu-vm.gst.hamburg.adfc.de:
+            bob.gst.hamburg.adfc.de:
+            marvin.gst.hamburg.adfc.de:
+            trillian.gst.hamburg.adfc.de:
+            zaphod.gst.hamburg.adfc.de:
+            slartibartfass.gst.hamburg.adfc.de:
+            zem.gst.hamburg.adfc.de:
+        gsthh_server:
+          hosts:
+            ucs-master.gst.hamburg.adfc.de:
+            dreicx.gst.hamburg.adfc.de:
+            nextcloud-srv.gst.hamburg.adfc.de:
+          children:
+            proxmox_gst:
+              hosts:
+                matratze01.gst.hamburg.adfc.de:
+                matratze02.gst.hamburg.adfc.de:
+            haproxy_gst_backends:
+              hosts:
+                ucs-master.gst.hamburg.adfc.de:
+                dreicx.gst.hamburg.adfc.de:
+                nextcloud-srv.gst.hamburg.adfc.de:
+              children:
+                proxmox_gst:
     backup_clients:
       hosts:
         adfc-hh-bak-1:
         adfc-hh-bak-2:
+    save_with_borg:
+      hosts:
+        portal.openbikesensor.hamburg:
+        chat2.hamburg.adfc.de:
+        ucs-master.gst.hamburg.adfc.de:
     domain_factory:
       hosts:
         status.adfc-intern.de:
+    hetzner:
+      children:
+        rocket_chat:
+      hosts:
+        portal.openbikesensor.hamburg:
+    rocket_chat:
+      hosts:
+        chat1.hamburg.adfc.de:
+        chat2.hamburg.adfc.de:
+        chat3.hamburg.adfc.de:
+        chat-test:
     tasmota:
       hosts:
         tasmota-0673.gst.hamburg.adfc.de:

@@ -1,41 +1,42 @@
-metropolregion_termine_git_repo: "https://github.com/michaelu123/adfc2"
-metropolregion_termine_git_version: "cc33557fda3b719f2cbd64d94a97b3f7c44f9c78"
+---
+metropolregion_termine_git_repo: https://github.com/michaelu123/adfc2
+metropolregion_termine_git_version: d0bb7de6f9ef4287900201f8482261d0f6ea45a4
 metropolregion_termine_www_dest_dir: /var/www/html/metropolregion_termine
 metropolregion_termine_packages:
-    - python3-caldav
+  - python3-caldav
 metropolregion_termine_zeitraum: 90
 metropolregion_termine_regio_ids:
-    - name: Hamburg
-      id: 158
-    - name: Cuxhaven
-      id: 162260
-    - name: Pinneberg
-      id: 170190
-    - name: LK Harburg
-      id: 162270
-    - name: Uelzen
-      id: 162291
-    - name: Lüneburg
-      id: 162290
-    - name: Neumüsnter
-      id: 170160
-    - name: Schwerin
-      id: 140004
-    - name: Lauenburg
-      id: 170130
-    - name: Lüchow Dannenberg
-      id: 162280
-    - name: Bad Segeberg
-      id: 170230
-    - name: Stade
-      id: 162330
-    - name: Steinburg
-      id: 170240
-    - name: Storman
-      id: 170291
-    - name: Heidekreis
-      id: 162320
-    - name: Ostholtstein
-      id: 170180
-    - name: Rotenburg
-      id: 162310
+  - name: Hamburg
+    id: 158
+  - name: Cuxhaven
+    id: 162260
+  - name: Pinneberg
+    id: 170190
+  - name: LK Harburg
+    id: 162270
+  - name: Uelzen
+    id: 162291
+  - name: Lüneburg
+    id: 162290
+  - name: Neumüsnter
+    id: 170160
+  - name: Schwerin
+    id: 140004
+  - name: Lauenburg
+    id: 170130
+  - name: Lüchow Dannenberg
+    id: 162280
+  - name: Bad Segeberg
+    id: 170230
+  - name: Stade
+    id: 162330
+  - name: Steinburg
+    id: 170240
+  - name: Storman
+    id: 170291
+  - name: Heidekreis
+    id: 162320
+  - name: Ostholtstein
+    id: 170180
+  - name: Rotenburg
+    id: 162310

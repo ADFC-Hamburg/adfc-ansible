@@ -51,6 +51,10 @@ var config = {
     // The real JID of focus participant - can be overridden here
     // focusUserJid: 'focus@auth.{{ jitsi_meet_server_name }}',
 
+    dynamicBrandingUrl: "https://{{ inventory_hostname }}/static/dyn_branding.json",
+    brandingDataUrl:  "https://{{ inventory_hostname }}/static/dyn_branding.json",
+    prejoinPageEnabled: true,
+    enableLayerSuspension: true,
 
     // Testing / experimental features.
     //
@@ -191,10 +195,26 @@ var config = {
     desktopSharingFirefoxDisabled: {{ (not jitsi_meet_enable_desktop_sharing_firefox) | bool | lower }},
 
     // Optional desktop sharing frame rate options. Default value: min:5, max:5.
-    // desktopSharingFrameRate: {
-    //     min: 5,
-    //     max: 5
-    // },
+    desktopSharingFrameRate: {
+         min: 15,
+         max: 30
+    },
+
+    videoQuality: {
+        preferredCodec: "VP9",
+	maxBitratesVideo: {
+          VP8: {
+            low: 200000,
+            standard: 500000,
+            high: 1500000
+          },
+          VP9: {
+            low: 100000,
+            standard: 300000,
+            high: 1200000
+          }
+        },
+    },
 
     // Try to start calls with screen-sharing instead of camera video.
     // startScreenSharing: false,
@@ -202,7 +222,7 @@ var config = {
     // Recording
 
     // Whether to enable file recording or not.
-    // fileRecordingsEnabled: false,
+    fileRecordingsEnabled: false,
     // Enable the dropbox integration.
     // dropbox: {
     //     appKey: '<APP_KEY>' // Specify your app key here.
@@ -216,11 +236,11 @@ var config = {
     // by enabling fileRecordingsServiceEnabled, we show both the integrations
     // and the generic recording service (its configuration and storage type
     // depends on jibri configuration)
-    // fileRecordingsServiceEnabled: false,
+    fileRecordingsServiceEnabled: false,
     // Whether to show the possibility to share file recording with other people
     // (e.g. meeting participants), based on the actual implementation
     // on the backend.
-    // fileRecordingsServiceSharingEnabled: false,
+    fileRecordingsServiceSharingEnabled: false,
 
     // Whether to enable live streaming or not.
     // liveStreamingEnabled: false,
@@ -285,7 +305,7 @@ var config = {
 
     // Enabling the close page will ignore the welcome page redirection when
     // a call is hangup.
-    // enableClosePage: false,
+    enableClosePage: true,
 
     // Disable hiding of remote thumbnails when in a 1-on-1 conference call.
     // disable1On1Mode: false,

@@ -1,3 +1,4 @@
+---
 # Rollen importieren
 # ansible-galaxy install -r requirements.yml
 
@@ -12,5 +13,14 @@ roles:
   - src: nginxinc.nginx
     version: 0.14.0
 collections:
+  - name: community.crypto
+    version: 2.2.1
+  - name: community.dns
+    version: 2.0.6
   - name: community.zabbix
     version: 1.5.0
+  - name: "univention.ucs_modules"
+    source: "https://galaxy.ansible.com"
+    version: 1.2.0
+  - name: hetzner.hcloud
+    version: 1.10.0

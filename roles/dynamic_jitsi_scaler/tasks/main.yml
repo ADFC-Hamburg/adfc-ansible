@@ -1,0 +1,80 @@
+---
+- name: Dynamic-jitsi-scaler | install dependencies
+  ansible.builtin.apt:
+    name:
+      - jq
+      - curl
+      - python-jinja2
+      - python-yaml
+      - python-paramiko
+      - python-httplib2
+      - python-six
+      - python-crypto
+      - python-setuptools
+      - sshpass
+      - python-cryptography
+      - python-pip
+      - python-jmespath
+      - python-dnspython
+
+- name: Install ansible
+  ansible.builtin.pip:
+    name:
+      - ansible==2.9.9
+      - hcloud
+
+- name: Ssh keygen
+  community.crypto.openssh_keypair:
+    path: /root/.ssh/batch
+
+- name: Dynamic-jitsi-scaler | install lib
+  ansible.builtin.copy:
+    src: dynamic-jitsi-scaler-lib.sh
+    dest: /usr/local/bin/dynamic-jitsi-scaler-lib.sh
+    mode: 0644
+
+- name: Dynamic-jitsi-scaler | install test lib
+  ansible.builtin.copy:
+    src: dynamic-jitsi-scaler-lib-test.sh
+    dest: /usr/local/bin/dynamic-jitsi-scaler-lib-test.sh
+    mode: 0644
+  when: dynamic_jitis_run_test | default(False)
+
+- name: Dynamic-jitsi-scaler | install script test
+  ansible.builtin.template:
+    src: dynamic-jitsi-scaler.sh.j2
+    dest: /usr/local/bin/dynamic-jitsi-scaler-test
+    mode: "0755"
+  vars:
+    dynamic_lib: /usr/local/bin/dynamic-jitsi-scaler-lib-test.sh
+    dynamic_admin_mail: "{{ test_admin_mail }}"
+  when: dynamic_jitis_run_test | default(False)
+
+- name: Dynamic-jitsi-sclaer | clean test reult
+  ansible.builtin.include_tasks: clean_test.yml
+
+- name: Dynamic-jitsi-sclaer | generic_test
+  ansible.builtin.include_tasks: generic_tescase.yml
+  loop: "{{ dynamic_jitsi_scaler_testcases }}"
+  loop_control:
+    loop_var: testcase
+  when: dynamic_jitis_run_test | default(False)
+
+- name: Dynamic-jitsi-scaler |install script
+  ansible.builtin.template:
+    src: dynamic-jitsi-scaler.sh.j2
+    dest: /usr/local/bin/dynamic-jitsi-scaler
+    mode: "0755"
+  vars:
+    dynamic_lib: /usr/local/bin/dynamic-jitsi-scaler-lib.sh
+    dynamic_admin_mail: "{{ admin_mail }}"
+
+- name: Dynamic-jitsi-scaler | Create system timer and service
+  ansible.builtin.template:
+    src: systemd-{{ item }}.j2
+    dest: /lib/systemd/system/{{ item }}
+    mode: "0644"
+  notify: reload systemd
+  with_items:
+    - djs.service
+    - djs.timer

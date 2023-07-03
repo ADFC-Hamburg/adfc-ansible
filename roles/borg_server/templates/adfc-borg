@@ -1,0 +1,319 @@
+#!/bin/bash
+
+STATUS_DIR="/usr/local/share/adfc-borg"
+
+# Wie alt darf das VPN_KONCK File sein, bevor davon ausgegangen wird, dass die Verbindung nicht mehr existiert
+VPN_KNOCK_TIMEOUT="65"
+
+# Wie viele Sekunden sollte das letzte erfolgreiche Backup höchstens her sein 60*60*24 (1 Tag)
+SUCCESS_TIMEOUT="86400"
+
+BORG_USER=""{{ borg_client_user }}"" # Benutzerkonto auf Backup-Client
+REPO_PATH="{{ adfc_borg_repo }}"
+PRUNE_DAYS="7"       # Anzahl der vorzuhaltenden Tagessicherungen
+PRUNE_WEEKS="4"      # Anzahl der vorzuhaltenden Wochensicherungen
+PRUNE_MONTHS="12"    # Anzahl der vorzuhaltenden Monatssicherungen
+PRUNE_YEARS="2"      # Anzahl der vorzuhaltenden Jahressicherungen
+
+BORG_CREATE_PARAMS="-C lz4 --info --exclude-caches --show-rc --stats --numeric-owner --noatime -e {{ borg_save_exclude_dirs |join(' -e ') }} --list --filter=AMEx"
+BORG_SAVE_PATH="{{ borg_save_path }}"
+
+BORG_INIT_PARAMS="--encryption keyfile"
+
+export BORG_PASSPHRASE="" BORG_RSH="ssh -F /usr/local/share/adfc-borg/ssh-config"
+
+
+borg_last_successfull_backup() {
+    RECHNER="$1"
+    SUCC="${STATUS_DIR}/success/${RECHNER}"
+    if [ ! -f $SUCC ] ; then
+        echo 0
+        exit
+    fi
+    LAST="$(( $( date +%s) - $(stat -c "%Y" $SUCC )))"
+    echo "$(( $LAST < $SUCCESS_TIMEOUT ))"
+}
+
+borg_lock() {
+    RECHNER="$1"
+    LOCK="${STATUS_DIR}/lock/${RECHNER}"
+    exec 200> $LOCK || ( echo  "Ein Backup läuft" ; exit 3)
+    flock -n 200 || ( echo  "Ein Backup läuft" ; exit 3)
+}
+
+borg_unlock() {
+    RECHNER="$1"
+    LOCK="${STATUS_DIR}/lock/${RECHNER}"
+    flock -u 200
+    rm $LOCK
+}
+
+borg_repo() {
+    RECHNER="$1"
+    echo "ssh://${RECHNER}/${REPO_PATH}"
+}
+
+
+borg_init() {
+    RECHNER="$1"
+    if [ -z "${RECHNER}" ] ; then
+        echo Bitte Rechner angeben
+        exit 1
+    fi
+    mkdir -p "${STATUS_DIR}" "${STATUS_DIR}/clients" "${STATUS_DIR}/lock" "${STATUS_DIR}/disabled" "${STATUS_DIR}/success"  "${STATUS_DIR}/tried" "${STATUS_DIR}/lastlog" "${STATUS_DIR}/ssh_conf"
+    if [ -f "${STATUS_DIR}/clients/${RECHNER}" ] ; then
+        echo existiert schon
+        exit 1
+    fi
+    echo /usr/local/bin/borg init $BORG_INIT_PARAMS $(borg_repo ${RECHNER})
+    /usr/local/bin/borg init $BORG_INIT_PARAMS $(borg_repo ${RECHNER})
+    if [ $? -ne 0 ]; then
+        echo Fehler beim borg init
+        exit 1
+    fi
+    touch "${STATUS_DIR}/clients/${RECHNER}"
+    # Damit
+    touch "${STATUS_DIR}/tried/${RECHNER}"
+    exit 0
+}
+
+borg_for() {
+    ACTION="$1"
+    RECHNER="$2"
+    if [ -n "$RECHNER" ] ; then
+        "${ACTION}" "${RECHNER}"
+    else
+        for FILE in ${STATUS_DIR}/clients/* ; do
+            RECHNER=$(basename $FILE)
+            "${ACTION}" "${RECHNER}"
+        done
+    fi
+    exit 0
+}
+
+borg_cron() {
+    {% if borg_create_pre_job |default('') != '' %}
+    OK=0
+    {{ borg_create_pre_job |default('') }} && OK=1
+    {% else %}
+    OK=1
+    {% endif %}
+    export BORG_RSH="ssh -F /usr/local/share/adfc-borg/ssh-config -i /root/.ssh/borgbackup-server"
+    if [ "$OK" == "1" ] ; then
+        for FILE in $(ls -tr ${STATUS_DIR}/tried/* ) ; do
+            RECHNER=$(basename $FILE)
+            LOG="/var/log/adfc-borg-${RECHNER}.log"
+            if [ ! -f "${STATUS_DIR}/disabled/${RECHNER}" ] ; then
+                borg_lock $RECHNER || exit $?
+                touch "${STATUS_DIR}/tried/${RECHNER}"
+                echo /usr/local/bin/borg create $BORG_CREATE_PARAMS $(borg_repo "${RECHNER}")::'{hostname}-{now:%Y-%m-%d_%H%M%S}' $BORG_SAVE_PATH
+                SSH_AUTH_SOCK="" /usr/local/bin/borg create $BORG_CREATE_PARAMS $(borg_repo "${RECHNER}")::'{hostname}-{now:%Y-%m-%d_%H%M%S}' $BORG_SAVE_PATH 2>&1 |tee -a $LOG
+                STATUS=${PIPESTATUS[0]}
+                borg_unlock $RECHNER
+                if [ $STATUS -eq 0 ]; then
+                    touch "${STATUS_DIR}/success/${RECHNER}"
+                    touch "${STATUS_DIR}/success/any"
+                    # Wenn eine Sicherung erfolgreich ist, anhalten
+                    exit 0
+                fi
+                # Sonst in der Schleife den nächsten nehmen
+            fi
+        done
+    fi
+}
+
+borg_status() {
+    RECHNER="$1"
+    RED='\033[0;31m'
+    GREEN='\033[0;32m'
+    # NC = NO COLOR
+    NC='\033[0m'
+
+    echo "== Status für Rechner $RECHNER =="
+    if [ -f "${STATUS_DIR}/disabled/${RECHNER}" ] ; then
+        echo -e "  ${RED}Der Rechner wurde vom Backup ausgenommen${NC}"
+        echo "  Bitte:"
+        echo "    adfc-borg start $RECHNER"
+        echo "  eingeben um ihn wieder hinzuzufügen"
+    else
+        echo -e "  ${GREEN}Der Rechner wird zum sichern verwendet${NC}"
+    fi
+    if [ -f "${STATUS_DIR}/success/${RECHNER}" ] ; then
+        SUC=$(borg_last_successfull_backup $RECHNER)
+        if [ "$SUC" == "1" ] ; then
+            echo -ne "${GREEN}"
+        else
+            echo -ne "${RED}"
+        fi
+        stat  -c "  Letzte erfolgreiche Sicherung: %y" "${STATUS_DIR}/success/${RECHNER}"
+        echo -ne "${NC}"
+    else
+        echo -e "  ${RED}Auf dem Rechner wurde noch nie eine Sicherung erfolgreich gesichert${NC}"
+    fi
+    /usr/local/bin/borg info  $(borg_repo "${RECHNER}")
+    LOCK="${STATUS_DIR}/lock/${RECHNER}"
+    if [ -f $LOCK ] ; then
+        echo -ne "${GREEN}"
+        stat -c "  Prozess aktiv seit: %y" $LOCK
+        echo -ne "${NC}"
+        BORG_PID=$(pgrep -f "/usr/bin/python3 /usr/local/bin/borg create.*$(borg_repo "${RECHNER}")::")
+        if [ "$BORG_PID" != "" ] ; then
+            OPENFILE=$(lsof -p $BORG_PID |tail -6 |grep -v pipe |cut -b 55- |head -1)
+            echo "  Pid: $BORG_PID Open file: $OPENFILE"
+        fi
+    else
+        echo "  Kein Backup aktiv"
+    fi
+    echo ""
+}
+
+borg_prune() {
+    RECHNER="$1"
+    LOG="/var/log/adfc-borg-${RECHNER}.log"
+    if [ ! -f "${STATUS_DIR}/disabled/${RECHNER}" ] ; then
+        borg_lock "${RECHNER}" || exit $lock
+        echo borg prune $(borg_repo "${RECHNER}") --stats --list --keep-within=1d --keep-daily=$PRUNE_DAYS --keep-weekly=$PRUNE_WEEKS --keep-monthly=$PRUNE_MONTHS --keep-yearly=$PRUNE_YEARS  2>&1 |tee -a $LOG
+        /usr/local/bin/borg prune $(borg_repo "${RECHNER}") --stats --list --keep-within=1d --keep-daily=$PRUNE_DAYS --keep-weekly=$PRUNE_WEEKS --keep-monthly=$PRUNE_MONTHS --keep-yearly=$PRUNE_YEARS  2>&1 |tee -a $LOG
+        borg_unlock "${RECHNER}"
+    else
+        echo "Rechner $RECHNER wurde deaktiviert"
+    fi
+}
+
+borg_start() {
+    RECHNER="$1"
+    if [ -f "${STATUS_DIR}/disabled/${RECHNER}" ] ; then
+        rm "${STATUS_DIR}/disabled/${RECHNER}"
+    fi
+}
+
+borg_stop() {
+    RECHNER="$1"
+    touch "${STATUS_DIR}/disabled/${RECHNER}"
+}
+
+borg_key_export() {
+    RECHNER="$1"
+    echo "============================================================================"
+    echo "ADFC Hamburg Vertraulich, nicht fuer Dritte!"
+    echo "Borg Key fuer Rechner $(hostname) gesichert auf ${RECHNER}"
+    echo "Kompakt:"
+    /usr/local/bin/borg key export $(borg_repo "${RECHNER}") /dev/stdout
+    echo "Papier-Version:"
+    /usr/local/bin/borg key export --paper $(borg_repo "${RECHNER}") /dev/stdout
+    echo "QR-Code: /tmp/borg-key-${RECHNER}.html"
+    /usr/local/bin/borg key export --qr-html $(borg_repo "${RECHNER}") /tmp/borg-key-${RECHNER}.html
+    echo "============================================================================"
+
+}
+
+borg_list() {
+    RED='\033[0;31m'
+    GREEN='\033[0;32m'
+    # NC = NO COLOR
+    NC='\033[0m'
+
+    RECHNER="$1"
+    echo "Liste der Backups auf ${RECHNER}:"
+    /usr/local/bin/borg list $(borg_repo "${RECHNER}")
+    #else
+    #    echo -e "${RED}FEHLER:${NC} Rechner $RECHNER nicht verbunden" 1>&2
+    #fi
+}
+
+borg_mount() {
+    RECHNER="$1"
+    SICHERUNG="$2"
+    if [ "$SICHERUNG" = "" ] ; then
+        EXPAND=""
+    else
+        EXPAND="::$SICHERUNG"
+    fi
+    mkdir -p "/mnt/restore/${RECHNER}"
+    echo "borg mount $(borg_repo "${RECHNER}")${EXPAND} /mnt/restore/${RECHNER}"
+    /usr/local/bin/borg mount $(borg_repo "${RECHNER}")${EXPAND} /mnt/restore/${RECHNER}
+    if [ $? -eq 0 ] ; then
+        echo "Mountpoint:  /mnt/restore/${RECHNER}"
+        echo "Bitte nach dem Restore mit:"
+        echo " adfc-borg umount ${RECHNER}"
+        echo "die Partition unmounten"
+    fi
+}
+
+borg_umount() {
+    RECHNER="$1"
+    /usr/local/bin/borg umount  /mnt/restore/${RECHNER}
+}
+
+borg_help() {
+    cat <<EOF
+
+AUFRUF
+ adfc-borg <aktion>
+
+aktion kann folgendes sein:
+
+
+help                 - Diese Hilfeseite
+
+init <rechnername>  - Rechner erstmalig initalisieren
+
+cron                - Eine Sicherung durchführen, der nächste freie Rechner wird gesichert
+
+status <rechnername> - Status anzeigen
+
+prune <rechnername> - Alte Sicherungen entfernen
+
+stop <rechnername>  - Sicherung verhindern
+                      z.B weil man eine Rücksicherung vornehmen will.
+
+start <rechnername>      - Sicherung wieder aufnemen
+
+key-export <rechnername> - Key zur Sicherung anzeigen
+
+list <rechnername>       - Sicherungen anzeigen
+
+mount <rechnername> <archiv> - Sicherung mounten
+
+Der Rechnername kann außer bei init und mount  werggelassen werden, dann gilt es für alle.
+
+EOF
+}
+
+
+case "$1" in
+    init)
+        borg_init "$2"
+    ;;
+    cron)
+        borg_cron
+    ;;
+    status)
+        borg_for borg_status "$2"
+    ;;
+    prune)
+        borg_for borg_prune "$2"
+    ;;
+    stop)
+        borg_for borg_stop "$2"
+    ;;
+    start)
+        borg_for borg_start "$2"
+    ;;
+    key-export)
+        borg_for borg_key_export "$2"
+    ;;
+    list)
+        borg_for borg_list "$2"
+    ;;
+    mount)
+        borg_mount "$2" "$3"
+    ;;
+    umount)
+        borg_umount "$2"
+    ;;
+    *)
+        borg_help
+    ;;
+esac
+exit 0

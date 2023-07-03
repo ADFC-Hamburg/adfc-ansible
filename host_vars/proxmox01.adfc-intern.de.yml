@@ -1,9 +1,12 @@
+---
 ssh_users_admins:
   - svena
   - georgs
   - janb
   - adfc_intern_batch
   - ansgarh
+  - annal
+  - joachimb
 
 postfix_host_email: admin@adfc-intern.de
 ipv4_netmask: 255.255.255.224
@@ -25,31 +28,43 @@ firewall:
   - name: Influxdb
     port: 8086
     proto: tcp
-firewall_test: no
+  - name: Jitsi-VB
+    port: 10000
+    proto: udp
+  - name: Jitsi-VB
+    port: 9090
+    proto: tcp
+  - name: Octo Bind Port
+    proto: udp
+    port: 4096
+  - name: Jitsi-VB-Was-ist-das
+    proto: udp
+    port: 5000
+firewall_test: false
 
 influxdb_host: proxmox01.adfc-intern.de
 
 dynamic_jitsi_scaler_meet_host: meet.adfc-intern.de
 
-admin_mail: "sven@anders-hamburg.de,georg.sommer@hamburg.adfc.de"
+admin_mail: sven@anders-hamburg.de,georg.sommer@hamburg.adfc.de
 test_admin_mail: sven@anders-hamburg.de
 
 grafana_auth_anonymous_enabled: "true"
-grafana_auth_anonymous_org_name: "ADFC Public"
-grafana_auth_anonymous_org_role: "Viewer"
+grafana_auth_anonymous_org_name: ADFC Public
+grafana_auth_anonymous_org_role: Viewer
 
 # Reverse Proxy
-grafana_server_http_addr: "127.0.0.1"
-grafana_server_domain: "stats.adfc-intern.de"
-grafana_server_root_url: "https://stats.adfc-intern.de/"
+grafana_server_http_addr: 127.0.0.1
+grafana_server_domain: stats.adfc-intern.de
+grafana_server_root_url: https://stats.adfc-intern.de/
 grafana_server_serve_from_sub_path: true
 
-influxdb_install: no
+influxdb_install: false
 
-telegraf_net: yes
+telegraf_net: true
 
 certbot_create_if_missing: true
-certbot_admin_email: "admin@adfc-intern.de"
+certbot_admin_email: admin@adfc-intern.de
 certbot_certs:
   - domains:
       - proxmox01.adfc-intern.de
@@ -73,7 +88,7 @@ nginx_http_template:
             ip: "[::]"
             port: 443
             ssl: true
-        server_name: "stats.adfc-intern.de"
+        server_name: stats.adfc-intern.de
         access_log:
           - name: main
             location: /var/log/nginx/access-stats.log
@@ -86,9 +101,9 @@ nginx_http_template:
             value: max-age=15768000
             always: true
         ssl:
-          cert: "/etc/letsencrypt/live/proxmox01.adfc-intern.de/fullchain.pem"
-          key: "/etc/letsencrypt/live/proxmox01.adfc-intern.de/privkey.pem"
-#          dhparam: /etc/ssl/dh_param.pem
+          cert: /etc/letsencrypt/live/proxmox01.adfc-intern.de/fullchain.pem
+          key: /etc/letsencrypt/live/proxmox01.adfc-intern.de/privkey.pem
+          #          dhparam: /etc/ssl/dh_param.pem
           protocols: TLSv1 TLSv1.1 TLSv1.2
           ciphers: HIGH:!aNULL:!MD5
           prefer_server_ciphers: true
@@ -106,7 +121,7 @@ nginx_http_template:
                   name: Strict-Transport-Security
                   value: max-age=15768000
                   always: true
-              proxy_connect_timeout: null
+              proxy_connect_timeout:
               proxy_pass: http://127.0.0.1:3000
               proxy_set_header:
                 header_host:
@@ -128,7 +143,7 @@ nginx_http_template:
           listen_localhost_v6:
             ip: "[::]"
             port: 80
-        server_name: "stats.adfc-intern.de"
+        server_name: stats.adfc-intern.de
         access_log:
           - name: main
             location: /var/log/nginx/access-stats-http.log

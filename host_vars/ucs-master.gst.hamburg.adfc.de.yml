@@ -1,7 +1,28 @@
-ansible_ssh_common_args: '-o ProxyCommand="ssh -W %h:%p -q root@babelfish.spdns.de -p 823"'
+---
+ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q root@babelfish.spdns.de -p 922"
 ansible_host: 192.168.123.32
 ansible_web_port: 443
-ansible_web_subdir: '/univention'
+ansible_web_subdir: /univention
+public_ipv4: 31.172.106.205
+
+borg_save_path: /
+borg_save_exclude_dirs:
+  - /mnt
+  - /var/cache
+  - /run
+  - /dev
+  - /sys
+  - /proc
+  - /tmp
+  - /usr/share/ppd
+  - /home.old
+  - "*/ImapMail"
+  - "*/.npm"
+  - "*/.cache"
+  - /adfc/software
+borg_client_user: borguser
+borg_cron_hour: 6,7,11,21
+borg_cron_minute: "55"
 
 systemd_max_memory:
   - service_name: univention-management-console-web-server
@@ -20,6 +41,42 @@ apache_sites:
 apache_ports:
   - "8080"
   - "8443"
+
+adfc_perms:
+  - name: /adfc/01_Vereinsverwaltung
+    group: Hauptis
+  - name: /adfc/02_Akquise
+    group: Hauptis
+  - name: /adfc/03_Arbeitsmittel
+    group: Hauptis
+  - name: /adfc/04_Öffentlichkeitsarbeit
+    group: Hauptis
+  - name: /adfc/05_Verkehrspolitik
+    group: Hauptis
+  - name: /adfc/06_Buchhaltung
+    group: Buchhaltung
+  - name: /adfc/07_Personal
+    group: Personal
+  - name: /adfc/08_Scans
+    group: Domain Users
+    dir_perm: 2777
+  - name: /adfc/Computer
+    group: Domain Admins
+  - name: /adfc/software
+    group: Domain Admins
+haproxy_lets_encrypt_domains:
+  - ucs-sso.gst.hamburg.adfc.de
+  - ucs-master.gst.hamburg.adfc.de
+
+haproxy_cert_and_key_files:
+  - /etc/univention/letsencrypt/domain.key
+  - /etc/univention/letsencrypt/signed_chain.crt
+
+haproxy_ssl_sites:
+  - domain: ucs-master.gst.hamburg.adfc.de
+    check_user_cert: true
+  - domain: ucs-sso.gst.hamburg.adfc.de
+    check_user_cert: false
 
 zabbix_agent2: True
 zabbix_agent_server: 127.0.0.1,172.16.28.2

@@ -1,0 +1,26 @@
+---
+galaxy_info:
+  role_name: jitsi_meet
+  author: "@freedomofpress (@ageis and @conorsch) now maintained by @UdelaRInterior (@santiagomr)"
+  description: Installs Jitsi Meet videoconferencing software
+  company:
+    - "@freedomofpress"
+    - "@UdelaRInterior"
+  license: MIT
+  min_ansible_version: "2.7"
+  platforms:
+    - name: Debian
+      versions:
+        - jessie
+        - stretch
+        - buster
+    - name: Ubuntu
+      versions:
+        - bionic
+  galaxy_tags:
+    - system
+    - webconference
+    - jitsi
+    - talk
+    - chat
+dependencies: []

@@ -1,0 +1,114 @@
+- name: Setup packages
+  ansible.builtin.apt:
+    name:
+      - nginx
+    state: present
+
+- name: Create a directory if it does not exist
+  ansible.builtin.file:
+    path: "{{ docker_rocketchat_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Copy rocketchat docker-compose.yml
+  ansible.builtin.copy:
+    src: compose.yml
+    dest: "{{ docker_rocketchat_dir }}/compose.yml"
+    mode: 0644
+    owner: root
+    group: root
+
+- name: Create env file
+  ansible.builtin.template:
+    src: docker-env.j2
+    dest: "{{ docker_rocketchat_dir }}/.env"
+    mode: 0644
+    owner: root
+    group: root
+  register: docker_env
+
+# use files parameter to use multiple docker-compose.yml files
+- name: Deploy Docker Compose stack
+  community.docker.docker_compose:
+    project_src: "{{ docker_rocketchat_dir }}"
+    files:
+      - compose.yml
+  tags:
+    - compose
+
+- name: Generate Diffie-Hellman parameters with the default size (4096 bits)
+  community.crypto.openssl_dhparam:
+    path: /etc/ssl/dhparams.pem
+  tags:
+    - nginx
+
+- name: Create a directory if it does not exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  loop:
+    - /var/www/chat-wartung
+    - /var/www/empty
+  tags:
+    - nginx
+
+- name: Copy wartung.html
+  ansible.builtin.copy:
+    src: wartung.html
+    dest: /var/www/chat-wartung/wartung.html
+    mode: 0644
+    owner: root
+    group: root
+  tags:
+    - nginx
+
+- name: Setup nginx Site
+  ansible.builtin.template:
+    src: nginx-site.conf.j2
+    dest: /etc/nginx/sites-available/{{ rocketchat_server_name }}.conf
+    mode: 0644
+    owner: root
+    group: root
+  notify:
+    - Restart nginx
+  tags:
+    - nginx
+
+- name: Setup nginx Wartung Site
+  ansible.builtin.template:
+    src: nginx-site-wartung.conf.j2
+    dest: /etc/nginx/sites-available/{{ rocketchat_server_name }}-wartung.conf
+    mode: 0644
+    owner: root
+    group: root
+  notify:
+    - Restart nginx
+  tags:
+    - nginx
+
+- name: Delete default site
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/default.conf
+    state: absent
+  notify:
+    - Restart nginx
+  tags:
+    - nginx
+
+- name: Create Sysmlink
+  ansible.builtin.file:
+    src: /etc/nginx/sites-available/{{ rocketchat_server_name }}.conf
+    dest: /etc/nginx/sites-enabled/{{ rocketchat_server_name }}.conf
+    state: link
+  notify:
+    - Restart nginx
+  tags:
+    - nginx_synlink
+
+- name: Include New Version
+  ansible.builtin.include_tasks: new_version.yml

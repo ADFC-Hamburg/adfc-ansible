@@ -1,2 +1,3 @@
+---
 - name: Restart Apache
-  include_tasks: restart-apache.yml
+  ansible.builtin.include_tasks: restart-apache.yml
