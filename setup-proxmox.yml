@@ -1,8 +1,8 @@
----
 - hosts: proxmox01.gst.hamburg.adfc.de
   gather_facts: true
   roles:
     - ssh_keys
+    - community.zabbix.zabbix_agent
     - postfix_auth
     - proxmox_backup
   tasks:
