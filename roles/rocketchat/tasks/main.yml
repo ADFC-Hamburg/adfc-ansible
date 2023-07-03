@@ -30,13 +30,14 @@
   register: docker_env
 
 # use files parameter to use multiple docker-compose.yml files
-- name: Deploy Docker Compose stack
-  community.docker.docker_compose:
-    project_src: "{{ docker_rocketchat_dir }}"
-    files:
-      - compose.yml
-  tags:
-    - compose
+- name: Pull Package and start detached
+  ansible.builtin.command:
+    chdir: "{{ docker_rocketchat_dir }}"
+    argv:
+      - docker
+      - compose
+      - up
+      - -d
 
 - name: Generate Diffie-Hellman parameters with the default size (4096 bits)
   community.crypto.openssl_dhparam:
