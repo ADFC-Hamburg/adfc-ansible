@@ -1,4 +1,3 @@
---
 - name: Install Repo Helper Packages
   ansible.builtin.apt:
     name: "{{ docker_repo_helper_packages }}"
