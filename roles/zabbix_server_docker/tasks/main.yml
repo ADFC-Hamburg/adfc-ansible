@@ -49,7 +49,7 @@
 #  docker_compose:
 #    project_src: /usr/src/zabbix-docker/
 
-- name:  docker-compose up shell
+- name: docker-compose up shell
   command: /usr/bin/docker-compose up -d
   args:
     chdir: /usr/src/zabbix-docker

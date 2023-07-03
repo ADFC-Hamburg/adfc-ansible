@@ -24,21 +24,21 @@
         state: restarted
 
   tasks:
-#    - name: enable cool solutions
-#      ucr:
-#        values:
-#          repository/online/component/cool-solutions: true
-#          repository/online/component/cool-solutions/version: current
-#          repository/online/component/cool-solutions/unmaintained: true
-#      tags: cool_solutions
-#    - name: check if univention-homedir-autocreate is installed
-#      ansible.builtin.stat:
-#        path: /usr/lib/univention-directory-listener/system/homedir-autocreate.py
-#      register: stat_homedir_listener
-#    - name: install module for autocreation of home dirs
-#      ansible.builtin.command: univention-install univention-homedir-autocreate
-#      when: not stat_homedir_listener.stat.exists
-#      tags: cool_solutions
+    #    - name: enable cool solutions
+    #      ucr:
+    #        values:
+    #          repository/online/component/cool-solutions: true
+    #          repository/online/component/cool-solutions/version: current
+    #          repository/online/component/cool-solutions/unmaintained: true
+    #      tags: cool_solutions
+    #    - name: check if univention-homedir-autocreate is installed
+    #      ansible.builtin.stat:
+    #        path: /usr/lib/univention-directory-listener/system/homedir-autocreate.py
+    #      register: stat_homedir_listener
+    #    - name: install module for autocreation of home dirs
+    #      ansible.builtin.command: univention-install univention-homedir-autocreate
+    #      when: not stat_homedir_listener.stat.exists
+    #      tags: cool_solutions
 
     - name: install postfix sender_canonical
       ansible.builtin.template:
