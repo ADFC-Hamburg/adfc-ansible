@@ -21,11 +21,19 @@
     mode: 0644
   notify: reload postfix
 
+- name: Get Sender Address
+  ansible.builtin.slurp:
+    src: /etc/ansible/secrets/postfix_host_email.txt
+  delegate_to: ucs-master.gst.hamburg.adfc.de
+  register: postfix_host_email_txt
+
 - name: Copy sender_canonical
   ansible.builtin.template:
     src: sender-canonical
     dest: /etc/postfix/sender_canonical
     mode: 0640
+  vars:
+    postfix_host_email: "{{ postfix_host_email_txt.content | b64decode }}"
 
 - name: Get client Auth from master
   ansible.builtin.slurp:
