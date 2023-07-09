@@ -1,17 +1,20 @@
+---
 - hosts:
-   - backup_clients
-   - arbeitsplatz
-   - proxmox01.adfc-intern.de
-   - meet
-   - tools.adfc-hamburg.de
-  gather_facts: no
+    - backup_clients
+    - arbeitsplatz
+    - proxmox01.adfc-intern.de
+    - meet
+    - tools.adfc-hamburg.de
+    - dreicx.gst.hamburg.adfc.de
+    - nextcloud-srv.gst.hamburg.adfc.de
+  gather_facts: false
   roles:
-   - update-os
+    - update_os
 
   pre_tasks:
     - name: Power on clients
       include_role:
-        name: tasmota-power-on
+        name: tasmota_power_on
       when: tasmota_wireless_ip is defined
 
     - name: Fakten einlesen
@@ -20,5 +23,5 @@
   post_tasks:
     - name: Poweroff unused clients that were off before
       include_role:
-        name: tasmota-power-off
+        name: tasmota_power_off
       when: (tasmota_wireless_ip is defined) and (connect_result is failed)

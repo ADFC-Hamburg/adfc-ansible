@@ -1,68 +1,72 @@
+---
 - name: Install asterisk
-  apt:
+  ansible.builtin.apt:
     name:
       - asterisk
       - unzip
 
 - name: Test German Sounds
-  stat:
+  ansible.builtin.stat:
     path: /usr/share/asterisk/sounds/de/confbridge-pin.sln16
   register: test_german_sounds
 
 - name: Install German Sounds
-  include_tasks: german_sounds.yml
+  ansible.builtin.include_tasks: german_sounds.yml
   when: not test_german_sounds.stat.exists
 
-- name: create adfc sounds dir
-  file:
+- name: Create adfc sounds dir
+  ansible.builtin.file:
     path: "{{ asterisk_sounds_dir }}/adfc"
     state: directory
-    mode: '0755'
+    mode: "0755"
 
-- name: copy custom sound files
-  copy:
+- name: Copy custom sound files
+  ansible.builtin.copy:
     src: "{{ item }}"
     dest: "{{ asterisk_sounds_dir }}/adfc/"
-    mode: '0644'
+    mode: "0644"
   loop: "{{ install_asterisk_sounds }}"
-- name: get sipgate secret and SIP-Id
-  slurp:
+
+- name: Get sipgate secret and SIP-Id
+  ansible.builtin.slurp:
     src: /root/sipgate.secret
   register: sipgate_secret_b64
   delegate_to: proxmox01.adfc-intern.de
   tags: asterisk-extension
 
-- name: set sipgate fact
-  set_fact:
+- name: Set sipgate fact
+  ansible.builtin.set_fact:
     sipgate_secret: "{{ sipgate_secret_b64.content | b64decode }}"
   tags: asterisk-extension
 
-- name: set facts
-  set_fact:
+- name: Set facts
+  ansible.builtin.set_fact:
     sipgate_adfc_hh_number: "2086851"
     sipgate_adfc_hh_password: "{{ sipgate_secret.split(' ')[4] }}"
   tags: asterisk-extension
 
-- name: check if password file is there
-  stat:
-    path: "/etc/jigasi-sip.secret"
+# jscpd:ignore-start
+- name: Check if password file is there
+  ansible.builtin.stat:
+    path: /etc/jigasi-sip.secret
   register: jigasi_sip_secret_stat
 
 - name: Create Password file if empty
-  copy:
+  ansible.builtin.copy:
     content: "{{ lookup('password', '/dev/null length=16') }}"
-    dest: "/etc/jigasi-sip.secret"
+    dest: /etc/jigasi-sip.secret
     mode: "0600"
     owner: root
   when: not jigasi_sip_secret_stat.stat.exists
 
-- name: read jigasi_sip secret
-  slurp:
-    path: "/etc/jigasi-sip.secret"
+- name: Read jigasi_sip secret
+  ansible.builtin.slurp:
+    path: /etc/jigasi-sip.secret
   register: jigasi_sip_secret
 
-- name: create extension.conf
-  template:
+# jscpd:ignore-end
+- name: Create extension.conf
+  ansible.builtin.template:
     src: extensions.conf.j2
     dest: /etc/asterisk/extensions.conf
     mode: 0644
@@ -70,51 +74,50 @@
   tags: asterisk-extension
 
 - name: Create pjsip.conf
-  template:
+  ansible.builtin.template:
     src: pjsip.conf.j2
     dest: /etc/asterisk/pjsip.conf
     mode: 0644
   notify: asterisk pjsip reload
   tags: pjsip_conf
 
-
 - name: Noload chan_sip
-  blockinfile:
+  ansible.builtin.blockinfile:
     path: /etc/asterisk/modules.conf
-    marker: ";  ANSIBLE MANAGED BLOCK {mark}"
-    insertafter: "noload => chan_modem_i4l.so"
+    marker: ;  ANSIBLE MANAGED BLOCK {mark}
+    insertafter: noload => chan_modem_i4l.so
     block: |
       noload => chan_sip.so
   notify: asterisk restart
 
 - name: Allow firewall for ipv4 sip
-  ufw:
+  community.general.ufw:
     rule: allow
     port: "5061"
     proto: udp
-    src: '{{ item }}'
+    src: "{{ item }}"
   loop: "{{ asterisk_sip_ips }}"
 
 - name: Allow firewall for ipv4 rtp
-  ufw:
+  community.general.ufw:
     rule: allow
     port: 10000:20000
     proto: udp
-    src: '{{ item }}'
+    src: "{{ item }}"
   loop: "{{ asterisk_sip_ips }}"
 
 - name: Create Asterisk Monitor
-  copy:
+  ansible.builtin.copy:
     src: restart_asterisk_on_error.sh
     dest: /usr/local/sbin/restart_asterisk_on_error.sh
     mode: 0755
     owner: root
     group: root
 
-- name: cron entry for monitor
+- name: Cron entry for monitor
   ansible.builtin.cron:
     name: asterisk_restart
-    job:  /usr/local/sbin/restart_asterisk_on_error.sh
-    minute: "12,32,52"
+    job: /usr/local/sbin/restart_asterisk_on_error.sh
+    minute: 12,32,52
     user: root
     cron_file: ansible_asterisk

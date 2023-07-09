@@ -1,0 +1,5 @@
+---
+- name: Remove bad Hetzner Repo
+  ansible.builtin.file:
+    path: /etc/apt/sources.list.d/hetzner-mirror.list
+    state: absent

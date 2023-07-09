@@ -1,28 +1,29 @@
+---
 # vpnc-Konfiguration
 - name: Installiere VPNC und Jq
-  apt:
+  ansible.builtin.apt:
     name:
-     - vpnc
-     - jq
+      - vpnc
+      - jq
   tags: vpnc, vpnc-mon
 # jq wird für das Monitor Skript gebraucht.
 
 - name: Get vpnc.conf shared secret from master
-  slurp:
+  ansible.builtin.slurp:
     src: "{{ adfc_secret_folder + 'vpnc/' + inventory_hostname + '_vpnc_shared_secret' }}"
   delegate_to: "{{ adfc_vpnc_source }}"
-  register: VPNC_SHARED_SECRET
+  register: vpnc_shared_secret
   tags: vpnc
 
 - name: Get vpnc.conf password from master
-  slurp:
+  ansible.builtin.slurp:
     src: "{{ adfc_secret_folder + 'vpnc/' + inventory_hostname + '_vpnc_password' }}"
   delegate_to: "{{ adfc_vpnc_source }}"
-  register: VPNC_PASSWORD
+  register: vpnc_password
   tags: vpnc
 
 - name: Entferne altes vpnc file
-  file:
+  ansible.builtin.file:
     path: /etc/vpnc/vpnc.conf
     state: absent
   tags:
@@ -30,59 +31,59 @@
     - cleanup
 
 - name: Erstelle /etc/vpnc/adfc-gst.conf
-  template:
+  ansible.builtin.template:
     src: vpnc-adfc-gst.conf
     dest: /etc/vpnc/adfc-gst.conf
     owner: root
     group: root
-    mode: '0600'
+    mode: "0600"
   tags: vpnc
 
 - name: Erstelle /etc/vpnc/vpnc-adfc-gst-custom-script
-  copy:
+  ansible.builtin.copy:
     src: vpnc-adfc-gst-custom-script
     dest: /etc/vpnc/vpnc-adfc-gst-custom-script
     owner: root
     group: root
-    mode: '0755'
+    mode: "0755"
   tags: vpnc
 
 - name: Erstelle /etc/systemd/system/vpnc@.service
-  copy:
+  ansible.builtin.copy:
     src: vpnc@.service
     dest: /etc/systemd/system/vpnc@.service
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
   tags: vpnc
 
-- name: start vpnc dameon
-  systemd:
+- name: Start vpnc dameon
+  ansible.builtin.systemd:
     state: started
-    enabled: yes
-    daemon_reload: yes
+    enabled: true
+    daemon_reload: true
     name: vpnc@adfc-gst
   tags: vpnc
 
 - name: Generate Directory /etc/vpnc/post-connect.d/
-  file:
+  ansible.builtin.file:
     path: /etc/vpnc/post-connect.d/
     state: directory
-    mode: '0755'
+    mode: "0755"
   tags: vpnc
 
 - name: Create VPNC-Monitor Skript
-  copy:
+  ansible.builtin.copy:
     src: vpnc-monitor.sh
     dest: /usr/local/sbin/vpnc-monitor
     mode: "0755"
   tags: vpnc, vpnc-mon
 
 - name: Call VPNC Monitor every minute
-  cron:
+  ansible.builtin.cron:
     user: root
     cron_file: ansible-vpnc
-    name: "vpnc-monitor"
+    name: vpnc-monitor
     minute: "*"
-    job: "/usr/local/sbin/vpnc-monitor vpnc@adfc-gst 192.168.123.1"
+    job: /usr/local/sbin/vpnc-monitor vpnc@adfc-gst 192.168.123.1
   tags: vpnc, vpnc-mon

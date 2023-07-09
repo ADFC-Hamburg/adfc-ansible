@@ -1,0 +1,144 @@
+#
+#
+# {{ ansible_managed }}
+#
+#
+# FIXME verify none ggf. ersetzen
+
+global
+    log /dev/log    local0
+    log /dev/log    local1 notice
+    chroot /var/lib/haproxy
+    stats socket /run/haproxy/admin.sock mode 660 level admin expose-fd listeners
+    stats timeout 30s
+    user haproxy
+    group haproxy
+    daemon
+
+    # Default SSL material locations
+    ca-base /etc/ssl/certs
+    crt-base /etc/ssl/private
+
+    # see https://ssl-config.mozilla.org/#server=haproxy&version=2.2.9&config=modern&openssl=1.1.1k&guideline=5.6
+    ssl-default-bind-ciphersuites TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256
+    ssl-default-bind-options prefer-client-ciphers no-sslv3 no-tlsv10 no-tlsv11 no-tlsv12 no-tls-tickets
+
+    ssl-default-server-ciphersuites TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256
+    ssl-default-server-options no-sslv3 no-tlsv10 no-tlsv11 no-tlsv12 no-tls-tickets
+
+defaults
+    log     global
+    mode    http
+    option  httplog
+    option  dontlognull
+    timeout connect 5000
+    timeout client  50000
+    timeout server  50000
+    errorfile 400 /etc/haproxy/errors/400.http
+    errorfile 403 /etc/haproxy/errors/403.http
+    errorfile 408 /etc/haproxy/errors/408.http
+    errorfile 500 /etc/haproxy/errors/500.http
+    errorfile 502 /etc/haproxy/errors/502.http
+    errorfile 503 /etc/haproxy/errors/503.http
+    errorfile 504 /etc/haproxy/errors/504.http
+
+##################################################
+# BACKENDS
+##################################################
+
+{% for ha_backend_host in groups[haproxy_backend_group] %}
+# {{ ha_backend_host }}
+{% for le_domain in (hostvars[ha_backend_host]['haproxy_lets_encrypt_domains'] | default([ha_backend_host])) %}
+backend lets_encrypt_{{ le_domain }}
+    mode http
+    server {{ le_domain }} {{ hostvars[ha_backend_host]['ansible_host']}}:80
+
+{% endfor %}
+{% for le_domain in (hostvars[ha_backend_host]['haproxy_dehydrated_domains'] | default([])) %}
+backend lets_encrypt_{{ le_domain }}
+    mode http
+    http-request set-path "%[path,regsub(^/.well-known/acme-challenge/,/)]"
+    server {{ le_domain }} {{ hostvars[ha_backend_host]['ansible_host']}}:180
+
+{% endfor %}
+{% for ha_site in (hostvars[ha_backend_host]['haproxy_ssl_sites'] | default([])) %}
+
+#    hostvars[ha_backend_host]['ansible_host'] + ':' ,
+
+{% set server_params = [
+    ha_site.domain,
+    hostvars[ha_backend_host]['ansible_host'] + ':'+ ( ha_site.port  | default(443) |string ),
+    'check',
+    'inter 60s',
+    'ssl',
+    'verify '+(ha_site.ssl_verify | default('required')),
+    'ca-file /etc/ssl/certs/ca-certificates.crt',
+     (ha_site.extra_srv_opt |default(''))
+    ]
+%}
+backend https_{{ ha_site.domain }}
+   mode http
+   option forwardfor
+   option httpchk {{ ha_site.httpchk |default('GET /') }}
+   http-request set-header X-Forwarded-Port %[dst_port]
+   http-request add-header X-Forwarded-Proto https if { ssl_fc }
+   server {{ server_params |join(' ') }}
+
+{% endfor %}
+{% endfor %}
+# Default Backends
+
+backend default_http
+    errorfile 503 /etc/haproxy/static/fehler.http.static.html
+
+backend default_https
+   errorfile 503 /etc/haproxy/static/fehler.https.static.html
+
+##################################################
+# FRONTENDS
+##################################################
+
+frontend http
+    bind :80
+    mode http
+    acl lets_encrypt path_beg /.well-known/acme-challenge/
+    # redirects from http to https
+{% for ha_backend_host in groups[haproxy_backend_group] %}
+    # {{ ha_backend_host }}
+{% for le_domain in (hostvars[ha_backend_host]['haproxy_lets_encrypt_domains'] | default([ha_backend_host])) %}
+    use_backend lets_encrypt_{{ le_domain }} if lets_encrypt  { hdr(Host) -i {{ le_domain }} }
+{% endfor %}
+{% for le_domain in (hostvars[ha_backend_host]['haproxy_dehydrated_domains'] | default([])) %}
+    use_backend lets_encrypt_{{ le_domain }} if lets_encrypt  { hdr(Host) -i {{ le_domain }} }
+{% endfor %}
+{% endfor %}
+    default_backend default_http
+
+frontend https
+    mode    http
+    bind :443 ssl crt /etc/haproxy/certs/ ca-file /etc/haproxy/cert_auth/CA.pem verify optional crl-file /etc/haproxy/cert_auth/crl.pem alpn h2,http/1.1
+    #tcp-request inspect-delay 5s
+    #tcp-request content accept if { req_ssl_hello_type 1 }
+    redirect scheme https code 301 if !{ ssl_fc }
+    http-response set-header Strict-Transport-Security max-age=63072000
+
+{% for ha_backend_host in groups[haproxy_backend_group] %}
+{% for ha_site in (hostvars[ha_backend_host]['haproxy_ssl_sites'] | default([])) %}
+{% set ha_acl = 'acl_'+ha_site.domain  %}
+
+    # {{ ha_site.domain }}
+    acl {{ ha_acl }} ssl_fc_sni {{ ha_site.domain }}
+{% if ha_site.check_user_cert |default(true) %}
+    http-request deny if {{ ha_acl }} !{ ssl_c_used 1 }
+    http-request deny if {{ ha_acl }} !{ ssl_c_verify 0 }
+{% endif %}
+    use_backend https_{{ ha_site.domain }} if {{ ha_acl}}
+{% endfor %}
+{% endfor %}
+
+    # Extra Content
+    {{ haproxy_https_extra_content |default('') |indent(4) }}
+    # Default
+    default_backend default_https
+
+{{ haproxy_file_extra_content |default('') }}

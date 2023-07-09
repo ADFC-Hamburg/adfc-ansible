@@ -1,40 +1,41 @@
-- name: shutdown
-  community.general.shutdown:
-  when: "hcloud_server_info.hcloud_server_info[0].status | default('unknown') != 'off'"
-  ignore_errors: yes
-  ignore_unreachable: yes
+---
+- name: Shutdown
+  community.general.shutdown: # noqa ignore-errors
+  when: hcloud_server_info.hcloud_server_info[0].status | default('unknown') != 'off'
+  failed_when: false
+  ignore_unreachable: true
 
-- name: wait for shutdown
-  hcloud_server_info:
+- name: Wait for shutdown
+  hetzner.hcloud.hcloud_server_info:
     api_token: "{{ hcloud_api_token }}"
     name: "{{ inventory_hostname }}"
   register: hcloud_server_info
-  until: "hcloud_server_info.hcloud_server_info[0].status == 'off'"
-  when: "hcloud_server_info.hcloud_server_info[0].status != 'off'"
+  until: hcloud_server_info.hcloud_server_info[0].status == 'off'
+  when: hcloud_server_info.hcloud_server_info[0].status != 'off'
   retries: 8
   delay: 20
-  ignore_errors: yes
+  failed_when: false
   delegate_to: localhost
 
 - name: Stop Server hard if it is not down
-  hcloud_server:
+  hetzner.hcloud.hcloud_server:
     name: "{{ inventory_hostname }}"
     api_token: "{{ hcloud_api_token }}"
     state: stopped
-  when: "hcloud_server_info.hcloud_server_info[0].status | default('unknown') != 'off'"
+  when: hcloud_server_info.hcloud_server_info[0].status | default('unknown') != 'off'
   delegate_to: localhost
 
 - name: Resize Server
-  hcloud_server:
+  hetzner.hcloud.hcloud_server:
     name: "{{ inventory_hostname }}"
     api_token: "{{ hcloud_api_token }}"
-    server_type: "{{ hcloud_new_server_type  }}"
-    upgrade_disk: no
+    server_type: "{{ hcloud_new_server_type }}"
+    upgrade_disk: false
     state: present
   delegate_to: localhost
 
 - name: Wait for connection
-  wait_for_connection:
+  ansible.builtin.wait_for_connection:
     delay: 30
     sleep: 10
     timeout: 300

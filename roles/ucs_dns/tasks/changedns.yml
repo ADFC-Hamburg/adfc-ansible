@@ -1,25 +1,25 @@
+---
 - name: Read Admin Password from file
-  slurp:
+  ansible.builtin.slurp:
     path: "{{ ucs_dns_dnsserver_password_file }}"
   register: ucs_dns_root_secret
   delegate_to: "{{ ucs_dns_dnsserver_password_file_server }}"
 
-- name: set vars1
-  set_fact:
-   ucs_dns_basename: "{{ ucs_dns_hostname.replace('.' + ucs_dns_zonename, '') }}"
-   ucs_dns_ldap_zone: "{{ 'zoneName=' + ucs_dns_zonename + ',' + ucs_dns_ldap_base }}"
-- name: set vars2
-  set_fact:
-    ucs_dns_dnsserver_password: "{{ ucs_dns_root_secret.content |b64decode |trim }}"
-    ucs_dns_entry_dn: "{{ 'relativeDomainName=' + ucs_dns_basename + ','  + ucs_dns_ldap_zone }}"
+- name: Set vars1
+  ansible.builtin.set_fact:
+    ucs_dns_basename: "{{ ucs_dns_hostname.replace('.' + ucs_dns_zonename, '') }}"
+    ucs_dns_ldap_zone: "{{ 'zoneName=' + ucs_dns_zonename + ',' + ucs_dns_ldap_base }}"
+- name: Set vars2
+  ansible.builtin.set_fact:
+    ucs_dns_dnsserver_password: "{{ ucs_dns_root_secret.content | b64decode | trim }}"
+    ucs_dns_entry_dn: "{{ 'relativeDomainName=' + ucs_dns_basename + ',' + ucs_dns_ldap_zone }}"
   delegate_to: localhost
 
-
 - name: Get entry
-  uri:
+  ansible.builtin.uri:
     headers:
       Accept: application/json
-    url: "https://{{ ucs_dns_dnsserver }}/univention/udm/dns/host_record/{{ ucs_dns_entry_dn |urlencode }}"
+    url: https://{{ ucs_dns_dnsserver }}/univention/udm/dns/host_record/{{ ucs_dns_entry_dn | urlencode }}
     url_username: "{{ ucs_dns_dnsserver_user }}"
     url_password: "{{ ucs_dns_dnsserver_password }}"
     status_code:
@@ -29,10 +29,10 @@
   delegate_to: localhost
 
 - name: Change entry
-  uri:
+  ansible.builtin.uri:
     headers:
       Accept: application/json
-    url: "https://{{ ucs_dns_dnsserver }}/univention/udm/dns/host_record/{{ ucs_dns_entry_dn |urlencode }}"
+    url: https://{{ ucs_dns_dnsserver }}/univention/udm/dns/host_record/{{ ucs_dns_entry_dn | urlencode }}
     url_username: "{{ ucs_dns_dnsserver_user }}"
     url_password: "{{ ucs_dns_dnsserver_password }}"
     method: PUT
@@ -51,17 +51,17 @@
   register: ucs_dns_change_action
   when:
     - ( dyndns_read_entry.status == 200)
-    - (( dyndns_read_entry.json.properties.a | map('ipaddr','int') |list |sort |join(',') )  !=
-      ( ucs_dns_ips  | map('ipaddr','int') |list |sort |join(',') )) or
+    - (( dyndns_read_entry.json.properties.a | map('ipaddr','int') | list | sort | join(',') )
+      != ( ucs_dns_ips  | map('ipaddr','int') | list | sort | join(',') )) or
       ( usc_dns_ttl_in_seconds != dyndns_read_entry.json.properties.zonettl)
   delegate_to: localhost
   changed_when: true
 
 - name: Create entry
-  uri:
+  ansible.builtin.uri:
     headers:
       Accept: application/json
-    url: "https://{{ ucs_dns_dnsserver }}/univention/udm/dns/host_record/"
+    url: https://{{ ucs_dns_dnsserver }}/univention/udm/dns/host_record/
     url_username: "{{ ucs_dns_dnsserver_user }}"
     url_password: "{{ ucs_dns_dnsserver_password }}"
     method: POST
@@ -83,7 +83,7 @@
   changed_when: true
 
 - name: Wait TTL
-  pause:
+  ansible.builtin.pause:
     seconds: "{{ ucs_dns_waittime }}"
   delegate_to: localhost
-  when: ( dyndns_read_entry.status == 404) or (ucs_dns_change_action.changed) # noqa 503
+  when: ( dyndns_read_entry.status == 404) or (ucs_dns_change_action.changed) # noqa no-handler

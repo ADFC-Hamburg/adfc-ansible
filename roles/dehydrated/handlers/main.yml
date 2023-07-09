@@ -1,0 +1,11 @@
+---
+- name: Restart dehydrated http
+  ansible.builtin.systemd:
+    name: dehydrated-http.service
+    daemon_reload: true
+    state: restarted
+    enabled: true
+
+- name: Domains abholen
+  ansible.builtin.command:
+    cmd: "dehydrated --cron"

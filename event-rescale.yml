@@ -1,8 +1,9 @@
+---
 - name: Setup Hetzner Server
   hosts: event.dyndns.adfc-intern.de
-  gather_facts: no
+  gather_facts: false
   vars_prompt:
-    - name:  hcloud_scale_server_type
+    - name: hcloud_scale_server_type
       prompt: |
         Welcher Servertype soll der Rechner bekommen? (Preis in Cent pro h)
          CPUs  virtuell       dediziert
@@ -13,6 +14,6 @@
            8:  cpx41 (4.5)    ccx31 (14.3)
            16: cpx51 (9.5)    ccx41 (28.6)
            32                 ccx51 (57.1)
-      private: no
+      private: false
   roles:
     - hcloud_server_rescale

@@ -1,0 +1,72 @@
+- name: Create Dir
+  file:
+    path: /usr/src/zabbix-docker
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
+
+- name: Create Password file for mysql_user
+  shell: pwgen -s1 16 > /usr/src/zabbix-docker/.MYSQL_PASSWORD
+  args:
+    creates: "/usr/src/zabbix-docker/.MYSQL_PASSWORD"
+
+- name: chmod Password file
+  file:
+    path: "/usr/src/zabbix-docker/.MYSQL_PASSWORD"
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Create Username
+  shell: pwgen -s1 > /usr/src/zabbix-docker/.MYSQL_USER
+  args:
+    creates: "/usr/src/zabbix-docker/.MYSQL_USER"
+
+- name: chmod Password file
+  file:
+    path: "/usr/src/zabbix-docker/.MYSQL_USER"
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Create Docker Files
+  template:
+    src: "{{ item }}.j2"
+    dest: "/usr/src/zabbix-docker/{{ item }}"
+    mode: 0644
+    owner: root
+    group: root
+  with_items:
+    - docker-compose.yaml
+    - env_db_mysql
+    - env_web
+    - env_srv
+
+# Geht leider nicht wegen zu alten Python Docker
+# sollten wir mit neuren UCS noch mal probieren
+#- name: Start Zabbix Docker Conatiners
+#  docker_compose:
+#    project_src: /usr/src/zabbix-docker/
+
+- name: docker-compose up shell
+  command: /usr/bin/docker-compose up -d
+  args:
+    chdir: /usr/src/zabbix-docker
+
+- name: Create Apache File
+  template:
+    src: "apache_conf.j2"
+    dest: "/etc/apache2/ucs-sites.conf.d/zabbix_ansible.conf"
+    mode: 0644
+    owner: root
+    group: root
+
+- name: Create Firewall file
+  template:
+    src: 51_ansible_zabbix.sh.j2
+    dest: /etc/security/packetfilter.d/51_ansible_zabbix.sh
+    mode: 0755
+    owner: root
+    group: root
+  notify: reload firewall

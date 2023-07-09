@@ -1,16 +1,16 @@
 - name: Install Repo Helper Packages
-  apt:
+  ansible.builtin.apt:
     name: "{{ docker_repo_helper_packages }}"
 
 - name: Fetch GPG Key
-  get_url:
+  ansible.builtin.get_url:
     url: "{{ docker_repo_gpg_key }}"
     dest: "{{ docker_repo_gpg_key_dest }}"
     mode: 0644
   register: docker_fetch_gpg
 
 - name: Create Repo File
-  copy:
+  ansible.builtin.copy:
     content: >
       deb [arch=amd64 signed-by={{ docker_repo_gpg_key_dest }}]
       {{ docker_repo_url }} {{ ansible_distribution_release }} stable
@@ -18,20 +18,25 @@
     mode: 0644
 
 - name: Delete docker.gpg
-  file:
+  ansible.builtin.file:
     path: "{{ docker_repo_gpg_key_gpg }}"
     state: absent
-  when: docker_fetch_gpg.changed # noqa 503
+  when: docker_fetch_gpg.changed # noqa no-handler
 
-- name: gpg Convert key
-  command: >
-    gpg2 --batch --dearmor --output
+- name: Gpg Convert key
+  ansible.builtin.command: >
+    gpg --batch --dearmor --output
     {{ docker_repo_gpg_key_gpg }}
     {{ docker_repo_gpg_key_dest }}
   args:
     creates: "{{ docker_repo_gpg_key_gpg }}"
 
-- name: Install Docker Software
-  apt:
-    name: "{{ docker_packages }}"
-    update_cache: yes
+#- name: Install Docker Software
+#  ansible.builtin.apt:
+#    name: "{{ docker_packages }}"
+#    update_cache: true
+
+- name: Install Pip Packages
+  ansible.builtin.pip:
+    name:
+      - docker

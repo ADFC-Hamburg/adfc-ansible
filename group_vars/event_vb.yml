@@ -1,14 +1,15 @@
+---
 hcloud_image: debian-10
-ucs_dns_zonename: "dyndns.adfc-intern.de"
+ucs_dns_zonename: dyndns.adfc-intern.de
 
-ansible_ssh_extra_args: "-o CheckHostIP=No"
+ansible_ssh_extra_args: -o CheckHostIP=No
 
-jitsi_meet_server_name: "event.adfc-intern.de"
+jitsi_meet_server_name: event.adfc-intern.de
 jitsi_meet_videobridge_certifcate_check: false
 jitsi_meet_use_stun_turn: false
 jitsi_meet_jvb_sipcfg_authorized_source_regexp: ""
 
-jitsi_meet_octo: yes
+jitsi_meet_octo: true
 jitsi_meet_octo_probability: 1
 jitsi_meet_region: region1
 jitsi_jicofo_bridge_selector: split

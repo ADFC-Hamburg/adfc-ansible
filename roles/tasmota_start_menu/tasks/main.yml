@@ -1,0 +1,73 @@
+---
+# Playbook to implement a remote startup script for users
+
+- name: Install script dependencies
+  ansible.builtin.apt:
+    name:
+      - dialog
+      - curl
+    state: present
+
+- name: Generate password for startup_script user
+  ansible.builtin.set_fact:
+    user_pass: "{{ lookup('password', '/dev/null length=16') }}"
+
+- name: Make sure user is present on host
+  ansible.builtin.user:
+    name: startup_script
+    shell: /usr/local/bin/tasmota_start_menu.sh
+    state: present
+    password: "{{ user_pass | password_hash('sha512') }}"
+    update_password: on_create
+    create_home: false
+    system: true
+
+- name: Copy the template over
+  ansible.builtin.template:
+    src: tasmota_start_menu.sh
+    dest: /usr/local/bin/tasmota_start_menu.sh
+    owner: root
+    group: root
+    mode: 0755
+    force: true
+
+- name: Check if udm configuration is correct
+  ansible.builtin.command:
+    argv:
+      - /usr/sbin/udm
+      - guacamole/config
+      - list
+      - --position
+      - cn=Client-Remote-Start,cn=guacamole,dc=hamburg,dc=adfc,dc=de
+  register: udm_config
+  changed_when: false
+  failed_when: false
+
+- name: Create guacamole config for tasmota-start-menu
+  ansible.builtin.command:
+    argv:
+      - /usr/sbin/udm
+      - guacamole/config
+      - create
+      - --position
+      - cn=guacamole,dc=hamburg,dc=adfc,dc=de
+      - --set
+      - name=Client-Remote-Start
+      - --set
+      - description=Skript zum entfernten Starten von Clients
+      - --set
+      - guacConfigProtocol=ssh
+      - --set
+      - guacConfigParameter=hostname=ucs-master.gst.hamburg.adfc.de
+      - --set
+      - guacConfigParameter=username=startup_script
+      - --set
+      - guacConfigParameter=server-layout=de-de-qwertz
+      - --set
+      - guacConfigParameter=password={{ user_pass }}
+      - --set
+      - nestedGroup=cn="Domain Admins",cn=groups,dc=hamburg,dc=adfc,dc=de
+      - --set
+      - nestedGroup=cn="Domain Users",cn=groups,dc=hamburg,dc=adfc,dc=de
+      - --ignore_exists
+  when: not udm_config.stdout is search("hostname=ucs-master.gst.hamburg.adfc.de")

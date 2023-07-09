@@ -1,3 +1,4 @@
+---
 all:
   children:
     server:
@@ -5,6 +6,7 @@ all:
         tools.adfc-hamburg.de:
         proxmox01.adfc-intern.de:
         int-master.adfc-intern.de:
+        chat.hamburg.adfc.de:
       children:
         gsthh_server:
         meet:
@@ -12,9 +14,7 @@ all:
             meet_server:
               hosts:
                 meet.adfc-intern.de:
-                test.adfc-intern.de:
                 test1.dyndns.adfc-intern.de:
-                test2.dyndns.adfc-intern.de:
             jitsi_vbs:
               children:
                 meet_vb:
@@ -31,7 +31,6 @@ all:
                     vbedh03.dyndns.adfc-intern.de:
             meet_test:
               hosts:
-                test.adfc-intern.de:
                 vb01.test.adfc-intern.de:
                 test1.dyndns.adfc-intern.de:
             meet_live:
@@ -55,21 +54,44 @@ all:
             zem.gst.hamburg.adfc.de:
         gsthh_server:
           hosts:
-            matratze01.gst.hamburg.adfc.de:
-            matratze02.gst.hamburg.adfc.de:
             ucs-master.gst.hamburg.adfc.de:
             dreicx.gst.hamburg.adfc.de:
             nextcloud-srv.gst.hamburg.adfc.de:
+          children:
+            proxmox_gst:
+              hosts:
+                matratze01.gst.hamburg.adfc.de:
+                matratze02.gst.hamburg.adfc.de:
+            haproxy_gst_backends:
+              hosts:
+                ucs-master.gst.hamburg.adfc.de:
+                dreicx.gst.hamburg.adfc.de:
+                nextcloud-srv.gst.hamburg.adfc.de:
+              children:
+                proxmox_gst:
     backup_clients:
       hosts:
         adfc-hh-bak-1:
         adfc-hh-bak-2:
+    save_with_borg:
+      hosts:
+        portal.openbikesensor.hamburg:
+        chat2.hamburg.adfc.de:
+        ucs-master.gst.hamburg.adfc.de:
     domain_factory:
       hosts:
         status.adfc-intern.de:
     hetzner:
+      children:
+        rocket_chat:
       hosts:
-        chat.hamburg.adfc.de:
+        portal.openbikesensor.hamburg:
+    rocket_chat:
+      hosts:
+        chat1.hamburg.adfc.de:
+        chat2.hamburg.adfc.de:
+        chat3.hamburg.adfc.de:
+        chat-test:
     tasmota:
       hosts:
         tasmota-0673.gst.hamburg.adfc.de:

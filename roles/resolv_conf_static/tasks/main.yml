@@ -1,0 +1,22 @@
+- name: Disalbe systemd-resolve conf
+  ansible.builtin.systemd:
+    name: systemd-resolved
+    state: stopped
+    enabled: false
+
+- name: Network Manager main section dns=default
+  ansible.builtin.template:
+    src: NetworkManager.conf.j2
+    dest: /etc/NetworkManager/NetworkManager.conf
+    mode: 0644
+    owner: root
+    group: root
+  notify: Restart NetworkManager
+
+- name: Write resolv.conf
+  ansible.builtin.template:
+    src: resolv.conf.j2
+    dest: /etc/resolv.conf
+    mode: 0644
+    owner: root
+    group: root

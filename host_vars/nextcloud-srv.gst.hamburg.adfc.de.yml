@@ -1,2 +1,15 @@
+---
 ansible_host: 192.168.123.87
-ansible_ssh_common_args: '-o ProxyCommand="ssh -W %h:%p -q root@babelfish.spdns.de -p 824"'
+ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q root@babelfish.spdns.de -p 824"
+
+haproxy_lets_encrypt_domains:
+  - archivcloud.hamburg.adfc.de
+
+haproxy_cert_and_key_files:
+  - /var/snap/nextcloud/current/certs/certbot/config/live/archivcloud.hamburg.adfc.de/fullchain.pem
+  - /var/snap/nextcloud/current/certs/certbot/config/live/archivcloud.hamburg.adfc.de/privkey.pem
+
+haproxy_ssl_sites:
+  - domain: archivcloud.hamburg.adfc.de
+    httpchk: GET /index.php/login HTTP/1.1\r\nHost:localhost
+    check_user_cert: false

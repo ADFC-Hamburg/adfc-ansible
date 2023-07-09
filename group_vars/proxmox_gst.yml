@@ -1,0 +1,44 @@
+---
+haproxy_backend_group: haproxy_gst_backends
+
+#  - matratze.gst.hamburg.adfc.de
+haproxy_https_extra_content: |
+  acl acl_matratze.gst.hamburg.adfc.de ssl_fc_sni matratze.gst.hamburg.adfc.de
+  http-request deny if acl_matratze.gst.hamburg.adfc.de !{ ssl_c_used 1 }
+  http-request deny if acl_matratze.gst.hamburg.adfc.de !{ ssl_c_verify 0 }
+  use_backend https_matratze.gst.hamburg.adfc.de if acl_matratze.gst.hamburg.adfc.de
+
+  acl acl_haproxy.gst.hamburg.adfc.de ssl_fc_sni haproxy.gst.hamburg.adfc.de
+  http-request deny if acl_haproxy.gst.hamburg.adfc.de !{ ssl_c_used 1 }
+  http-request deny if acl_haproxy.gst.hamburg.adfc.de !{ ssl_c_verify 0 }
+  use_backend https_haproxy.gst.hamburg.adfc.de if acl_haproxy.gst.hamburg.adfc.de
+
+haproxy_file_extra_content: |
+  backend https_matratze.gst.hamburg.adfc.de
+    description Back-end proxmox
+    mode http
+    balance roundrobin
+    option forwardfor
+    option httpchk GET /
+    cookie SERVERID insert indirect nocache
+    http-request set-header X-Forwarded-Port %[dst_port]
+    http-request add-header X-Forwarded-Proto https if { ssl_fc }
+    server matratze01 192.168.123.90:8006 cookie S1 check ssl verify required ca-file /etc/ssl/certs/ca-certificates.crt
+    server matratze02 192.168.123.91:8006 cookie S2 check ssl verify required ca-file /etc/ssl/certs/ca-certificates.crt
+
+  listen stats
+     bind 127.0.0.1:2022
+     mode http
+     stats enable
+     stats uri /
+     acl do_admin always_true
+     stats admin if do_admin
+
+   backend https_haproxy.gst.hamburg.adfc.de
+     mode http
+     server haproxy.gst.hamburg.adfc.de 127.0.0.1:2022
+
+dehydrated_deploy_hook: |-
+  cp ${FULLCHAINFILE} /etc/pve/local/pveproxy-ssl.pem
+  cp ${KEYFILE} /etc/pve/local/pveproxy-ssl.key
+  systemctl restart pveproxy.service

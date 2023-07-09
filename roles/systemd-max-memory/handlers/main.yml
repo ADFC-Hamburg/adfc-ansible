@@ -1,3 +1,0 @@
-- name: restart systemd
-  systemd:
-    daemon_reload: yes

@@ -1,6 +1,0 @@
-- name: Restart turnserver
-  systemd:
-    name: coturn
-    state: restarted
-- name: Coturn Certcopy
-  command: /etc/cron.daily/coturn-cert.sh

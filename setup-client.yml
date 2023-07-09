@@ -1,302 +1,300 @@
+---
 - hosts: arbeitsplatz
-  gather_facts: no
+  gather_facts: false
   roles:
-  - basic_setup
-  - kubuntu
-  - ssh-keys
-  - inactivity-shutdown
-  - jnv.unattended-upgrades
-  - load-contacts
-  - postfix-auth
-  - skype
-  - fonts
-  - xrdp
-  - unburden-home-dir
-  - firefox-client
-  - chromium
-  - thunderbird
-  - libreoffice
-  - slack
-  - links-on-desktop
-  - client-apt-remove
-  - master-pdf-editor
-  - gdm_desktoptheme
-  - chromium-latest
+    - basic_setup
+    - kubuntu
+    - ssh_keys
+    - inactivity_shutdown
+    - jnv.unattended-upgrades
+    - load_contacts
+    - postfix_auth
+    - skype
+    - fonts
+    - xrdp
+    - unburden_home_dir
+    - firefox_client
+    - chromium
+    - thunderbird
+    - libreoffice
+    - slack
+    - links_on_desktop
+    - client_apt_remove
+    - master_pdf_editor
+    - gdm_desktoptheme
+    - chromium_latest
+    - moneyplex_settings
   handlers:
-  - name: XnViewMP manuell installieren
-    apt:
-      deb: "/usr/local/share/ansible_downloads/XnViewMP-linux-x64.deb"
+    - name: XnViewMP manuell installieren
+      ansible.builtin.apt:
+        deb: /usr/local/share/ansible_downloads/XnViewMP-linux-x64.deb
 
-  - name: PDF-Editor manuell installieren
-    apt:
-      deb: "/usr/local/share/ansible_downloads/{{ deb_name_master_pdf_editor }}"
-  - name: apt-get update ausführen
-    apt:
-      update_cache: yes
-    tags: software
-
+    - name: PDF-Editor manuell installieren
+      ansible.builtin.apt:
+        deb: /usr/local/share/ansible_downloads/{{ deb_name_master_pdf_editor }}
+    - name: apt-get update ausführen
+      ansible.builtin.apt:
+        update_cache: true
+      tags: software
 
   pre_tasks:
     - name: Power on clients
       include_role:
-        name: tasmota-power-on
+        name: tasmota_power_on
       when: tasmota_wireless_ip is defined
 
     - name: Fakten einlesen
       setup:
-
     - name: apt-get update
-      apt:
-        update_cache: yes
+      ansible.builtin.apt:
+        update_cache: true
       tags: software
-
 
   post_tasks:
     - name: Poweroff unused clients that were off before
       include_role:
-        name: tasmota-power-off
+        name: tasmota_power_off
       when: (tasmota_wireless_ip is defined) and (connect_result is failed)
 
   tasks:
+    - name: Setup Cups client.conf
+      ansible.builtin.copy:
+        content: "ServerName ucs-master.gst.hamburg.adfc.de"
+        dest: /etc/cups/client.conf
+        mode: 0644
 
-  - name: Setup Cups client.conf
-    copy:
-      content: "ServerName ucs-master.gst.hamburg.adfc.de"
-      dest: /etc/cups/client.conf
-      mode: 0644
+    # spezielle Repositories hinzufügen
+    - name: ucs domain join repository
+      ansible.builtin.apt_repository:
+        repo: ppa:univention-dev/ppa
+        update-cache: false
+      notify: apt-get update ausführen
 
-# spezielle Repositories hinzufügen
-  - name: ucs domain join repository
-    apt_repository:
-      repo: 'ppa:univention-dev/ppa'
-      update-cache: no
-    notify: apt-get update ausführen
+    - name: keepassxc ppa
+      ansible.builtin.apt_repository:
+        repo: ppa:phoerious/keepassxc
+        update-cache: false
+      notify: apt-get update ausführen
+      tags: software
 
-  - name: keepassxc ppa
-    apt_repository:
-      repo: 'ppa:phoerious/keepassxc'
-      update-cache: no
-    notify: apt-get update ausführen
-    tags: software
+    - name: add ucs-master to /etc/hosts
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+        line: 192.168.123.32  ucs-master.gst.hamburg.adfc.de
+      tags: etc_hosts
 
-  - name: add ucs-master to /etc/hosts
-    lineinfile:
-      path: /etc/hosts
-      line: "192.168.123.32  ucs-master.gst.hamburg.adfc.de"
-    tags: etc_hosts
+    - name: ubuntu-mozilla-security-ppa
+      ansible.builtin.apt_repository:
+        repo: ppa:ubuntu-mozilla-security/ppa
+        update-cache: false
+      notify: apt-get update ausführen
+      tags: software
 
-  - name: ubuntu-mozilla-security-ppa
-    apt_repository:
-      repo: 'ppa:ubuntu-mozilla-security/ppa'
-      update-cache: no
-    notify: apt-get update ausführen
-    tags: software
+    - name: ppa fuer hibiskus entfernen
+      tags: software
+      ansible.builtin.apt_repository:
+        repo: ppa:marko-preuss/hibiscus
+        update-cache: false
+        state: absent
 
-  - name: ppa fuer hibiskus entfernen
-    tags: software
-    apt_repository:
-      repo: 'ppa:marko-preuss/hibiscus'
-      update-cache: no
-      state: absent
+    - name: ppa für Nextcloud hinzufügen
+      ansible.builtin.apt_repository:
+        repo: ppa:nextcloud-devs/client
+        update-cache: false
+      notify: apt-get update ausführen
+      tags: software
 
-  - name: ppa für Nextcloud hinzufügen
-    apt_repository:
-      repo: 'ppa:nextcloud-devs/client'
-      update-cache: no
-    notify: apt-get update ausführen
-    tags: software
+    # benötigte Programme installieren
+    # pdfshuffler muss bei Wechsel auf Kubuntu >=19 in pdfarranger geändert werden
+    - name: Sicherstellen, dass repositories auf dem neusten Stand sind
+      meta: flush_handlers
 
-# benötigte Programme installieren
-# pdfshuffler muss bei Wechsel auf Kubuntu >=19 in pdfarranger geändert werden
-  - name: Sicherstellen, dass repositories auf dem neusten Stand sind
-    meta: flush_handlers
+    - name: Installiere Pakete
+      ansible.builtin.apt:
+        name:
+          - apt-transport-https
+          - emacs
+          - ncdu
+          - git
+          - univention-domain-join
+          - univention-domain-join-cli
+          - nfs-common
+          - openjdk-11-jre
+          - flameshot
+          - gstreamer1.0-plugins-base
+          - kdenlive
+          - vlc
+          - language-pack-de
+          - language-pack-de-base
+          - language-pack-kde-de
+          - libccid
+          - gnome-user-docs-de
+          - gnupg2
+          - gimp
+          - gimp-help-de
+          - glabels
+          - openshot-qt
+          - gnucash
+          - gnucash-docs
+          - bsd-mailx
+          - krdc
+          - pavucontrol
+          - pdfmod
+          - pdfarranger
+          - keepassxc
+          - nextcloud-client
+          - nextcloud-client-dolphin
+          - language-pack-gnome-de
+          - qrencode
+          - qtqr
+          - pdfgrep
+          - kleopatra
+      tags: software
 
-  - name: Installiere Pakete
-    apt:
-      name:
-      - apt-transport-https
-      - emacs
-      - ncdu
-      - git
-      - univention-domain-join
-      - univention-domain-join-cli
-      - nfs-common
-      - openjdk-11-jre
-      - flameshot
-      - gstreamer1.0-plugins-base
-      - kdenlive
-      - vlc
-      - language-pack-de
-      - language-pack-de-base
-      - language-pack-kde-de
-      - gnome-user-docs-de
-      - gnupg2
-      - gimp
-      - gimp-help-de
-      - glabels
-      - openshot-qt
-      - gnucash
-      - gnucash-docs
-      - bsd-mailx
-      - krdc
-      - pavucontrol
-      - pdfmod
-      - pdfshuffler
-      - keepassxc
-      - nextcloud-client
-      - nextcloud-client-dolphin
-      - language-pack-gnome-de
-      - qrencode
-      - qtqr
-      - pdfgrep
-      - kleopatra
-    tags: software
-
-  - name: uninstall hibiscus-ppa
-    apt:
-      name: hibiscus-ppa
-      state: absent
-    tags: hibiscus
+    - name: uninstall hibiscus-ppa
+      ansible.builtin.apt:
+        name: hibiscus-ppa
+        state: absent
+      tags: hibiscus
     # Rollen erst includieren wenn das hibiscus-ppa paktet deinstalliert ist
-  - name: install jameica
-    include_role:
-      name: jameica
-  - name: install hibiscus
-    include_role:
-      name: hibiscus
+    - name: install jameica
+      include_role:
+        name: jameica
+    - name: install hibiscus
+      include_role:
+        name: hibiscus
 
-  - name: Kein KDE Update Icon mehr anzeigen
-    apt:
-      name: plasma-discover
-      state: absent
-    tags: plasma-discover
+    - name: Kein KDE Update Icon mehr anzeigen
+      ansible.builtin.apt:
+        name: plasma-discover
+        state: absent
+      tags: plasma-discover
 
-# XnViewMP installieren
-  - name: XnViewMP manuell runterladen
-    get_url:
-      url: http://download.xnview.com/XnViewMP-linux-x64.deb
-      dest: /usr/local/share/ansible_downloads/XnViewMP-linux-x64.deb
-    notify: XnViewMP manuell installieren
-    tags: xnviewmp, software
+    # XnViewMP installieren
+    - name: XnViewMP manuell runterladen
+      get_url:
+        url: http://download.xnview.com/XnViewMP-linux-x64.deb
+        dest: /usr/local/share/ansible_downloads/XnViewMP-linux-x64.deb
+      notify: XnViewMP manuell installieren
+      tags: xnviewmp, software
 
-# Master-PDF-Editor installieren
-  - name: PDF-Editor manuell runterladen
-    get_url:
-      url: https://code-industry.net/public/{{ deb_name_master_pdf_editor }}
-      dest: /usr/local/share/ansible_downloads/{{ deb_name_master_pdf_editor }}
-    notify: PDF-Editor manuell installieren
-    tags: pdfeditor, software
+    # Master-PDF-Editor installieren
+    - name: PDF-Editor manuell runterladen
+      get_url:
+        url: https://code-industry.net/public/{{ deb_name_master_pdf_editor }}
+        dest: /usr/local/share/ansible_downloads/{{ deb_name_master_pdf_editor }}
+      notify: PDF-Editor manuell installieren
+      tags: pdfeditor, software
 
-  - name: Pruefe Freemind-snap
-    stat:
-      path: /var/lib/snapd/desktop/applications/freemind_freemind.desktop
-    register: freemind_snap_result
+    - name: Pruefe Freemind-snap
+      ansible.builtin.stat:
+        path: /var/lib/snapd/desktop/applications/freemind_freemind.desktop
+      register: freemind_snap_result
 
-# Freemind als Snap installieren
-  - name: Freemind-Snap installieren
-    command: snap install freemind
-    when: not freemind_snap_result.stat.exists
+    # Freemind als Snap installieren
+    - name: Freemind-Snap installieren
+      ansible.builtin.command: snap install freemind
+      when: not freemind_snap_result.stat.exists
 
-# Shortcuts für Flameshot einrichten
-  - name: Erstelle /usr/share/khotkeys/flameshot.khotkeys
-    copy:
-      src: flameshot.khotkeys
-      dest: /usr/share/khotkeys/flameshot.khotkeys
-  - name: Standard-Hotkeys fuer Spectacle löschen
-    file:
-      path: /usr/share/khotkeys/spectacle.khotkeys
-      state: absent
+    # Shortcuts für Flameshot einrichten
+    - name: Erstelle /usr/share/khotkeys/flameshot.khotkeys
+      ansible.builtin.copy:
+        src: flameshot.khotkeys
+        dest: /usr/share/khotkeys/flameshot.khotkeys
+    - name: Standard-Hotkeys fuer Spectacle löschen
+      ansible.builtin.file:
+        path: /usr/share/khotkeys/spectacle.khotkeys
+        state: absent
 
-  - name: Menueeintrag fuer ADFC-Datenbank erstellen
-    copy:
-      src: adfc-datenbank.desktop
-      dest: /usr/share/applications/adfc-datenbank.desktop
+    - name: Menueeintrag fuer ADFC-Datenbank erstellen
+      ansible.builtin.copy:
+        src: adfc-datenbank.desktop
+        dest: /usr/share/applications/adfc-datenbank.desktop
 
-  - name: Erstelle /etc/issue
-    template:
-      src: issue
-      dest: /etc/issue
+    - name: Erstelle /etc/issue
+      ansible.builtin.template:
+        src: issue
+        dest: /etc/issue
 
-  - name: Hostname anpassen
-    command: hostnamectl set-hostname {{ inventory_hostname_short }}
-    when: ansible_hostname != inventory_hostname_short
+    - name: Hostname anpassen
+      ansible.builtin.command: hostnamectl set-hostname {{ inventory_hostname_short }}
+      when: ansible_hostname != inventory_hostname_short
 
-  - name: Stat Netplan Network-manager-cfg
-    stat:
-      path: /etc/netplan/01-network-manager-all.yaml
-    register: netplan_nmgr_stat
-  - name: Move Netplan Network-manager-cfg
-    command: mv /etc/netplan/01-network-manager-all.yaml /etc/netplan/01-network-manager-all.yaml.unused
-    when: netplan_nmgr_stat.stat.exists
-  - name: Erstelle /etc/netplan/02-adfc.yaml
-    template:
-      src: etc-netplan-02-adfc.yaml
-      dest: /etc/netplan/02-adfc.yaml
-    register: interfaces_create
-  - name: Reboot on network interfaces changes
-    reboot: # noqa 503
-    when: interfaces_create.changed
+    - name: Stat Netplan Network-manager-cfg
+      ansible.builtin.stat:
+        path: /etc/netplan/01-network-manager-all.yaml
+      register: netplan_nmgr_stat
+    - name: Move Netplan Network-manager-cfg
+      ansible.builtin.command: mv /etc/netplan/01-network-manager-all.yaml /etc/netplan/01-network-manager-all.yaml.unused
+      when: netplan_nmgr_stat.stat.exists
+    - name: Erstelle /etc/netplan/02-adfc.yaml
+      ansible.builtin.template:
+        src: etc-netplan-02-adfc.yaml
+        dest: /etc/netplan/02-adfc.yaml
+      register: interfaces_create
+    - name: Reboot on network interfaces changes
+      reboot: # noqa no-handler
+      when: interfaces_create.changed
 
-  - name: Check if join is alread done
-    stat:
-      path: /usr/share/pam-configs/ucs_mkhomedir
-    register: stat_ucs_mkhomedir
-  - name: Prompt for Admin Password
-    pause:
-       prompt: "Enter UCS-Master Administrator password"
-    register: UCSAdminPassword
-    no_log: true
-    when: not stat_ucs_mkhomedir.stat.exists
-  - name: create password file
-    copy:
-      content: "{{ UCSAdminPassword.user_input }}"
-      dest: "/root/ucs-admin-pw.secret"
-    when: not stat_ucs_mkhomedir.stat.exists
-  - name: Do univention domain join
-    command: "/usr/sbin/univention-domain-join-cli --username Administrator --dc-ip ucs-master --password-file /root/ucs-admin-pw.secret"
-    when: not stat_ucs_mkhomedir.stat.exists
-  - name: delete password file
-    file:
-      state: absent
-      path: "/root/ucs-admin-pw.secret"
-  - name: Reboot after domain join
-    reboot:
-    when: not stat_ucs_mkhomedir.stat.exists
+    - name: Check if join is alread done
+      ansible.builtin.stat:
+        path: /usr/share/pam-configs/ucs_mkhomedir
+      register: stat_ucs_mkhomedir
+    - name: Prompt for Admin Password
+      ansible.builtin.pause:
+        prompt: Enter UCS-Master Administrator password
+      register: UCSAdminPassword
+      no_log: true
+      when: not stat_ucs_mkhomedir.stat.exists
+    - name: create password file
+      ansible.builtin.copy:
+        content: "{{ UCSAdminPassword.user_input }}"
+        dest: /root/ucs-admin-pw.secret
+      when: not stat_ucs_mkhomedir.stat.exists
+    - name: Do univention domain join
+      ansible.builtin.command: /usr/sbin/univention-domain-join-cli --username Administrator --dc-ip ucs-master --password-file /root/ucs-admin-pw.secret
+      when: not stat_ucs_mkhomedir.stat.exists
+    - name: delete password file
+      ansible.builtin.file:
+        state: absent
+        path: /root/ucs-admin-pw.secret
+    - name: Reboot after domain join
+      reboot:
+      when: not stat_ucs_mkhomedir.stat.exists
 
-# mount NFS shares
-  - name: Mount NFS /adfc
-    mount:
-      path: /adfc
-      src: ucs-master.gst.hamburg.adfc.de:/adfc
-      fstype: nfs
-      state: mounted
-  - name: Mount NFS /home
-    mount:
-      path: /home
-      src: ucs-master.gst.hamburg.adfc.de:/home
-      fstype: nfs
-      state: mounted
+    # mount NFS shares
+    - name: Mount NFS /adfc
+      mount:
+        path: /adfc
+        src: ucs-master.gst.hamburg.adfc.de:/adfc
+        fstype: nfs
+        state: mounted
+    - name: Mount NFS /home
+      mount:
+        path: /home
+        src: ucs-master.gst.hamburg.adfc.de:/home
+        fstype: nfs
+        state: mounted
+
+    # ADFC - Desktop theme
+
+    - name: sudoer erstellen
+      ansible.builtin.template:
+        src: sudoers-client
+        dest: /etc/sudoers.d/adfc-ansible
+        validate: /usr/sbin/visudo -cf %s
+        mode: 0440
+      tags: sudo
+
+    - name: Erlaube Zugriff auf video,audio etc.
+      ansible.builtin.template:
+        src: group.conf.j2
+        dest: /etc/security/group.conf
+        mode: 0644
+      tags: video-dev
+
+    - name: Remove unwanted packages
+      include_role:
+        name: client_apt_remove
 
 
-# ADFC - Desktop theme
-
-
-
-  - name: sudoer erstellen
-    template:
-      src: sudoers-client
-      dest: /etc/sudoers.d/adfc-ansible
-      validate: '/usr/sbin/visudo -cf %s'
-      mode: 0440
-    tags: sudo
-
-  - name: Erlaube Zugriff auf video,audio etc.
-    template:
-      src: group.conf.j2
-      dest: /etc/security/group.conf
-      mode: 0644
-    tags: video-dev
-
-  - name: Remove unwanted packages
-    include_role:
-      name: client-apt-remove

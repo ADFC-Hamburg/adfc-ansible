@@ -1,7 +1,14 @@
-ansible_ssh_common_args: '-o ProxyCommand="ssh -W %h:%p -q root@babelfish.spdns.de -p 823"'
+---
+ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q root@babelfish.spdns.de -p 823"
 ansible_host: 192.168.123.4
 ansible_web_port: 8006
-ansible_web_subdir: '/'
+ansible_web_subdir: /
 postfix_host_email: proxmox02@hamburg.adfc.de
 check_ips:
   - 192.168.123.32
+
+zabbix_agent2: True
+zabbix_agent_server: 127.0.0.1,192.168.123.32
+zabbix_agent_serveractive: 127.0.0.1,192.168.123.32
+zabbix_api_use: false
+zabbix_install_pip_packages: false

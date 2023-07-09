@@ -1,22 +1,21 @@
+---
 # GitHub Actions docs
 # https://help.github.com/en/articles/about-github-actions
 # https://help.github.com/en/articles/workflow-syntax-for-github-actions
 
 name: CI
 
-on: [push]
-
+true: [push]
 jobs:
   build:
-
     # Machine environment:
     runs-on: ubuntu-18.04
 
     steps:
-    - name: install ansible-lint
-      run: |
-       pip install --upgrade setuptools wheel
-       pip install ansible-lint
-    - uses: actions/checkout@v2
-    - name: lint role files
-      run: ~/.local/bin/ansible-lint -v .
+      - name: install ansible-lint
+        run: |
+          pip install --upgrade setuptools wheel
+          pip install ansible-lint
+      - uses: actions/checkout@v3
+      - name: lint role files
+        run: ~/.local/bin/ansible-lint -v .

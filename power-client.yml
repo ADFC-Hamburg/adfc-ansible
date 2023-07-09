@@ -1,12 +1,12 @@
 ---
 - hosts: arbeitsplatz
-  gather_facts: no
+  gather_facts: false
 
   vars_prompt:
     - name: command
       prompt: "Befehl eingeben: (status, poweroff, poweron)"
-      default: "status"
-      private: no
+      default: status
+      private: false
 
   tasks:
     - name: Tasmota Power Rolle starten

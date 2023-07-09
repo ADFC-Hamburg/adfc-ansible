@@ -1,0 +1,155 @@
+# {{ ansible_managed }}
+# Abgespeckte Version von
+# https://github.com/zabbix/zabbix-docker/blob/5.4.7/docker-compose_v3_alpine_mysql_latest.yaml
+# da ucs nicht alle docker features unterstützt
+version: '3.5'
+services:
+ zabbix-server:
+  restart: always
+  image: zabbix/zabbix-server-mysql:{{ zabbix_server_docker_version }}
+  ports:
+   - "10051:10051"
+  volumes:
+   - /etc/localtime:/etc/localtime:ro
+   - /etc/timezone:/etc/timezone:ro
+   - ./zbx_env/usr/lib/zabbix/alertscripts:/usr/lib/zabbix/alertscripts:ro
+   - ./zbx_env/usr/lib/zabbix/externalscripts:/usr/lib/zabbix/externalscripts:ro
+   - ./zbx_env/var/lib/zabbix/export:/var/lib/zabbix/export:rw
+   - ./zbx_env/var/lib/zabbix/modules:/var/lib/zabbix/modules:ro
+   - ./zbx_env/var/lib/zabbix/enc:/var/lib/zabbix/enc:ro
+   - ./zbx_env/var/lib/zabbix/ssh_keys:/var/lib/zabbix/ssh_keys:ro
+   - ./zbx_env/var/lib/zabbix/mibs:/var/lib/zabbix/mibs:ro
+   - /var/run/mysqld:/var/run/mysqld
+   - snmptraps:/var/lib/zabbix/snmptraps:rw
+  ulimits:
+   nproc: 65535
+   nofile:
+    soft: 20000
+    hard: 40000
+  deploy:
+   resources:
+    limits:
+      cpus: '0.70'
+      memory: 1G
+    reservations:
+      cpus: '0.5'
+      memory: 512M
+  env_file:
+   - env_db_mysql
+   - env_srv
+  secrets:
+   - MYSQL_USER
+   - MYSQL_PASSWORD
+   - MYSQL_ROOT_PASSWORD
+  stop_grace_period: 30s
+  sysctls:
+   - net.ipv4.ip_local_port_range=1024 65000
+   - net.ipv4.conf.all.accept_redirects=0
+   - net.ipv4.conf.all.secure_redirects=0
+   - net.ipv4.conf.all.send_redirects=0
+  labels:
+   com.zabbix.description: "Zabbix server with MySQL database support"
+   com.zabbix.company: "Zabbix LLC"
+   com.zabbix.component: "zabbix-server"
+   com.zabbix.dbtype: "mysql"
+   com.zabbix.os: "alpine"
+  networks:
+   zabbix_net:
+     aliases:
+      - zabbix-server
+      - zabbix-server-mysql
+      - zabbix-server-alpine-mysql
+      - zabbix-server-mysql-alpine
+     ipv4_address: 172.16.28.2
+
+ zabbix-web-nginx-mysql:
+  image: zabbix/zabbix-web-nginx-mysql:{{ zabbix_server_docker_version }}
+  restart: always
+  ports:
+   - "9080:8080"
+   - "9443:8443"
+  volumes:
+   - /etc/localtime:/etc/localtime:ro
+   - /etc/timezone:/etc/timezone:ro
+   - ./zbx_env/etc/ssl/nginx:/etc/ssl/nginx:ro
+   - ./zbx_env/usr/share/zabbix/modules/:/usr/share/zabbix/modules/:ro
+   - /var/run/mysqld:/var/run/mysqld
+  deploy:
+   resources:
+    limits:
+      cpus: '0.70'
+      memory: 512M
+    reservations:
+      cpus: '0.5'
+      memory: 256M
+  env_file:
+   - env_db_mysql
+   - env_web
+  secrets:
+   - MYSQL_USER
+   - MYSQL_PASSWORD
+  depends_on:
+   - zabbix-server
+  healthcheck:
+   test: ["CMD", "curl", "-f", "http://localhost:8080/"]
+   interval: 10s
+   timeout: 5s
+   retries: 3
+   start_period: 30s
+  stop_grace_period: 10s
+  sysctls:
+   - net.core.somaxconn=65535
+  labels:
+   com.zabbix.description: "Zabbix frontend on Nginx web-server with MySQL database support"
+   com.zabbix.company: "Zabbix LLC"
+   com.zabbix.component: "zabbix-frontend"
+   com.zabbix.webserver: "nginx"
+   com.zabbix.dbtype: "mysql"
+   com.zabbix.os: "alpine"
+  networks:
+    zabbix_net:
+      aliases:
+        - zabbix-web-nginx-mysql
+        - zabbix-web-nginx-alpine-mysql
+        - zabbix-web-nginx-mysql-alpine
+      ipv4_address: 172.16.28.3
+ zabbix-snmptraps:
+  image: zabbix/zabbix-snmptraps:{{ zabbix_server_docker_version }}
+  ports:
+   - "162:1162/udp"
+  volumes:
+   - snmptraps:/var/lib/zabbix/snmptraps
+  deploy:
+   resources:
+    limits:
+      cpus: '0.5'
+      memory: 256M
+    reservations:
+      cpus: '0.25'
+      memory: 128M
+  networks:
+   zabbix_net:
+    aliases:
+     - zabbix-snmptraps
+    ipv4_address: 172.16.28.4
+  stop_grace_period: 5s
+  labels:
+   com.zabbix.description: "Zabbix snmptraps"
+   com.zabbix.company: "Zabbix LLC"
+   com.zabbix.component: "snmptraps"
+   com.zabbix.os: "alpine"
+networks:
+  zabbix_net:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.16.28.0/24
+secrets:
+  MYSQL_USER:
+    file: ./.MYSQL_USER
+  MYSQL_PASSWORD:
+    file: ./.MYSQL_PASSWORD
+  MYSQL_ROOT_PASSWORD:
+    file: /etc/mysql.secret
+volumes:
+  snmptraps:
