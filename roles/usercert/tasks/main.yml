@@ -21,3 +21,12 @@
     - src: openssl.cnf.j2
       dst: /usr/local/share/adfc-usercert/openssl.cnf.j2
 
+- name: Create Cronjob
+  ansible.builtin.cron:
+    name: adfc-usercert
+    minute: "32"
+    hour: "10"
+    weekday: 1
+    user: root
+    job: /usr/local/sbin/adfc-usercert --cron ALL >/dev/null
+    cron_file: ansible_adfc-usercert
