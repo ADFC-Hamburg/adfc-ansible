@@ -17,7 +17,8 @@ from pprint import pformat
 
 logging.basicConfig(filename='/var/log/adfc/usercert.log',
                     level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s')
-# SSLBASE="/etc/adfc-test-ssl" # Zum testen, Achtung Pfade in /etc/adfc-test-ssl/openssl.cnf anpassen
+# SSLBASE="/etc/adfc-test-ssl" # Zum testen, Achtung Pfade in
+# /etc/adfc-test-ssl/openssl.cnf anpassen
 SSLBASE = "/etc/univention/ssl"
 JINJA_OPENSSL_TEMPLATE = "/usr/local/share/adfc-usercert/openssl.cnf.j2"
 CA = "ucsCA"
@@ -31,7 +32,8 @@ Dieses liegt unter:
 
 %s
 
-und muss von dir auf einem sicheren Weg (möglichst per USB Stick) zu dir nach Hause kopiert werden.
+und muss von dir auf einem sicheren Weg (möglichst per USB Stick) zu dir nach Hause
+kopiert werden.
 
 Das Passwort für das Zertifikat lautet:
 
@@ -41,7 +43,8 @@ Eine Anleitung zum Einspielen findet sich unter
 
 https://wiki.hamburg.adfc.de/doku.php?id=ak-pc:zugriff_von_aussen_ueber_zertifikat
 
-Bitte lösche diese E-Mail und sämtliche Kopien des Zertifikats nachdem du das Zertifikat eingespielt hast.
+Bitte lösche diese E-Mail und sämtliche Kopien des Zertifikats nachdem du das Zertifikat
+eingespielt hast.
 """
 
 ucr = univention.config_registry.ConfigRegistry()
@@ -119,15 +122,8 @@ def mk_config(outfile: str, password: str, name: str, days: str, ssl_email='',
     outf.close()
     chmod(outfile, 0o600)
 
-
-def run_userscript(action: str, user):
-    logging.info('userscript %s %s' % (action, user['uid']))
-    fargs = ['/usr/lib/univention-ssl-usercert/copy-zertifikat',
-             action,
-             user['dn'],
-             user['uid'],
-             '/etc/univention/ssl/user']
-    rtn = subprocess.run(fargs, capture_output=True)
+def run_subrprocess(fargs,env):
+    rtn = subprocess.run(fargs, capture_output=True, env=env)
     if (rtn.returncode == 0):
         logging.info('stdout: %s' % rtn.stdout.decode('utf-8'))
         logging.info('stderr: %s' % rtn.stdout.decode('utf-8'))
@@ -144,6 +140,18 @@ def run_userscript(action: str, user):
         sys.exit(2)
     # else
     return rtn
+def run_userscript(action: str, user):
+    logging.info('userscript %s %s' % (action, user['uid']))
+    fargs = ['/usr/lib/univention-ssl-usercert/copy-zertifikat',
+             action,
+             user['dn'],
+             user['uid'],
+             '/etc/univention/ssl/user']
+    enviroment = {
+        'HOME': '/root',
+    }
+    return run_subrprocess(fargs, enviroment)
+
 
 
 def openssl(*args):
@@ -155,24 +163,7 @@ def openssl(*args):
         'DEFAULT_MD': ucr.get('ssl/default/hashfunction'),
         'DEFAULT_BITS': DEFAULT_BITS
     }
-    rtn = subprocess.run(fargs, capture_output=True, env=enviroment)
-    if (rtn.returncode == 0):
-        logging.info('stdout: %s' % rtn.stdout.decode('utf-8'))
-        logging.info('stderr: %s' % rtn.stdout.decode('utf-8'))
-        logging.info('rtncode %d' % rtn.returncode)
-    else:
-        logging.error('stdout: %s' % rtn.stdout.decode('utf-8'))
-        logging.error('stderr: %s' % rtn.stdout.decode('utf-8'))
-        logging.error('rtncode %d' % rtn.returncode)
-        print('Stdout:')
-        print(rtn.stdout.decode('utf-8'))
-        print('Stderr:')
-        print(rtn.stderr.decode('utf-8'))
-        print('Returncode: %d', rtn.returncode)
-        sys.exit(2)
-    # else
-    return rtn
-
+    return run_subrprocess(fargs, enviroment)
 
 def send_mail(recipient: str, subject: str, message: str):
     global FROM_EMAIL
