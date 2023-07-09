@@ -1,4 +1,4 @@
 - hosts:
-   - ucs-master.gst.hamburg.adfc.de
+    - ucs-master.gst.hamburg.adfc.de
   roles:
-   - usercert
+    - usercert
