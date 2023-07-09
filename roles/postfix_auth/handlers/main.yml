@@ -5,7 +5,7 @@
 
 - name: Postfix newaliases
   ansible.builtin.command: /usr/bin/newaliases
-  notify: reload postfix
+  notify: Reload postfix
 
 - name: Reload postfix
   ansible.builtin.service:
