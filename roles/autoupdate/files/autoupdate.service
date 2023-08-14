@@ -1,0 +1,13 @@
+[Unit]
+Description=ADFC Autoupdate on Startup
+After=network.target local-fs.target
+RequiresMountsFor=/run /var/log /var/run /var/lib /boot
+
+[Service]
+ExecStart=/usr/local/sbin/autoupdate
+Type=simple
+User=root
+
+[Install]
+WantedBy=default.target
+Before=sddm.service unattended-upgrades.service
