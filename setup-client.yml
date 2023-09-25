@@ -149,6 +149,7 @@
           - qtqr
           - pdfgrep
           - kleopatra
+          - pandoc
       tags: software
 
     - name: uninstall hibiscus-ppa
