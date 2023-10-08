@@ -1,0 +1,4 @@
+docker_haproxy_dir: /srv/docker-haproxy
+
+haproxy_version: lts-alpine3.18
+nginx_version: mainline-alpine3.18

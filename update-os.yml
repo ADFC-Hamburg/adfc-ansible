@@ -7,6 +7,7 @@
     - tools.adfc-hamburg.de
     - dreicx.gst.hamburg.adfc.de
     - nextcloud-srv.gst.hamburg.adfc.de
+    - chat2.hamburg.adfc.de
   gather_facts: false
   roles:
     - update_os

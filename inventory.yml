@@ -92,6 +92,12 @@ all:
         chat2.hamburg.adfc.de:
         chat3.hamburg.adfc.de:
         chat-test:
+    loadbalancer:
+      hosts:
+        loadbalancer01.hamburg.adfc.de:
+    tools_2023:
+      hosts:
+        tools1.hamburg.adfc.de:
     tasmota:
       hosts:
         tasmota-0673.gst.hamburg.adfc.de:

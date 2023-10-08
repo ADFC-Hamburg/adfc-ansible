@@ -14,6 +14,17 @@
     name: nginx.service
     state: restarted
 
+- name: Create a Backup Volume
+  hetzner.hcloud.hcloud_volume:
+    api_token: "{{ hcloud_api_token }}"
+    name: chat-monogdb-{{ lookup('pipe','date +%Y-%m-%d') }}
+    server: "{{ inventory_hostname }}"
+    size: {{ rocketchat_mongodb_size_gb }}
+    automount: no
+    state: present
+  delegate_to: localhost
+  register: hcloud_host
+
 - name: Stop Docker Compose stack
   ansible.builtin.command:
     chdir: "{{ docker_rocketchat_dir }}"
@@ -24,16 +35,17 @@
   tags:
     - compose
 
-- name: Create LVM Snapshot
-  ansible.builtin.command:
-    argv:
-      - lvcreate
-      - -L
-      - 2G
-      - -s
-      - -n
-      - var-lib-docker-snap-ansible
-      - /dev/chat2vg/var-lib-docker
+#FIXME
+#- name: Create LVM Snapshot
+#  ansible.builtin.command:
+#    argv:
+#      - lvcreate
+#      - -L
+#      - 2G
+#      - -s
+#      - -n
+#      - var-lib-docker-snap-ansible
+#      - /dev/chat2vg/var-lib-docker
 
 - name: Start Docker Compose stack
   ansible.builtin.command:
@@ -57,12 +69,12 @@
       Wenn etwas nicht klappt, kann das hier mit Strg-C abgebrochen
       und auf den LVM Snapshot var-lib-docker-snap-ansible zurück gegangen werden
 
-- name: Delete LVM Snapshot
-  ansible.builtin.command:
-    argv:
-      - lvremove
-      - -f
-      - /dev/chat2vg/var-lib-docker-snap-ansible
+#- name: Delete LVM Snapshot
+#  ansible.builtin.command:
+#    argv:
+#      - lvremove
+#      - -f
+#      - /dev/chat2vg/var-lib-docker-snap-ansible
 
 - name: Create Sysmlink to main site
   ansible.builtin.file:

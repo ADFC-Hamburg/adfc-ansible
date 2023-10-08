@@ -1,0 +1,7 @@
+- name: Setup Rocketchat
+  hosts: tools_2023
+  gather_facts: true
+  roles:
+#    - ssh_keys
+    - docker
+    - rocketchat

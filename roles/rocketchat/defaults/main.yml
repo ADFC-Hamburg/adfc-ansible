@@ -11,6 +11,7 @@ ssl_ciphers:
   - ECDHE-RSA-CHACHA20-POLY1305
   - DHE-RSA-AES128-GCM-SHA256
   - DHE-RSA-AES256-GCM-SHA384
+rocketchat_mongodb_size_gb: 15
 rocketchat_ssl_params: |
   ssl_session_timeout 1d;
   ssl_session_cache shared:MozSSL:10m;  # about 40000 sessions
