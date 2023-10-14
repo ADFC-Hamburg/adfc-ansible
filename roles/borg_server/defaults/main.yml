@@ -1,2 +1,4 @@
 ---
 adfc_borg_repo: /adfc-backup/{{ inventory_hostname }}
+borg_bin_version: 1.1.17
+borg_bin_sha256_sum: "21484d30271478d4a01aad1b286973443b50afc5379e4a6aef40da3379e21ddf"

@@ -8,27 +8,61 @@
       - cython3
       - libacl1-dev
       - libssl-dev
+      - python3-virtualenv
+      - python3-dev
+      - build-essential
   tags: borg-server
 
-- name: Install virtualenv via pip
-  ansible.builtin.pip:
-    name: virtualenv
-    executable: pip3
+#- name: Install virtualenv via pip
+#  ansible.builtin.pip:
+#    name: virtualenv
+#    executable: pip3
 
-- name: Install borg
-  ansible.builtin.pip:
-    name:
-      - wheel
-      - cython
-      - borgbackup==1.1.15
-    virtualenv: /usr/local/share/borg-venv
-  vars:
-    ansible_python_interpreter: /usr/bin/python3
-  tags: borg-server
+# Demnächst:
+##- name: Delete venv
+#  ansible.builtin.file:
+#    name: /usr/local/share/borg-venv
+#    state: absent
+
+- name: Create dir
+  ansible.builtin.file:
+    path: /usr/local/share/adfc-borg
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
+  loop:
+    - /usr/local/share/adfc-borg
+    - /usr/local/share/adfc-borg/bin
+    - /usr/local/share/adfc-borg/clients
+    - /usr/local/share/adfc-borg/ssh-config
+    - /usr/local/share/adfc-borg/tried
+    - /usr/local/share/adfc-borg/success
+
+
+- name: Get borg binary
+  ansible.builtin.get_url:
+    url: https://github.com/borgbackup/borg/releases/download/{{ borg_bin_version }}/borg-linux64
+    dest: /usr/local/share/adfc-borg/bin/borg-{{ borg_bin_version }}-linux64
+    mode: 0755
+    owner: root
+    group: root
+    checksum: sha256:{{ borg_bin_sha256_sum }}
+# Alter Weg venv erstellen:
+#- name: Install borg
+#  ansible.builtin.pip:
+#    name:
+#      - wheel
+#      - cython
+#      - borgbackup==1.1.15
+#    virtualenv: /usr/local/share/borg-venv
+#  vars:
+#    ansible_python_interpreter: /usr/bin/python3
+#  tags: borg-server
 
 - name: Sysmlink borg executable
   ansible.builtin.file:
-    src: /usr/local/share/borg-venv/bin/{{ item }}
+    src: /usr/local/share/adfc-borg/bin/borg-{{ borg_bin_version }}-linux64
     dest: /usr/local/bin/{{ item }}
     state: link
   with_items:
@@ -60,13 +94,6 @@
   register: backup_clients_keyscan
   tags: borg-server,adfc-borg,borg-keyscan
 
-- name: Create dir
-  ansible.builtin.file:
-    path: /usr/local/share/adfc-borg
-    state: directory
-    mode: 0755
-    owner: root
-    group: root
 
 - name: Output Keyscan
   ansible.builtin.copy:

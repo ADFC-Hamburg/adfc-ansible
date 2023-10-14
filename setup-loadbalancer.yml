@@ -2,6 +2,5 @@
   hosts: loadbalancer
   gather_facts: true
   roles:
-#    - ssh_keys
-#    - docker
-    - haproxy_docker
+    - dehydrated
+    - haproxy_lb

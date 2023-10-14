@@ -76,7 +76,7 @@ all:
     save_with_borg:
       hosts:
         portal.openbikesensor.hamburg:
-        chat2.hamburg.adfc.de:
+        tools1.hamburg.adfc.de:
         ucs-master.gst.hamburg.adfc.de:
     domain_factory:
       hosts:

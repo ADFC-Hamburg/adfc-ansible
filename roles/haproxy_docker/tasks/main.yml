@@ -12,7 +12,7 @@
     - "{{ docker_haproxy_dir }}/haproxy/errors"
     - "{{ docker_haproxy_dir }}/nginx"
     - "{{ docker_haproxy_dir }}/nginx-html"
-    - "{{ docker_haproxy_dir }}/nginx-html/wartung"
+    - "{{ docker_haproxy_dir }}/nginx-html/letsencrypt"
     - "{{ docker_haproxy_dir }}/nginx-html/empty"
 
 - name: Copy haproxy docker-compose.yml
@@ -23,13 +23,13 @@
     owner: root
     group: root
 
-- name: Copy wartung.html
-  ansible.builtin.copy:
-    src: wartung.html
-    dest: "{{ docker_haproxy_dir }}/nginx-html/wartung/wartung.html"
-    mode: 0644
-    owner: root
-    group: root
+#- name: Copy wartung.html
+#  ansible.builtin.copy:
+#    src: wartung.html
+#    dest: "{{ docker_haproxy_dir }}/nginx-html/wartung/wartung.html"
+#    mode: 0644
+#    owner: root
+#    group: root
 
 - name: Copy haproxy errors files
   ansible.builtin.copy:
@@ -58,7 +58,7 @@
 
 - name: Create haproxy.conf
   ansible.builtin.template:
-    src: haproxy.conf.j2
+    src: haproxy.cfg.j2
     dest: "{{ docker_haproxy_dir }}/haproxy/haproxy.cfg"
     mode: 0644
     owner: root
@@ -66,7 +66,7 @@
 
 - name: Create nginx.conf
   ansible.builtin.template:
-    src: nginx-wartung.conf.j2
+    src: nginx-letsencrypt.conf.j2
     dest: "{{ docker_haproxy_dir }}/nginx/nginx.conf"
     mode: 0644
     owner: root
@@ -82,4 +82,3 @@
       - compose
       - up
       - -d
-

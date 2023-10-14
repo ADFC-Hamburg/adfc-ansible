@@ -1,5 +1,8 @@
 global
     log stdout format raw local0 info
+    maxconn 5000
+    log stdout format raw local0 info
+
 #    chroot /var/lib/haproxy
 #    stats socket /run/haproxy/admin.sock mode 660 level admin expose-fd listeners
 #    stats timeout 30s
@@ -23,9 +26,13 @@ defaults
     mode    http
     option  httplog
     option  dontlognull
-    timeout connect 5000
-    timeout client  50000
-    timeout server  50000
+    timeout connect 5s
+    timeout client 30s
+    timeout server 30s
+    timeout tunnel 90s
+    timeout http-request 10s
+    log global
+    option httplog
     errorfile 400 /usr/local/etc/haproxy/errors/400.http
     errorfile 403 /usr/local/etc/haproxy/errors/403.http
     errorfile 408 /usr/local/etc/haproxy/errors/408.http
@@ -34,16 +41,36 @@ defaults
     errorfile 503 /usr/local/etc/haproxy/errors/503.http
     errorfile 504 /usr/local/etc/haproxy/errors/504.http
 
-frontend mywebsite
+frontend http
     mode http
     bind :80
+    acl lets_encrypt path_beg /.well-known/acme-challenge/
+    use_backend lets_encrypt if lets_encrypt
+    default_backend no_http
+
+
+frontend https
+    mode http
     bind :443 ssl crt /usr/local/etc/haproxy/ssl/
+
     http-request redirect scheme https code 301 unless { ssl_fc }
+    http-response set-header Strict-Transport-Security max-age=63072000
+
     use_backend chat_server
 
+backend no_http
+    redirect scheme https
+
+backend lets_encrypt
+    server localhost 127.0.0.1:801 no-ssl check
+
 backend chat_server
-    server chat2_ext 168.119.117.53 port 443 ssl verify none check
-    server chat2_int 192.168.134.3 port 8080 no-ssl check
+    option forwardfor
+    http-request add-header X-Forwarded-Proto https
+    http-request add-header X-CLIENT-IP %[src]
+    #server chat2_ext 168.119.117.53 port 443 ssl verify none check
+    server tools1 192.168.134.4:3000  no-ssl check
+    server tools2 192.168.134.5:3000  no-ssl check
 
 frontend stats
   bind *:8404

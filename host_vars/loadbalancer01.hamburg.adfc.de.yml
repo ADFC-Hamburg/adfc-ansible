@@ -1,0 +1,8 @@
+haproxy_dehydrated_domains:
+  - loadbalancer01.hamburg.adfc.de
+  - chat.hamburg.adfc.de
+
+dehydrated_deploy_hook: |
+  cat ${FULLCHAINFILE} ${KEYFILE} | sed '/^$/d' \
+     > /etc/haproxy/ssl/${DOMAIN}.pem
+

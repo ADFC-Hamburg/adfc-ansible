@@ -1,18 +1,18 @@
+
 services:
   haproxy:
     image: haproxy:${HAPROXY_RELEASE:-lts-alpine}
     restart: on-failure
     volumes:
       - ${HAPROXY_CONF}:/usr/local/etc/haproxy:ro
-    sysctls:
-      - net.ipv4.ip_unprivileged_port_start=0
+    network_mode: host
+    #sysctls:
+    #  - net.ipv4.ip_unprivileged_port_start=0
     ports:
-      - 80:80
-      - 443:443
-      - 127.0.0.1:8404:8404
-    links:
-      - nginx-wartung
-  nginx-wartung:
+      - 81:80
+      - 444:443
+      - 127.0.0.1:8405:8404
+  nginx-letsencrypt:
     image: nginx:${NGINX_RELEASE:-mainline-alpine}
     restart: on-failure
     # zum testen auf Port 8080
@@ -21,3 +21,4 @@ services:
     volumes:
       - ${HTML}:/usr/share/nginx/html:ro
       - ${NGINX_CONF}/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - /var/lib/dehydrated/acme-challenges/:/var/lib/dehydrated/acme-challenges/
