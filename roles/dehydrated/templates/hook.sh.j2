@@ -1,15 +1,28 @@
 #!/usr/bin/env bash
 # {{ ansible_managed }}
+# See https://github.com/dehydrated-io/dehydrated/blob/master/docs/examples/hook.sh
 set -e
 set -u
 set -o pipefail
 
 deploy_cert() {
     local DOMAIN="${1}" KEYFILE="${2}" CERTFILE="${3}" FULLCHAINFILE="${4}" CHAINFILE="${5}" TIMESTAMP="${6}"
-    {{ dehydrated_deploy_hook |default('') |indent(4) }}
+    {{ dehydrated_deploy_hook | indent(4) }}
+}
+startup_hook() {
+{# This hook is called before the cron command to do some initial tasks #}
+{# (e.g. starting a webserver). #}
+    {{ dehydrated_startup_hook | indent(4) }}
+}
+
+exit_hook() {
+{# This hook is called at the end of the cron command and can be used to #}
+{# do some final (cleanup or other) tasks. #}
+    local ERROR="${1:-}"
+    {{ dehydrated_exit_hook | indent(4) }}
 }
 
 HANDLER="$1"; shift
-if [[ "${HANDLER}" =~ ^(deploy_cert)$ ]]; then
+if [[ "${HANDLER}" =~ ^(deploy_cert|startup_hook|exit_hook)$ ]]; then
     "$HANDLER" "$@"
 fi

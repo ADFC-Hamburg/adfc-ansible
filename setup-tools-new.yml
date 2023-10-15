@@ -1,7 +1,8 @@
-- name: Setup Rocketchat
+- name: Setup Tools new
   hosts: tools_2023
   gather_facts: true
   roles:
-#    - ssh_keys
+    - ssh_keys
     - docker
     - rocketchat
+    - docker_compose_project

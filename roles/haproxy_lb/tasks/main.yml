@@ -43,6 +43,15 @@
 - name: Generate haproxy template
   ansible.builtin.template:
     src: haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy-new.cfg
+    mode: 0644
+    owner: root
+    group: root
+  tags:
+    - haproxy_cfg
+- name: Generate haproxy template
+  ansible.builtin.template:
+    src: haproxy.cfg.j2
     dest: /etc/haproxy/haproxy.cfg
     mode: 0644
     owner: root

@@ -1,10 +1,7 @@
 ---
-- name: Restart dehydrated http
+- name: Restart systemd
   ansible.builtin.systemd:
-    name: dehydrated-http.service
     daemon_reload: true
-    state: restarted
-    enabled: true
 
 - name: Domains abholen
   ansible.builtin.command:

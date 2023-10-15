@@ -2,12 +2,10 @@
 - hosts:
     - backup_clients
     - arbeitsplatz
-    - proxmox01.adfc-intern.de
-    - meet
     - tools.adfc-hamburg.de
     - dreicx.gst.hamburg.adfc.de
     - nextcloud-srv.gst.hamburg.adfc.de
-    - chat2.hamburg.adfc.de
+    - hcloud_server
   gather_facts: false
   roles:
     - update_os

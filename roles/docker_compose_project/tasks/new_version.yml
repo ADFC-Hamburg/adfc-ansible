@@ -1,0 +1,35 @@
+- name:  Docker compose pull
+  ansible.builtin.command:
+    chdir: "{{ docker_dir }}"
+    argv:
+      - docker
+      - compose
+      - pull
+
+- name: Docker compose stop
+  ansible.builtin.command:
+    chdir: "{{ docker_dir }}"
+    argv:
+      - docker
+      - compose
+      - down
+
+- name: Docker sompose start
+  ansible.builtin.command:
+    chdir: "{{ docker_dir }}"
+    argv:
+      - docker
+      - compose
+      - up
+      - -d
+
+- name: Delete old Docker images
+  ansible.builtin.command:
+    argv:
+      - docker
+      - image
+      - prune
+      - --force
+      - --all
+  register: docker_image_prune
+  changed_when: "'Total reclaimed space: 0B' not in docker_image_prune.stdout"

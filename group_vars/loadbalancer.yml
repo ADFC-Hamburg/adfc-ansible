@@ -1,0 +1,15 @@
+haproxy_dehydrated_domains:
+  - "{{ inventory_hostname }}"
+  - chat.hamburg.adfc.de
+  - t30antrag.hamburg.adfc.de
+  - t30forderung.hamburg.adfc.de
+  - meet.adfc-intern.de
+
+dehydrated_deploy_hook: |
+  cat ${FULLCHAINFILE} ${KEYFILE} | sed '/^$/d' \
+     > /etc/haproxy/ssl/${DOMAIN}.pem
+  systemctl restart haproxy.service
+dehydrated_startup_hook: |
+  systemctl start dehydrated-http.service
+  sleep 5
+dehydrated_exit_hook: 'systemctl stop dehydrated-http.service'

@@ -54,6 +54,16 @@ frontend https
     acl acl_chat.hamburg.adfc.de ssl_fc_sni chat.hamburg.adfc.de
     use_backend https_chat.hamburg.adfc.de if acl_chat.hamburg.adfc.de
 
+
+    {% for compose_project_hostkey  in (hostvars[groups['tools_2023'][0]].keys() | map('regex_search','^docker_compose_project_(.*)') | select('string') | list)  %}
+    {% set first_domain=hostvars[groups['tools_2023'][0]][compose_project_hostkey].domains[0] %}
+    {% for domain in hostvars[groups['tools_2023'][0]][compose_project_hostkey].domains %}
+    acl acl_{{ domain }} ssl_fc_sni {{ domain }}
+    use_backend https_{{ first_domain }} if acl_{{ domain }}
+
+    {% endfor%}
+    {% endfor %}
+
     #acl acl_lb ssl_fc_sni loadbalancer01.hamburg.adfc.de
     #use_backend chat_server if acl_lb
 
@@ -72,7 +82,23 @@ frontend stats
 
 
 backend lets_encrypt
-    server localhost 127.0.1.1:180 no-ssl check
+    http-request set-path "%[path,regsub(^/.well-known/acme-challenge/,/)]"
+    {% for lb_name in groups['loadbalancer']%}
+    server {{ lb_name }} {{ hostvars[lb_name]['dehydrated_acme_listen_ip'] }}:180 no-ssl check
+    {% endfor %}
+
+{% for compose_project_hostkey  in (hostvars[groups['tools_2023'][0]].keys() | map('regex_search','^docker_compose_project_(.*)') | select('string') | list)  %}
+{% set first_domain=hostvars[groups['tools_2023'][0]][compose_project_hostkey]['domains'][0] %}
+backend https_{{ first_domain }}
+    option forwardfor
+    http-request add-header X-Forwarded-Proto https
+    http-request add-header X-CLIENT-IP %[src]
+    http-request add-header X-Nginx-Proxy true
+
+{% for tools_backend in groups['tools_2023'] %}
+    server {{ tools_backend.split('.')[0 ]}} {{ hostvars[tools_backend]['adfc_internal_ip'] }}:{{ hostvars[tools_backend][compose_project_hostkey]['internal_port'] }} no-ssl check
+{% endfor %}
+{% endfor %}
 
 backend https_chat.hamburg.adfc.de
     option forwardfor
@@ -80,8 +106,10 @@ backend https_chat.hamburg.adfc.de
     http-request add-header X-CLIENT-IP %[src]
     http-request add-header X-Nginx-Proxy true
 
-    server tools1 192.168.134.4:3000  no-ssl check
-    server tools2 192.168.134.5:3000  no-ssl check
+{% for tools_backend in groups['tools_2023'] %}
+    server {{ tools_backend.split('.')[0 ]}} {{ hostvars[tools_backend]['adfc_internal_ip'] }}:{{ hostvars[tools_backend][compose_project_hostkey]['internal_port'] }} no-ssl check
+{% endfor %}
+{% endfor %}
 
 # Default Backends
 backend default_http

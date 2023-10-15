@@ -6,4 +6,5 @@
     mode: 0644
     owner: root
     group: root
-  notify: restart dehydrated http
+  notify:
+    - Restart systemd

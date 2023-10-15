@@ -1,1 +1,5 @@
 dehydrated_wellknown_dir: "${BASEDIR}/acme-challenges"
+dehydrated_acme_listen_ip: inventory_hostname
+dehydrated_deploy_hook: 'echo -n'
+dehydrated_startup_hook: 'echo -n'
+dehydrated_exit_hook: 'echo -n'

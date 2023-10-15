@@ -1,0 +1,3 @@
+adfc_internal_ip: 192.168.134.6
+public_ipv4: "195.201.17.95"
+borg_cron_minute: "29"

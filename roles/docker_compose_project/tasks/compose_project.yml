@@ -1,0 +1,22 @@
+- name: Create directory
+  ansible.builtin.file:
+    path: "{{ docker_dir }}"
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
+
+- name: Create Compose File
+  ansible.builtin.copy:
+    content: |
+      # Ansible Managed
+      {{ compose_project.compose_block | to_nice_yaml }}
+    dest: "{{ docker_dir }}/compose.yml"
+    mode: 0644
+    owner: root
+    group: root
+  register: compose_file
+
+- name: Pull Package and start detached
+  ansible.builtin.include_tasks: new_version.yml
+  when: compose_file.changed

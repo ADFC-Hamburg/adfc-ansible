@@ -1,0 +1,9 @@
+- name: Loop over hostvars starting with docker_compose_project
+  ansible.builtin.include_tasks: compose_project.yml
+  loop: "{{ hostvars[inventory_hostname].keys() | map('regex_search','^docker_compose_project_(.*)') | select('string') | list }}"
+  loop_control:
+    loop_var: compose_project_hostkey
+  vars:
+    compose_project: "{{ hostvars[inventory_hostname][compose_project_hostkey] }}"
+    compose_project_name: "{{ compose_project_hostkey | replace('docker_compose_project_','') }}"
+    docker_dir: "/srv/docker-{{ compose_project_name }}"

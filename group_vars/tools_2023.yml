@@ -1,0 +1,34 @@
+docker_compose_project_meet_redirect:
+  state: both_nodes
+  domains:
+    - meet.adfc-intern.de
+  internal_port: 3100
+  compose_block:
+    version: "3"
+    services:
+      web:
+        image: ghcr.io/adfc-hamburg/https_meet_redirect
+        ports:
+          - 3100:80
+docker_compose_project_t30_gone:
+  state: both_nodes
+  domains:
+    - t30forderung.hamburg.adfc.de
+    - t30antrag.hamburg.adfc.de
+  internal_port: 3200
+  compose_block:
+    version: "3"
+    services:
+      web:
+        image: ghcr.io/adfc-hamburg/https_t30_gone
+        ports:
+          - 3200:80
+adfc_borg_repo: /adfc-backup/chat.hamburg.adfc.de
+borg_create_pre_job: >-
+  docker exec docker-rocket-mongodb-1 sh -c 'mongodump --archive'  >
+  /usr/local/share/rocketchat/mongodump 2>/usr/local/share/rocketchat/mongodump.log
+borg_save_path: "/usr/local/share/rocketchat /etc"
+borg_save_exclude_dirs:
+  - /tmp
+borg_cron_hour: "2,14"
+borg_client_user: "borgchat"
