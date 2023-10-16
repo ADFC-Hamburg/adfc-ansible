@@ -6,6 +6,21 @@
     owner: root
     group: root
 
+- name: Mount Hetzner Volumes
+  ansible.builtin.include_tasks: mount_hcloud_vol.yml
+  loop: "{{ compose_project.hetzner_volumes | default([]) }}"
+  loop_control:
+    loop_var: vol
+
+- name: Create Compose Backup
+  ansible.builtin.copy:
+    remote_src: true
+    src: "{{ docker_dir }}/compose.yml"
+    dest: "{{ docker_dir }}/compose.old"
+    mode: 0644
+    owner: root
+    group: root
+
 - name: Create Compose File
   ansible.builtin.copy:
     content: |

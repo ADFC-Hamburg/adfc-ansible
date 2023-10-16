@@ -4,5 +4,4 @@
   roles:
     - ssh_keys
     - docker
-    - rocketchat
     - docker_compose_project
