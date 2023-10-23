@@ -11,6 +11,12 @@
   loop: "{{ compose_project.hetzner_volumes | default([]) }}"
   loop_control:
     loop_var: vol
+  when: inventory_hostname in compose_project.nodes
+
+- name: Test if compose file is there
+  ansible.builtin.stat:
+    path: "{{ docker_dir }}/compose.yml"
+  register: compose_stat
 
 - name: Create Compose Backup
   ansible.builtin.copy:
@@ -20,6 +26,7 @@
     mode: 0644
     owner: root
     group: root
+  when: compose_stat.stat.exists
 
 - name: Create Compose File
   ansible.builtin.copy:
@@ -34,4 +41,5 @@
 
 - name: Pull Package and start detached
   ansible.builtin.include_tasks: new_version.yml
-  when: compose_file.changed
+  when: compose_file.changed and inventory_hostname in compose_project.nodes
+
