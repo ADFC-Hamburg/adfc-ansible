@@ -72,7 +72,6 @@
     owner: root
     group: root
 
-
   register: docker_env
 - name: Pull Package and start detached
   ansible.builtin.command:

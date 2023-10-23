@@ -15,7 +15,6 @@
        "{{ vol.src }}/"
        "{{ docker_dir }}/hcloud_backup_{{  vol.hcloud_volume_prefix }}"
 
-
 - name: Unmount ephemeral
   ansible.posix.mount:
     path: "{{ docker_dir }}/hcloud_backup_{{  vol.hcloud_volume_prefix }}"

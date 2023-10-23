@@ -69,4 +69,3 @@
       - --all
   register: docker_image_prune
   changed_when: "'Total reclaimed space: 0B' not in docker_image_prune.stdout"
-

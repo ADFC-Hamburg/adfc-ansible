@@ -12,4 +12,4 @@ dehydrated_deploy_hook: |
 dehydrated_startup_hook: |
   systemctl start dehydrated-http.service
   sleep 5
-dehydrated_exit_hook: 'systemctl stop dehydrated-http.service'
+dehydrated_exit_hook: "systemctl stop dehydrated-http.service"

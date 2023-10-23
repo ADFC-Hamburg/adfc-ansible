@@ -29,8 +29,8 @@ haproxy_lb_errors:
     title_de: Dienst nicht verfügbar
     text_en: The Service in unreachable. Perhabs due to a maintainance. Please come back soon.
     text_de: >
-     Der Dienst ist derzeit nicht verfügbar. Dies kann wegen Wartungsarbeiten oder aufgrund
-     hohen Datenaufkommens passieren.
+      Der Dienst ist derzeit nicht verfügbar. Dies kann wegen Wartungsarbeiten oder aufgrund
+      hohen Datenaufkommens passieren.
     refresh: 120
   - code: 504
     title_en: Gateway Time-out

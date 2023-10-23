@@ -92,7 +92,6 @@ docker_compose_project_rocketchat_test:
           MONGODB_ENABLE_JOURNAL: true
           ALLOW_EMPTY_PASSWORD: yes
 
-
 docker_compose_project_rocket:
   nodes:
     - tools1.hamburg.adfc.de
@@ -147,7 +146,6 @@ docker_compose_project_rocket:
           MONGODB_ADVERTISED_HOSTNAME: mongodb
           MONGODB_ENABLE_JOURNAL: true
           ALLOW_EMPTY_PASSWORD: yes
-
 
 adfc_borg_repo: /adfc-backup/chat.hamburg.adfc.de
 borg_create_pre_job: >-

@@ -39,7 +39,6 @@
     - /usr/local/share/adfc-borg/tried
     - /usr/local/share/adfc-borg/success
 
-
 - name: Get borg binary
   ansible.builtin.get_url:
     url: https://github.com/borgbackup/borg/releases/download/{{ borg_bin_version }}/borg-linux64
@@ -93,7 +92,6 @@
   loop: "{{ groups['backup_clients'] }}"
   register: backup_clients_keyscan
   tags: borg-server,adfc-borg,borg-keyscan
-
 
 - name: Output Keyscan
   ansible.builtin.copy:

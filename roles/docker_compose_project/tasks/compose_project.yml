@@ -42,4 +42,3 @@
 - name: Pull Package and start detached
   ansible.builtin.include_tasks: new_version.yml
   when: compose_file.changed and inventory_hostname in compose_project.nodes
-
