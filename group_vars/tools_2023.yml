@@ -161,8 +161,8 @@ docker_compose_project_quartiere:
           MARIADB_DISABLE_UPGRADE_BACKUP: "0"
           MYSQL_RANDOM_ROOT_PASSWORD: "1"
         secrets:
-         - db_root_password
-         - db_password
+          - db_root_password
+          - db_password
       wordpress:
         image: wordpress:6.3.2-php8.0
         restart: unless-stopped
