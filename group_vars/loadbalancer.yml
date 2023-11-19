@@ -11,6 +11,7 @@ haproxy_dehydrated_domains:
   - xn--quartierefrmenschen-fbc.de
   - www.xn--quartierefrmenschen-fbc.de
   - api.hamburg.adfc.de
+  - wiki.hamburg.adfc.de
 
 dehydrated_deploy_hook: |
   cat ${FULLCHAINFILE} ${KEYFILE} | sed '/^$/d' \
