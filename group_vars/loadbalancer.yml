@@ -4,6 +4,13 @@ haproxy_dehydrated_domains:
   - t30antrag.hamburg.adfc.de
   - t30forderung.hamburg.adfc.de
   - meet.adfc-intern.de
+  - codierung.hamburg.adfc.de
+  - quartierefuermenschen.adfc-hamburg.de
+  - quartierefuermenschen.de
+  - www.quartierefuermenschen.de
+  - xn--quartierefrmenschen-fbc.de
+  - www.xn--quartierefrmenschen-fbc.de
+  - api.hamburg.adfc.de
 
 dehydrated_deploy_hook: |
   cat ${FULLCHAINFILE} ${KEYFILE} | sed '/^$/d' \

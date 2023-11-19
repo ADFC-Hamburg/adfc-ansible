@@ -61,7 +61,7 @@ frontend https
     acl acl_{{ domain }} ssl_fc_sni {{ domain }}
     use_backend https_{{ first_domain }} if acl_{{ domain }}
 
-    {% endfor%}
+    {% endfor %}
     {% endfor %}
 
     #acl acl_lb ssl_fc_sni loadbalancer01.hamburg.adfc.de
@@ -90,17 +90,6 @@ backend lets_encrypt
 {% for compose_project_hostkey  in (hostvars[groups['tools_2023'][0]].keys() | map('regex_search','^docker_compose_project_(.*)') | select('string') | list)  %}
 {% set first_domain=hostvars[groups['tools_2023'][0]][compose_project_hostkey]['domains'][0] %}
 backend https_{{ first_domain }}
-    option forwardfor
-    http-request add-header X-Forwarded-Proto https
-    http-request add-header X-CLIENT-IP %[src]
-    http-request add-header X-Nginx-Proxy true
-
-{% for tools_backend in groups['tools_2023'] %}
-    server {{ tools_backend.split('.')[0 ]}} {{ hostvars[tools_backend]['adfc_internal_ip'] }}:{{ hostvars[tools_backend][compose_project_hostkey]['internal_port'] }} no-ssl check
-{% endfor %}
-{% endfor %}
-
-backend https_chat.hamburg.adfc.de
     option forwardfor
     http-request add-header X-Forwarded-Proto https
     http-request add-header X-CLIENT-IP %[src]

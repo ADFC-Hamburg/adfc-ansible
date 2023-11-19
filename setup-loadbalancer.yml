@@ -2,7 +2,7 @@
   hosts: loadbalancer
   gather_facts: true
   roles:
-    #    - ssh_keys
-    #- basic_setup
+    - ssh_keys
+    - basic_setup
     - dehydrated
-    #- haproxy_lb
+    - haproxy_lb

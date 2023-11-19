@@ -10,6 +10,7 @@ Content-Type: text/html
       {% if error.refresh |default('0') != '0' %}
       <meta http-equiv="refresh" content="{{ error.refresh }}" />
       {% endif %}
+      <meta http-equiv=“content-type“ content=“text/html; charset=UTF-8″ />
       <style>
         body {
           background-color: yellow;

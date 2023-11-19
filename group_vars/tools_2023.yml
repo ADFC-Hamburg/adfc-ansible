@@ -1,3 +1,30 @@
+docker_compose_project_codierung:
+  nodes:
+    - tools1.hamburg.adfc.de
+    - tools2.hamburg.adfc.de
+  domains:
+    - codierung.hamburg.adfc.de
+  internal_port: 3300
+  compose_block:
+    version: "3"
+    services:
+      web:
+        image: ghcr.io/adfc-hamburg/codierung
+        restart: unless-stopped
+        ports:
+          - "{{ adfc_internal_ip }}:3300:80"
+        labels:
+          - "com.centurylinklabs.watchtower.scope=codierung"
+      watchtower:
+        image: containrrr/watchtower
+        volumes:
+          - /root/.docker/config.json:/config.json:ro
+          - /var/run/docker.sock:/var/run/docker.sock:ro
+        # pruefe alle 20 Minuten = 1200 Sec auf update
+        command: --interval 1200 --debug --scope=codierung docker-codierung-web-1
+        labels:
+          - "com.centurylinklabs.watchtower.scope=codierung"
+
 docker_compose_project_meet_redirect:
   nodes:
     - tools1.hamburg.adfc.de
@@ -13,6 +40,7 @@ docker_compose_project_meet_redirect:
         restart: unless-stopped
         ports:
           - "{{ adfc_internal_ip }}:3100:80"
+
 docker_compose_project_t30_gone:
   nodes:
     - tools1.hamburg.adfc.de
@@ -29,11 +57,11 @@ docker_compose_project_t30_gone:
         restart: unless-stopped
         ports:
           - "{{ adfc_internal_ip }}:3200:80"
-rocketchat_test_version: 6.2.9
+rocketchat_test_version: 6.4.6
 rocketchat_test_root_url: https://chat-test-hamburg.adfc.de
 rocketchat_test_mongodb_version: 5.0
 
-rocketchat_live_version: 6.4.2
+rocketchat_live_version: 6.4.6
 rocketchat_live_root_url: https://chat.hamburg.adfc.de
 rocketchat_live_mongodb_version: 5.0
 
@@ -92,6 +120,109 @@ docker_compose_project_rocketchat_test:
           MONGODB_ENABLE_JOURNAL: true
           ALLOW_EMPTY_PASSWORD: yes
 
+docker_compose_project_quartiere:
+  nodes:
+    - tools2.hamburg.adfc.de
+  domains:
+    - quartierefuermenschen.adfc-hamburg.de
+    - quartierefuermenschen.de
+    - www.quartierefuermenschen.de
+    - xn--quartierefrmenschen-fbc.de
+    - www.xn--quartierefrmenschen-fbc.de
+  internal_port: 3400
+  hetzner_volumes:
+    - name: quartiere-mariadb
+      size_gb: 10
+      location: nbg1
+      mount: /var/lib/docker/volumes/docker-quartiere_mariadb
+    - name: quartiere-wordpress
+      size_gb: 10
+      location: nbg1
+      mount: /var/lib/docker/volumes/docker-quartiere_wordpress
+  compose_block:
+    version: "3.1"
+    volumes:
+      mariadb:
+        driver: local
+      wordpress:
+        driver: local
+    services:
+      mariadb:
+        image: mariadb:11.1
+        restart: unless-stopped
+        volumes:
+          - mariadb:/var/lib/mysql
+        environment:
+          MARIADB_DATABASE: wordpress
+          MARIADB_USER: wordpress
+          MARIADB_PASSWORD_FILE: /run/secrets/db_password
+          MARIADB_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
+          MARIADB_AUTO_UPGRADE: "1"
+          MARIADB_DISABLE_UPGRADE_BACKUP: "0"
+          MYSQL_RANDOM_ROOT_PASSWORD: "1"
+        secrets:
+         - db_root_password
+         - db_password
+      wordpress:
+        image: wordpress:6.3.2-php8.0
+        restart: unless-stopped
+        volumes:
+          - wordpress:/var/www/html
+        depends_on:
+          - mariadb
+        environment:
+          WORDPRESS_DB_HOST: mariadb
+          WORDPRESS_DB_USER: wordpress
+          WORDPRESS_DB_NAME: wordpress
+          WORDPRESS_DB_PASSWORD_FILE: /run/secrets/db_password
+        secrets:
+          - db_password
+        ports:
+          - "{{ adfc_internal_ip}}:3400:80"
+    secrets:
+      db_password:
+        file: db_password.txt
+      db_root_password:
+        file: db_root_password.txt
+
+docker_compose_project_api:
+  nodes:
+    - tools1.hamburg.adfc.de
+    - tools2.hamburg.adfc.de
+  domains:
+    - api.hamburg.adfc.de
+  internal_port: 3500
+  compose_block:
+    version: "3"
+    volumes:
+      api_data:
+        driver: local
+    services:
+      api:
+        image: nginx:mainline-alpine-slim
+        restart: unless-stopped
+        ports:
+          - "{{ adfc_internal_ip}}:3500:80"
+        volumes:
+          - api_data:/usr/share/nginx/html:ro
+        labels:
+          - "com.centurylinklabs.watchtower.scope=api"
+      adfc_tour_to_vadb:
+        image: ghcr.io/adfc-hamburg/adfc-tour_to_vadb:main
+        restart: unless-stopped
+        volumes:
+          - api_data:/srv/metroterm/out
+        labels:
+          - "com.centurylinklabs.watchtower.scope=api"
+      watchtower:
+        image: containrrr/watchtower
+        volumes:
+          - /root/.docker/config.json:/config.json:ro
+          - /var/run/docker.sock:/var/run/docker.sock:ro
+        # pruefe alle 12h = 43200  1200 Sec auf update
+        command: --interval 43200 --debug --scope=api docker-api-api-1 docker-api-adfc_tour_to_vadb-1
+        labels:
+          - "com.centurylinklabs.watchtower.scope=api"
 
 docker_compose_project_rocket:
   nodes:

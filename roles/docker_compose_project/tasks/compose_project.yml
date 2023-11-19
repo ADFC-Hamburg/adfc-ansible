@@ -39,6 +39,18 @@
     group: root
   register: compose_file
 
+- name: Create Secret file
+  ansible.builtin.copy:
+    content: "{{ lookup('ansible.builtin.password', '/dev/null', length=16) }}"
+    dest: "{{ docker_dir }}/{{ secret.value.file }}"
+    mode: 0600
+    owner: root
+    group: root
+    force: false
+  loop: "{{ compose_project.compose_block.secrets |default({}) | dict2items  }}"
+  loop_control:
+    loop_var: secret
+
 - name: Pull Package and start detached
   ansible.builtin.include_tasks: new_version.yml
   when: compose_file.changed and inventory_hostname in compose_project.nodes
