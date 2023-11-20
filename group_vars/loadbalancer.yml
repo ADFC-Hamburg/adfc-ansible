@@ -1,17 +1,19 @@
 haproxy_dehydrated_domains:
   - "{{ inventory_hostname }}"
+  - api.hamburg.adfc.de
   - chat.hamburg.adfc.de
-  - t30antrag.hamburg.adfc.de
-  - t30forderung.hamburg.adfc.de
-  - meet.adfc-intern.de
   - codierung.hamburg.adfc.de
+  - meet.adfc-intern.de
   - quartierefuermenschen.adfc-hamburg.de
   - quartierefuermenschen.de
-  - www.quartierefuermenschen.de
-  - xn--quartierefrmenschen-fbc.de
-  - www.xn--quartierefrmenschen-fbc.de
-  - api.hamburg.adfc.de
+  - radverkehr.hamburg.adfc.de
+  - t30antrag.hamburg.adfc.de
+  - t30forderung.hamburg.adfc.de
+  - web20.hamburg.adfc.de
   - wiki.hamburg.adfc.de
+  - www.quartierefuermenschen.de
+  - www.xn--quartierefrmenschen-fbc.de
+  - xn--quartierefrmenschen-fbc.de
 
 dehydrated_deploy_hook: |
   cat ${FULLCHAINFILE} ${KEYFILE} | sed '/^$/d' \
