@@ -391,7 +391,7 @@ docker_compose_project_radverkehr:
         labels:
           - "com.centurylinklabs.watchtower.scope=radverkehr"
       radverkehr-updater:
-        image:  ghcr.io/adfc-hamburg/hh-radverkehr-updater
+        image: ghcr.io/adfc-hamburg/hh-radverkehr-updater
         restart: unless-stopped
         volumes:
           - radverkehr:/src/hh-radverkehr
