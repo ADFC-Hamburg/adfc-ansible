@@ -77,6 +77,7 @@ all:
       hosts:
         portal.openbikesensor.hamburg:
         tools1.hamburg.adfc.de:
+        tools2.hamburg.adfc.de:
         ucs-master.gst.hamburg.adfc.de:
     domain_factory:
       hosts:

@@ -26,7 +26,7 @@
 
 - name: Create dir
   ansible.builtin.file:
-    path: /usr/local/share/adfc-borg
+    path: "{{ item }}"
     state: directory
     mode: 0755
     owner: root
@@ -35,7 +35,7 @@
     - /usr/local/share/adfc-borg
     - /usr/local/share/adfc-borg/bin
     - /usr/local/share/adfc-borg/clients
-    - /usr/local/share/adfc-borg/ssh-config
+    - /usr/local/share/adfc-borg/lock
     - /usr/local/share/adfc-borg/tried
     - /usr/local/share/adfc-borg/success
 

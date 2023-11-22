@@ -279,11 +279,22 @@ docker_compose_project_rocket:
           MONGODB_ENABLE_JOURNAL: true
           ALLOW_EMPTY_PASSWORD: yes
 
-adfc_borg_repo: /adfc-backup/chat.hamburg.adfc.de
-borg_create_pre_job: >-
-  docker exec docker-rocket-mongodb-1 sh -c 'mongodump --archive'  >
-  /usr/local/share/rocketchat/mongodump 2>/usr/local/share/rocketchat/mongodump.log
-borg_save_path: "/usr/local/share/rocketchat /etc"
+borg_create_pre_job: |-
+  {% raw %}
+  if docker ps --format '{{.Names}}' |grep -w ^docker-rocket-mongodb-1>/dev/null; then
+   docker exec docker-rocket-mongodb-1 sh -c 'mongodump --archive'  > \
+   /usr/local/share/rocketchat/mongodump 2>/usr/local/share/rocketchat/mongodump.log
+  fi {% endraw %}
+borg_save_path: >
+  /etc
+  /usr/local/share/rocketchat
+  /var/lib/docker/volumes/docker-radverkehr-radverkehr
+  /var/lib/docker/volumes/docker-api_api_data
+  /var/lib/docker/volumes/docker-quartiere_mariadb
+  /var/lib/docker/volumes/docker-quartiere_wordpress
+  /var/lib/docker/volumes/docker-web20_web20
+  /var/lib/docker/volumes/docker-wiki_wiki
+
 borg_save_exclude_dirs:
   - /tmp
 borg_cron_hour: "2,14"
@@ -297,7 +308,7 @@ docker_compose_project_wiki:
   internal_port: 3600
   hetzner_volumes:
     - name: wiki
-      size_gb: 20
+      size_gb: 10
       location: nbg1
       mount: /var/lib/docker/volumes/docker-wiki_wiki
   compose_block:
@@ -334,7 +345,7 @@ docker_compose_project_web20:
   internal_port: 3700
   hetzner_volumes:
     - name: web20
-      size_gb: 20
+      size_gb: 10
       location: nbg1
       mount: /var/lib/docker/volumes/docker-web20_web20
   compose_block:
@@ -371,9 +382,9 @@ docker_compose_project_radverkehr:
   internal_port: 3800
   hetzner_volumes:
     - name: radverkehr
-      size_gb: 20
+      size_gb: 10
       location: nbg1
-      mount: /var/lib/docker/volumes/docker-radverkehr-radverkehr
+      mount: /var/lib/docker/volumes/docker-radverkehr_radverkehr
   compose_block:
     version: "3"
     volumes:
