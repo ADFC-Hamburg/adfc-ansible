@@ -40,3 +40,5 @@ haproxy_lb_errors:
 
 # dh_file darf nicht ins ssl Verzeichnis
 haproxy_lb_dh_file: /etc/haproxy/dhparams.pem
+
+loadbalancer_redirect_domains: []

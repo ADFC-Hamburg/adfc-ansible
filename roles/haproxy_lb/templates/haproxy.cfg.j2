@@ -34,6 +34,7 @@ defaults
 {% for error in haproxy_lb_errors %}
     errorfile {{ error.code }} /etc/haproxy/static/{{ error.code }}.http
 {% endfor %}
+
 frontend http
     mode http
     bind :80
@@ -51,18 +52,34 @@ frontend https
     http-request redirect scheme https code 301 unless { ssl_fc }
     http-response set-header Strict-Transport-Security max-age=63072000
 
-    acl acl_chat.hamburg.adfc.de ssl_fc_sni chat.hamburg.adfc.de
-    use_backend https_chat.hamburg.adfc.de if acl_chat.hamburg.adfc.de
-
-
-    {% for compose_project_hostkey  in (hostvars[groups['tools_2023'][0]].keys() | map('regex_search','^docker_compose_project_(.*)') | select('string') | list)  %}
-    {% set first_domain=hostvars[groups['tools_2023'][0]][compose_project_hostkey].domains[0] %}
-    {% for domain in hostvars[groups['tools_2023'][0]][compose_project_hostkey].domains %}
-    acl acl_{{ domain }} ssl_fc_sni {{ domain }}
+{% for compose_project_hostkey  in (hostvars[groups['tools_2023'][0]].keys() | map('regex_search','^docker_compose_project_(.*)') | select('string') | list)  %}
+{%- set first_domain=hostvars[groups['tools_2023'][0]][compose_project_hostkey].domains[0] -%}
+{% for domain in hostvars[groups['tools_2023'][0]][compose_project_hostkey].domains %}
+    # acl acl_{{ domain }} ssl_fc_sni {{ domain }} mit SNI scheint das manchmal nicht richtig zu gehen, sven 2023-12-10
+    acl acl_{{ domain }} hdr(host) -i {{ domain }}
     use_backend https_{{ first_domain }} if acl_{{ domain }}
 
-    {% endfor %}
-    {% endfor %}
+{% endfor %}
+{% endfor %}
+
+    # Redircects
+
+{% for redirect_dom in loadbalancer_redirect_domains %}
+{% set first_domain=redirect_dom.domains[0] %}
+
+    #   {{ first_domain}}
+
+{% for dom in redirect_dom.domains %}
+    acl host_match_{{ first_domain }} hdr(host) -i {{ dom }}
+{% endfor %}
+{% for dest in redirect_dom.dest %}
+    acl path_match_{{ first_domain }}_{{ loop.index }} path_beg  -i {{ dest.path }}
+{% endfor %}
+{% for dest in redirect_dom.dest %}
+    http-request redirect code 301 location {{ dest.url }} if host_match_{{ first_domain }} path_match_{{ first_domain }}_{{ loop.index }}
+{% endfor %}
+{% endfor %}
+
 
     #acl acl_lb ssl_fc_sni loadbalancer01.hamburg.adfc.de
     #use_backend chat_server if acl_lb
@@ -89,6 +106,7 @@ backend lets_encrypt
 
 {% for compose_project_hostkey  in (hostvars[groups['tools_2023'][0]].keys() | map('regex_search','^docker_compose_project_(.*)') | select('string') | list)  %}
 {% set first_domain=hostvars[groups['tools_2023'][0]][compose_project_hostkey]['domains'][0] %}
+
 backend https_{{ first_domain }}
     option forwardfor
     http-request add-header X-Forwarded-Proto https
@@ -96,7 +114,9 @@ backend https_{{ first_domain }}
     http-request add-header X-Nginx-Proxy true
 
 {% for tools_backend in groups['tools_2023'] %}
-    server {{ tools_backend.split('.')[0 ]}} {{ hostvars[tools_backend]['adfc_internal_ip'] }}:{{ hostvars[tools_backend][compose_project_hostkey]['internal_port'] }} no-ssl check
+{% set internal_port=hostvars[tools_backend][compose_project_hostkey]['internal_port'] %}
+{% set internal_ip=hostvars[tools_backend]['adfc_internal_ip'] %}
+    server {{ tools_backend.split('.')[0 ]}}_{{ internal_port }} {{ internal_ip  }}:{{ internal_port}} no-ssl check
 {% endfor %}
 {% endfor %}
 
