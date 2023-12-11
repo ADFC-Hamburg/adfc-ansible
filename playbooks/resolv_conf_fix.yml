@@ -2,7 +2,7 @@
   gather_facts: false
   serial: 1
   roles:
-  - resolv_conf_static
+    - resolv_conf_static
   pre_tasks:
     - name: Power on clients
       include_role:
