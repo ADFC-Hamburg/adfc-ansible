@@ -297,5 +297,3 @@
     - name: Remove unwanted packages
       include_role:
         name: client_apt_remove
-
-
