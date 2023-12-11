@@ -1,0 +1,11 @@
+---
+- hosts: meet.adfc-intern.de
+  gather_facts: true
+  roles:
+    - udelarinterior.jitsi_meet
+    - meet_server_external_vb_addition
+    - telegraf
+  tasks:
+    - name: test
+      ansible.builtin.debug:
+        msg: Hello world

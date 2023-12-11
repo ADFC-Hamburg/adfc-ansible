@@ -1,0 +1,119 @@
+---
+- hosts: ucs-master.gst.hamburg.adfc.de
+  gather_facts: true
+  roles:
+    - tasmota_start_menu
+    - ssh_keys
+    - gray_print
+    - systemd_max_memory
+    - links_on_desktop
+    - borg_server
+    - external_https
+    - self_service_sms
+    - zabbix_server_docker
+    - community.zabbix.zabbix_agent
+
+  handlers:
+    - name: ucr commit postifx main.cf
+      ansible.builtin.command: ucr commit /etc/postfix/main.cf
+      notify: restart postfix
+
+    - name: restart postfix
+      ansible.builtin.systemd:
+        name: postfix
+        state: restarted
+
+  tasks:
+    #    - name: enable cool solutions
+    #      ucr:
+    #        values:
+    #          repository/online/component/cool-solutions: true
+    #          repository/online/component/cool-solutions/version: current
+    #          repository/online/component/cool-solutions/unmaintained: true
+    #      tags: cool_solutions
+    #    - name: check if univention-homedir-autocreate is installed
+    #      ansible.builtin.stat:
+    #        path: /usr/lib/univention-directory-listener/system/homedir-autocreate.py
+    #      register: stat_homedir_listener
+    #    - name: install module for autocreation of home dirs
+    #      ansible.builtin.command: univention-install univention-homedir-autocreate
+    #      when: not stat_homedir_listener.stat.exists
+    #      tags: cool_solutions
+
+    - name: install postfix sender_canonical
+      ansible.builtin.template:
+        src: ucs-master-sender_canonical
+        dest: /etc/postfix/sender_caonical
+      tags: postfix
+
+    - name: install postfix main.cf
+      ansible.builtin.template:
+        src: ucs-master-postfix-main.cf.local
+        dest: /etc/postfix/main.cf.local
+      notify: ucr commit postifx main.cf
+      tags: postfix
+
+    - name: Copy copy-zertifikat.sh
+      ansible.builtin.copy:
+        src: copy-zertifikat.sh
+        dest: /usr/lib/univention-ssl-usercert/copy-zertifikat
+        mode: "0755"
+
+    - name: Create adfc-who
+      ansible.builtin.template:
+        src: adfc-who.sh
+        dest: /usr/local/sbin/adfc-who
+        mode: "0755"
+      tags: adfc-who
+
+    - name: Copy backup-windows.sh
+      ansible.builtin.copy:
+        src: backup-windows.sh
+        dest: /usr/local/sbin/adfc-backup-win7pro
+        mode: "0755"
+      tags: backup-windows
+
+    - name: Cronjob fuer backup-windows
+      cron:
+        name: adfc-backup-win7pro
+        hour: 10,14,17
+        minute: "11"
+        cron_file: ansible_backup_win
+        user: root
+        job: /usr/local/sbin/adfc-backup-win7pro
+      tags: backup-windows
+
+    - name: Cron delete proxmox Datensicherung
+      cron:
+        name: ansible-delete-proxmox-datensicherung
+        hour: "19"
+        minute: "28"
+        cron_file: ansible-delete-proxmox-datensicherung
+        ansible.builtin.user: root
+        job: /usr/bin/find /adfc/Computer/Datensicherung/Proxmox/ -type f -ctime 5 -delete
+      tags: proxmox-backup
+
+    - name: Cron delete old tomcat logs
+      cron:
+        name: ansible-delete-old-tomcat-logs
+        hour: "23"
+        minute: "27"
+        cron_file: ansible-delete-old-tomcat-logs
+        ansible.builtin.user: root
+        job: univention-app shell guacamole find /usr/local/tomcat/logs -mtime +3 -delete
+
+    - name: Wake On LAN installieren
+      ansible.builtin.apt:
+        name: wakeonlan
+        state: present
+        update_cache: true
+
+    - name: Create Delete Scan Script
+      ansible.builtin.cron:
+        name: adfc-scan-delete
+        hour: 12
+        minute: 32
+        cron_file: ansible_scan_delete
+        user: root
+        job: /usr/bin/find /adfc/08_Scans/ -mtime +30 -delete
+      tags: adfc_scan_delete

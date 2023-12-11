@@ -1,0 +1,10 @@
+---
+- hosts:
+    - meet.adfc-intern.de
+    - int-master.adfc-intern.de
+    - proxmox01.adfc-intern.de
+    - vbdh01.meet.adfc-intern.de
+    - vbdh02.meet.adfc-intern.de
+  gather_facts: true
+  roles:
+    - telegraf

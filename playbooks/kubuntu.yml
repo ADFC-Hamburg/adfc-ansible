@@ -1,0 +1,4 @@
+---
+- hosts: arbeitsplatz
+  roles:
+    - kubuntu

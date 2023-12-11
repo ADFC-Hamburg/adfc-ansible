@@ -1,0 +1,10 @@
+---
+- hosts: tools.adfc-hamburg.de
+  roles:
+    - ssh_keys
+    - docker
+    - quartierefuermenschen
+  tasks:
+    - name: test
+      ansible.builtin.debug:
+        msg: hello world
