@@ -279,11 +279,22 @@ docker_compose_project_rocket:
           MONGODB_ENABLE_JOURNAL: true
           ALLOW_EMPTY_PASSWORD: yes
 
-adfc_borg_repo: /adfc-backup/chat.hamburg.adfc.de
-borg_create_pre_job: >-
-  docker exec docker-rocket-mongodb-1 sh -c 'mongodump --archive'  >
-  /usr/local/share/rocketchat/mongodump 2>/usr/local/share/rocketchat/mongodump.log
-borg_save_path: "/usr/local/share/rocketchat /etc"
+borg_create_pre_job: |-
+  {% raw %}
+  if docker ps --format '{{.Names}}' |grep -w ^docker-rocket-mongodb-1>/dev/null; then
+   docker exec docker-rocket-mongodb-1 sh -c 'mongodump --archive'  > \
+   /usr/local/share/rocketchat/mongodump 2>/usr/local/share/rocketchat/mongodump.log
+  fi {% endraw %}
+borg_save_path: >
+  /etc
+  /usr/local/share/rocketchat
+  /var/lib/docker/volumes/docker-radverkehr-radverkehr
+  /var/lib/docker/volumes/docker-api_api_data
+  /var/lib/docker/volumes/docker-quartiere_mariadb
+  /var/lib/docker/volumes/docker-quartiere_wordpress
+  /var/lib/docker/volumes/docker-web20_web20
+  /var/lib/docker/volumes/docker-wiki_wiki
+
 borg_save_exclude_dirs:
   - /tmp
 borg_cron_hour: "2,14"
@@ -297,7 +308,7 @@ docker_compose_project_wiki:
   internal_port: 3600
   hetzner_volumes:
     - name: wiki
-      size_gb: 20
+      size_gb: 10
       location: nbg1
       mount: /var/lib/docker/volumes/docker-wiki_wiki
   compose_block:
@@ -361,15 +372,84 @@ docker_compose_project_tresor:
         secrets:
           - db_url
           - admin_token
+
+docker_compose_project_web20:
+  nodes:
+    - tools2.hamburg.adfc.de
+  domains:
+    - web20.hamburg.adfc.de
+  internal_port: 3700
+  hetzner_volumes:
+    - name: web20
+      size_gb: 10
+      location: nbg1
+      mount: /var/lib/docker/volumes/docker-web20_web20
+  compose_block:
+    version: "3"
+    volumes:
+      web20:
+        driver: local
+    services:
+      web20:
+        restart: unless-stopped
+        image: php:8.2-apache
+        #environment:
+        ports:
+          - "{{ adfc_internal_ip}}:3700:80"
+        volumes:
+          - web20:/var/www/html
+        labels:
+          - "com.centurylinklabs.watchtower.scope=web20"
       watchtower:
         image: containrrr/watchtower
         volumes:
           - /root/.docker/config.json:/config.json:ro
           - /var/run/docker.sock:/var/run/docker.sock:ro
           # pruefe alle 12h = 43200  1200 Sec auf update
-        command: --interval 43200 --debug --scope=tresor
+        command: --interval 43200 --debug --scope=web20
         labels:
-          - "com.centurylinklabs.watchtower.scope=tresor"
-    secrets:
-      admin_token:
-        file: admin_token.txt
+          - "com.centurylinklabs.watchtower.scope=web20"
+
+docker_compose_project_radverkehr:
+  nodes:
+    - tools1.hamburg.adfc.de
+  domains:
+    - radverkehr.hamburg.adfc.de
+  internal_port: 3800
+  hetzner_volumes:
+    - name: radverkehr
+      size_gb: 10
+      location: nbg1
+      mount: /var/lib/docker/volumes/docker-radverkehr_radverkehr
+  compose_block:
+    version: "3"
+    volumes:
+      radverkehr:
+        driver: local
+    services:
+      radverkehr:
+        image: nginx:mainline-alpine-slim
+        restart: unless-stopped
+        #environment:
+        ports:
+          - "{{ adfc_internal_ip}}:3800:80"
+        volumes:
+          - radverkehr:/usr/share/nginx/html:ro
+        labels:
+          - "com.centurylinklabs.watchtower.scope=radverkehr"
+      radverkehr-updater:
+        image: ghcr.io/adfc-hamburg/hh-radverkehr-updater
+        restart: unless-stopped
+        volumes:
+          - radverkehr:/src/hh-radverkehr
+        labels:
+          - "com.centurylinklabs.watchtower.scope=radverkehr"
+      watchtower:
+        image: containrrr/watchtower
+        volumes:
+          - /root/.docker/config.json:/config.json:ro
+          - /var/run/docker.sock:/var/run/docker.sock:ro
+          # pruefe alle 12h = 43200  1200 Sec auf update
+        command: --interval 43200 --debug --scope=radverkehr
+        labels:
+          - "com.centurylinklabs.watchtower.scope=radverkehr"
