@@ -16,7 +16,7 @@ haproxy_dehydrated_domains:
   - www.bettelampel.de
   - radreise-messe.de
   - www.radreise-messe.de
-  - tressor.hamburg.adfc.de
+  - tresor.hamburg.adfc.de
 
 dehydrated_deploy_hook: |
   cat ${FULLCHAINFILE} ${KEYFILE} | sed '/^$/d' \

@@ -61,7 +61,7 @@ rocketchat_test_version: 6.4.6
 rocketchat_test_root_url: https://chat-test-hamburg.adfc.de
 rocketchat_test_mongodb_version: 5.0
 
-rocketchat_live_version: 6.4.6
+rocketchat_live_version: 6.5.0
 rocketchat_live_root_url: https://chat.hamburg.adfc.de
 rocketchat_live_mongodb_version: 5.0
 
@@ -208,7 +208,7 @@ docker_compose_project_api:
         labels:
           - "com.centurylinklabs.watchtower.scope=api"
       adfc_tour_to_vadb:
-        image: ghcr.io/adfc-hamburg/adfc-tour_to_vadb:main
+        image: ghcr.io/adfc-hamburg/adfc-tour_to_vadb
         restart: unless-stopped
         volumes:
           - api_data:/srv/metroterm/out
@@ -220,7 +220,7 @@ docker_compose_project_api:
           - /root/.docker/config.json:/config.json:ro
           - /var/run/docker.sock:/var/run/docker.sock:ro
         # pruefe alle 12h = 43200  1200 Sec auf update
-        command: --interval 43200 --debug --scope=api docker-api-api-1 docker-api-adfc_tour_to_vadb-1
+        command: --interval 43200 --debug --scope=api
         labels:
           - "com.centurylinklabs.watchtower.scope=api"
 
@@ -325,3 +325,51 @@ docker_compose_project_wiki:
         command: --interval 43200 --debug --scope=wiki docker-wiki-wiki-1
         labels:
           - "com.centurylinklabs.watchtower.scope=wiki"
+
+docker_compose_project_tresor:
+  nodes:
+    - tools1.hamburg.adfc.de
+  domains:
+    - tresor.hamburg.adfc.de
+  internal_port: 3800
+  hetzner_volumes:
+    - name: tresor_valutwarden
+      size_gb: 10
+      location: nbg1
+      mount: /var/lib/docker/volumes/docker-tresor_vaultwarden
+  compose_block:
+    version: "3"
+    volumes:
+      mariadb:
+        driver: local
+    services:
+      tresor:
+        restart: unless-stopped
+        image: vaultwarden/server:latest
+        environment:
+          # https://github.com/dani-garcia/vaultwarden/blob/main/.env.template
+          INVITATIONS_ALLOWED: true
+          INVITATION_ORG_NAME: Tressor ADFC Hamburg
+          ADMIN_TOKEN_FILE: /run/secrets/admin_token
+          DOMAIN: https://tresor.hamburg.adfc.de
+          SIGNUPS_ALLOWED: false
+
+        ports:
+          - "{{ adfc_internal_ip}}:3800:80"
+        labels:
+          - "com.centurylinklabs.watchtower.scope=tresor"
+        secrets:
+          - db_url
+          - admin_token
+      watchtower:
+        image: containrrr/watchtower
+        volumes:
+          - /root/.docker/config.json:/config.json:ro
+          - /var/run/docker.sock:/var/run/docker.sock:ro
+          # pruefe alle 12h = 43200  1200 Sec auf update
+        command: --interval 43200 --debug --scope=tresor
+        labels:
+          - "com.centurylinklabs.watchtower.scope=tresor"
+    secrets:
+      admin_token:
+        file: admin_token.txt
