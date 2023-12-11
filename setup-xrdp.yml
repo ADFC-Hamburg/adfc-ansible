@@ -1,4 +1,0 @@
----
-- hosts: kubuntu-vm.gst.hamburg.adfc.de
-  roles:
-    - xrdp

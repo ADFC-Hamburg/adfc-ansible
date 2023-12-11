@@ -1,8 +1,0 @@
----
-- hosts: tasmota
-  gather_facts: false
-
-  tasks:
-    - name: Tasmota Setup durchführen
-      include_role:
-        name: tasmota_setup

@@ -1,6 +1,0 @@
----
-- name: Setup Videobridge
-  hosts: tools
-  gather_facts: true
-  roles:
-    - certbot_renew

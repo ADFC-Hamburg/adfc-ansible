@@ -1,8 +1,0 @@
----
-- hosts: tools.adfc-hamburg.de
-  roles:
-    - quartierefuermenschen
-  tasks:
-    - name: test
-      ansible.builtin.debug:
-        msg: hello world
