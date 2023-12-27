@@ -1,0 +1,15 @@
+docker_compose_project_meet_redirect:
+  nodes:
+    - tools1.hamburg.adfc.de
+    - tools2.hamburg.adfc.de
+  domains:
+    - meet.adfc-intern.de
+  internal_port: 3100
+  compose_block:
+    version: "3"
+    services:
+      web:
+        image: ghcr.io/adfc-hamburg/https_meet_redirect
+        restart: unless-stopped
+        ports:
+          - "{{ adfc_internal_ip }}:3100:80"

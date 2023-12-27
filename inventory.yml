@@ -76,7 +76,8 @@ all:
     save_with_borg:
       hosts:
         portal.openbikesensor.hamburg:
-        chat2.hamburg.adfc.de:
+        tools1.hamburg.adfc.de:
+        tools2.hamburg.adfc.de:
         ucs-master.gst.hamburg.adfc.de:
     domain_factory:
       hosts:
@@ -92,6 +93,16 @@ all:
         chat2.hamburg.adfc.de:
         chat3.hamburg.adfc.de:
         chat-test:
+    hcloud_server:
+      children:
+        loadbalancer:
+          hosts:
+            loadbalancer01.hamburg.adfc.de:
+            loadbalancer02.hamburg.adfc.de:
+        tools_2023:
+          hosts:
+            tools1.hamburg.adfc.de:
+            tools2.hamburg.adfc.de:
     tasmota:
       hosts:
         tasmota-0673.gst.hamburg.adfc.de:

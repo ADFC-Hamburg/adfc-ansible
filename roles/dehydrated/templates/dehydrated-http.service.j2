@@ -7,7 +7,7 @@ Type=simple
 Restart=always
 User=root
 WorkingDirectory=/var/lib/dehydrated/acme-challenges
-ExecStart=/usr/bin/python3 -m http.server 180 --bind {{ ansible_host }}
+ExecStart=/usr/bin/python3 -m http.server 180 --bind {{ dehydrated_acme_listen_ip  }}
 
 [Install]
 WantedBy=multi-user.target

@@ -1,0 +1,5 @@
+- name: Setup LB
+  hosts: loadbalancer
+  gather_facts: true
+  roles:
+    - haproxy_lb

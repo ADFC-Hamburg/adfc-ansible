@@ -1,0 +1,24 @@
+- name: Mount backup vol
+  ansible.posix.mount:
+    src: "{{ hcloud_vol.hcloud_volume.linux_device }}"
+    path: "{{ docker_dir }}/hcloud_backup_{{  vol.hcloud_volume_prefix }}"
+    opts: "discard,noatime,ro"
+    fstype: ext4
+    state: ephemeral
+
+- name: Rsync Restore
+  ansible.builtin.command:
+    argv:
+      - rsync
+      - -a
+      - --delete
+      - "{{ docker_dir }}/hcloud_backup_{{  vol.hcloud_volume_prefix }}/"
+      - "{{ vol.src }}"
+  loop: "{{ compose_project.backup_on_new_version }}"
+
+- name: Prompt
+  ansible.builtin.pause:
+    prompt: |
+      test
+      "{{ docker_dir }}/hcloud_backup_{{  vol.hcloud_volume_prefix }}/"
+      "{{ vol.src }}"

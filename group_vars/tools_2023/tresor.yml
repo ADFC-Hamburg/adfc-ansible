@@ -1,0 +1,48 @@
+docker_compose_project_tresor:
+  nodes:
+    - tools1.hamburg.adfc.de
+  domains:
+    - tresor.hamburg.adfc.de
+  internal_port: 3900
+  hetzner_volumes:
+    - name: tresor_valutwarden
+      size_gb: 10
+      location: nbg1
+      mount: /var/lib/docker/volumes/docker-tresor_vaultwarden
+  compose_block:
+    version: "3"
+    volumes:
+      vaultwarden:
+        driver: local
+    services:
+      tresor:
+        restart: unless-stopped
+        image: vaultwarden/server:latest
+        environment:
+          # https://github.com/dani-garcia/vaultwarden/blob/main/.env.template
+          INVITATIONS_ALLOWED: true
+          INVITATION_ORG_NAME: Tressor ADFC Hamburg
+          ADMIN_TOKEN_FILE: /run/secrets/admin_token
+          DOMAIN: https://tresor.hamburg.adfc.de
+          SIGNUPS_ALLOWED: false
+          IP_HEADER: x-client-ip
+        ports:
+          - "{{ adfc_internal_ip}}:3900:80"
+        labels:
+          - "com.centurylinklabs.watchtower.scope=tresor"
+        secrets:
+          - admin_token
+        volumes:
+          - vaultwarden:/data
+      watchtower:
+        image: containrrr/watchtower
+        volumes:
+          - /root/.docker/config.json:/config.json:ro
+          - /var/run/docker.sock:/var/run/docker.sock:ro
+          # pruefe alle 12h = 43200  1200 Sec auf update
+        command: --interval 43200 --debug --scope=tresor
+        labels:
+          - "com.centurylinklabs.watchtower.scope=tresor"
+    secrets:
+      admin_token:
+        file: admin_token.txt

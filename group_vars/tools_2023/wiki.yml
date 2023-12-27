@@ -1,0 +1,36 @@
+docker_compose_project_wiki:
+  nodes:
+    - tools2.hamburg.adfc.de
+  domains:
+    - wiki.hamburg.adfc.de
+  internal_port: 3600
+  hetzner_volumes:
+    - name: wiki
+      size_gb: 10
+      location: nbg1
+      mount: /var/lib/docker/volumes/docker-wiki_wiki
+  compose_block:
+    version: "3"
+    volumes:
+      wiki:
+        driver: local
+    services:
+      wiki:
+        restart: unless-stopped
+        image: php:7.4-apache
+        #environment:
+        ports:
+          - "{{ adfc_internal_ip}}:3600:80"
+        volumes:
+          - wiki:/var/www/html
+        labels:
+          - "com.centurylinklabs.watchtower.scope=wiki"
+      watchtower:
+        image: containrrr/watchtower
+        volumes:
+          - /root/.docker/config.json:/config.json:ro
+          - /var/run/docker.sock:/var/run/docker.sock:ro
+          # pruefe alle 12h = 43200  1200 Sec auf update
+        command: --interval 43200 --debug --scope=wiki docker-wiki-wiki-1
+        labels:
+          - "com.centurylinklabs.watchtower.scope=wiki"

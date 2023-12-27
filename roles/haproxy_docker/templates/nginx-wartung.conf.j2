@@ -1,0 +1,21 @@
+# {{ ansible_managed }}
+server {
+    listen 80;
+
+    error_page 403 404 =503 /wartung.html;
+    error_page 500 501 502 503 504 =503 /wartung.html;
+
+    location = /wartung.html {
+        root /usr/share/nginx/html/wartung;
+        index wartung.html
+        internal;
+    }
+
+    location /{
+        autoindex off;
+        root /usr/share/nginx/html/empty;
+        index index.html;
+        try_files $uri $uri/ /index.html =500;
+    }
+
+}

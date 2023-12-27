@@ -1,7 +1,0 @@
-- name: Setup Rocketchat
-  hosts: chat2.hamburg.adfc.de
-  gather_facts: true
-  roles:
-    - docker
-    - dehydrated
-    - rocketchat

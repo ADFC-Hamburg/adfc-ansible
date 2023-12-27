@@ -1,0 +1,1 @@
+hcloud_api_token: "{{ hcloud_key_slurp.content | b64decode |trim }}"
