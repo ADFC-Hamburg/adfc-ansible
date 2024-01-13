@@ -31,12 +31,11 @@
   args:
     creates: "{{ docker_repo_gpg_key_gpg }}"
 
-#- name: Install Docker Software
-#  ansible.builtin.apt:
-#    name: "{{ docker_packages }}"
-#    update_cache: true
-
-- name: Install Pip Packages
-  ansible.builtin.pip:
-    name:
-      - docker
+- name: Install Docker Software
+  ansible.builtin.apt:
+    name: "{{ docker_packages }}"
+    update_cache: true
+#- name: Install Pip Packages
+# ansible.builtin.pip:
+#    name:
+#      - docker

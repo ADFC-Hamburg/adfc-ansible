@@ -14,11 +14,11 @@ otrs_version: 6.0.25
 otrs_md5sum_tar_gz: 3b78844bc3cd1459ec0d7328518f7ccf
 ssh_users_admins:
   - svena
-  - tobiasd
   - volkerk
   - martinw
   - georgs
   - johannesb
+  - johannesd
   - jensd
 
 firewall:

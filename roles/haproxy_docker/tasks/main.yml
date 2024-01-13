@@ -1,0 +1,83 @@
+- name: Create a directory if it does not exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  loop:
+    - "{{ docker_haproxy_dir }}"
+    - "{{ docker_haproxy_dir }}/haproxy"
+    - "{{ docker_haproxy_dir }}/haproxy/ssl"
+    - "{{ docker_haproxy_dir }}/haproxy/errors"
+    - "{{ docker_haproxy_dir }}/nginx"
+    - "{{ docker_haproxy_dir }}/nginx-html"
+    - "{{ docker_haproxy_dir }}/nginx-html/letsencrypt"
+    - "{{ docker_haproxy_dir }}/nginx-html/empty"
+
+- name: Copy haproxy docker-compose.yml
+  ansible.builtin.copy:
+    src: compose.yml
+    dest: "{{ docker_haproxy_dir }}/compose.yml"
+    mode: 0644
+    owner: root
+    group: root
+
+#- name: Copy wartung.html
+#  ansible.builtin.copy:
+#    src: wartung.html
+#    dest: "{{ docker_haproxy_dir }}/nginx-html/wartung/wartung.html"
+#    mode: 0644
+#    owner: root
+#    group: root
+
+- name: Copy haproxy errors files
+  ansible.builtin.copy:
+    src: "{{ item }}.http"
+    dest: "{{ docker_haproxy_dir }}/haproxy/errors/{{ item }}.http"
+    mode: 0644
+    owner: root
+    group: root
+  loop:
+    - 400
+    - 403
+    - 408
+    - 500
+    - 502
+    - 503
+    - 504
+
+- name: Create env file
+  ansible.builtin.template:
+    src: docker-env.j2
+    dest: "{{ docker_haproxy_dir }}/.env"
+    mode: 0644
+    owner: root
+    group: root
+  register: docker_env
+
+- name: Create haproxy.conf
+  ansible.builtin.template:
+    src: haproxy.cfg.j2
+    dest: "{{ docker_haproxy_dir }}/haproxy/haproxy.cfg"
+    mode: 0644
+    owner: root
+    group: root
+
+- name: Create nginx.conf
+  ansible.builtin.template:
+    src: nginx-letsencrypt.conf.j2
+    dest: "{{ docker_haproxy_dir }}/nginx/nginx.conf"
+    mode: 0644
+    owner: root
+    group: root
+
+  register: docker_env
+- name: Pull Package and start detached
+  ansible.builtin.command:
+    chdir: "{{ docker_haproxy_dir }}"
+    argv:
+      - docker
+      - compose
+      - up
+      - -d

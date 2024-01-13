@@ -1,0 +1,7 @@
+docker_haproxy_dir: /srv/docker-haproxy
+
+haproxy_version: lts-alpine3.18
+nginx_version: mainline-alpine3.18
+
+haproxy_docker_http_port: 80
+haproxy_docker_https_port: 443

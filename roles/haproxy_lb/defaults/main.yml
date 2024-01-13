@@ -1,0 +1,44 @@
+haproxy_lb_errors:
+  - code: 400
+    title_en: Bad request
+    title_de: Ung&uuml;ltige Anfrage
+    text_en: Your browser sent an invalid request.
+    text_de: Ihr Webbrowser hat eine fehlerhafte Anfrage geschickt, die der Server aufgrund fehlerhafter Syntax nicht bearbeiten kann.
+  - code: 403
+    title_en: Forbidden
+    title_de: Verboten
+    text_en: Request forbidden by administrative rules.
+    text_de: Der Zugriff ist dauerhaft verboten. Eine Authorisation wird nicht anerkannt, und ihr Webbrowser soll die Anfrage nicht noch einmal stellen.
+  - code: 408
+    title_en: Request Time-out
+    title_de: Anfrage-Zeit&uuml;berschreitung
+    text_en: Your browser didn't send a complete request in time.
+    text_de: Ihr Browser hat die Anfrage nicht in der vorgegebenen Zeit beendet.
+  - code: 500
+    title_en: Internal Server Error
+    title_de: Interner Server-Fehler
+    text_en: An internal server error occurred.
+    text_de: Der Server entdeckt einen internen Fehler und kann deshalb die Anfrage nicht bearbeiten.
+  - code: 502
+    title_en: Bad Gateway
+    title_de: Schlechtes Portal
+    text_en: The server returned an invalid or incomplete response.
+    text_de: Der Server, in diesem Fall ein HaProxy, kann die Anfrage nicht ausf&uuml;hren, weil im weiteren Verlauf ein Fehler aufgetreten ist.
+  - code: 503
+    title_en: Service Unavailable
+    title_de: Dienst nicht verf&uuml;gbar
+    text_en: The Service in unreachable. Perhabs due to a maintainance. Please come back soon.
+    text_de: >
+      Der Dienst ist derzeit nicht verf&uuml;gbar. Dies kann wegen Wartungsarbeiten oder aufgrund
+      hohen Datenaufkommens passieren.
+    refresh: 120
+  - code: 504
+    title_en: Gateway Time-out
+    title_de: Portal-Auszeit
+    text_en: The server didn't respond in time.
+    text_de: Der Proxy kann die Anfrage wegen einer Zeit&uuml;berschreitung nicht bearbeiten.
+
+# dh_file darf nicht ins ssl Verzeichnis
+haproxy_lb_dh_file: /etc/haproxy/dhparams.pem
+
+loadbalancer_redirect_domains: []

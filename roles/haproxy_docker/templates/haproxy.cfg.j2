@@ -1,0 +1,79 @@
+global
+    log stdout format raw local0 info
+    maxconn 5000
+    log stdout format raw local0 info
+
+#    chroot /var/lib/haproxy
+#    stats socket /run/haproxy/admin.sock mode 660 level admin expose-fd listeners
+#    stats timeout 30s
+#    user haproxy
+#    group haproxy
+    daemon
+
+    # Default SSL material locations
+    ca-base /etc/ssl/certs
+    crt-base /etc/ssl/private
+
+    # see https://ssl-config.mozilla.org/#server=haproxy&version=2.2.9&config=modern&openssl=1.1.1k&guideline=5.6
+    ssl-default-bind-ciphersuites TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256
+    ssl-default-bind-options prefer-client-ciphers no-sslv3 no-tlsv10 no-tlsv11 no-tlsv12 no-tls-tickets
+
+    ssl-default-server-ciphersuites TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256
+    ssl-default-server-options no-sslv3 no-tlsv10 no-tlsv11 no-tlsv12 no-tls-tickets
+
+defaults
+    log     global
+    mode    http
+    option  httplog
+    option  dontlognull
+    timeout connect 5s
+    timeout client 30s
+    timeout server 30s
+    timeout tunnel 90s
+    timeout http-request 10s
+    log global
+    option httplog
+    errorfile 400 /usr/local/etc/haproxy/errors/400.http
+    errorfile 403 /usr/local/etc/haproxy/errors/403.http
+    errorfile 408 /usr/local/etc/haproxy/errors/408.http
+    errorfile 500 /usr/local/etc/haproxy/errors/500.http
+    errorfile 502 /usr/local/etc/haproxy/errors/502.http
+    errorfile 503 /usr/local/etc/haproxy/errors/503.http
+    errorfile 504 /usr/local/etc/haproxy/errors/504.http
+
+frontend http
+    mode http
+    bind :80
+    acl lets_encrypt path_beg /.well-known/acme-challenge/
+    use_backend lets_encrypt if lets_encrypt
+    default_backend no_http
+
+
+frontend https
+    mode http
+    bind :443 ssl crt /usr/local/etc/haproxy/ssl/
+
+    http-request redirect scheme https code 301 unless { ssl_fc }
+    http-response set-header Strict-Transport-Security max-age=63072000
+
+    use_backend chat_server
+
+backend no_http
+    redirect scheme https
+
+backend lets_encrypt
+    server localhost 127.0.0.1:801 no-ssl check
+
+backend chat_server
+    option forwardfor
+    http-request add-header X-Forwarded-Proto https
+    http-request add-header X-CLIENT-IP %[src]
+    #server chat2_ext 168.119.117.53 port 443 ssl verify none check
+    server tools1 192.168.134.4:3000  no-ssl check
+    server tools2 192.168.134.5:3000  no-ssl check
+
+frontend stats
+  bind *:8404
+  stats enable
+  stats uri /
+  stats refresh 10s

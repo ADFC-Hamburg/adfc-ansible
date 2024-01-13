@@ -1,0 +1,64 @@
+docker_compose_project_quartiere:
+  nodes:
+    - tools2.hamburg.adfc.de
+  domains:
+    - quartierefuermenschen.adfc-hamburg.de
+    - quartierefuermenschen.de
+    - www.quartierefuermenschen.de
+    - xn--quartierefrmenschen-fbc.de
+    - www.xn--quartierefrmenschen-fbc.de
+  internal_port: 3400
+  hetzner_volumes:
+    - name: quartiere-mariadb
+      size_gb: 10
+      location: nbg1
+      mount: /var/lib/docker/volumes/docker-quartiere_mariadb
+    - name: quartiere-wordpress
+      size_gb: 10
+      location: nbg1
+      mount: /var/lib/docker/volumes/docker-quartiere_wordpress
+  compose_block:
+    version: "3.1"
+    volumes:
+      mariadb:
+        driver: local
+      wordpress:
+        driver: local
+    services:
+      mariadb:
+        image: mariadb:11.1
+        restart: unless-stopped
+        volumes:
+          - mariadb:/var/lib/mysql
+        environment:
+          MARIADB_DATABASE: wordpress
+          MARIADB_USER: wordpress
+          MARIADB_PASSWORD_FILE: /run/secrets/db_password
+          MARIADB_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
+          MARIADB_AUTO_UPGRADE: "1"
+          MARIADB_DISABLE_UPGRADE_BACKUP: "0"
+          MYSQL_RANDOM_ROOT_PASSWORD: "1"
+        secrets:
+          - db_root_password
+          - db_password
+      wordpress:
+        image: wordpress:6.3.2-php8.0
+        restart: unless-stopped
+        volumes:
+          - wordpress:/var/www/html
+        depends_on:
+          - mariadb
+        environment:
+          WORDPRESS_DB_HOST: mariadb
+          WORDPRESS_DB_USER: wordpress
+          WORDPRESS_DB_NAME: wordpress
+          WORDPRESS_DB_PASSWORD_FILE: /run/secrets/db_password
+        secrets:
+          - db_password
+        ports:
+          - "{{ adfc_internal_ip}}:3400:80"
+    secrets:
+      db_password:
+        file: db_password.txt
+      db_root_password:
+        file: db_root_password.txt

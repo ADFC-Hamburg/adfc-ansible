@@ -1,0 +1,71 @@
+- name: Docker compose pull
+  ansible.builtin.command:
+    chdir: "{{ docker_dir }}"
+    argv:
+      - docker
+      - compose
+      - pull
+
+- name: Create New Hetzner Volumes
+  ansible.builtin.include_tasks: create_new_hcloud_volume.yml
+  loop: "{{ compose_project.backup_on_new_version | default([]) }}"
+  loop_control:
+    loop_var: vol
+
+- name: Docker compose stop
+  ansible.builtin.command:
+    chdir: "{{ docker_dir }}"
+    argv:
+      - docker
+      - compose
+      - down
+
+- name: Rsync 2nd time
+  ansible.builtin.include_tasks: 2nd_sync_hcloud.yml
+  loop: "{{ compose_project.backup_on_new_version | default([]) }}"
+  loop_control:
+    loop_var: vol
+
+- name: Docker compose start
+  ansible.builtin.command:
+    chdir: "{{ docker_dir }}"
+    argv:
+      - docker
+      - compose
+      - up
+      - -d
+
+- name: Ask if everything is working
+  ansible.builtin.pause:
+    prompt: >
+      Funktioniert der Docker Container mit den Domains:
+      {% for dom in compose_project.domains %}
+      https://{{dom}}
+      {% endfor %}
+      ? Bitte JA oder NEIN und danach RETURN eingeben.
+  when: "compose_project.backup_on_new_version | default([]) != []"
+  register: pres
+  until: "pres.user_input=='JA' or pres.user_input=='NEIN'"
+  retries: 100
+
+- name: Clean Hetzner
+  ansible.builtin.include_tasks: clean_hcloud_vol.yml
+  loop: "{{ compose_project.backup_on_new_version | default([]) }}"
+  loop_control:
+    loop_var: vol
+  when: "compose_project.backup_on_new_version | default([]) != [] and pres.user_input=='JA'"
+
+- name: Restore Hcloud Vol
+  ansible.builtin.include_tasks: restore_version.yml
+  when: "compose_project.backup_on_new_version | default([]) != [] and pres.user_input=='NEIN'"
+
+- name: Delete old Docker images
+  ansible.builtin.command:
+    argv:
+      - docker
+      - image
+      - prune
+      - --force
+      - --all
+  register: docker_image_prune
+  changed_when: "'Total reclaimed space: 0B' not in docker_image_prune.stdout"

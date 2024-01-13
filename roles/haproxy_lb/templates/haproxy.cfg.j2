@@ -1,0 +1,131 @@
+# generated 2023-10-14, Mozilla Guideline v5.7, HAProxy 2.16.2, OpenSSL 3.0.11, intermediate configuration
+# https://ssl-config.mozilla.org/#server=haproxy&version=2.16.2&config=intermediate&openssl=3.0.11&guideline=5.7
+global
+    # intermediate configuration
+    ssl-default-bind-ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-CHACHA20-POLY1305
+    ssl-default-bind-ciphersuites TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256
+    ssl-default-bind-options prefer-client-ciphers no-sslv3 no-tlsv10 no-tlsv11 no-tls-tickets
+
+    ssl-default-server-ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-CHACHA20-POLY1305
+    ssl-default-server-ciphersuites TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256
+    ssl-default-server-options no-sslv3 no-tlsv10 no-tlsv11 no-tls-tickets
+
+    #ssl-dh-param-file {{ haproxy_lb_dh_file }}
+    maxconn 5000
+
+    log /dev/log    local0
+    log /dev/log    local1 notice
+    chroot /var/lib/haproxy
+    stats socket /run/haproxy/admin.sock mode 660 level admin
+    stats timeout 30s
+    user haproxy
+    group haproxy
+    daemon
+
+defaults
+    mode http
+    timeout connect 5s
+    timeout client 30s
+    timeout server 30s
+    timeout tunnel 90s
+    timeout http-request 10s
+    log global
+    option httplog
+{% for error in haproxy_lb_errors %}
+    errorfile {{ error.code }} /etc/haproxy/static/{{ error.code }}.http
+{% endfor %}
+
+frontend http
+    mode http
+    bind :80
+    bind [::]:80 v6only
+    acl lets_encrypt path_beg /.well-known/acme-challenge/
+    use_backend lets_encrypt if lets_encrypt
+    default_backend no_http
+
+frontend https
+    bind :443 ssl crt /etc/haproxy/ssl/ alpn h2,http/1.1
+    bind [::]:443 v6only ssl crt /etc/haproxy/ssl/ alpn h2,http/1.1
+    maxconn 5000
+    option forwardfor
+
+    http-request redirect scheme https code 301 unless { ssl_fc }
+    http-response set-header Strict-Transport-Security max-age=63072000
+
+{% for compose_project_hostkey  in (hostvars[groups['tools_2023'][0]].keys() | map('regex_search','^docker_compose_project_(.*)') | select('string') | list)  %}
+{%- set first_domain=hostvars[groups['tools_2023'][0]][compose_project_hostkey].domains[0] -%}
+{% for domain in hostvars[groups['tools_2023'][0]][compose_project_hostkey].domains %}
+    # acl acl_{{ domain }} ssl_fc_sni {{ domain }} mit SNI scheint das manchmal nicht richtig zu gehen, sven 2023-12-10
+    acl acl_{{ domain }} hdr(host) -i {{ domain }}
+    use_backend https_{{ first_domain }} if acl_{{ domain }}
+
+{% endfor %}
+{% endfor %}
+
+    # Redircects
+
+{% for redirect_dom in loadbalancer_redirect_domains %}
+{% set first_domain=redirect_dom.domains[0] %}
+
+    #   {{ first_domain}}
+
+{% for dom in redirect_dom.domains %}
+    acl host_match_{{ first_domain }} hdr(host) -i {{ dom }}
+{% endfor %}
+{% for dest in redirect_dom.dest %}
+    acl path_match_{{ first_domain }}_{{ loop.index }} path_beg  -i {{ dest.path }}
+{% endfor %}
+{% for dest in redirect_dom.dest %}
+    http-request redirect code 301 location {{ dest.url }} if host_match_{{ first_domain }} path_match_{{ first_domain }}_{{ loop.index }}
+{% endfor %}
+{% endfor %}
+
+
+    #acl acl_lb ssl_fc_sni loadbalancer01.hamburg.adfc.de
+    #use_backend chat_server if acl_lb
+
+    default_backend default_https
+
+frontend stats
+    bind 127.0.0.1:8404
+    stats enable
+    stats uri /
+    stats refresh 10s
+    acl do_admin always_true
+    stats admin if do_admin
+
+
+#################################################################
+
+
+backend lets_encrypt
+    http-request set-path "%[path,regsub(^/.well-known/acme-challenge/,/)]"
+    {% for lb_name in groups['loadbalancer']%}
+    server {{ lb_name }} {{ hostvars[lb_name]['dehydrated_acme_listen_ip'] }}:180 no-ssl check
+    {% endfor %}
+
+{% for compose_project_hostkey  in (hostvars[groups['tools_2023'][0]].keys() | map('regex_search','^docker_compose_project_(.*)') | select('string') | list)  %}
+{% set first_domain=hostvars[groups['tools_2023'][0]][compose_project_hostkey]['domains'][0] %}
+
+backend https_{{ first_domain }}
+    option forwardfor
+    http-request add-header X-Forwarded-Proto https
+    http-request add-header X-CLIENT-IP %[src]
+    http-request add-header X-Nginx-Proxy true
+
+{% for tools_backend in groups['tools_2023'] %}
+{% set internal_port=hostvars[tools_backend][compose_project_hostkey]['internal_port'] %}
+{% set internal_ip=hostvars[tools_backend]['adfc_internal_ip'] %}
+    server {{ tools_backend.split('.')[0 ]}}_{{ internal_port }} {{ internal_ip  }}:{{ internal_port}} no-ssl check
+{% endfor %}
+{% endfor %}
+
+# Default Backends
+backend default_http
+    errorfile 503 /etc/haproxy/static/fehler.http.static.html
+
+backend default_https
+   errorfile 503 /etc/haproxy/static/fehler.https.static.html
+
+backend no_http
+    redirect scheme https

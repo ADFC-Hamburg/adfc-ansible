@@ -1,6 +1,0 @@
----
-- name: Setup Videobridge
-  hosts: jitsi_vbs
-  gather_facts: true
-  roles:
-    - certbot_renew

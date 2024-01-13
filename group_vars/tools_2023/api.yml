@@ -1,0 +1,37 @@
+docker_compose_project_api:
+  nodes:
+    - tools2.hamburg.adfc.de
+  domains:
+    - api.hamburg.adfc.de
+  internal_port: 3500
+  compose_block:
+    version: "3"
+    volumes:
+      api_data:
+        driver: local
+    services:
+      api:
+        image: php:8.3-apache
+        restart: unless-stopped
+        ports:
+          - "{{ adfc_internal_ip}}:3500:80"
+        volumes:
+          - api_data:/var/www/html:rw
+        labels:
+          - "com.centurylinklabs.watchtower.scope=api"
+      adfc_tour_to_vadb:
+        image: ghcr.io/adfc-hamburg/adfc-tour_to_vadb
+        restart: unless-stopped
+        volumes:
+          - api_data:/srv/metroterm/out/
+        labels:
+          - "com.centurylinklabs.watchtower.scope=api"
+      watchtower:
+        image: containrrr/watchtower
+        volumes:
+          - /root/.docker/config.json:/config.json:ro
+          - /var/run/docker.sock:/var/run/docker.sock:ro
+        # pruefe alle 12h = 43200  1200 Sec auf update
+        command: --interval 43200 --debug --scope=api
+        labels:
+          - "com.centurylinklabs.watchtower.scope=api"

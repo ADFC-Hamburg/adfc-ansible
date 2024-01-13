@@ -1,0 +1,43 @@
+docker_compose_project_radverkehr:
+  nodes:
+    - tools1.hamburg.adfc.de
+  domains:
+    - radverkehr.hamburg.adfc.de
+  internal_port: 3800
+  hetzner_volumes:
+    - name: radverkehr
+      size_gb: 10
+      location: nbg1
+      mount: /var/lib/docker/volumes/docker-radverkehr_radverkehr
+  compose_block:
+    version: "3"
+    volumes:
+      radverkehr:
+        driver: local
+    services:
+      radverkehr:
+        image: nginx:mainline-alpine-slim
+        restart: unless-stopped
+        #environment:
+        ports:
+          - "{{ adfc_internal_ip}}:3800:80"
+        volumes:
+          - radverkehr:/usr/share/nginx/html:ro
+        labels:
+          - "com.centurylinklabs.watchtower.scope=radverkehr"
+      radverkehr-updater:
+        image: ghcr.io/adfc-hamburg/hh-radverkehr-updater
+        restart: unless-stopped
+        volumes:
+          - radverkehr:/src/hh-radverkehr
+        labels:
+          - "com.centurylinklabs.watchtower.scope=radverkehr"
+      watchtower:
+        image: containrrr/watchtower
+        volumes:
+          - /root/.docker/config.json:/config.json:ro
+          - /var/run/docker.sock:/var/run/docker.sock:ro
+          # pruefe alle 12h = 43200  1200 Sec auf update
+        command: --interval 43200 --debug --scope=radverkehr
+        labels:
+          - "com.centurylinklabs.watchtower.scope=radverkehr"

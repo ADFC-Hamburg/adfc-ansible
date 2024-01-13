@@ -1,0 +1,56 @@
+- name: Create directory
+  ansible.builtin.file:
+    path: "{{ docker_dir }}"
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
+
+- name: Mount Hetzner Volumes
+  ansible.builtin.include_tasks: mount_hcloud_vol.yml
+  loop: "{{ compose_project.hetzner_volumes | default([]) }}"
+  loop_control:
+    loop_var: vol
+  when: inventory_hostname in compose_project.nodes
+
+- name: Test if compose file is there
+  ansible.builtin.stat:
+    path: "{{ docker_dir }}/compose.yml"
+  register: compose_stat
+
+- name: Create Compose Backup
+  ansible.builtin.copy:
+    remote_src: true
+    src: "{{ docker_dir }}/compose.yml"
+    dest: "{{ docker_dir }}/compose.old"
+    mode: 0644
+    owner: root
+    group: root
+  when: compose_stat.stat.exists
+
+- name: Create Compose File
+  ansible.builtin.copy:
+    content: |
+      # Ansible Managed
+      {{ compose_project.compose_block | to_nice_yaml }}
+    dest: "{{ docker_dir }}/compose.yml"
+    mode: 0644
+    owner: root
+    group: root
+  register: compose_file
+
+- name: Create Secret file
+  ansible.builtin.copy:
+    content: "{{ lookup('ansible.builtin.password', '/dev/null', length=16) }}"
+    dest: "{{ docker_dir }}/{{ secret.value.file }}"
+    mode: 0600
+    owner: root
+    group: root
+    force: false
+  loop: "{{ compose_project.compose_block.secrets |default({}) | dict2items  }}"
+  loop_control:
+    loop_var: secret
+
+- name: Pull Package and start detached
+  ansible.builtin.include_tasks: new_version.yml
+  when: compose_file.changed and inventory_hostname in compose_project.nodes

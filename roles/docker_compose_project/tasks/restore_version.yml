@@ -1,0 +1,37 @@
+- name: Docker compose stop
+  ansible.builtin.command:
+    chdir: "{{ docker_dir }}"
+    argv:
+      - docker
+      - compose
+      - down
+
+- name: Restore hcloud volumes
+  ansible.builtin.include_tasks: restore_hcloud_vol.yml
+  loop: "{{ compose_project.backup_on_new_version | default([]) }}"
+  loop_control:
+    loop_var: vol
+
+- name: Restore Compose Backup
+  ansible.builtin.copy:
+    remote_src: true
+    src: "{{ docker_dir }}/compose.old"
+    dest: "{{ docker_dir }}/compose.yml"
+    mode: 0644
+    owner: root
+    group: root
+
+- name: Docker compose start
+  ansible.builtin.command:
+    chdir: "{{ docker_dir }}"
+    argv:
+      - docker
+      - compose
+      - up
+      - -d
+
+- name: Prompt
+  ansible.builtin.pause:
+    prompt: |
+      Restore Completed please delete backup volumes in Hetzner Hcloud Console
+      https://console.hetzner.cloud/

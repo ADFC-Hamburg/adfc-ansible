@@ -9,7 +9,8 @@
     src: base-journald.conf
     dest: /etc/systemd/journald.conf
     mode: "0644"
-  notify: restart journald
+  notify:
+    - Restart journald
 
 - name: Downloadverzeichnis für deb-Pakete erstellen
   ansible.builtin.file:

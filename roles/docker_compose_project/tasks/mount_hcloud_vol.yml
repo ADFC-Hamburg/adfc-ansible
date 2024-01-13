@@ -1,0 +1,18 @@
+- name: Create Hetzner volume
+  hetzner.hcloud.hcloud_volume:
+    api_token: "{{ hcloud_api_token }}"
+    name: "{{ vol.name }}"
+    size: "{{ vol.size_gb }}"
+    server: "{{ inventory_hostname }}"
+    format: ext4
+    state: present
+  delegate_to: localhost
+  register: hcloud_vol
+
+- name: Mount vol
+  ansible.posix.mount:
+    src: "{{ hcloud_vol.hcloud_volume.linux_device }}"
+    path: "{{ vol.mount }}"
+    opts: "discard,noatime"
+    fstype: ext4
+    state: mounted

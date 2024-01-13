@@ -1,7 +1,7 @@
 ---
 # cx11 kleinster Server mit einer CPU für Tests
-# ccx31 8 Dedicierte VCPUs 32 GB RAM
-hcloud_server_type: "{{ 'cx11' if hcloud_test else 'ccx41' }}"
+# ccx32 8 Dedicierte VCPUs 32 GB RAM
+hcloud_server_type: "{{ 'cx11' if hcloud_test else 'ccx42' }}"
 hcloud_server_location: nbg1
 jitsi_meet_jvb_cfg_java_jvb_props:
   - --subdomain=vbeh03
