@@ -11,6 +11,7 @@ haproxy_dehydrated_domains:
   - radverkehr.hamburg.adfc.de
   - t30antrag.hamburg.adfc.de
   - t30forderung.hamburg.adfc.de
+  - test2024.klara.bike
   - tresor.hamburg.adfc.de
   - web20.hamburg.adfc.de
   - wiki.hamburg.adfc.de
@@ -18,6 +19,7 @@ haproxy_dehydrated_domains:
   - www.quartierefuermenschen.de
   - www.radreise-messe.de
   - www.xn--quartierefrmenschen-fbc.de
+  - www2024.klara.bike
   - xn--quartierefrmenschen-fbc.de
 
 dehydrated_deploy_hook: |

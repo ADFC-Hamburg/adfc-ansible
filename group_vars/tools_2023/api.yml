@@ -1,6 +1,5 @@
 docker_compose_project_api:
   nodes:
-    - tools1.hamburg.adfc.de
     - tools2.hamburg.adfc.de
   domains:
     - api.hamburg.adfc.de
@@ -12,19 +11,19 @@ docker_compose_project_api:
         driver: local
     services:
       api:
-        image: nginx:mainline-alpine-slim
+        image: php:8.3-apache
         restart: unless-stopped
         ports:
           - "{{ adfc_internal_ip}}:3500:80"
         volumes:
-          - api_data:/usr/share/nginx/html:ro
+          - api_data:/var/www/html:rw
         labels:
           - "com.centurylinklabs.watchtower.scope=api"
       adfc_tour_to_vadb:
         image: ghcr.io/adfc-hamburg/adfc-tour_to_vadb
         restart: unless-stopped
         volumes:
-          - api_data:/srv/metroterm/out
+          - api_data:/srv/metroterm/out/
         labels:
           - "com.centurylinklabs.watchtower.scope=api"
       watchtower:
