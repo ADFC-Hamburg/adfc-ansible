@@ -13,11 +13,11 @@ adfc_secret_folder: /etc/ansible/secrets/
 adfc_vpnc_source: ucs-master.gst.hamburg.adfc.de
 adfc_borg_server: "{{ ansible_user + '@' + adfc_vpnc_source + ':/path/to/repo' }}"
 ssh_users_admins:
-  - svena
-  - volkerk
-  - martinw
   - georgs
   - johannesd
+  - lucaf
+  - svena
+  - volkerk
 
 # Paketverwaltung
 deb_name_master_pdf_editor: master-pdf-editor-5.7.60-qt5.x86_64.deb
