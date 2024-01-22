@@ -1,5 +1,6 @@
 haproxy_dehydrated_domains:
   - "{{ inventory_hostname }}"
+  - adfc-hamburg.de
   - api.hamburg.adfc.de
   - bettelampel.de
   - chat.hamburg.adfc.de
@@ -14,6 +15,7 @@ haproxy_dehydrated_domains:
   - tresor.hamburg.adfc.de
   - web20.hamburg.adfc.de
   - wiki.hamburg.adfc.de
+  - www.adfc-hamburg.de
   - www.bettelampel.de
   - www.quartierefuermenschen.de
   - www.radreise-messe.de
@@ -41,3 +43,10 @@ loadbalancer_redirect_domains:
     dest:
       - path: /
         url: https://hamburg.adfc.de/artikel/radreisemesse-ein-resumee
+  - domains:
+      - www.adfc-hamburg.de
+      - adfc-hamburg.de
+    dest:
+      - path: /
+        url: https://hamburg.adfc.de/
+
