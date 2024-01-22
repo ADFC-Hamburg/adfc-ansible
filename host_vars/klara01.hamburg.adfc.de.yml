@@ -7,3 +7,9 @@ klara_bike_domains:
   - domains:
      - www2024.klara.bike
     port: 8080
+ssh_users_admins:
+  - georgs
+  - lucaf
+  - svena
+  - volkerk
+  - ralphw
