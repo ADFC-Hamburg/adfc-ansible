@@ -1,0 +1,7 @@
+---
+- hosts:
+    - klara_backend
+  gather_facts: false
+  roles:
+    - klara_backend
+

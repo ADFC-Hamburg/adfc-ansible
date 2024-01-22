@@ -1,0 +1,9 @@
+ansible_ssh_common_args: "-A"
+
+klara_bike_domains:
+  - domains:
+     - test2024.klara.bike
+    port: 8180
+  - domains:
+     - www2024.klara.bike
+    port: 8080
