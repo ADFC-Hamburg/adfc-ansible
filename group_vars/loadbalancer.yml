@@ -51,4 +51,3 @@ loadbalancer_redirect_domains:
     dest:
       - path: /
         url: https://hamburg.adfc.de/
-
