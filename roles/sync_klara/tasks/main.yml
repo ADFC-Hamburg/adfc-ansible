@@ -22,7 +22,7 @@
 
 - name: Save Wordpres DB
   ansible.builtin.shell:
-    cmd: "ssh -l ssh-283920-backup klara.bike \"mysqldump  db283920 -udb283920 -p'{{ db_password }}'\"> {{ sync_klara_tmp_dir }}/db-klara.sql"
+    cmd: 'ssh -l ssh-283920-backup klara.bike "mysqldump  db283920 -udb283920 -p''{{ db_password }}''"> {{ sync_klara_tmp_dir }}/db-klara.sql'
   vars:
     db_password: "{{ klara_wordpress_db_pass_cmd.stdout }}"
   tags:
@@ -30,7 +30,7 @@
 
 - name: Save Test Wordpres DB
   ansible.builtin.shell:
-    cmd: "ssh -l ssh-283920-backup klara.bike \"mysqldump  db283920_2 -udb283920_2 -p'{{ db_password }}'\"> {{ sync_klara_tmp_dir }}/db-test_klara.sql"
+    cmd: 'ssh -l ssh-283920-backup klara.bike "mysqldump  db283920_2 -udb283920_2 -p''{{ db_password }}''"> {{ sync_klara_tmp_dir }}/db-test_klara.sql'
   vars:
     db_password: "{{ klara_test_wordpress_db_pass_cmd.stdout }}"
   tags:
@@ -38,7 +38,7 @@
 
 - name: Save Radzaehler DB
   ansible.builtin.shell:
-    cmd: "ssh -l ssh-283920-backup klara.bike \"mysqldump  db283920_4 -udb283920_4 -p'{{ db_password }}'\"> {{ sync_klara_tmp_dir }}/db-radzaehler.sql"
+    cmd: 'ssh -l ssh-283920-backup klara.bike "mysqldump  db283920_4 -udb283920_4 -p''{{ db_password }}''"> {{ sync_klara_tmp_dir }}/db-radzaehler.sql'
   vars:
     db_password: "{{ klara_wordpress_db_pass_cmd.stdout }}"
   tags:
@@ -132,13 +132,13 @@
 - name: Loop over Releases
   ansible.builtin.include_tasks: mariadb_upgrade.yml
   loop:
-   - "10.5"
-   - "10.6"
-   - "10.7"
-   - "10.8"
-   - "10.9"
-   - "10.10"
-   - "10.11"
+    - "10.5"
+    - "10.6"
+    - "10.7"
+    - "10.8"
+    - "10.9"
+    - "10.10"
+    - "10.11"
   loop_control:
     loop_var: mariadb_version
   tags:
@@ -252,8 +252,8 @@
     login_unix_socket: /run/mysqld/mysqld.sock
   delegate_to: klara01.hamburg.adfc.de
   loop:
-      - "GRANT ALL ON *.* TO 'root'@'localhost' IDENTIFIED VIA unix_socket WITH GRANT OPTION"
-      - "drop user \"root\"@\"%\""
+    - "GRANT ALL ON *.* TO 'root'@'localhost' IDENTIFIED VIA unix_socket WITH GRANT OPTION"
+    - 'drop user "root"@"%"'
   tags:
     - add_root_socket_user
     - resync_db
@@ -325,7 +325,6 @@
     new_db_password: "{{ sync_klara_new_mysql_password.radzaehler }}"
   tags:
     - replace_setting
-
 # /etc/apache2/sites-enabled/klara.bike.conf
 #   a2ensite klara.bike
 #   a2dissite 000-default.conf

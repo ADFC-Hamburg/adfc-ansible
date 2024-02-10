@@ -25,6 +25,6 @@
     - name: Create UCS CA Cert
       ansible.builtin.command:
         argv:
-         - /usr/sbin/update-ca-certificates
-         - -f
+          - /usr/sbin/update-ca-certificates
+          - -f
       changed_when: true
