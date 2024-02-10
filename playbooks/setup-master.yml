@@ -53,12 +53,6 @@
       notify: ucr commit postifx main.cf
       tags: postfix
 
-    - name: Copy copy-zertifikat.sh
-      ansible.builtin.copy:
-        src: copy-zertifikat.sh
-        dest: /usr/lib/univention-ssl-usercert/copy-zertifikat
-        mode: "0755"
-
     - name: Create adfc-who
       ansible.builtin.template:
         src: adfc-who.sh
