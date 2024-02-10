@@ -1,46 +1,6 @@
 ---
 all:
   children:
-    server:
-      hosts:
-        tools.adfc-hamburg.de:
-        proxmox01.adfc-intern.de:
-        int-master.adfc-intern.de:
-        chat.hamburg.adfc.de:
-      children:
-        gsthh_server:
-        meet:
-          children:
-            meet_server:
-              hosts:
-                meet.adfc-intern.de:
-                test1.dyndns.adfc-intern.de:
-            jitsi_vbs:
-              children:
-                meet_vb:
-                  hosts:
-                    vbdh01.meet.adfc-intern.de:
-                    vbdh02.meet.adfc-intern.de:
-                    vbdh03.meet.adfc-intern.de:
-                    vbdh04.meet.adfc-intern.de:
-                    proxmox01.adfc-intern.de:
-                event_vb:
-                  hosts:
-                    vbedh01.dyndns.adfc-intern.de:
-                    vbedh02.dyndns.adfc-intern.de:
-                    vbedh03.dyndns.adfc-intern.de:
-            meet_test:
-              hosts:
-                vb01.test.adfc-intern.de:
-                test1.dyndns.adfc-intern.de:
-            meet_live:
-              hosts:
-                meet.adfc-intern.de:
-                vbdh01.meet.adfc-intern.de:
-                vbdh02.meet.adfc-intern.de:
-                vbdh03.meet.adfc-intern.de:
-                vbdh04.meet.adfc-intern.de:
-                proxmox01.adfc-intern.de:
     gsthh:
       children:
         arbeitsplatz:
@@ -62,13 +22,12 @@ all:
               hosts:
                 matratze01.gst.hamburg.adfc.de:
                 matratze02.gst.hamburg.adfc.de:
-            haproxy_gst_backends:
-              hosts:
-                ucs-master.gst.hamburg.adfc.de:
-                dreicx.gst.hamburg.adfc.de:
-                nextcloud-srv.gst.hamburg.adfc.de:
               children:
-                proxmox_gst:
+                haproxy_gst_backends:
+                  hosts:
+                    ucs-master.gst.hamburg.adfc.de:
+                    dreicx.gst.hamburg.adfc.de:
+                    nextcloud-srv.gst.hamburg.adfc.de:
     backup_clients:
       hosts:
         adfc-hh-bak-1:
@@ -79,30 +38,20 @@ all:
         tools1.hamburg.adfc.de:
         tools2.hamburg.adfc.de:
         ucs-master.gst.hamburg.adfc.de:
-    domain_factory:
-      hosts:
-        status.adfc-intern.de:
     hetzner:
-      children:
-        rocket_chat:
       hosts:
         portal.openbikesensor.hamburg:
-    rocket_chat:
-      hosts:
-        chat1.hamburg.adfc.de:
-        chat2.hamburg.adfc.de:
-        chat3.hamburg.adfc.de:
-        chat-test:
-    hcloud_server:
       children:
-        loadbalancer:
-          hosts:
-            loadbalancer01.hamburg.adfc.de:
-            loadbalancer02.hamburg.adfc.de:
-        tools_2023:
-          hosts:
-            tools1.hamburg.adfc.de:
-            tools2.hamburg.adfc.de:
+        hcloud_server:
+          children:
+            loadbalancer:
+              hosts:
+                loadbalancer01.hamburg.adfc.de:
+                loadbalancer02.hamburg.adfc.de:
+            tools_2023:
+              hosts:
+                tools1.hamburg.adfc.de:
+                tools2.hamburg.adfc.de:
     tasmota:
       hosts:
         tasmota-0673.gst.hamburg.adfc.de:
