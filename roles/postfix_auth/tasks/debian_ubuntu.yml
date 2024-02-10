@@ -7,7 +7,6 @@
       - exim4
     state: absent
 
-
 - name: Install libsasl2-modules to prevent "no mechanisms found error"
   ansible.builtin.apt:
     name:
@@ -15,7 +14,6 @@
       - postfix
       - bsd-mailx
     state: present
-
 
 - name: Create directory for postfix
   ansible.builtin.file:
