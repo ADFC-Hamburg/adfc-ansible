@@ -1,5 +1,0 @@
----
-- name: Restart jitsi-videobridge
-  ansible.builtin.service:
-    name: jitsi-videobridge2
-    state: restarted

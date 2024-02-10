@@ -1,7 +1,0 @@
----
-- name: Restart turnserver
-  ansible.builtin.systemd:
-    name: coturn
-    state: restarted
-- name: Coturn Certcopy
-  ansible.builtin.command: /etc/cron.daily/coturn-cert.sh
