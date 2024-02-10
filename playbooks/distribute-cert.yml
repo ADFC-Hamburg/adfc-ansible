@@ -1,0 +1,30 @@
+---
+- hosts: arbeitsplatz
+  gather_facts: false
+  tasks:
+    - name: Read UCS CA Cert
+      ansible.builtin.slurp:
+        path: /etc/univention/ssl/ucsCA/CAcert.pem
+      register: ucs_ca
+      delegate_to: ucs-master.gst.hamburg.adfc.de
+
+    - name: Create UCS CA Cert
+      ansible.builtin.copy:
+        content: "{{ ucs_ca.content | b64decode }}"
+        dest: /etc/ssl/ucsCAcert.pem
+        mode: "0644"
+        owner: root
+
+    - name: Create UCS CA Cert
+      ansible.builtin.copy:
+        content: "{{ ucs_ca.content | b64decode }}"
+        dest: /etc/univention/ssl/ucsCA/CAcert.pem
+        mode: "0644"
+        owner: root
+
+    - name: Create UCS CA Cert
+      ansible.builtin.command:
+        argv:
+         - /usr/sbin/update-ca-certificates
+         - -f
+      changed_when: true
