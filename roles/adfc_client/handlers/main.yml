@@ -1,0 +1,12 @@
+- name: XnViewMP manuell installieren
+  ansible.builtin.apt:
+    deb: /usr/local/share/ansible_downloads/XnViewMP-linux-x64.deb
+
+- name: PDF-Editor manuell installieren
+  ansible.builtin.apt:
+    deb: /usr/local/share/ansible_downloads/{{ deb_name_master_pdf_editor }}
+
+- name: apt-get update ausführen
+  ansible.builtin.apt:
+    update_cache: true
+  tags: software
