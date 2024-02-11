@@ -19,7 +19,7 @@ inet_interfaces = loopback-only
 recipient_delimiter = +
 
 # Configuration for using a relay host
-relayhost = mail.jpberlin.de
+relayhost = {{ smtp_mailserver }}
 smtp_sasl_auth_enable = yes
 smtp_sasl_password_maps = hash:/etc/postfix/smtp_auth
 smtp_sasl_security_options = noanonymous

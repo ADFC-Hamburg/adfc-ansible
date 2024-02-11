@@ -9,4 +9,4 @@
 
 - name: Include  setup_debian_ubuntu.yml
   ansible.builtin.include_tasks: ucs.yml
-  when: not ucs_stat.stat.exists
+  when: ucs_stat.stat.exists

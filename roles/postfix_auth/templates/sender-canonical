@@ -1,3 +1,0 @@
-/^.*adfc-hh-bak-.$/ {{ postfix_host_email }}
-/^.*gst.hamburg.adfc.de$/   {{ postfix_host_email }}
-/^.*{{ inventory_hostname }}$/ {{ postfix_host_email }}
