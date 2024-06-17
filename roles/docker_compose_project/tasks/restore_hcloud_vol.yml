@@ -12,7 +12,7 @@
       - rsync
       - -a
       - --delete
-      - --delete_before
+      - --delete-before
       - --inplace
       - "{{ docker_dir }}/hcloud_backup_{{  vol.hcloud_volume_prefix }}/"
       - "{{ vol.src }}"
