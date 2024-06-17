@@ -4,6 +4,8 @@
       - rsync
       - -a
       - --delete
+      - --delete-before
+      - --inplace
       - "{{ vol.src }}/"
       - "{{ docker_dir }}/hcloud_backup_{{  vol.hcloud_volume_prefix }}"
   loop: "{{ compose_project.backup_on_new_version }}"
