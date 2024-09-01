@@ -1,8 +1,8 @@
-rocketchat_test_version: 6.4.6
+rocketchat_test_version: 6.11.1
 rocketchat_test_root_url: https://chat-test.hamburg.adfc.de
 rocketchat_test_mongodb_version: 5.0
 
-rocketchat_live_version: 6.9.1
+rocketchat_live_version: 6.11.1
 rocketchat_live_root_url: https://chat.hamburg.adfc.de
 rocketchat_live_mongodb_version: 5.0
 
