@@ -13,6 +13,7 @@ haproxy_dehydrated_domains:
   - t30antrag.hamburg.adfc.de
   - t30forderung.hamburg.adfc.de
   - test2024.klara.bike
+  - tour2pdf.hamburg.adfc.de
   - tresor.hamburg.adfc.de
   - web20.hamburg.adfc.de
   - wiki.hamburg.adfc.de
