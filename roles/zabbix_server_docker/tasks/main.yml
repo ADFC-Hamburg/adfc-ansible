@@ -70,3 +70,12 @@
     owner: root
     group: root
   notify: reload firewall
+
+- name: create externalscripts
+  copy:
+    dest: /usr/src/zabbix-docker/zbx_env/usr/lib/zabbix/externalscripts/
+    src: externalscripts/
+    mode: 0755
+    directory_mode: 0755
+    owner: root
+    group: root
