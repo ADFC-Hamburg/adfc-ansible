@@ -4,6 +4,35 @@
 # da ucs nicht alle docker features unterstützt
 version: '3.5'
 services:
+ mysql-server:
+  image: "mysql:8.0-oracle"
+  command:
+   - mysqld
+   - --skip-mysqlx
+   - --character-set-server=utf8mb4
+   - --collation-server=utf8mb4_bin
+# Only during upgrade from versions prior 6.4 and new installations (schema deployment)
+   - --log_bin_trust_function_creators=1
+   - --disable-log-bin
+  restart: unless-stopped
+  volumes:
+   - ./zbx_env/var/lib/mysql:/var/lib/mysql:rw
+  env_file:
+   - env_db_mysql
+  environment:
+   - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/MYSQL_ROOT_PASSWORD
+  secrets:
+   - MYSQL_USER
+   - MYSQL_PASSWORD
+   - MYSQL_ROOT_PASSWORD
+  stop_grace_period: 1m
+  networks:
+   zabbix_net:
+     aliases:
+      - mysql
+      - database
+     ipv4_address: 172.16.28.5
+
  zabbix-server:
   restart: always
   image: zabbix/zabbix-server-mysql:{{ zabbix_server_docker_version }}
