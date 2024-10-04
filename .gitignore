@@ -6,3 +6,4 @@ github_token.txt
 report
 megalinter-reports/
 library/__pycache__/
+.vscode/
