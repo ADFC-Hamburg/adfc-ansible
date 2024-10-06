@@ -7,7 +7,7 @@ postfix_host_email: proxmox02@hamburg.adfc.de
 check_ips:
   - 192.168.123.32
 
-zabbix_agent2: True
+zabbix_agent2: true
 zabbix_agent_server: 127.0.0.1,192.168.123.32
 zabbix_agent_serveractive: 127.0.0.1,192.168.123.32
 zabbix_api_use: false

@@ -87,4 +87,4 @@ zabbix_host_groups:
   - Linux Servers
 zabbix_link_templates:
   - Template OS Linux
-zabbix_install_pip_packages: no
+zabbix_install_pip_packages: false

@@ -18,7 +18,7 @@ docker_compose_project_wiki:
       wiki:
         restart: unless-stopped
         image: php:7.4-apache
-        #environment:
+        # environment:
         ports:
           - "{{ adfc_internal_ip}}:3600:80"
         volumes:
