@@ -3,6 +3,8 @@ exclude_paths:
   - .cache/
   - .github/
   - ~/.ansible/roles/jnv.unattended-upgrades
+  - roles/geerlingguy.certbot/molecule/default/
+  - roles/nginxinc.nginx/molecule
 skip_list:
   - no-changed-when
   - schema[meta]
