@@ -18,9 +18,9 @@ docker_compose_project_radverkehr:
       radverkehr:
         image: nginx:mainline-alpine-slim
         restart: unless-stopped
-        #environment:
+        # environment:
         ports:
-          - "{{ adfc_internal_ip}}:3800:80"
+          - "{{ adfc_internal_ip }}:3800:80"
         volumes:
           - radverkehr:/usr/share/nginx/html:ro
         labels:

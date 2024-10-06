@@ -82,7 +82,7 @@
         hour: "19"
         minute: "28"
         cron_file: ansible-delete-proxmox-datensicherung
-        ansible.builtin.user: root
+        user: root
         job: /usr/bin/find /adfc/Computer/Datensicherung/Proxmox/ -type f -ctime 5 -delete
       tags: proxmox-backup
 
