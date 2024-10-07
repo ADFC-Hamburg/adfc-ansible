@@ -1,0 +1,45 @@
+- name: Create Dir
+  file:
+    path: /usr/src/fritzbox_exporter-docker
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
+
+- name: Create Docker Files
+  copy:
+    src: "docker-compose.yaml"
+    dest: "/usr/src/fritzbox_exporter-docker/docker-compose.yaml"
+    mode: 0644
+    owner: root
+    group: root
+
+- name: Create env
+  file:
+    path: /usr/src/fritzbox_exporter-docker/env
+    mode: 0600
+    owner: root
+    group: root
+
+- name: docker-compose up shell
+  command: /usr/bin/docker-compose up -d
+  args:
+    chdir: /usr/src/fritzbox_exporter-docker
+
+- name: Create Apache File
+  template:
+    src: "apache_conf"
+    dest: "/etc/apache2/ucs-sites.conf.d/fritz-metric.conf"
+    mode: 0644
+    owner: root
+    group: root
+  notify: reload apache
+ 
+- name: create target for prometheus
+  copy:
+    dest: /var/lib/univention-appcenter/apps/prometheus/conf/custom-targets.json
+    src: custom-targets.json
+    mode: 0644
+    owner: root
+    group: root
+  notify: restart prometheus

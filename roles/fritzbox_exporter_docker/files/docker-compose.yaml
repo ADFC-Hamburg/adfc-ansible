@@ -1,0 +1,15 @@
+# {{ ansible_managed }}
+# https://github.com/sberk42/fritzbox_exporter
+version: '3'
+services:
+  fritzbox-prometheus-exporter:
+    image: "ghcr.io/sberk42/fritzbox_exporter/fritzbox_exporter:latest"
+    restart: unless-stopped
+    ports:
+      - "9042:9042"
+    environment:
+      GATEWAY_URL: http://192.168.123.1:49000
+      LISTEN_ADDRESS: 0.0.0.0:9042
+      GATEWAY_LUAURL: http://192.168.123.1
+    env_file:
+      - env
