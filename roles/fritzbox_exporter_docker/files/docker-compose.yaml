@@ -1,6 +1,6 @@
 # {{ ansible_managed }}
 # https://github.com/sberk42/fritzbox_exporter
-version: '3'
+version: "3"
 services:
   fritzbox-prometheus-exporter:
     image: "ghcr.io/sberk42/fritzbox_exporter/fritzbox_exporter:latest"

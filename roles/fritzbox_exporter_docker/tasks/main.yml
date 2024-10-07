@@ -34,7 +34,7 @@
     owner: root
     group: root
   notify: reload apache
- 
+
 - name: create target for prometheus
   copy:
     dest: /var/lib/univention-appcenter/apps/prometheus/conf/custom-targets.json
