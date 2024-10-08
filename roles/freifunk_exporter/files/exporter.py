@@ -16,12 +16,12 @@ def fetch_data():
             # Set up SSH client
             client = paramiko.SSHClient()
             client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            
+
             # Connect to the remote server using an SSH key
             private_key_path = os.path.expanduser('~/.ssh/id_rsa')  # Path to your private key
             key = paramiko.RSAKey.from_private_key_file(private_key_path)
-            client.connect('2a03:2267:4:0:fa1a:67ff:fea6:1df', username='root', pkey=key)  # Update with your username
-            
+            client.connect('192.168.250.53', username='root', pkey=key)  # Update with your username
+
             # Execute the command
             stdin, stdout, stderr = client.exec_command('gluon-neighbour-info -s "" -l -d ::1 -p 1001 -t 3 -r statistics')
 
@@ -30,11 +30,11 @@ def fetch_data():
             while True:
                 if time.time() - start_time > 3:  # Stop reading after 3 seconds
                     break
-                
+
                 line = stdout.readline()
                 if not line:
                     break  # Exit if no more lines
-                
+
                 # Process each line of data
                 decoded_line = line.strip()
                 if decoded_line.startswith("data:"):
