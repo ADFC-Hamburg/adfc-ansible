@@ -1,0 +1,7 @@
+- name: install python modules
+  package:
+    name: "{{ item }}"
+  with_items:
+    - python3-flask
+    - python3-paramiko
+    - python3-gunicorn
