@@ -24,6 +24,24 @@
 
 - name: Start freifunk exporter
   service:
-    name: freifunk exporter
+    name: freifunk-exporter
     state: started
     enabled: yes
+
+- name: Create Apache File
+  copy:
+    src: "apache_conf"
+    dest: "/etc/apache2/ucs-sites.conf.d/freifunk-metric,conf"
+    mode: 0644
+    owner: root
+    group: root
+  notify: reload apache
+
+- name: create target for prometheus
+  copy:
+    dest: /var/lib/univention-appcenter/apps/prometheus/conf/custom-targets.json
+    src: custom-targets.json
+    mode: 0644
+    owner: root
+    group: root
+  notify: restart prometheus
