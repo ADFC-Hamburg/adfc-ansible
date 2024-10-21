@@ -7,3 +7,7 @@ report
 megalinter-reports/
 library/__pycache__/
 .vscode/
+roles/geerlingguy.certbot
+roles/jnv.unattended-upgrades
+roles/nginxinc.nginx
+roles/udelarinterior.jitsi_meet
