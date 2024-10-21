@@ -27,7 +27,7 @@
     chdir: /usr/src/fritzbox_exporter-docker
 
 - name: Create Apache File
-  template:
+  copy:
     src: "apache_conf"
     dest: "/etc/apache2/ucs-sites.conf.d/fritz-metric.conf"
     mode: 0644
