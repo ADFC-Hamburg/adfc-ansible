@@ -10,6 +10,7 @@
     - external_https
     - self_service_sms
     - zabbix_server_docker
+    - fritzbox_exporter_docker
     - community.zabbix.zabbix_agent
 
   handlers:
