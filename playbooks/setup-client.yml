@@ -9,7 +9,6 @@
     - jnv.unattended-upgrades
     - load_contacts
     - postfix_auth
-    - skype
     - fonts
     - xrdp
     - unburden_home_dir
