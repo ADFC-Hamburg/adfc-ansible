@@ -24,7 +24,7 @@
   ansible.builtin.template:
     src: domains.txt.j2
     dest: /etc/dehydrated/domains.txt
-    mode: 0644
+    mode: "0644"
     owner: root
     group: root
   notify: Domains abholen
@@ -33,7 +33,7 @@
   ansible.builtin.template:
     src: hook.sh.j2
     dest: /etc/dehydrated/hook.sh
-    mode: 0755
+    mode: "0755"
     owner: root
     group: root
 
@@ -52,6 +52,6 @@
     content: |
       HOOK=/etc/dehydrated/hook.sh
     dest: /etc/dehydrated/conf.d/ansible.sh
-    mode: 0755
+    mode: "0755"
     owner: root
     group: root

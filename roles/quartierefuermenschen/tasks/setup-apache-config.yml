@@ -3,7 +3,7 @@
   ansible.builtin.template:
     src: "{{ apache_cfg.template_src }}"
     dest: /etc/apache2/sites-available/{{ apache_cfg.site_name }}.conf
-    mode: 0644
+    mode: "0644"
 
 - name: Check if Certificate is there
   ansible.builtin.stat:

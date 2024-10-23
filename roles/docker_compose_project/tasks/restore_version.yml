@@ -17,7 +17,7 @@
     remote_src: true
     src: "{{ docker_dir }}/compose.old"
     dest: "{{ docker_dir }}/compose.yml"
-    mode: 0644
+    mode: "0644"
     owner: root
     group: root
 
