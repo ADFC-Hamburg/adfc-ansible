@@ -18,9 +18,8 @@ docker_compose_project_web20:
       web20:
         restart: unless-stopped
         image: php:8.2-apache
-        #environment:
         ports:
-          - "{{ adfc_internal_ip}}:3700:80"
+          - "{{ adfc_internal_ip }}:3700:80"
         volumes:
           - web20:/var/www/html
         labels:

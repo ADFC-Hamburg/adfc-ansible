@@ -12,13 +12,13 @@
   ansible.builtin.file:
     path: /etc/postfix
     state: directory
-    mode: 0644
+    mode: "0644"
 
 - name: Copy postfix configuration file
   ansible.builtin.template:
     src: postfix-main.cf
     dest: /etc/postfix/main.cf
-    mode: 0644
+    mode: "0644"
   notify: reload postfix
 
 - name: Get Sender Address
@@ -31,7 +31,7 @@
   ansible.builtin.template:
     src: sender-canonical
     dest: /etc/postfix/sender_canonical
-    mode: 0640
+    mode: "0640"
   vars:
     postfix_host_email: "{{ postfix_host_email_txt.content | b64decode }}"
 
@@ -45,7 +45,7 @@
   ansible.builtin.copy:
     content: "{{ smtp_auth.content | b64decode }}"
     dest: /etc/postfix/smtp_auth
-    mode: 0600
+    mode: "0600"
     owner: root
     group: root
   notify: postfix postmap smtp_auth

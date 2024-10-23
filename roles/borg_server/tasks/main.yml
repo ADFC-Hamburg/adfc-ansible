@@ -13,13 +13,13 @@
       - build-essential
   tags: borg-server
 
-#- name: Install virtualenv via pip
+# - name: Install virtualenv via pip
 #  ansible.builtin.pip:
 #    name: virtualenv
 #    executable: pip3
 
 # Demnächst:
-##- name: Delete venv
+# - name: Delete venv
 #  ansible.builtin.file:
 #    name: /usr/local/share/borg-venv
 #    state: absent
@@ -28,7 +28,7 @@
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
-    mode: 0755
+    mode: "0755"
     owner: root
     group: root
   loop:
@@ -43,12 +43,12 @@
   ansible.builtin.get_url:
     url: https://github.com/borgbackup/borg/releases/download/{{ borg_bin_version }}/borg-linux64
     dest: /usr/local/share/adfc-borg/bin/borg-{{ borg_bin_version }}-linux64
-    mode: 0755
+    mode: "0755"
     owner: root
     group: root
     checksum: sha256:{{ borg_bin_sha256_sum }}
 # Alter Weg venv erstellen:
-#- name: Install borg
+# - name: Install borg
 #  ansible.builtin.pip:
 #    name:
 #      - wheel
@@ -102,7 +102,7 @@
       {% endfor %}
       {% endfor %}
     dest: /usr/local/share/adfc-borg/known_hosts
-    mode: 0644
+    mode: "0644"
     owner: root
     group: root
   tags: borg-server,adfc-borg,borg-keyscan

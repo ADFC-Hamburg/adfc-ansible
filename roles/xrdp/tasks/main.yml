@@ -72,7 +72,7 @@
   ansible.builtin.copy:
     src: additional_guacamole_cipher.conf
     dest: /etc/ssh/sshd_config.d/
-    mode: 0644
+    mode: "0644"
     owner: root
     group: root
   notify: Restart ssh

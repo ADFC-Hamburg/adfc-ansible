@@ -56,7 +56,7 @@ docker_compose_project_quartiere:
         secrets:
           - db_password
         ports:
-          - "{{ adfc_internal_ip}}:3400:80"
+          - "{{ adfc_internal_ip }}:3400:80"
     secrets:
       db_password:
         file: db_password.txt
