@@ -1,10 +1,10 @@
-rocketchat_test_version: 6.11.1
+rocketchat_test_version: 6.13.0
 rocketchat_test_root_url: https://chat-test.hamburg.adfc.de
-rocketchat_test_mongodb_version: 5.0
+rocketchat_test_mongodb_version: 6.0
 
-rocketchat_live_version: 6.11.1
+rocketchat_live_version: 6.13.0
 rocketchat_live_root_url: https://chat.hamburg.adfc.de
-rocketchat_live_mongodb_version: 5.0
+rocketchat_live_mongodb_version: 6.0
 
 docker_compose_project_rocketchat_test:
   nodes:
@@ -69,9 +69,13 @@ docker_compose_project_rocket:
   internal_port: 3000
   hetzner_volumes:
     - name: chat-mongo
-      size_gb: 20
+      size_gb: 30
       location: nbg1
       mount: /var/lib/docker/volumes/docker-rocket_mongodb_data
+    - name: chat-upload
+      size_gb: 20
+      location: nbg1
+      mount: /var/lib/docker/volumes/docker-rocket_rocket_uploads
   backup_on_new_version:
     - src: /var/lib/docker/volumes/docker-rocket_mongodb_data
       hcloud_volume_prefix: backup_chat_mongo
@@ -83,6 +87,8 @@ docker_compose_project_rocket:
     # Version: 63a01a43be966e79a66ce38ad2f1249245deb4cd
     volumes:
       mongodb_data:
+        driver: local
+      rocket_uploads:
         driver: local
     services:
       rocketchat:
@@ -101,6 +107,8 @@ docker_compose_project_rocket:
           - 3000
         ports:
           - "{{ adfc_internal_ip }}:3000:3000"
+        volumes:
+        - rocket_uploads:/app/uploads
       mongodb:
         image: docker.io/bitnami/mongodb:{{ rocketchat_live_mongodb_version }}
         restart: unless-stopped
@@ -115,3 +123,10 @@ docker_compose_project_rocket:
           MONGODB_ADVERTISED_HOSTNAME: mongodb
           MONGODB_ENABLE_JOURNAL: true
           ALLOW_EMPTY_PASSWORD: yes # noqa yaml[truthy]
+        # Wenn man von außen zugreifen will:
+        # ports:
+        # - 127.0.0.1:27017:27017
+        deploy:
+          resources:
+            limits:
+              cpus: '1.8'
