@@ -5,8 +5,8 @@
 
 - name: Create pcscd.service.d directory
   ansible.builtin.file:
-    path:  /etc/systemd/system/pcscd.service.d
-    mode: 0755
+    path: /etc/systemd/system/pcscd.service.d
+    mode: "0755"
     owner: root
     group: root
 
@@ -17,7 +17,7 @@
       ExecStart=
       ExecStart=/usr/sbin/pcscd --foreground $PCSCD_ARGS
     dest: /etc/systemd/system/pcscd.service.d/ansible_override.conf
-    mode: 0644
+    mode: "0644"
     owner: root
     group: root
   notify:

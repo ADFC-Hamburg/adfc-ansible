@@ -1,11 +1,12 @@
 ---
-- hosts: dreicx.gst.hamburg.adfc.de
+- name: Setup Dreicx
+  hosts: dreicx.gst.hamburg.adfc.de
   gather_facts: true
   roles:
     - ssh_keys
   tasks:
     - name: Set Zabbix repository (Role macht das falsch)
-      apt_repository:
+      ansible.builtin.apt_repository:
         filename: "adfc_ansible_zabbix"
         repo: "{{ item }} http://repo.zabbix.com/zabbix/{{ zabbix_version }}/raspbian/ {{ ansible_distribution_release }} main"
         state: present
@@ -13,16 +14,16 @@
         - deb-src
         - deb
     - name: Install Zabbix Agent
-      include_role:
+      ansible.builtin.include_role:
         name: community.zabbix.zabbix_agent
     - name: Installiere Pakete
-      apt:
+      ansible.builtin.apt:
         name:
           - apt-transport-https
       tags: software
 
     - name: Create SSH Key for Backup
-      openssh_keypair:
+      community.crypto.openssh_keypair:
         path: /root/.ssh/dreicx-backup
         size: 2048
         type: rsa
@@ -34,7 +35,7 @@
       ansible.builtin.copy:
         src: /usr/share/doc/rsync/scripts/rrsync
         dest: /usr/local/bin/rrsync
-        mode: 0755
+        mode: "0755"
         owner: root
         group: root
         remote_src: true
@@ -42,7 +43,7 @@
 
     - name: Safe Dreicx Backup key
       ansible.posix.authorized_key:
-        ansible.builtin.user: phonesystem
+        user: phonesystem
         state: present
         key: "{{ dreicx_backup_ssh_key.public_key }}"
         key_options: "{{ ssh_key_opts | join(',') }}"
@@ -66,7 +67,7 @@
       tags: dreicx_backup
 
     - name: Create Backup Job
-      cron:
+      ansible.builtin.cron:
         name: dreicx Backup
         minute: "20"
         hour: "4"
@@ -79,7 +80,7 @@
           '--rsh=ssh -i /root/.ssh/dreicx-backup'
           phonesystem@192.168.123.70:.
           /adfc/Computer/Datensicherung/dreicx/
-        ansible.builtin.user: root
+        user: root
         cron_file: /etc/cron.d/ansible_backup_dreicx
       delegate_to: ucs-master.gst.hamburg.adfc.de
       tags: dreicx_backup
