@@ -4,7 +4,7 @@ docker_compose_project_abrechnung:
     - tools2.hamburg.adfc.de
   domains:
     - abrechnung.hamburg.adfc.de
-  internal_port: 4000
+  internal_port: 4100
   hetzner_volumes: []
   compose_block:
     version: "3"
@@ -14,7 +14,7 @@ docker_compose_project_abrechnung:
         image: ghcr.io/adfc-hamburg/abrechnungsformular
         #environment:
         ports:
-          - "{{ adfc_internal_ip}}:4000:8000"
+          - "{{ adfc_internal_ip}}:4100:8000"
         labels:
           - "com.centurylinklabs.watchtower.scope=abrechnung"
       watchtower:
