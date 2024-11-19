@@ -11,7 +11,7 @@ docker_compose_project_tour2pdf:
       tour2pdf:
         restart: unless-stopped
         image: ghcr.io/adfc-hamburg/tour2pdf
-        #environment:
+        # environment:
         ports:
           - "{{ adfc_internal_ip }}:4000:8000"
         labels:

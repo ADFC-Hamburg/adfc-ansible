@@ -259,13 +259,13 @@
     - name: Prompt for Admin Password
       ansible.builtin.pause:
         prompt: Enter UCS-Master Administrator password
-      register: UCSAdminPassword
+      register: ucs_admin_password
       no_log: true
       when: not stat_ucs_mkhomedir.stat.exists
 
     - name: Create password file
       ansible.builtin.copy:
-        content: "{{ UCSAdminPassword.user_input }}"
+        content: "{{ ucs_admin_password.user_input }}"
         dest: /root/ucs-admin-pw.secret
         mode: "0644"
       when: not stat_ucs_mkhomedir.stat.exists

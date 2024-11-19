@@ -1,9 +1,6 @@
 ---
-- hosts: proxmox02.gst.hamburg.adfc.de
+- name: Restart UCS Master
+  hosts: proxmox02.gst.hamburg.adfc.de
   gather_facts: false
   roles:
     - ucs_master_start
-  tasks:
-    - name: test
-      ansible.builtin.debug:
-        msg: hello world

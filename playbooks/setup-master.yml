@@ -1,5 +1,6 @@
 ---
-- hosts: ucs-master.gst.hamburg.adfc.de
+- name: Setup Master
+  hosts: ucs-master.gst.hamburg.adfc.de
   gather_facts: true
   roles:
     - tasmota_start_menu
@@ -14,11 +15,11 @@
     - community.zabbix.zabbix_agent
 
   handlers:
-    - name: ucr commit postifx main.cf
+    - name: Run ucr commit postifx main.cf
       ansible.builtin.command: ucr commit /etc/postfix/main.cf
       notify: restart postfix
 
-    - name: restart postfix
+    - name: Restart postfix
       ansible.builtin.systemd:
         name: postfix
         state: restarted
@@ -40,17 +41,23 @@
     #      when: not stat_homedir_listener.stat.exists
     #      tags: cool_solutions
 
-    - name: install postfix sender_canonical
+    - name: Install postfix sender_canonical
       ansible.builtin.template:
         src: ucs-master-sender_canonical
         dest: /etc/postfix/sender_caonical
+        mode: "0644"
+        owner: root
+        group: root
       tags: postfix
 
-    - name: install postfix main.cf
+    - name: Install postfix main.cf
       ansible.builtin.template:
         src: ucs-master-postfix-main.cf.local
         dest: /etc/postfix/main.cf.local
-      notify: ucr commit postifx main.cf
+        mode: "0644"
+        owner: root
+        group: root
+      notify: Run ucr commit postifx main.cf
       tags: postfix
 
     - name: Create adfc-who
@@ -68,7 +75,7 @@
       tags: backup-windows
 
     - name: Cronjob fuer backup-windows
-      cron:
+      ansible.builtin.cron:
         name: adfc-backup-win7pro
         hour: 10,14,17
         minute: "11"
@@ -78,22 +85,22 @@
       tags: backup-windows
 
     - name: Cron delete proxmox Datensicherung
-      cron:
+      ansible.builtin.cron:
         name: ansible-delete-proxmox-datensicherung
         hour: "19"
         minute: "28"
         cron_file: ansible-delete-proxmox-datensicherung
-        ansible.builtin.user: root
+        user: root
         job: /usr/bin/find /adfc/Computer/Datensicherung/Proxmox/ -type f -ctime 5 -delete
       tags: proxmox-backup
 
     - name: Cron delete old tomcat logs
-      cron:
+      ansible.builtin.cron:
         name: ansible-delete-old-tomcat-logs
         hour: "23"
         minute: "27"
         cron_file: ansible-delete-old-tomcat-logs
-        ansible.builtin.user: root
+        user: root
         job: univention-app shell guacamole find /usr/local/tomcat/logs -mtime +3 -delete
 
     - name: Wake On LAN installieren

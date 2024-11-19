@@ -1,8 +1,9 @@
 ---
-- hosts: tasmota
+- name: Setup Tasmota
+  hosts: tasmota
   gather_facts: false
 
   tasks:
     - name: Tasmota Setup durchführen
-      include_role:
+      ansible.builtin.include_role:
         name: tasmota_setup
