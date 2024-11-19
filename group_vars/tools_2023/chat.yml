@@ -108,7 +108,7 @@ docker_compose_project_rocket:
         ports:
           - "{{ adfc_internal_ip }}:3000:3000"
         volumes:
-        - rocket_uploads:/app/uploads
+          - rocket_uploads:/app/uploads
       mongodb:
         image: docker.io/bitnami/mongodb:{{ rocketchat_live_mongodb_version }}
         restart: unless-stopped
@@ -129,4 +129,4 @@ docker_compose_project_rocket:
         deploy:
           resources:
             limits:
-              cpus: '1.8'
+              cpus: "1.8"
