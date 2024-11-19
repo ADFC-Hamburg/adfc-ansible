@@ -13,7 +13,7 @@ docker_compose_project_tour2pdf:
         image: ghcr.io/adfc-hamburg/tour2pdf
         #environment:
         ports:
-          - "{{ adfc_internal_ip}}:4000:8000"
+          - "{{ adfc_internal_ip }}:4000:8000"
         labels:
           - "com.centurylinklabs.watchtower.scope=tour2pdf"
       watchtower:
