@@ -1,0 +1,58 @@
+---
+# Playbook to configure Postfix on a server to be able to send emails to admins
+
+- name: Install libsasl2-modules to prevent "no mechanisms found error"
+  ansible.builtin.apt:
+    name:
+      - exim4
+    state: absent
+
+- name: Install libsasl2-modules to prevent "no mechanisms found error"
+  ansible.builtin.apt:
+    name:
+      - libsasl2-modules
+      - postfix
+      - bsd-mailx
+    state: present
+
+- name: Create directory for postfix
+  ansible.builtin.file:
+    path: /etc/postfix
+    state: directory
+    mode: 0644
+
+- name: Copy postfix configuration file
+  ansible.builtin.template:
+    src: postfix-main.cf.j2
+    dest: /etc/postfix/main.cf
+    mode: 0644
+  notify:
+    - Reload postfix
+
+- name: Copy sender_canonical
+  ansible.builtin.template:
+    src: sender-canonical.j2
+    dest: /etc/postfix/sender_canonical
+    mode: 0640
+
+- name: Create SMTP client Auth
+  ansible.builtin.template:
+    src: smtp_auth.j2
+    dest: /etc/postfix/smtp_auth
+    mode: 0600
+    owner: root
+    group: root
+  notify:
+    - Postfix postmap smtp_auth
+
+- name: Make sure mail for root is redirected
+  ansible.builtin.lineinfile:
+    path: /etc/aliases
+    regexp: "^root:"
+    line: "root: {{ smtp_admin_receiver }}"
+  notify: Postfix newaliases
+
+- name: Change Username of Root User
+  ansible.builtin.user:
+    name: root
+    comment: ADFC {{ inventory_hostname_short }} root
