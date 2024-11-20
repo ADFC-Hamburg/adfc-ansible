@@ -1,0 +1,18 @@
+#
+# {{ ansible_managed }}
+#
+LDAPTrustedMode TLS
+<Location "/metrics-freifunk/metrics/">
+        AuthName "Prometheus Access"
+        AuthType Basic
+        require valid-user
+        <IfModule mod_authnz_ldap.c>
+                AuthBasicProvider ldap
+                AuthLDAPUrl "ldap://ucs-master.gst.hamburg.adfc.de:7389/dc=hamburg,dc=adfc,dc=de?uid?sub?(objectClass=*)"
+                AuthLDAPBindDN "cn=prome-37576203,cn=memberserver,cn=computers,dc=hamburg,dc=adfc,dc=de"
+                AuthLDAPBindPassword "exec:/bin/cat /etc/prometheus_ldap.secret"
+        </IfModule>
+        RewriteRule ".*" "http://127.0.0.1:5000/metrics" [P]
+        #ProxyPass http://127.0.0.1:9042/metrics retry=0
+        ProxyPassReverse http://127.0.0.1:5000/metrics
+</Location>
