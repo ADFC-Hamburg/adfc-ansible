@@ -54,7 +54,11 @@
     src: firefox-extension-update.sh
     dest: /etc/cron.daily/firefox-extension-update.sh
     mode: 0755
-  notify: Run firefox extension update
+
+- name: Run firefox extension update
+  ansible.builtin.command:
+    argv:
+      - /etc/cron.daily/firefox-extension-update.sh
 
 - name: Create symbolic links for extensions
   ansible.builtin.file:
