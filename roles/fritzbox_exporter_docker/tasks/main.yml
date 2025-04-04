@@ -1,45 +1,49 @@
 - name: Create Dir
-  file:
+  ansible.builtin.file:
     path: /usr/src/fritzbox_exporter-docker
     state: directory
-    mode: 0755
+    mode: "0755"
     owner: root
     group: root
 
 - name: Create Docker Files
-  copy:
+  ansible.builtin.copy:
     src: "docker-compose.yaml"
     dest: "/usr/src/fritzbox_exporter-docker/docker-compose.yaml"
-    mode: 0644
+    mode: "0644"
     owner: root
     group: root
 
 - name: Create env
-  file:
+  ansible.builtin.file:
     path: /usr/src/fritzbox_exporter-docker/env
-    mode: 0600
+    mode: "0600"
     owner: root
     group: root
 
-- name: docker-compose up shell
-  command: /usr/bin/docker-compose up -d
+- name: Docker-compose up shell
+  ansible.builtin.command:
+    argv:
+      - /usr/bin/docker-compose
+      - up
+      - -d
   args:
     chdir: /usr/src/fritzbox_exporter-docker
 
 - name: Create Apache File
-  template:
+  ansible.builtin.template:
     src: "apache_conf"
     dest: "/etc/apache2/ucs-sites.conf.d/fritz-metric.conf"
-    mode: 0644
+    mode: "0644"
     owner: root
     group: root
-  notify: reload apache
+  notify: Reload apache
 
-- name: create target for prometheus
-  copy:
+- name: Create target for prometheus
+  ansible.builtin.copy:
     dest: /var/lib/univention-appcenter/apps/prometheus/conf/custom-targets.json
     src: custom-targets.json
-    mode: 0644
+    mode: "0644"
     owner: root
     group: root
-  notify: restart prometheus
+  notify: Restart prometheus
