@@ -1,0 +1,27 @@
+docker_compose_project_tour2pdf:
+  nodes:
+    - tools1.hamburg.adfc.de
+    - tools2.hamburg.adfc.de
+  domains:
+    - tour2pdf.hamburg.adfc.de
+  internal_port: 4000
+  compose_block:
+    version: "3"
+    services:
+      tour2pdf:
+        restart: unless-stopped
+        image: ghcr.io/adfc-hamburg/tour2pdf
+        #environment:
+        ports:
+          - "{{ adfc_internal_ip}}:4000:8000"
+        labels:
+          - "com.centurylinklabs.watchtower.scope=tour2pdf"
+      watchtower:
+        image: containrrr/watchtower
+        volumes:
+          - /root/.docker/config.json:/config.json:ro
+          - /var/run/docker.sock:/var/run/docker.sock:ro
+          # pruefe alle 12h = 43200  1200 Sec auf update
+        command: --interval 43200 --debug --scope=tour2pdf docker-tour2pdf-tour2pdf-1
+        labels:
+          - "com.centurylinklabs.watchtower.scope=tour2pdf"

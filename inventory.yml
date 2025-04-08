@@ -52,6 +52,7 @@ all:
             zaphod.gst.hamburg.adfc.de:
             slartibartfass.gst.hamburg.adfc.de:
             zem.gst.hamburg.adfc.de:
+            desiato.gst.hamburg.adfc.de:
         gsthh_server:
           hosts:
             ucs-master.gst.hamburg.adfc.de:
