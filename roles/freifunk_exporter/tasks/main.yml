@@ -1,47 +1,47 @@
-- name: install python modules
-  package:
+- name: Install python modules
+  ansible.builtin.package:
     name: "{{ item }}"
   with_items:
     - python3-flask
     - python3-paramiko
     - python3-gunicorn
 
-- name: copy python script
-  copy:
+- name: Copy python script
+  ansible.builtin.copy:
     dest: /usr/local/sbin/freifunk-exporter.py
     src: freifunk-exporter.py
-    mode: 0700
+    mode: "0700"
     owner: root
     group: root
 
-- name: copy the freifunk exporter service
-  copy:
+- name: Copy the freifunk exporter service
+  ansible.builtin.copy:
     dest: /etc/systemd/system/freifunk-exporter.service
     src: freifunk-exporter.service
-    mode: 0644
+    mode: "0644"
     owner: root
     group: root
 
 - name: Start freifunk exporter
-  service:
+  ansible.builtin.service:
     name: freifunk-exporter
     state: started
-    enabled: yes
+    enabled: true
 
 - name: Create Apache File
-  copy:
+  ansible.builtin.copy:
     src: "apache_conf"
     dest: "/etc/apache2/ucs-sites.conf.d/freifunk-metric,conf"
-    mode: 0644
+    mode: "0644"
     owner: root
     group: root
   notify: reload apache
 
-- name: create target for prometheus
-  copy:
+- name: Create target for prometheus
+  ansible.builtin.copy:
     dest: /var/lib/univention-appcenter/apps/prometheus/conf/custom-targets.json
     src: custom-targets.json
-    mode: 0644
+    mode: "0644"
     owner: root
     group: root
-  notify: restart prometheus
+  notify: Restart prometheus
