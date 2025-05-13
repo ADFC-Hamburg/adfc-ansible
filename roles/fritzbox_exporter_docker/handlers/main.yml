@@ -1,7 +1,7 @@
-- name: reload apache
-  service:
+- name: Reload apache
+  ansible.builtin.service:
     name: apache2
     state: reloaded
 
-- name: restart prometheus
-  command: univention-app restart prometheus
+- name: Restart prometheus
+  ansible.builtin.command: univention-app restart prometheus
