@@ -1,10 +1,10 @@
-rocketchat_test_version: 6.13.0
+rocketchat_test_version: 7.5.0
 rocketchat_test_root_url: https://chat-test.hamburg.adfc.de
 rocketchat_test_mongodb_version: 6.0
 
-rocketchat_live_version: 6.13.0
+rocketchat_live_version: 7.5.1
 rocketchat_live_root_url: https://chat.hamburg.adfc.de
-rocketchat_live_mongodb_version: 6.0
+rocketchat_live_mongodb_version: 7.0
 
 docker_compose_project_rocketchat_test:
   nodes:
@@ -23,7 +23,6 @@ docker_compose_project_rocketchat_test:
       hcloud_size_gb: 15
       hcloud_location: nbg1
   compose_block:
-    version: "3"
     # From https://raw.githubusercontent.com/RocketChat/Docker.Official.Image/master/compose.yml
     # Version: 63a01a43be966e79a66ce38ad2f1249245deb4cd
     volumes:
@@ -82,7 +81,6 @@ docker_compose_project_rocket:
       hcloud_size_gb: 20
       hcloud_location: nbg1
   compose_block:
-    version: "3"
     # From https://raw.githubusercontent.com/RocketChat/Docker.Official.Image/master/compose.yml
     # Version: 63a01a43be966e79a66ce38ad2f1249245deb4cd
     volumes:
