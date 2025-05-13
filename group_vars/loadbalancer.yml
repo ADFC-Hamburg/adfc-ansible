@@ -1,5 +1,6 @@
 haproxy_dehydrated_domains:
   - "{{ inventory_hostname }}"
+  - abrechnung.hamburg.adfc.de
   - adfc-hamburg.de
   - api.hamburg.adfc.de
   - bettelampel.de
