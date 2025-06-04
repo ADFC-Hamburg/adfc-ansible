@@ -12,6 +12,13 @@ adfc_vpnc_gateway: babelfish.spdns.de
 adfc_secret_folder: /etc/ansible/secrets/
 adfc_vpnc_source: ucs-master.gst.hamburg.adfc.de
 adfc_borg_server: "{{ ansible_user + '@' + adfc_vpnc_source + ':/path/to/repo' }}"
+
+smtp_user: "{{ lookup('community.general.bitwarden', 'c4d7a1aa-d43f-46c5-96f1-6a5dbdb0013a', search='id', field='username') | first }}"
+smtp_password: "{{ lookup('community.general.bitwarden', 'c4d7a1aa-d43f-46c5-96f1-6a5dbdb0013a', search='id', field='password') | first }}"
+smtp_mailserver: "{{ lookup('community.general.bitwarden', 'c4d7a1aa-d43f-46c5-96f1-6a5dbdb0013a', search='id', field='smtp_mailserver') | first }}"
+smtp_admin_receiver: "{{ lookup('community.general.bitwarden', 'c4d7a1aa-d43f-46c5-96f1-6a5dbdb0013a', search='id', field='smtp_to') | first }}"
+smtp_from_mail: "{{ lookup('community.general.bitwarden', 'c4d7a1aa-d43f-46c5-96f1-6a5dbdb0013a', search='id', field='smtp_sender') | first }}"
+
 ssh_users_admins:
   - falkh
   - georgs
