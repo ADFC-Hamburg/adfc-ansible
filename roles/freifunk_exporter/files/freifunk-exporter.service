@@ -1,0 +1,10 @@
+[Unit]
+Description=freifunk service
+
+[Service]
+User=root
+Group=root
+ExecStart=/usr/local/sbin/freifunk-exporter.py
+
+[Install]
+WantedBy=multi-user.target
