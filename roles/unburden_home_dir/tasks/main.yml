@@ -8,7 +8,7 @@
   ansible.builtin.copy:
     src: "{{ item }}"
     dest: /etc/
-    mode: 0644
+    mode: "0644"
     owner: root
     group: root
   with_items:
