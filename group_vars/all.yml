@@ -18,6 +18,7 @@ ssh_users_admins:
   - lucaf
   - svena
   - volkerk
+  - alis
 
 # Paketverwaltung
 deb_name_master_pdf_editor: master-pdf-editor-5.7.60-qt5.x86_64.deb
