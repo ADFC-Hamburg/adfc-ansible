@@ -1,0 +1,9 @@
+---
+- name: Setup Posfix
+  gather_facts: true
+  hosts:
+    - gsthh:!dreicx.gst.hamburg.adfc.de
+    - backup_clients
+    - hetzner
+  roles:
+    - postfix_auth

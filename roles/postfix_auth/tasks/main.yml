@@ -1,64 +1,12 @@
----
-# Playbook to configure Postfix on a server to be able to send emails to admins
+- name: Detect if system is univention
+  ansible.builtin.stat:
+    path: /etc/univention/base.conf
+  register: ucs_stat
 
-- name: Install libsasl2-modules to prevent "no mechanisms found error"
-  ansible.builtin.apt:
-    name:
-      - libsasl2-modules
-      - postfix
-    state: present
+- name: Include  setup_debian_ubuntu.yml
+  ansible.builtin.include_tasks: debian_ubuntu.yml
+  when: not ucs_stat.stat.exists
 
-- name: Create directory for postfix
-  ansible.builtin.file:
-    path: /etc/postfix
-    state: directory
-    mode: 0644
-
-- name: Copy postfix configuration file
-  ansible.builtin.template:
-    src: postfix-main.cf
-    dest: /etc/postfix/main.cf
-    mode: 0644
-  notify: reload postfix
-
-- name: Get Sender Address
-  ansible.builtin.slurp:
-    src: /etc/ansible/secrets/postfix_host_email.txt
-  delegate_to: ucs-master.gst.hamburg.adfc.de
-  register: postfix_host_email_txt
-
-- name: Copy sender_canonical
-  ansible.builtin.template:
-    src: sender-canonical
-    dest: /etc/postfix/sender_canonical
-    mode: 0640
-  vars:
-    postfix_host_email: "{{ postfix_host_email_txt.content | b64decode }}"
-
-- name: Get client Auth from master
-  ansible.builtin.slurp:
-    src: /etc/ansible/secrets/smtp_client_auth
-  delegate_to: ucs-master.gst.hamburg.adfc.de
-  register: smtp_auth
-
-- name: Create SMTP client Auth
-  ansible.builtin.copy:
-    content: "{{ smtp_auth.content | b64decode }}"
-    dest: /etc/postfix/smtp_auth
-    mode: 0600
-    owner: root
-    group: root
-  notify: postfix postmap smtp_auth
-
-- name: Get notfication-emailaddress
-  ansible.builtin.slurp:
-    src: /etc/ansible/secrets/mailingliste.txt
-  delegate_to: ucs-master.gst.hamburg.adfc.de
-  register: mailingliste
-
-- name: Make sure mail for root is redirected
-  ansible.builtin.lineinfile:
-    path: /etc/aliases
-    regexp: "^root:"
-    line: "root: {{ mailingliste.content |b64decode  |replace('\n', '') }}"
-  notify: Postfix newaliases
+- name: Include  setup_debian_ubuntu.yml
+  ansible.builtin.include_tasks: ucs.yml
+  when: ucs_stat.stat.exists
