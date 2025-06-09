@@ -7,7 +7,7 @@
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
-    mode: 0755
+    mode: "0755"
     owner: root
     group: root
   with_items:
@@ -22,7 +22,7 @@
   ansible.builtin.template:
     src: "error.http.j2"
     dest: "/etc/haproxy/static/{{ error.code }}.http"
-    mode: 0644
+    mode: "0644"
     owner: root
     group: root
   loop: "{{ haproxy_lb_errors }}"
@@ -33,7 +33,7 @@
   ansible.builtin.copy:
     src: "{{ item }}"
     dest: /etc/haproxy/static/{{ item }}
-    mode: 0644
+    mode: "0644"
     owner: root
     group: root
   with_items:
@@ -44,7 +44,7 @@
   ansible.builtin.template:
     src: haproxy.cfg.j2
     dest: /etc/haproxy/haproxy-new.cfg
-    mode: 0644
+    mode: "0644"
     owner: root
     group: root
   tags:
@@ -53,7 +53,7 @@
   ansible.builtin.template:
     src: haproxy.cfg.j2
     dest: /etc/haproxy/haproxy.cfg
-    mode: 0644
+    mode: "0644"
     owner: root
     group: root
     validate: /usr/sbin/haproxy -f %s -c

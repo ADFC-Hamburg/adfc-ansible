@@ -4,43 +4,10 @@ all:
     server:
       hosts:
         tools.adfc-hamburg.de:
-        proxmox01.adfc-intern.de:
         int-master.adfc-intern.de:
         chat.hamburg.adfc.de:
       children:
         gsthh_server:
-        meet:
-          children:
-            meet_server:
-              hosts:
-                meet.adfc-intern.de:
-                test1.dyndns.adfc-intern.de:
-            jitsi_vbs:
-              children:
-                meet_vb:
-                  hosts:
-                    vbdh01.meet.adfc-intern.de:
-                    vbdh02.meet.adfc-intern.de:
-                    vbdh03.meet.adfc-intern.de:
-                    vbdh04.meet.adfc-intern.de:
-                    proxmox01.adfc-intern.de:
-                event_vb:
-                  hosts:
-                    vbedh01.dyndns.adfc-intern.de:
-                    vbedh02.dyndns.adfc-intern.de:
-                    vbedh03.dyndns.adfc-intern.de:
-            meet_test:
-              hosts:
-                vb01.test.adfc-intern.de:
-                test1.dyndns.adfc-intern.de:
-            meet_live:
-              hosts:
-                meet.adfc-intern.de:
-                vbdh01.meet.adfc-intern.de:
-                vbdh02.meet.adfc-intern.de:
-                vbdh03.meet.adfc-intern.de:
-                vbdh04.meet.adfc-intern.de:
-                proxmox01.adfc-intern.de:
     gsthh:
       children:
         arbeitsplatz:
@@ -88,12 +55,6 @@ all:
         rocket_chat:
       hosts:
         portal.openbikesensor.hamburg:
-    rocket_chat:
-      hosts:
-        chat1.hamburg.adfc.de:
-        chat2.hamburg.adfc.de:
-        chat3.hamburg.adfc.de:
-        chat-test:
     hcloud_server:
       children:
         loadbalancer:

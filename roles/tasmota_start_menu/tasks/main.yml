@@ -28,7 +28,7 @@
     dest: /usr/local/bin/tasmota_start_menu.sh
     owner: root
     group: root
-    mode: 0755
+    mode: "0755"
     force: true
 
 - name: Check if udm configuration is correct

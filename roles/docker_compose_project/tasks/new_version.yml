@@ -40,7 +40,7 @@
     prompt: >
       Funktioniert der Docker Container mit den Domains:
       {% for dom in compose_project.domains %}
-      https://{{dom}}
+      https://{{ dom }}
       {% endfor %}
       ? Bitte JA oder NEIN und danach RETURN eingeben.
   when: "compose_project.backup_on_new_version | default([]) != []"
