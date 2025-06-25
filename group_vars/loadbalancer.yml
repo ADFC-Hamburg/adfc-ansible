@@ -6,6 +6,7 @@ haproxy_dehydrated_domains:
   - bettelampel.de
   - chat.hamburg.adfc.de
   - codierung.hamburg.adfc.de
+  - ghostbike-hamburg.de
   - meet.adfc-intern.de
   - quartierefuermenschen.adfc-hamburg.de
   - quartierefuermenschen.de
@@ -53,3 +54,9 @@ loadbalancer_redirect_domains:
     dest:
       - path: /
         url: https://hamburg.adfc.de/
+  - domains:
+      - www.ghostbike-hamburg.de
+      - ghostbike-hamburg.de
+    dest:
+      - path: /
+        url: https://hamburg.adfc.de/artikel/ghostbike
