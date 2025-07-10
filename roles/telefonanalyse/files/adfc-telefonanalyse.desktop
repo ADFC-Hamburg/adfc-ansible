@@ -1,0 +1,17 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Type=Application
+
+Name=ADFC Telefonanalyse
+Exec=/opt/telefonanalyse/.venv/bin/python /opt/telefonanalyse/telefonanalyse.py
+Icon=/opt/telefonanalyse/icon.png
+Comment=Datenbank für eingegangene Telefongespräche
+Categories=Utility;
+Keywords=datenbank;database;
+
+Path=/opt/telefonanalyse
+Terminal=false
+SingleMainWindow=true
+
+TryExec=/opt/telefonanalyse/telefonanalyse.py
+NoDisplay=false
