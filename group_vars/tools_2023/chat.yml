@@ -44,7 +44,7 @@ docker_compose_project_rocketchat_test:
         expose:
           - 3005
         ports:
-          - "{{ adfc_internal_ip}}:3005:3005"
+          - "{{ adfc_internal_ip }}:3005:3005"
       mongodb:
         image: docker.io/bitnami/mongodb:{{ rocketchat_test_mongodb_version }}
         restart: unless-stopped
@@ -58,7 +58,7 @@ docker_compose_project_rocketchat_test:
           MONGODB_INITIAL_PRIMARY_PORT_NUMBER: 27017
           MONGODB_ADVERTISED_HOSTNAME: mongodb
           MONGODB_ENABLE_JOURNAL: true
-          ALLOW_EMPTY_PASSWORD: yes
+          ALLOW_EMPTY_PASSWORD: yes # noqa yaml[truthy]
 
 docker_compose_project_rocket:
   nodes:
@@ -104,9 +104,9 @@ docker_compose_project_rocket:
         expose:
           - 3000
         ports:
-          - "{{ adfc_internal_ip}}:3000:3000"
+          - "{{ adfc_internal_ip }}:3000:3000"
         volumes:
-        - rocket_uploads:/app/uploads
+          - rocket_uploads:/app/uploads
       mongodb:
         image: docker.io/bitnami/mongodb:{{ rocketchat_live_mongodb_version }}
         restart: unless-stopped
@@ -120,11 +120,11 @@ docker_compose_project_rocket:
           MONGODB_INITIAL_PRIMARY_PORT_NUMBER: 27017
           MONGODB_ADVERTISED_HOSTNAME: mongodb
           MONGODB_ENABLE_JOURNAL: true
-          ALLOW_EMPTY_PASSWORD: yes
+          ALLOW_EMPTY_PASSWORD: yes # noqa yaml[truthy]
         # Wenn man von außen zugreifen will:
         # ports:
         # - 127.0.0.1:27017:27017
         deploy:
           resources:
             limits:
-              cpus: '1.8'
+              cpus: "1.8"

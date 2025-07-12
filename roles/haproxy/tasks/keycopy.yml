@@ -7,7 +7,7 @@
       #!/bin/bash
       exec {{ ssh_command }}
     dest: /usr/local/sbin/haproxy_keycat
-    mode: 0700
+    mode: "0700"
     owner: root
     group: root
   delegate_to: "{{ ha_backend_host }}"

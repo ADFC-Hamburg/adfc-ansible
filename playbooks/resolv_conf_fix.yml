@@ -1,15 +1,16 @@
-- hosts: arbeitsplatz
+- name: Static resolve conf
+  hosts: arbeitsplatz
   gather_facts: false
   serial: 1
   roles:
     - resolv_conf_static
   pre_tasks:
     - name: Power on clients
-      include_role:
+      ansible.builtin.include_role:
         name: tasmota-power-on
       when: tasmota_wireless_ip is defined
   post_tasks:
     - name: Poweroff unused clients that were off before
-      include_role:
+      ansible.builtin.include_role:
         name: tasmota-power-off
       when: (tasmota_wireless_ip is defined) and (connect_result is failed)

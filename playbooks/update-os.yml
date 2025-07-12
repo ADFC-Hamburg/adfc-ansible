@@ -1,5 +1,6 @@
 ---
-- hosts:
+- name: Update OS
+  hosts:
     - backup_clients
     - arbeitsplatz
     - tools.adfc-hamburg.de
@@ -12,15 +13,15 @@
 
   pre_tasks:
     - name: Power on clients
-      include_role:
+      ansible.builtin.include_role:
         name: tasmota_power_on
       when: tasmota_wireless_ip is defined
 
     - name: Fakten einlesen
-      setup:
+      ansible.builtin.setup:
 
   post_tasks:
     - name: Poweroff unused clients that were off before
-      include_role:
+      ansible.builtin.include_role:
         name: tasmota_power_off
       when: (tasmota_wireless_ip is defined) and (connect_result is failed)

@@ -1,5 +1,6 @@
 ---
-- hosts:
+- name: Setup Borgbackup
+  hosts:
     - save_with_borg
   gather_facts: true
   roles:

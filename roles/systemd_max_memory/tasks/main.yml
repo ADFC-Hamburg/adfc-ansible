@@ -3,7 +3,7 @@
   ansible.builtin.file:
     path: /etc/systemd/system/{{ item.service_name }}.service.d
     state: directory
-    mode: 0755
+    mode: "0755"
     owner: root
     group: root
   with_items: "{{ systemd_max_memory }}"
@@ -11,7 +11,7 @@
   ansible.builtin.template:
     src: systemd-memory-extension.conf
     dest: /etc/systemd/system/{{ item.service_name }}.service.d/ansible_max_menory.conf
-    mode: 0644
+    mode: "0644"
     owner: root
     group: root
   with_items: "{{ systemd_max_memory }}"

@@ -1,4 +1,5 @@
 ---
-- hosts: arbeitsplatz
+- name: Setup kubuntu
+  hosts: arbeitsplatz
   roles:
     - kubuntu

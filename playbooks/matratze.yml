@@ -1,5 +1,6 @@
 ---
-- hosts: proxmox_gst
+- name: Setup Matratze
+  hosts: proxmox_gst
   gather_facts: false
   roles:
     - dehydrated
