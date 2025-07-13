@@ -1,0 +1,4 @@
+- name: Installiere KDE
+  ansible.builtin.apt:
+    name:
+      - kde-standard

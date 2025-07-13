@@ -51,6 +51,7 @@ all:
             trillian.gst.hamburg.adfc.de:
             zaphod.gst.hamburg.adfc.de:
             slartibartfass.gst.hamburg.adfc.de:
+            fenchurch.gst.hamburg.adfc.de:
             zem.gst.hamburg.adfc.de:
             desiato.gst.hamburg.adfc.de:
         gsthh_server:

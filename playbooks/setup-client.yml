@@ -2,27 +2,20 @@
 - hosts: arbeitsplatz
   gather_facts: false
   roles:
-    - basic_setup
-    - kubuntu
-    - ssh_keys
-    - inactivity_shutdown
-    - jnv.unattended-upgrades
-    - load_contacts
-    - postfix_auth
-    - fonts
-    - xrdp
-    - unburden_home_dir
-    - firefox_client
-    - chromium
+  #  - fonts
+  #  - xrdp
+  #  - unburden_home_dir
+  #  - firefox_client
+  #  - chromium
     - thunderbird
     - libreoffice
-    - slack
+  #  - slack
     - links_on_desktop
     - client_apt_remove
-    - master_pdf_editor
-    - gdm_desktoptheme
-    - chromium_latest
-    - moneyplex_settings
+ #   - master_pdf_editor
+ #  - gdm_desktoptheme
+ #   - chromium_latest
+ #   - moneyplex_settings
   handlers:
     - name: XnViewMP manuell installieren
       ansible.builtin.apt:
@@ -56,17 +49,25 @@
       when: (tasmota_wireless_ip is defined) and (connect_result is failed)
 
   tasks:
-    - name: Setup Cups client.conf
+    - name: Install Apt Repo key
       ansible.builtin.copy:
-        content: "ServerName ucs-master.gst.hamburg.adfc.de"
-        dest: /etc/cups/client.conf
-        mode: 0644
+        src: ../files/ucs_apt_key.pub
+        dest: /etc/apt/keyrings/ucs_apt_key.asc
+        mode: "0644"
+        owner: root
+        group: root
+
+    #- name: Add an apt key by id from a keyserver
+    #  ansible.builtin.apt_key:
+    #    file: /etc/apt/keyrings/ucs_apt_key.asc
 
     # spezielle Repositories hinzufügen
-    - name: ucs domain join repository
+    - name: Univention PPA mit signed-by hinzufügen
       ansible.builtin.apt_repository:
-        repo: ppa:univention-dev/ppa
-        update-cache: false
+        repo: "deb [signed-by=/usr/share/keyrings/univention.gpg] http://ppa.launchpad.net/univention-dev/ppa/ubuntu focal main"
+        state: present
+        filename: "univention-ppa"
+        update_cache: false
       notify: apt-get update ausführen
 
     - name: keepassxc ppa
@@ -112,6 +113,7 @@
       ansible.builtin.apt:
         name:
           - apt-transport-https
+          - cups
           - emacs
           - ncdu
           - git
@@ -150,6 +152,12 @@
           - kleopatra
           - pandoc
       tags: software
+
+    - name: Setup Cups client.conf
+      ansible.builtin.copy:
+        content: "ServerName ucs-master.gst.hamburg.adfc.de"
+        dest: /etc/cups/client.conf
+        mode: 0644
 
     - name: uninstall hibiscus-ppa
       ansible.builtin.apt:
@@ -192,9 +200,9 @@
       register: freemind_snap_result
 
     # Freemind als Snap installieren
-    - name: Freemind-Snap installieren
-      ansible.builtin.command: snap install freemind
-      when: not freemind_snap_result.stat.exists
+    #- name: Freemind-Snap installieren
+    #  ansible.builtin.command: snap install freemind
+    #  when: not freemind_snap_result.stat.exists
 
     # Shortcuts für Flameshot einrichten
     - name: Erstelle /usr/share/khotkeys/flameshot.khotkeys

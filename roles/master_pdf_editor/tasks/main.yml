@@ -7,4 +7,4 @@
 
 - name: Install master pdf editor
   ansible.builtin.apt:
-    deb: https://code-industry.net/public/master-pdf-editor-5.8.20-qt5.x86_64.deb
+    deb: https://code-industry.net/public/master-pdf-editor-5.9.90-qt5.x86_64.deb

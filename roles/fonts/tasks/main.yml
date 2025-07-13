@@ -5,9 +5,6 @@
       - libfreetype6
       - libfreetype6-dev
       - libfontconfig
-      - fonts-larabie-deco
-      - fonts-larabie-straight
-      - fonts-larabie-uncommon
 
 - name: Teste TTF
   ansible.builtin.stat:

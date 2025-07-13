@@ -19,4 +19,4 @@ unattended_automatic_reboot_time: 03:00
 
 ansible_python_interpreter: /usr/bin/python3
 ansible_host_macaddress: ff:ff:ff:ff:ff:ff
-ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q root@babelfish.spdns.de -p 922"
+ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q root@babelfish.spdns.de -p 825"

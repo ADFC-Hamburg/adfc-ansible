@@ -3,8 +3,7 @@
   ansible.builtin.apt:
     name:
       - thunderbird
-      - thunderbird-locale-de
-      - xul-ext-lightning
+      - thunderbird-l10n-de
   tags: software, thunderbird
 
 - name: Setup Thunderbid Settings

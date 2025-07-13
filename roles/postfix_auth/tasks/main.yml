@@ -19,7 +19,7 @@
     src: postfix-main.cf
     dest: /etc/postfix/main.cf
     mode: 0644
-  notify: reload postfix
+  notify: Reload postfix
 
 - name: Get Sender Address
   ansible.builtin.slurp:
@@ -48,7 +48,7 @@
     mode: 0600
     owner: root
     group: root
-  notify: postfix postmap smtp_auth
+  notify: Postfix postmap smtp_auth
 
 - name: Get notfication-emailaddress
   ansible.builtin.slurp:
