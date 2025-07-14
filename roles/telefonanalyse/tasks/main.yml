@@ -31,20 +31,12 @@
     dest: "{{ telefonanalyse_programdir.path }}"
     extra_opts: ['--strip-components=1', '--show-stored-names']
 
-- name: Create virtual environment
-  ansible.builtin.command:
-    cmd: "python3 -m venv {{ telefonanalyse_programdir.path }}/.venv"
-    creates: "{{ telefonanalyse_programdir.path }}/.venv/bin/python3"
-
-- name: Install required Python packages
-  ansible.builtin.command:
-    cmd: "{{ telefonanalyse_programdir.path }}/.venv/bin/pip install -r {{ telefonanalyse_programdir.path }}/requirements.txt"
-
-- name: Set permissions on virtual environment folder
-  ansible.builtin.file:
-    path: "{{ telefonanalyse_programdir.path }}/.venv"
-    recurse: yes
-    mode: 0755
+- name: Create virtual environment and install required Python packages
+  ansible.builtin.pip:
+    requirements: "{{ telefonanalyse_programdir.path }}/requirements.txt"
+    virtualenv: "{{ telefonanalyse_programdir.path }}/.venv"
+    virtualenv_command: "python3 -m venv"
+    umask: "0022"
 
 - name: Create and set permissions for applications folder
   ansible.builtin.file:
