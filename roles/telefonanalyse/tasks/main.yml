@@ -4,7 +4,6 @@
     name: "{{ packages }}"
   vars:
     packages:
-      - desktop-file-utils
       - python3
       - python3-pip
       - python3-tk
@@ -49,18 +48,14 @@
     recurse: yes
     mode: 0755
 
-- name: Copy .desktop file
-  ansible.builtin.copy:
-    src: adfc-telefonanalyse.desktop
-    dest: /tmp/adfc-telefonanalyse.desktop
-  register: telefonanalyse_desktopfile
-
 - name: Create and set permissions for applications folder
   ansible.builtin.file:
     path: /usr/local/share/applications
     state: directory
     mode: 0755
 
-- name: Install .desktop file
-  ansible.builtin.command:
-    cmd: "desktop-file-install --dir=/usr/local/share/applications/ --mode=0644 {{ telefonanalyse_desktopfile.dest }}"
+- name: Copy .desktop file into applications folder
+  ansible.builtin.copy:
+    src: adfc-telefonanalyse.desktop
+    dest: /usr/local/share/applications/adfc-telefonanalyse.desktop
+    mode: 0644
