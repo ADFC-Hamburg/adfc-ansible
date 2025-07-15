@@ -24,6 +24,7 @@
     - gdm_desktoptheme
     - chromium_latest
     - moneyplex_settings
+    - telefonanalyse
   handlers:
     - name: XnViewMP manuell installieren
       ansible.builtin.apt:

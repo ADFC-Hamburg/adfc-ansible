@@ -1,0 +1,3 @@
+---
+telefonanalyse_dest: /opt/telefonanalyse
+telefonanalyse_git_tag: v2025-07-08.1
