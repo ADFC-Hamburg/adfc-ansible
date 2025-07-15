@@ -13,12 +13,12 @@
     version: "{{ telefonanalyse_git_tag }}"
     depth: 1
     umask: '0022'
-    dest: /opt/telefonanalyse
+    dest: "{{ telefonanalyse_dest }}"
 
 - name: Create virtual environment and install required Python packages
   ansible.builtin.pip:
-    requirements: "/opt/telefonanalyse/requirements.txt"
-    virtualenv: "/opt/telefonanalyse/venv"
+    requirements: "{{ telefonanalyse_dest }}/requirements.txt"
+    virtualenv: "{{ telefonanalyse_dest }}/venv"
     virtualenv_command: "python3 -m venv"
     umask: "0022"
 
@@ -29,7 +29,7 @@
     mode: '0755'
 
 - name: Copy .desktop file into applications folder
-  ansible.builtin.copy:
+  ansible.builtin.template:
     src: adfc-telefonanalyse.desktop
     dest: /usr/local/share/applications/adfc-telefonanalyse.desktop
     mode: '0644'
