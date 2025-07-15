@@ -26,10 +26,10 @@
   ansible.builtin.file:
     path: /usr/local/share/applications
     state: directory
-    mode: 0755
+    mode: '0755'
 
 - name: Copy .desktop file into applications folder
   ansible.builtin.copy:
     src: adfc-telefonanalyse.desktop
     dest: /usr/local/share/applications/adfc-telefonanalyse.desktop
-    mode: 0644
+    mode: '0644'
