@@ -3,7 +3,7 @@
 Type=Application
 
 Name=ADFC Telefonanalyse
-Exec=/opt/telefonanalyse/.venv/bin/python /opt/telefonanalyse/telefonanalyse.py
+Exec=/opt/telefonanalyse/venv/bin/python /opt/telefonanalyse/telefonanalyse.py
 Icon=/opt/telefonanalyse/icon.png
 Comment=Datenbank für eingegangene Telefongespräche
 Categories=Utility;

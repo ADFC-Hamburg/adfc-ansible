@@ -18,7 +18,7 @@
 - name: Create virtual environment and install required Python packages
   ansible.builtin.pip:
     requirements: "/opt/telefonanalyse/requirements.txt"
-    virtualenv: "/opt/telefonanalyse/.venv"
+    virtualenv: "/opt/telefonanalyse/venv"
     virtualenv_command: "python3 -m venv"
     umask: "0022"
 
