@@ -5,7 +5,7 @@
       - python3
       - python3-pip
       - python3-tk
-      - python3-venv
+      - virtualenv
 
 - name: Download code from GitHub
   ansible.builtin.git:
@@ -19,7 +19,8 @@
   ansible.builtin.pip:
     requirements: "{{ telefonanalyse_dest }}/requirements.txt"
     virtualenv: "{{ telefonanalyse_dest }}/venv"
-    virtualenv_command: "python3 -m venv"
+    virtualenv_command: virtualenv
+    virtualenv_python: python3
     umask: "0022"
 
 - name: Create and set permissions for applications folder
