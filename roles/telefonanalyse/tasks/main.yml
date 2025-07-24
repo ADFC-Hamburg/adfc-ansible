@@ -33,3 +33,9 @@
     src: adfc-telefonanalyse.desktop
     dest: /usr/local/share/applications/adfc-telefonanalyse.desktop
     mode: '0644'
+
+- name: Link .desktop file to XDG autostart
+  ansible.builtin.file:
+    src: /usr/local/share/applications/adfc-telefonanalyse.desktop
+    dest: /etc/xdg/autostart/adfc-telefonanalyse.desktop
+    state: link
