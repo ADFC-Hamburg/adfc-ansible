@@ -25,6 +25,7 @@ haproxy_file_extra_content: |
     http-request add-header X-Forwarded-Proto https if { ssl_fc }
     server matratze01 192.168.123.90:8006 cookie S1 check ssl verify required ca-file /etc/ssl/certs/ca-certificates.crt
     server matratze02 192.168.123.91:8006 cookie S2 check ssl verify required ca-file /etc/ssl/certs/ca-certificates.crt
+    server matratze03 192.168.123.92:8006 cookie S3 check ssl verify required ca-file /etc/ssl/certs/ca-certificates.crt
 
   listen stats
      bind 127.0.0.1:2022
