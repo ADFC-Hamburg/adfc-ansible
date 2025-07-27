@@ -9,3 +9,5 @@ basic_setup_base_packages:
   - git
   - apt-transport-https
 basic_setup_journald_max_use: 512M
+
+basic_setup_debian_mirror: "https://deb.debian.org/debian/"
