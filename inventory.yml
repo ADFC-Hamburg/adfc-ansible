@@ -46,6 +46,7 @@ all:
         arbeitsplatz:
           hosts:
             kubuntu-vm.gst.hamburg.adfc.de:
+            debian-vm.gst.hamburg.adfc.de:
             bob.gst.hamburg.adfc.de:
             marvin.gst.hamburg.adfc.de:
             trillian.gst.hamburg.adfc.de:

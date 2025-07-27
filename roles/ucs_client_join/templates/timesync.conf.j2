@@ -1,0 +1,9 @@
+# {{ ansible_managed }}
+
+[Time]
+{% if ucs_client_join_ntp_servers | length > 0 %}
+NTP={{ ([ucs_client_join_primary_fqdn] + ucs_client_join_ntp_servers) | unique | join(' ') }}
+{% else %}
+NTP={{ ucs_client_join_primary_fqdn }}
+{% endif %}
+FallbackNTP=0.de.pool.ntp.org 1.de.pool.ntp.org 2.de.pool.ntp.org 3.de.pool.ntp.org

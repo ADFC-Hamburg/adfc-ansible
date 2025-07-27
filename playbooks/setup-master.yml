@@ -9,9 +9,9 @@
     - borg_server
     - external_https
     - self_service_sms
-    - zabbix_server_docker
-    - fritzbox_exporter_docker
-    - community.zabbix.zabbix_agent
+#    - zabbix_server_docker
+#    - fritzbox_exporter_docker
+#    - community.zabbix.zabbix_agent
 
   handlers:
     - name: ucr commit postifx main.cf
@@ -60,23 +60,6 @@
         mode: "0755"
       tags: adfc-who
 
-    - name: Copy backup-windows.sh
-      ansible.builtin.copy:
-        src: backup-windows.sh
-        dest: /usr/local/sbin/adfc-backup-win7pro
-        mode: "0755"
-      tags: backup-windows
-
-    - name: Cronjob fuer backup-windows
-      cron:
-        name: adfc-backup-win7pro
-        hour: 10,14,17
-        minute: "11"
-        cron_file: ansible_backup_win
-        user: root
-        job: /usr/local/sbin/adfc-backup-win7pro
-      tags: backup-windows
-
     - name: Cron delete proxmox Datensicherung
       cron:
         name: ansible-delete-proxmox-datensicherung
@@ -111,3 +94,22 @@
         user: root
         job: /usr/bin/find /adfc/08_Scans/ -mtime +30 -delete
       tags: adfc_scan_delete
+
+    - name: Lese SSH Keys ein
+      ansible.builtin.command:
+        argv:
+          - grep
+          - ADFC-Ansible
+          - /root/.ssh/authorized_keys
+      register: ssh_keys_output
+      tags: admin_ssh_keys
+
+    - name: Copy ADFC SSH Key
+      ansible.builtin.copy:
+        content: "{{ ssh_keys_output.stdout }}"
+        dest: /var/www/adfc-ssh.pub
+        mode: "0644"
+        remote_src: true
+        owner: root
+        group: root
+      tags: admin_ssh_keys

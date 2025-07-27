@@ -1,0 +1,23 @@
+- name: Create UCS mkhomedir
+  ansible.builtin.copy:
+    src: ucs_mkhomedir
+    dest: /usr/share/pam-configs/ucs_mkhomedir
+    mode: '0644'
+    owner: root
+    group: root
+  notify: PAM auth update
+
+- name: Create local groups configuration
+  ansible.builtin.copy:
+    src: local_groups
+    dest: /usr/share/pam-configs/local_groups
+    mode: '0644'
+    owner: root
+    group: root
+  notify: PAM auth update
+
+- name: Update Group configuration
+  ansible.builtin.lineinfile:
+    path: /etc/security/group.conf
+    line: "*;*;*;Al0000-2400;audio,cdrom,dialout,floppy,plugdev,adm"
+  notify: PAM auth update

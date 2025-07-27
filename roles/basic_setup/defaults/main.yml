@@ -6,4 +6,6 @@ basic_setup_base_packages:
   - htop
   - mc
   - ncdu
+  - git
+  - apt-transport-https
 basic_setup_journald_max_use: 512M

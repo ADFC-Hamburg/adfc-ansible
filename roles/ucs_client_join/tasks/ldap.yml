@@ -1,0 +1,28 @@
+- name: Create Maschin in UCS Ldap directory
+  univention.ucs_modules.univention_directory_manager:
+    module: computers/ubuntu
+    position: "{{ ucs_client_join_ldap_host_position }}"
+    dn: "{{ ucs_client_join_ldap_host_dn }}"
+    set_properties: "{{ my_set_properties + ucs_client_join_additional_udm_properties }}"
+  register: machine_in_ldap_result
+  delegate_to: "{{ ucs_client_join_primary_fqdn }}"
+  vars:
+    my_set_properties:
+      - property: name
+        value: "{{ inventory_hostname_short }}"
+      - property: password
+        value: "{{ ucs_client_join_machine_secret }}"
+      - property: fqdn
+        value: "{{ inventory_hostname }}"
+      - property: operatingSystem
+        value: "{{ ansible_distribution }}"
+      - property: operatingSystemVersion
+        value: "{{ ansible_distribution_version }}"
+
+- name: Generate ldap.conf file
+  ansible.builtin.template:
+    src: ldap.conf.j2
+    dest: /etc/ldap/ldap.conf
+    mode: "0644"
+    owner: root
+    group: root

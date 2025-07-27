@@ -2,20 +2,27 @@
 - hosts: arbeitsplatz
   gather_facts: false
   roles:
-  #  - fonts
-  #  - xrdp
-  #  - unburden_home_dir
-  #  - firefox_client
-  #  - chromium
+    - basic_setup
+    - kde_debian
+    - ssh_keys
+    - ucs_client_join
+    - inactivity_shutdown
+    - jnv.unattended-upgrades
+    - load_contacts
+    - postfix_auth
+    - fonts
+    - xrdp
+    - unburden_home_dir
+    - firefox_client
+    - chromium
     - thunderbird
     - libreoffice
-  #  - slack
     - links_on_desktop
     - client_apt_remove
- #   - master_pdf_editor
- #  - gdm_desktoptheme
- #   - chromium_latest
- #   - moneyplex_settings
+    - master_pdf_editor
+    - gdm_desktoptheme
+    - chromium_latest
+    - moneyplex_settings
   handlers:
     - name: XnViewMP manuell installieren
       ansible.builtin.apt:
@@ -61,14 +68,6 @@
     #  ansible.builtin.apt_key:
     #    file: /etc/apt/keyrings/ucs_apt_key.asc
 
-    # spezielle Repositories hinzufügen
-    - name: Univention PPA mit signed-by hinzufügen
-      ansible.builtin.apt_repository:
-        repo: "deb [signed-by=/usr/share/keyrings/univention.gpg] http://ppa.launchpad.net/univention-dev/ppa/ubuntu focal main"
-        state: present
-        filename: "univention-ppa"
-        update_cache: false
-      notify: apt-get update ausführen
 
     - name: keepassxc ppa
       ansible.builtin.apt_repository:
@@ -77,11 +76,6 @@
       notify: apt-get update ausführen
       tags: software
 
-    - name: add ucs-master to /etc/hosts
-      ansible.builtin.lineinfile:
-        path: /etc/hosts
-        line: 192.168.123.32  ucs-master.gst.hamburg.adfc.de
-      tags: etc_hosts
 
     - name: ubuntu-mozilla-security-ppa
       ansible.builtin.apt_repository:
@@ -112,14 +106,7 @@
     - name: Installiere Pakete
       ansible.builtin.apt:
         name:
-          - apt-transport-https
-          - cups
-          - emacs
-          - ncdu
-          - git
-          - univention-domain-join
-          - univention-domain-join-cli
-          - nfs-common
+
           - openjdk-11-jre
           - flameshot
           - gstreamer1.0-plugins-base
@@ -153,17 +140,8 @@
           - pandoc
       tags: software
 
-    - name: Setup Cups client.conf
-      ansible.builtin.copy:
-        content: "ServerName ucs-master.gst.hamburg.adfc.de"
-        dest: /etc/cups/client.conf
-        mode: 0644
 
-    - name: uninstall hibiscus-ppa
-      ansible.builtin.apt:
-        name: hibiscus-ppa
-        state: absent
-      tags: hibiscus
+
     # Rollen erst includieren wenn das hibiscus-ppa paktet deinstalliert ist
     - name: install jameica
       include_role:
@@ -194,15 +172,7 @@
       notify: PDF-Editor manuell installieren
       tags: pdfeditor, software
 
-    - name: Pruefe Freemind-snap
-      ansible.builtin.stat:
-        path: /var/lib/snapd/desktop/applications/freemind_freemind.desktop
-      register: freemind_snap_result
-
-    # Freemind als Snap installieren
-    #- name: Freemind-Snap installieren
-    #  ansible.builtin.command: snap install freemind
-    #  when: not freemind_snap_result.stat.exists
+    - # FIXME Freemind-snap
 
     # Shortcuts für Flameshot einrichten
     - name: Erstelle /usr/share/khotkeys/flameshot.khotkeys
@@ -224,10 +194,6 @@
         src: issue
         dest: /etc/issue
 
-    - name: Hostname anpassen
-      ansible.builtin.command: hostnamectl set-hostname {{ inventory_hostname_short }}
-      when: ansible_hostname != inventory_hostname_short
-
     - name: Stat Netplan Network-manager-cfg
       ansible.builtin.stat:
         path: /etc/netplan/01-network-manager-all.yaml
@@ -244,45 +210,6 @@
       reboot: # noqa no-handler
       when: interfaces_create.changed
 
-    - name: Check if join is alread done
-      ansible.builtin.stat:
-        path: /usr/share/pam-configs/ucs_mkhomedir
-      register: stat_ucs_mkhomedir
-    - name: Prompt for Admin Password
-      ansible.builtin.pause:
-        prompt: Enter UCS-Master Administrator password
-      register: UCSAdminPassword
-      no_log: true
-      when: not stat_ucs_mkhomedir.stat.exists
-    - name: create password file
-      ansible.builtin.copy:
-        content: "{{ UCSAdminPassword.user_input }}"
-        dest: /root/ucs-admin-pw.secret
-      when: not stat_ucs_mkhomedir.stat.exists
-    - name: Do univention domain join
-      ansible.builtin.command: /usr/sbin/univention-domain-join-cli --username Administrator --dc-ip ucs-master --password-file /root/ucs-admin-pw.secret
-      when: not stat_ucs_mkhomedir.stat.exists
-    - name: delete password file
-      ansible.builtin.file:
-        state: absent
-        path: /root/ucs-admin-pw.secret
-    - name: Reboot after domain join
-      reboot:
-      when: not stat_ucs_mkhomedir.stat.exists
-
-    # mount NFS shares
-    - name: Mount NFS /adfc
-      mount:
-        path: /adfc
-        src: ucs-master.gst.hamburg.adfc.de:/adfc
-        fstype: nfs
-        state: mounted
-    - name: Mount NFS /home
-      mount:
-        path: /home
-        src: ucs-master.gst.hamburg.adfc.de:/home
-        fstype: nfs
-        state: mounted
 
     # ADFC - Desktop theme
 

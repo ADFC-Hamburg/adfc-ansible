@@ -1,0 +1,25 @@
+- name: Test UCS authentication
+  ansible.builtin.command:
+    cmd: getent passwd
+  register: ucs_users_test
+  failed_when: ucs_users_test.rc != 0 or inventory_hostname_short not in ucs_users_test.stdout
+  changed_when: false
+
+- name: Test LDAP connectivity
+  ansible.builtin.command:
+    argv:
+      - ldapsearch
+      - -x
+      - -H
+      - ldap://{{ ucs_client_join_primary_fqdn }}:7389
+      - -b
+      - "{{ ucs_client_join_ldap_base_dn }}"
+      - "(cn={{ inventory_hostname_short }})"
+      - -w
+      - "{{ ucs_client_join_machine_secret }}"
+      - -D
+      - "{{ ucs_client_join_ldap_host_dn }}"
+      - dn
+  register: ldap_test
+  failed_when: ldap_test.rc != 0
+  changed_when: false

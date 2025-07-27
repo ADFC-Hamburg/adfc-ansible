@@ -1,0 +1,84 @@
+- name: Hostname anpassen
+  ansible.builtin.command:
+    argv:
+      - hostnamectl
+      - set-hostname
+      - "{{ inventory_hostname_short }}"
+  when: ansible_hostname != inventory_hostname_short
+
+- name: Fix Network Interfaces, so that nfs wait for network online
+  ansible.builtin.lineinfile:
+    path: /etc/network/interfaces
+    state: present
+    search_string: "allow-hotplug {{ ansible_default_ipv4.interface }}"
+    line: "auto {{ ansible_default_ipv4.interface }}"
+
+- name: Installiere Pakete
+  ansible.builtin.apt:
+    name: "{{ ucs_client_join_apt_packages }}"
+
+- name: Get ucs master IPv4 address
+  ansible.builtin.command:
+    argv:
+      - dig
+      - +short
+      - "{{ ucs_client_join_primary_fqdn }}"
+      - A
+  delegate_to: "{{ ucs_client_join_primary_fqdn }}"
+  changed_when: false
+  register: ucs_client_join_primary_ipv4_address_result
+
+- name: Get Univention Config Regsity from Primary
+  ansible.builtin.command:
+    argv:
+      - /usr/sbin/univention-config-registry
+      - --shell
+      - dump
+  delegate_to: "{{ ucs_client_join_primary_fqdn }}"
+  changed_when: false
+  register: ucs_client_join_primary_ucr_dump_cmd
+
+- name: Add ucs-master to /etc/hosts
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    line: "{{ ucs_client_join_primary_ipv4_address }}  {{ ucs_client_join_primary_fqdn }}"
+  tags: etc_hosts
+
+- name: Setup Cups client.conf
+  ansible.builtin.copy:
+    content: "ServerName {{ ucs_client_join_cups_server }}"
+    dest: /etc/cups/client.conf
+    mode: "0644"
+
+# Fixme set timeserver
+
+- name: Create  CA Certificate
+  ansible.builtin.include_tasks: ca_cert.yml
+
+- name: Create machine secret
+  ansible.builtin.include_tasks: machine_secret.yml
+
+- name: Configure Ldap
+  ansible.builtin.include_tasks: ldap.yml
+
+- name: Configure sssd
+  ansible.builtin.include_tasks: sssd.yml
+
+- name: Configure PAM
+  ansible.builtin.include_tasks: pam.yml
+
+- name: Force all notified handlers to run now
+  ansible.builtin.meta: flush_handlers
+
+- name: Test authentication after reboot
+  ansible.builtin.include_tasks: "test_auth.yml"
+  when: ucs_client_join_run_test | default(false)
+
+- name: Mount NFS dirs
+  ansible.posix.mount:
+    path: "{{ item }}"
+    src: "{{ ucs_client_join_primary_fqdn }}:{{ item }}"
+    fstype: nfs
+    opts: "defaults,noatime,noexec"
+    state: mounted
+  loop: "{{ ucs_client_nfs_mount_dirs }}"

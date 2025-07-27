@@ -20,3 +20,20 @@ unattended_automatic_reboot_time: 03:00
 ansible_python_interpreter: /usr/bin/python3
 ansible_host_macaddress: ff:ff:ff:ff:ff:ff
 ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q root@babelfish.spdns.de -p 825"
+
+ucs_client_join_primary_fqdn: ucs-master.gst.hamburg.adfc.de
+
+
+ucs_client_join_additional_udm_properties:
+  - property: network
+    value: cn=default,cn=networks,dc=hamburg,dc=adfc,dc=de
+  - property: ip
+    value: "{{ ansible_default_ipv4.address }}"
+  - property: mac
+    value: "{{ ansible_default_ipv4.macaddress }}"
+  - property: domain
+    value: "gst.hamburg.adfc.de"
+
+ucs_client_nfs_mount_dirs:
+  - /adfc
+  - /home
