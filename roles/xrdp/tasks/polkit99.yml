@@ -1,0 +1,27 @@
+- name: Create polkit
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: /etc/polkit-1/localauthority/50-local.d/{{ item }}
+    mode: "0644"
+    owner: root
+    group: root
+  notify: Restart polkit
+  with_items:
+    - xrdp-color-manager.pkla
+    - xrdp-disable-network-manager.pkla
+
+- name: Change polkit to disable shutdown on virtual machines
+  ansible.builtin.copy:
+    src: xrdp-disable-shutdown.pkla
+    dest: /etc/polkit-1/localauthority/50-local.d/xrdp-disable-shutdown.pkla
+    mode: "0644"
+    owner: root
+    group: root
+  notify: Restart polkit
+  when: enable_user_shutdown is defined and not enable_user_shutdown
+
+- name: Make sure polkit is set to enable shutdown on physical machines
+  ansible.builtin.file:
+    state: absent
+    path: /etc/polkit-1/localauthority/50-local.d/xrdp-disable-shutdown.pkla
+  when: enable_user_shutdown is undefined
