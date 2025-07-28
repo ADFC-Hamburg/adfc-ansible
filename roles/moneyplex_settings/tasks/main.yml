@@ -5,7 +5,8 @@
 
 - name: Create pcscd.service.d directory
   ansible.builtin.file:
-    path:  /etc/systemd/system/pcscd.service.d
+    path: /etc/systemd/system/pcscd.service.d
+    state: directory
     mode: 0755
     owner: root
     group: root

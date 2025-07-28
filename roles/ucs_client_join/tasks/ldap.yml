@@ -19,6 +19,14 @@
       - property: operatingSystemVersion
         value: "{{ ansible_distribution_version }}"
 
+- name: Create /etc/ldap directory
+  ansible.builtin.file:
+    path: /etc/ldap
+    state: directory
+    mode: "0755"
+    owner: root
+    group: root
+
 - name: Generate ldap.conf file
   ansible.builtin.template:
     src: ldap.conf.j2

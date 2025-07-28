@@ -1,29 +1,16 @@
 ---
 - hosts: arbeitsplatz
   gather_facts: false
-  roles:
-    - update_os
-    - basic_setup
-    - kde_debian
-    - ssh_keys
-    - ucs_client_join
-    - inactivity_shutdown
-    - load_contacts
-    - postfix_auth
-    - fonts
-    - xrdp
-    - unburden_home_dir
-    - firefox_client
-    - thunderbird
-    - libreoffice
-    - links_on_desktop
-    - client_apt_remove
-    - master_pdf_editor
-    - gdm_desktoptheme
-    - chromium_latest
-    - moneyplex_settings
-    - arbeitsplatz
-    - client_apt_remove
+  handlers:
+    - name: XnViewMP manuell installieren
+      ansible.builtin.apt:
+        deb: /usr/local/share/ansible_downloads/XnViewMP-linux-x64.deb
+
+    - name: apt-get update ausführen
+      ansible.builtin.apt:
+        update_cache: true
+      tags: software
+
   pre_tasks:
     - name: Power on clients
       include_role:
@@ -32,7 +19,7 @@
 
     - name: Fakten einlesen
       setup:
-    - name: Apt-get update
+    - name: apt-get update
       ansible.builtin.apt:
         update_cache: true
       tags: software
@@ -42,3 +29,5 @@
       include_role:
         name: tasmota_power_off
       when: (tasmota_wireless_ip is defined) and (connect_result is failed)
+  roles:
+    - arbeitsplatz

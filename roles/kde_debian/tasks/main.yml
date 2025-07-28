@@ -2,3 +2,4 @@
   ansible.builtin.apt:
     name:
       - kde-standard
+    clean: true

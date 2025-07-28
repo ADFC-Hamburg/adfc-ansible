@@ -5,6 +5,17 @@
   ansible.builtin.apt:
     name: libqt5printsupport5
 
+- name: Create sources file for Master PDF Editor
+  ansible.builtin.copy:
+    src: master-pdf-editor.sources
+    dest: /etc/apt/sources.list.d/master-pdf-editor.sources
+    mode: "0644"
+    owner: root
+    group: root
+  register: master_pdf_editor_sources_copy_result
+
 - name: Install master pdf editor
   ansible.builtin.apt:
-    deb: https://code-industry.net/public/master-pdf-editor-5.9.90-qt5.x86_64.deb
+    name:
+      - master-pdf-editor-5
+    update_cache: "{{ master_pdf_editor_sources_copy_result.changed }}"

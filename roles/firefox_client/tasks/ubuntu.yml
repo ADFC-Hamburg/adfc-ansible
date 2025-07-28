@@ -1,12 +1,40 @@
-- name: Install firefox
-  ansible.builtin.include_tasks: "{{ ansible_distribution | lower }}.yml"
+---
+- name: "Uninstall Firefox snap package"
+  community.general.snap:
+    name:
+      - firefox
+    state: absent
 
-- name: Installiere helper packages
+- name: Add Fireox repo
+  ansible.builtin.apt_repository:
+    repo: ppa:mozillateam/ppa
+
+- name: Pin Package
+  ansible.builtin.copy:
+    content: |
+      Package: *
+      Pin: release o=LP-PPA-mozillateam
+      Pin-Priority: 1001
+    dest: "/etc/apt/preferences.d/mozilla-firefox"
+    mode: 0644
+    owner: root
+    group: root
+
+- name: Add unattended update file
+  ansible.builtin.copy:
+    content: |
+      Unattended-Upgrade::Allowed-Origins:: "LP-PPA-mozillateam:${distro_codename}";
+    dest: /etc/apt/apt.conf.d/51unattended-upgrades-firefox
+    mode: 0644
+    owner: root
+    group: root
+
+- name: Installiere Firefox
   ansible.builtin.apt:
     name:
+      - firefox
       - wget
       - bsd-mailx
-
 - name: "Create /etc/firefox dir"
   ansible.builtin.file:
     path: /etc/firefox
