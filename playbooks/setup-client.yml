@@ -22,6 +22,7 @@
     - gdm_desktoptheme
     - chromium_latest
     - moneyplex_settings
+    - faime_downloader
     - arbeitsplatz
     - client_apt_remove
   pre_tasks:
