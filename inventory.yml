@@ -65,6 +65,9 @@ all:
           hosts:
             tools1.hamburg.adfc.de:
             tools2.hamburg.adfc.de:
+        extra_tools:
+          hosts:
+            klara01.hamburg.adfc.de:
     tasmota:
       hosts:
         tasmota-0673.gst.hamburg.adfc.de:

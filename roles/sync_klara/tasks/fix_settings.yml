@@ -1,0 +1,29 @@
+- name: Create backup
+  ansible.builtin.copy:
+    src: "{{ db_settings_file }}"
+    dest: "{{ db_settings_file }}.backup-2024-01-df"
+    mode: 0600
+    owner: root
+    force: false
+    remote_src: true
+  delegate_to: klara01.hamburg.adfc.de
+  tags:
+    - replace_setting
+
+- name: Replace
+  ansible.builtin.replace:
+    path: "{{ db_settings_file }}"
+    regexp: "{{ item.from }}"
+    replace: "{{ item.to }}"
+  delegate_to: klara01.hamburg.adfc.de
+  loop:
+    - from: db283920_2
+      to: test_klara
+    - from: db283920_4
+      to: radzaehler
+    - from: db283920
+      to: klara
+    - from: "{{ old_db_password |replace(')','.')  }}"
+      to: "{{ new_db_password }}"
+  tags:
+    - replace_setting
