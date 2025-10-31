@@ -21,9 +21,9 @@ fi
 if p=$(ping -c1 -W1 $ip_client | grep -i '0 received'); then
 	echo "Der Client $computer reagiert nicht."
 	if a=$(curl -s http://$ip_tasmota/cm?cmnd=power | grep -i '"ON"'); then
-    echo "Die Steckdose war eingeschaltet. Sie wird nun ausgeschaltet und nach einer Minute wieder eingeschaltet. Der Client $computer sollte dann starten."
+    echo "Die Steckdose war eingeschaltet. Sie wird nun ausgeschaltet und nach 10s wieder eingeschaltet. Der Client $computer sollte dann starten."
     curl -s "http://$ip_tasmota/cm?cmnd=Power+Off" &>/dev/null
-    sleep 60
+    sleep 10
 	fi
 
   echo "Die Steckdose wird jetzt eingeschaltet. Bitte ein paar Sekunden warten bis der Client hochgefahren ist und dann die Verbindung über guacamole aufbauen."
