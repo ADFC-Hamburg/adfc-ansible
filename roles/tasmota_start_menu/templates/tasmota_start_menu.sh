@@ -21,25 +21,16 @@ fi
 if p=$(ping -c1 -W1 $ip_client | grep -i '0 received'); then
 	echo "Der Client $computer reagiert nicht."
 	if a=$(curl -s http://$ip_tasmota/cm?cmnd=power | grep -i '"ON"'); then
-		wakeonlan $mac_client &>/dev/null
-		echo "Der client wurde aufgeweckt"
-		sleep 5
-		if b=$(ping -c1 -W1 $ip_client | grep -i '0 received'); then
-			echo "Die Steckdose war eingeschaltet. Sie wird nun ausgeschaltet und nach einer Minute wieder eingeschaltet. Der Client $computer sollte dann starten."
-			curl -s "http://$ip_tasmota/cm?cmnd=Power+Off" &>/dev/null
-			sleep 60
-		else
-			echo "Der client $computer hat geschlafen und wurde erfolgreich aufgeweckt"
-			sleep 5
-			exit
-		fi
-	else
-		echo "Die Steckdose wird jetzt eingeschaltet. Bitte ein paar Sekunden warten bis der Client hochgefahren ist und dann die Verbindung über guacamole aufbauen."
-		curl -s "http://$ip_tasmota/cm?cmnd=Power+On" &>/dev/null
-		sleep 5
-		echo "Dieses Programm wird jetzt automatisch beendet."
-		sleep 5
+    echo "Die Steckdose war eingeschaltet. Sie wird nun ausgeschaltet und nach 10s wieder eingeschaltet. Der Client $computer sollte dann starten."
+    curl -s "http://$ip_tasmota/cm?cmnd=Power+Off" &>/dev/null
+    sleep 10
 	fi
+
+  echo "Die Steckdose wird jetzt eingeschaltet. Bitte ein paar Sekunden warten bis der Client hochgefahren ist und dann die Verbindung über guacamole aufbauen."
+  curl -s "http://$ip_tasmota/cm?cmnd=Power+On" &>/dev/null
+  sleep 5
+  echo "Dieses Programm wird jetzt automatisch beendet."
+  sleep 5
 else
 	echo "Der Client $computer läuft bereits. Bitte bauen Sie eine Verbindung über guacamole auf."
 	echo "Dieses Programm wird jetzt automatisch beendet."
