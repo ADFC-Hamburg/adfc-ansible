@@ -20,6 +20,7 @@ ssh_users_admins:
   - johannesb
   - johannesd
   - jensd
+  - patrickl
 
 firewall:
   - name: Apache http
