@@ -1,8 +1,8 @@
-rocketchat_test_version: 7.9.3
+rocketchat_test_version: 7.13.2
 rocketchat_test_root_url: https://chat-test.hamburg.adfc.de
 rocketchat_test_mongodb_version: 6.0
 
-rocketchat_live_version: 7.9.3
+rocketchat_live_version: 7.13.2
 rocketchat_live_root_url: https://chat.hamburg.adfc.de
 rocketchat_live_mongodb_version: 7.0
 
@@ -46,7 +46,7 @@ docker_compose_project_rocketchat_test:
         ports:
           - "{{ adfc_internal_ip }}:3005:3005"
       mongodb:
-        image: docker.io/bitnami/mongodb:{{ rocketchat_test_mongodb_version }}
+        image: docker.io/bitnamilegacy/mongodb:{{ rocketchat_test_mongodb_version }}
         restart: unless-stopped
         volumes:
           - mongodb_data:/bitnami/mongodb
@@ -68,11 +68,11 @@ docker_compose_project_rocket:
   internal_port: 3000
   hetzner_volumes:
     - name: chat-mongo
-      size_gb: 30
+      size_gb: 20
       location: nbg1
       mount: /var/lib/docker/volumes/docker-rocket_mongodb_data
     - name: chat-upload
-      size_gb: 20
+      size_gb: 30
       location: nbg1
       mount: /var/lib/docker/volumes/docker-rocket_rocket_uploads
   backup_on_new_version:
@@ -108,7 +108,7 @@ docker_compose_project_rocket:
         volumes:
           - rocket_uploads:/app/uploads
       mongodb:
-        image: docker.io/bitnami/mongodb:{{ rocketchat_live_mongodb_version }}
+        image: docker.io/bitnamilegacy/mongodb:{{ rocketchat_live_mongodb_version }}
         restart: unless-stopped
         volumes:
           - mongodb_data:/bitnami/mongodb
