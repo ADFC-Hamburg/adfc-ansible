@@ -5,6 +5,10 @@ ansible_web_port: 443
 ansible_web_subdir: /univention
 public_ipv4: 31.172.106.205
 
+# Temporary solution for compatibility with UCS 5.0;
+# remove after ugrading UCS-Master to UCS 5.2
+ansible_python_interpreter: /root/.pyenv/versions/3.13.11/bin/python3.13
+
 borg_save_path: /
 borg_save_exclude_dirs:
   - /mnt
