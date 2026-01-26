@@ -83,7 +83,7 @@
   ansible.builtin.command:
     argv:
       - /usr/sbin/udm
-      - guacamole/config
+      - guacamole-config/connection
       - list
       - --position
       - cn={{ inventory_hostname_short }},cn=guacamole,dc=hamburg,dc=adfc,dc=de
@@ -100,7 +100,7 @@
   ansible.builtin.command:
     argv:
       - /usr/sbin/udm
-      - guacamole/config
+      - guacamole-config/connection
       - create
       - --position
       - cn=guacamole,dc=hamburg,dc=adfc,dc=de
@@ -109,30 +109,30 @@
       - --set
       - description=Verbindung zum Rechner {{ inventory_hostname_short }}
       - --set
-      - guacConfigProtocol=rdp
-      - --set
-      - guacConfigParameter=enable-sftp=true
-      - --set
-      - guacConfigParameter=sftp-username=${GUAC_USERNAME}
-      - --set
-      - guacConfigParameter=sftp-password=${GUAC_PASSWORD}
-      - --set
-      - guacConfigParameter=enable-drive=true
-      - --set
-      - guacConfigParameter=username=${GUAC_USERNAME}
-      - --set
-      - guacConfigParameter=password=${GUAC_PASSWORD}
-      - --set
-      - guacConfigParameter=hostname={{ inventory_hostname }}
-      - --set
-      - guacConfigParameter=enable-font-smoothing=true
-      - --set
-      - guacConfigParamter=server-layout=de-de-qwertz
-      - --set
-      - guacConfigParameter=enable-printing=true
-      - --set
-      - nestedGroup=cn="Domain Admins",cn=groups,dc=hamburg,dc=adfc,dc=de
-      - --set
-      - nestedGroup=cn="Domain Users",cn=groups,dc=hamburg,dc=adfc,dc=de
+      - protocol=rdp
+      - --append
+      - parameter=enable-sftp=true
+      - --append
+      - parameter=sftp-username=${GUAC_USERNAME}
+      - --append
+      - parameter=sftp-password=${GUAC_PASSWORD}
+      - --append
+      - parameter=enable-drive=true
+      - --append
+      - parameter=username=${GUAC_USERNAME}
+      - --append
+      - parameter=password=${GUAC_PASSWORD}
+      - --append
+      - parameter=hostname={{ inventory_hostname }}
+      - --append
+      - parameter=enable-font-smoothing=true
+      - --append
+      - parameter=server-layout=de-de-qwertz
+      - --append
+      - parameter=enable-printing=true
+      - --append
+      - group=cn="Domain Admins",cn=groups,dc=hamburg,dc=adfc,dc=de
+      - --append
+      - group=cn="Domain Users",cn=groups,dc=hamburg,dc=adfc,dc=de
       - --ignore_exists
   when: not udm_config.stdout is search(udm_hostname)
