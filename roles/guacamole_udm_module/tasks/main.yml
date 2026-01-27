@@ -1,0 +1,4 @@
+---
+- name: Install Guacamole module for Univention Directory Manager
+  ansible.builtin.apt:
+    deb: "https://github.com/PaddiLu/univention-guacamole-config/releases/download/{{ guacamole_udm_tag }}/univention-guacamole-config_{{ guacamole_udm_version }}_all.deb"

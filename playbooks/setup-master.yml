@@ -3,6 +3,7 @@
   hosts: ucs-master.gst.hamburg.adfc.de
   gather_facts: true
   roles:
+    - guacamole_udm_module
     - tasmota_start_menu
     - ssh_keys
     - systemd_max_memory
