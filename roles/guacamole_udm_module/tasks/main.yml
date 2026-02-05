@@ -2,3 +2,17 @@
 - name: Install Guacamole module for Univention Directory Manager
   ansible.builtin.apt:
     deb: "https://github.com/PaddiLu/univention-guacamole-config/releases/download/{{ guacamole_udm_tag }}/univention-guacamole-config_{{ guacamole_udm_version }}_all.deb"
+
+- name: Create container for Guacamole connections
+  ansible.builtin.command:
+    argv:
+      - /usr/sbin/udm
+      - container/cn
+      - create
+      - --position
+      - dc=hamburg,dc=adfc,dc=de
+      - --set
+      - name=guacamole
+      - --set
+      - description=Container for Apache Guacamole connections
+      - --ignore_exists
