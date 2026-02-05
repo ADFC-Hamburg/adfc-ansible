@@ -1,0 +1,3 @@
+---
+guacamole_docker_port: "40700"
+guacamole_docker_path: "/usr/src/guacamole-docker"

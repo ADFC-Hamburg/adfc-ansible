@@ -1,0 +1,49 @@
+---
+- name: Create base directory
+  ansible.builtin.file:
+    path: "{{ guacamole_docker_path }}"
+    state: directory
+    mode: "0755"
+    owner: root
+    group: root
+
+- name: Create directories for mounting to Docker containers
+  ansible.builtin.file:
+    path: "{{ guacamole_docker_path }}/{{ item }}"
+    state: directory
+    mode: "0777"
+    owner: root
+    group: root
+  loop:
+    - guacd-drive
+    - guacd-record
+    - postgres-data
+
+- name: Copy Docker Compose file
+  ansible.builtin.copy:
+    dest: "{{ guacamole_docker_path }}/docker-compose.yml"
+    src: docker-compose.yml
+    mode: "0644"
+    owner: root
+    group: root
+
+- name: Copy initdb file for postgres
+  ansible.builtin.copy:
+    dest: "{{ guacamole_docker_path }}/initdb.sql"
+    src: initdb.sql
+    mode: "0644"
+    owner: root
+    group: root
+
+- name: Create variables file for Docker Compose
+  ansible.builtin.template:
+    dest: "{{ guacamole_docker_path }}/.env"
+    src: env.j2
+    mode: "0600"
+    owner: root
+    group: root
+
+- name: Create and start service
+  ansible.builtin.command: 
+    cmd: docker-compose up --detach
+    chdir: "{{ guacamole_docker_path }}"
