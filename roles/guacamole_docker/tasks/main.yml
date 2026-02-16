@@ -35,6 +35,20 @@
     owner: root
     group: root
 
+- name: Generate password for postgres
+  ansible.builtin.copy:
+    dest: "{{ guacamole_docker_path }}/.password"
+    content: "{{ lookup('ansible.builtin.password', '/dev/null') }}"
+    mode: "0600"
+    owner: root
+    group: root
+    force: false
+
+- name: Fetch password for postgres
+  ansible.builtin.slurp:
+    src: "{{ guacamole_docker_path }}/.password"
+  register: guacamole_docker_password_slurp
+
 - name: Create variables file for Docker Compose
   ansible.builtin.template:
     dest: "{{ guacamole_docker_path }}/.env"
