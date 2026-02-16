@@ -61,3 +61,12 @@
   ansible.builtin.command: 
     cmd: docker-compose up --detach
     chdir: "{{ guacamole_docker_path }}"
+
+- name: Create Apache File
+  ansible.builtin.template:
+    dest: "/etc/apache2/ucs-sites.conf.d/guacamole_ansible.conf"
+    src: "apache.conf.j2"
+    mode: "0644"
+    owner: root
+    group: root
+  notify: Reload apache

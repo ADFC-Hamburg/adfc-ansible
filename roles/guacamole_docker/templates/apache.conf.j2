@@ -1,0 +1,9 @@
+#
+# {{ ansible_managed }}
+#
+{% if guacamole_docker_url_dir != 'guacamole' %}
+RewriteEngine		on
+RewriteRule			"^/guacamole/" "/{{ guacamole_docker_url_dir }}/" [R]
+{% endif %}
+ProxyPass           /{{ guacamole_docker_url_dir }}/ http://127.0.0.1:{{ guacamole_docker_port }}/ retry=0
+ProxyPassReverse    /{{ guacamole_docker_url_dir }}/ http://127.0.0.1:{{ guacamole_docker_port }}/
