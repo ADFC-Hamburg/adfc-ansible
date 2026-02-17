@@ -2,3 +2,6 @@
 guacamole_docker_port: "40700"
 guacamole_docker_path: "/usr/src/guacamole-docker"
 guacamole_docker_url_dir: "homeoffice"
+guacamole_docker_version_guacamole: "1.6.0"
+guacamole_docker_version_guacd: "1.6.0"
+guacamole_docker_version_postgres: "18-alpine"

@@ -5,7 +5,7 @@ networks:
 services:
   guacd:
     container_name: guacd_compose
-    image: guacamole/guacd:1.6.0
+    image: guacamole/guacd:${GUACD_VERSION}
     networks:
       - guacnetwork_compose
     restart: unless-stopped
@@ -21,7 +21,7 @@ services:
 
   database:
     container_name: postgres_guacamole_compose
-    image: postgres:18-alpine
+    image: postgres:${POSTGRES_VERSION}
     networks:
       - guacnetwork_compose
     restart: unless-stopped
@@ -48,7 +48,7 @@ services:
         condition: service_healthy
       database:
         condition: service_healthy
-    image: guacamole/guacamole:1.6.0
+    image: guacamole/guacamole:${GUACAMOLE_VERSION}
     networks:
       - guacnetwork_compose
     restart: always
