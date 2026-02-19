@@ -16,3 +16,5 @@
       - --set
       - description=Container for Apache Guacamole connections
       - --ignore_exists
+  register: guacamole_udm_container_result
+  changed_when: "'Object created:' in guacamole_udm_container_result.stdout"

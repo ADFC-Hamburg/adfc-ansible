@@ -61,6 +61,8 @@
   ansible.builtin.command: 
     cmd: docker-compose up --detach
     chdir: "{{ guacamole_docker_path }}"
+  register: guacamole_docker_up_result
+  changed_when: "'... done' in guacamole_docker_up_result.stderr"
 
 - name: Create Apache File
   ansible.builtin.template:
