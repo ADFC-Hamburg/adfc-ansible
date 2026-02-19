@@ -2,6 +2,10 @@
 guacamole_docker_port: "40700"
 guacamole_docker_path: "/usr/src/guacamole-docker"
 guacamole_docker_url_dir: "homeoffice"
+
+guacamole_docker_branding_version: "2026.02.19"
+guacamole_docker_branding_checksum: "sha256:3db7c0bc0701282aae43dc4340297663799b4edec37180a38071c0bce2d34b8f"
+
 guacamole_docker_version_guacamole: "1.6.0"
 guacamole_docker_version_guacd: "1.6.0"
 guacamole_docker_version_postgres: "18-alpine"

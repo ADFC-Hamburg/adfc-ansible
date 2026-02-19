@@ -49,6 +49,17 @@
     src: "{{ guacamole_docker_path }}/.password"
   register: guacamole_docker_password_slurp
 
+- name: Download branding extension for Guacamole
+  ansible.builtin.get_url:
+    dest: "{{ guacamole_docker_path }}/branding-adfc-hh.jar"
+    url: "https://github.com/ADFC-Hamburg/guacamole-branding/releases/download/{{ guacamole_docker_branding_version }}/branding-adfc-hh.jar"
+    checksum: "{{ guacamole_docker_branding_checksum }}"
+    mode: "0644"
+    owner: root
+    group: root
+    force: true
+  register: guacamole_docker_branding_result
+
 - name: Create variables file for Docker Compose
   ansible.builtin.template:
     dest: "{{ guacamole_docker_path }}/.env"
@@ -56,6 +67,14 @@
     mode: "0600"
     owner: root
     group: root
+
+- name: Stop and remove service
+  ansible.builtin.command: 
+    cmd: docker-compose down
+    chdir: "{{ guacamole_docker_path }}"
+  when: guacamole_docker_branding_result.changed
+  register: guacamole_docker_down_result
+  changed_when: "'... done' in guacamole_docker_down_result.stderr"
 
 - name: Create and start service
   ansible.builtin.command: 

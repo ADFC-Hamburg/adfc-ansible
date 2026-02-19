@@ -74,6 +74,8 @@ services:
           memory: 4g
     ports:
       - ${PORT}:8080/tcp
+    volumes:
+      - ./branding-adfc-hh.jar:/etc/guacamole/extensions/branding-adfc-hh.jar:ro
 
 volumes:
   guacd-drive:
