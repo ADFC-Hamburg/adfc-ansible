@@ -1,6 +1,8 @@
 ---
 guacamole_docker_port: "40700"
-guacamole_docker_path: "/usr/src/guacamole-docker"
+guacamole_docker_container_path: "/opt/docker/containers/guacamole-docker"
+guacamole_docker_data_path: "/srv/guacamole-docker"
+guacamole_docker_secrets_path: "/opt/docker/secrets"
 guacamole_docker_url_dir: "homeoffice"
 
 guacamole_docker_branding_version: "2026.02.19"

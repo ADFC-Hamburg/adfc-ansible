@@ -1,15 +1,19 @@
 ---
-- name: Create base directory
+- name: Create base directories
   ansible.builtin.file:
-    path: "{{ guacamole_docker_path }}"
+    path: "{{ item.path }}"
     state: directory
-    mode: "0755"
+    mode: "{{ item.mode }}"
     owner: root
     group: root
+  loop:
+    - { path: "{{ guacamole_docker_container_path }}", mode: '0710' }
+    - { path: "{{ guacamole_docker_data_path }}", mode: '0755' }
+    - { path: "{{ guacamole_docker_secrets_path }}", mode: '0710' }
 
 - name: Create directories for mounting to Docker containers
   ansible.builtin.file:
-    path: "{{ guacamole_docker_path }}/{{ item }}"
+    path: "{{ guacamole_docker_data_path }}/{{ item }}"
     state: directory
     mode: "0777"
     owner: root
@@ -21,7 +25,7 @@
 
 - name: Copy Docker Compose file
   ansible.builtin.copy:
-    dest: "{{ guacamole_docker_path }}/docker-compose.yml"
+    dest: "{{ guacamole_docker_container_path }}/docker-compose.yml"
     src: docker-compose.yml
     mode: "0644"
     owner: root
@@ -29,7 +33,7 @@
 
 - name: Copy initdb file for postgres
   ansible.builtin.copy:
-    dest: "{{ guacamole_docker_path }}/initdb.sql"
+    dest: "{{ guacamole_docker_data_path }}/initdb.sql"
     src: initdb.sql
     mode: "0644"
     owner: root
@@ -37,7 +41,7 @@
 
 - name: Generate password for postgres
   ansible.builtin.copy:
-    dest: "{{ guacamole_docker_path }}/.password"
+    dest: "{{ guacamole_docker_secrets_path }}/guacamole-docker-db-passwd"
     content: "{{ lookup('ansible.builtin.password', '/dev/null') }}"
     mode: "0600"
     owner: root
@@ -46,12 +50,12 @@
 
 - name: Fetch password for postgres
   ansible.builtin.slurp:
-    src: "{{ guacamole_docker_path }}/.password"
+    src: "{{ guacamole_docker_secrets_path }}/guacamole-docker-db-passwd"
   register: guacamole_docker_password_slurp
 
 - name: Download branding extension for Guacamole
   ansible.builtin.get_url:
-    dest: "{{ guacamole_docker_path }}/branding-adfc-hh.jar"
+    dest: "{{ guacamole_docker_data_path }}/branding-adfc-hh.jar"
     url: "https://github.com/ADFC-Hamburg/guacamole-branding/releases/download/{{ guacamole_docker_branding_version }}/branding-adfc-hh.jar"
     checksum: "{{ guacamole_docker_branding_checksum }}"
     mode: "0644"
@@ -62,7 +66,7 @@
 
 - name: Create variables file for Docker Compose
   ansible.builtin.template:
-    dest: "{{ guacamole_docker_path }}/.env"
+    dest: "{{ guacamole_docker_container_path }}/.env"
     src: env.j2
     mode: "0600"
     owner: root
@@ -71,7 +75,7 @@
 - name: Stop and remove service
   ansible.builtin.command: 
     cmd: docker-compose down
-    chdir: "{{ guacamole_docker_path }}"
+    chdir: "{{ guacamole_docker_container_path }}"
   when: guacamole_docker_branding_result.changed
   register: guacamole_docker_down_result
   changed_when: "'... done' in guacamole_docker_down_result.stderr"
@@ -79,7 +83,7 @@
 - name: Create and start service
   ansible.builtin.command: 
     cmd: docker-compose up --detach
-    chdir: "{{ guacamole_docker_path }}"
+    chdir: "{{ guacamole_docker_container_path }}"
   register: guacamole_docker_up_result
   changed_when: "'... done' in guacamole_docker_up_result.stderr"
 

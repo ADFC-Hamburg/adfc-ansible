@@ -16,8 +16,8 @@ services:
       timeout: 3s
       retries: 10
     volumes:
-      - ./guacd-drive:/drive:rw,z
-      - ./guacd-record:/record:rw,z
+      - ${DATA_PATH:-.}/guacd-drive:/drive:rw,z
+      - ${DATA_PATH:-.}/guacd-record:/record:rw,z
 
   database:
     container_name: postgres_guacamole_compose
@@ -36,8 +36,8 @@ services:
       timeout: 3s
       retries: 10
     volumes:
-      - ./initdb.sql:/docker-entrypoint-initdb.d/initdb.sql:ro,z
-      - ./postgres-data:/var/lib/postgresql:rw,Z
+      - ${DATA_PATH:-.}/initdb.sql:/docker-entrypoint-initdb.d/initdb.sql:ro,z
+      - ${DATA_PATH:-.}/postgres-data:/var/lib/postgresql:rw,Z
 
   guacamole:
     container_name: guacamole_compose
@@ -75,7 +75,7 @@ services:
     ports:
       - ${PORT}:8080/tcp
     volumes:
-      - ./branding-adfc-hh.jar:/etc/guacamole/extensions/branding-adfc-hh.jar:ro
+      - ${DATA_PATH:-.}/branding-adfc-hh.jar:/etc/guacamole/extensions/branding-adfc-hh.jar:ro
 
 volumes:
   guacd-drive:
