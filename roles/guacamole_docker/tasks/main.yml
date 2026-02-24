@@ -13,15 +13,15 @@
 
 - name: Create directories for mounting to Docker containers
   ansible.builtin.file:
-    path: "{{ guacamole_docker_data_path }}/{{ item }}"
+    path: "{{ guacamole_docker_data_path }}/{{ item.path }}"
     state: directory
-    mode: "0777"
-    owner: root
-    group: root
+    mode: "{{ item.mode | default('0755') }}"
+    owner: "{{ item.uid | default('root') }}"
+    group: "{{ item.gid | default('root') }}"
   loop:
-    - guacd-drive
-    - guacd-record
-    - postgres-data
+    - { path: 'guacd-drive', mode: '0700', uid: '1000', gid: '1000' }
+    - { path: 'guacd-record', mode: '0750', uid: '1000', gid: '1000' }
+    - { path: 'postgres-data' }
 
 - name: Copy Docker Compose file
   ansible.builtin.copy:
