@@ -17,7 +17,7 @@ services:
       retries: 10
     volumes:
       - ${DATA_PATH:-.}/guacd-drive:/drive:rw,z
-      - ${DATA_PATH:-.}/guacd-record:/record:rw,z
+      - ${DATA_PATH:-.}/guacd-record:/var/lib/guacamole/recordings:rw,z
 
   database:
     container_name: postgres_guacamole_compose
@@ -59,7 +59,7 @@ services:
       POSTGRESQL_USERNAME: guacamole_user
       POSTGRESQL_PASSWORD: "${DB_PASSWORD}"
       WEBAPP_CONTEXT: ROOT
-      RECORDING_SEARCH_PATH: /record
+      RECORDING_ENABLED: "true"
       LDAP_ENABLED: "true"
       LDAP_HOSTNAME: "ucs-master.gst.hamburg.adfc.de"
       LDAP_USER_BASE_DN: 'cn=users,dc=hamburg,dc=adfc,dc=de'
@@ -75,6 +75,7 @@ services:
     ports:
       - ${PORT}:8080/tcp
     volumes:
+      - ${DATA_PATH:-.}/guacd-record:/var/lib/guacamole/recordings:ro,z
       - ${DATA_PATH:-.}/branding-adfc-hh.jar:/etc/guacamole/extensions/branding-adfc-hh.jar:ro
 
 volumes:
