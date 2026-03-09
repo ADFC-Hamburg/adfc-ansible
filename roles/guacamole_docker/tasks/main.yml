@@ -31,10 +31,16 @@
     owner: root
     group: root
 
-- name: Copy initdb file for postgres
-  ansible.builtin.copy:
+- name: Generate initdb for postgres
+  ansible.builtin.command:
+    cmd: "docker container run --rm --entrypoint '/opt/guacamole/bin/initdb.sh' guacamole/guacamole:{{ guacamole_docker_version_guacamole }} --postgresql"
+  register: guacamole_docker_initdb
+  changed_when: false
+
+- name: Create initdb file with encoded Guacamole password
+  ansible.builtin.template:
     dest: "{{ guacamole_docker_data_path }}/initdb.sql"
-    src: initdb.sql
+    src: initdb.sql.j2
     mode: "0644"
     owner: root
     group: root

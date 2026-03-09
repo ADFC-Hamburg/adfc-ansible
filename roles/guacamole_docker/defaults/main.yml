@@ -5,6 +5,9 @@ guacamole_docker_data_path: "/srv/guacamole-docker"
 guacamole_docker_secrets_path: "/opt/docker/secrets"
 guacamole_docker_url_dir: "homeoffice"
 
+guacamole_docker_guacadmin_pass_encoded: "6855D6B7FB5B81A613E8E301040D4BBB5FB4F0D14F3D20ACC0829AC8D7CC6FFB" # SHA256 of concatenated password and salt
+guacamole_docker_guacadmin_pass_salt: "1717C360E66EF8826628C4386EC54BD276023D29026190055145795C37052D86"
+
 guacamole_docker_branding_version: "2026.02.19"
 guacamole_docker_branding_checksum: "sha256:3db7c0bc0701282aae43dc4340297663799b4edec37180a38071c0bce2d34b8f"
 
