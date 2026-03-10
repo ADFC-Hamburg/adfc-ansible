@@ -10,6 +10,7 @@ guacamole_docker_guacadmin_pass_salt: "1717C360E66EF8826628C4386EC54BD276023D290
 
 guacamole_docker_branding_version: "2026.02.19"
 guacamole_docker_branding_checksum: "sha256:3db7c0bc0701282aae43dc4340297663799b4edec37180a38071c0bce2d34b8f"
+guacamole_docker_icon_svg: '<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg viewBox="0 0 75 58" xmlns="http://www.w3.org/2000/svg"><style>path{stroke-width:4;stroke:#004b7c;stroke-linecap:round;stroke-linejoin:round;fill:#fff;}</style><path d="M2,56l71,0"/><path d="M65,2a6,6,0,0,1,6,6l0,34a6,6,0,0,1,-6,6l-55,0a6,6,0,0,1,-6,-6l0,-34a6,6,0,0,1,6,-6Z"/><path d="M37.5,11l-14,14l0,14l10,0l0,-10l8,0l0,10l10,0l0,-14Z" style="stroke:#ee7f00;"/></svg>'
 
 guacamole_docker_version_guacamole: "1.6.0"
 guacamole_docker_version_guacd: "1.6.0"

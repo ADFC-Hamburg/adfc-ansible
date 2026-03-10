@@ -101,3 +101,44 @@
     owner: root
     group: root
   notify: Reload apache
+
+- name: Create menu entry for Univention Portal
+  ansible.builtin.command:
+    argv:
+      - /usr/sbin/udm
+      - portals/entry
+      - create
+      - --position
+      - cn=entry,cn=portals,cn=univention,dc=hamburg,dc=adfc,dc=de
+      - --set
+      - name=guacamole_docker
+      - --append
+      - displayName="en_US" "Home Office"
+      - --append
+      - displayName="de_DE" "Homeoffice"
+      - --append
+      - description="en_US" "ADFC Hamburg Home Office"
+      - --append
+      - description="de_DE" "ADFC Hamburg Homeoffice"
+      - --append
+      - link="en_US" "/{{ guacamole_docker_url_dir }}/"
+      - --set
+      - icon={{ guacamole_docker_icon_svg | b64encode }}
+      - --set
+      - linkTarget=newwindow
+      - --ignore_exists
+  register: guacamole_docker_entry_result
+  changed_when: "'Object created:' in guacamole_docker_entry_result.stdout"
+
+- name: Add menu entry to Univention Portal
+  ansible.builtin.command:
+    argv:
+      - /usr/sbin/udm
+      - portals/category
+      - modify
+      - --dn
+      - cn=domain-service,cn=category,cn=portals,cn=univention,dc=hamburg,dc=adfc,dc=de
+      - --append
+      - entries=cn=guacamole_docker,cn=entry,cn=portals,cn=univention,dc=hamburg,dc=adfc,dc=de
+  register: guacamole_docker_category_result
+  changed_when: "'Object modified:' in guacamole_docker_category_result.stdout"
