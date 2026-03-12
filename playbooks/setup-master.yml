@@ -13,6 +13,7 @@
     - self_service_sms
     - zabbix_server_docker
     - fritzbox_exporter_docker
+    - guacamole_docker
     - community.zabbix.zabbix_agent
 
   handlers:
