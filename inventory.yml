@@ -28,8 +28,9 @@ all:
           children:
             proxmox_gst:
               hosts:
-                matratze01.gst.hamburg.adfc.de:
+                #matratze01.gst.hamburg.adfc.de:
                 matratze02.gst.hamburg.adfc.de:
+                matratze03.gst.hamburg.adfc.de:
             haproxy_gst_backends:
               hosts:
                 ucs-master.gst.hamburg.adfc.de:
