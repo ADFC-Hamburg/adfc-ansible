@@ -2,7 +2,6 @@ verteiler_app_version: 5
 
 docker_compose_project_verteiler:
   nodes:
-    - tools1.hamburg.adfc.de
     - tools2.hamburg.adfc.de
   domains:
     - verteiler.hamburg.adfc.de
