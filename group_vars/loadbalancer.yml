@@ -17,6 +17,7 @@ haproxy_dehydrated_domains:
   - test2024.klara.bike
   - tour2pdf.hamburg.adfc.de
   - tresor.hamburg.adfc.de
+  - verteiler.hamburg.adfc.de
   - web20.hamburg.adfc.de
   - wiki.hamburg.adfc.de
   - www.adfc-hamburg.de
