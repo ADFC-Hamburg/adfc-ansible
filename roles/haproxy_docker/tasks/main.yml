@@ -19,12 +19,12 @@
   ansible.builtin.copy:
     src: compose.yml
     dest: "{{ docker_haproxy_dir }}/compose.yml"
-    mode: 0644
+    mode: "0644"
     owner: root
     group: root
 
-#- name: Copy wartung.html
-#  ansible.builtin.copy:
+# - name: Copy wartung.html
+#   ansible.builtin.copy:
 #    src: wartung.html
 #    dest: "{{ docker_haproxy_dir }}/nginx-html/wartung/wartung.html"
 #    mode: 0644
@@ -35,7 +35,7 @@
   ansible.builtin.copy:
     src: "{{ item }}.http"
     dest: "{{ docker_haproxy_dir }}/haproxy/errors/{{ item }}.http"
-    mode: 0644
+    mode: "0644"
     owner: root
     group: root
   loop:
@@ -51,7 +51,7 @@
   ansible.builtin.template:
     src: docker-env.j2
     dest: "{{ docker_haproxy_dir }}/.env"
-    mode: 0644
+    mode: "0644"
     owner: root
     group: root
   register: docker_env
@@ -60,7 +60,7 @@
   ansible.builtin.template:
     src: haproxy.cfg.j2
     dest: "{{ docker_haproxy_dir }}/haproxy/haproxy.cfg"
-    mode: 0644
+    mode: "0644"
     owner: root
     group: root
 
@@ -68,7 +68,7 @@
   ansible.builtin.template:
     src: nginx-letsencrypt.conf.j2
     dest: "{{ docker_haproxy_dir }}/nginx/nginx.conf"
-    mode: 0644
+    mode: "0644"
     owner: root
     group: root
 

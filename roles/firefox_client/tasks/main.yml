@@ -10,7 +10,7 @@
 - name: "Create /etc/firefox dir"
   ansible.builtin.file:
     path: /etc/firefox
-    mode: 0755
+    mode: "0755"
     state: directory
     owner: root
     group: root
@@ -19,13 +19,13 @@
   ansible.builtin.template:
     src: sysprefs.js
     dest: /etc/firefox/syspref.js
-    mode: 0644
+    mode: "0644"
 
 - name: Copy firefox extension update cron script
   ansible.builtin.template:
     src: firefox-extension-update.sh
     dest: /etc/cron.daily/firefox-extension-update.sh
-    mode: 0755
+    mode: "0755"
   notify: Run firefox extension update
 
 - name: Create symbolic links for extensions

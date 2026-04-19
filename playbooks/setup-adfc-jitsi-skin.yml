@@ -1,9 +1,0 @@
----
-- hosts: meet_server
-  gather_facts: true
-  roles:
-    - adfc_jitsi_skin
-  tasks:
-    - name: test
-      ansible.builtin.debug:
-        msg: Hello world

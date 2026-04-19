@@ -1,15 +1,14 @@
 ---
-- hosts: arbeitsplatz
+- name: Power
+  hosts: arbeitsplatz
   gather_facts: false
-
   vars_prompt:
     - name: command
       prompt: "Befehl eingeben: (status, poweroff, poweron)"
       default: status
       private: false
-
   tasks:
     - name: Tasmota Power Rolle starten
-      include_role:
+      ansible.builtin.include_role:
         name: tasmota-power
       when: tasmota_wireless_ip is defined

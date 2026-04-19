@@ -1,0 +1,45 @@
+verteiler_app_version: 5
+
+docker_compose_project_verteiler:
+  nodes:
+    - tools2.hamburg.adfc.de
+  domains:
+    - verteiler.hamburg.adfc.de
+  internal_port: 4105
+  hetzner_volumes:
+    - name: verteiler-data
+      size_gb: 10
+      location: nbg1
+      mount: /var/lib/docker/volumes/docker-verteiler_data
+  compose_block:
+    version: "3"
+    volumes:
+      data:
+        driver: local
+    services:
+      verteiler:
+        restart: unless-stopped
+        image: ghcr.io/adfc-hamburg/verteiler-app:{{ verteiler_app_version }}
+        volumes:
+          - data:/var/opt/verteiler-app
+        environment:
+          SECRET_KEY_FILE: /run/secrets/secret_key
+        secrets:
+          - secret_key
+        ports:
+          - "{{ adfc_internal_ip }}:4105:8000"
+        labels:
+          - "com.centurylinklabs.watchtower.scope=verteiler"
+      watchtower:
+        image: containrrr/watchtower
+        volumes:
+          - /root/.docker/config.json:/config.json:ro
+          - /var/run/docker.sock:/var/run/docker.sock:ro
+        # pruefe alle 12h = 43200s auf Updates
+        command: --interval 43200 --debug --scope=verteiler docker-verteiler-verteiler-1
+        labels:
+          - "com.centurylinklabs.watchtower.scope=verteiler"
+    secrets:
+      secret_key:
+        file: verteiler_key.txt
+    

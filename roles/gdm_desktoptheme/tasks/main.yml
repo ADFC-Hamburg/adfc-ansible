@@ -8,7 +8,7 @@
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
-    mode: 0755
+    mode: "0755"
     owner: root
     group: root
   tags: gdm
@@ -36,7 +36,7 @@
   ansible.builtin.copy:
     src: desktopthemes/kubuntu-default-plasmarc
     dest: /usr/share/kubuntu-default-settings/kf5-settings/plasmarc
-    mode: 0644
+    mode: "0644"
   tags: gdm
 
 - name: Sync wallpaper directory
@@ -56,14 +56,14 @@
   ansible.builtin.file:
     path: /usr/local/share/themes/adfc/
     state: directory
-    mode: 0755
+    mode: "0755"
   tags: gdm
 
 - name: Copy ADFC Logo
   ansible.builtin.copy:
     src: ADFC-HH-rgb.jpg
     dest: /usr/local/share/themes/adfc/ADFC-HH-rgb.jpg
-    mode: 0644
+    mode: "0644"
   tags: gdm
 
 - name: Remove Gnome Desktop file ubuntu.desktop
@@ -90,7 +90,7 @@
   ansible.builtin.copy:
     src: client-etc-gdm3-greeter.dconf-defaults
     dest: /etc/gdm3/greeter.dconf-defaults
-    mode: 0644
+    mode: "0644"
     owner: root
     group: root
   notify: Restart gdm3
@@ -100,7 +100,7 @@
   ansible.builtin.copy:
     src: ubuntu-adfc.css
     dest: /usr/share/gnome-shell/theme/ubuntu-adfc.css
-    mode: 0644
+    mode: "0644"
   notify: Restart gdm3
   tags: gdm
 
@@ -116,7 +116,7 @@
   ansible.builtin.copy:
     src: ADFC-login-background.png
     dest: /usr/local/share/themes/adfc/ADFC-login-background.png
-    mode: 0644
+    mode: "0644"
   notify: Restart gdm3
   tags: gdm
 

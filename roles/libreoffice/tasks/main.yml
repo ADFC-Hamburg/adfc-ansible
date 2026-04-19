@@ -12,4 +12,4 @@
   ansible.builtin.copy:
     src: adfc.xcd
     dest: /usr/lib/libreoffice/share/registry/adfc.xcd
-    mode: 0644
+    mode: "0644"
