@@ -73,12 +73,26 @@ services:
           cpus: '2.0'
           memory: 4g
     ports:
-      - ${PORT}:8080/tcp
+      - 8080/tcp
     volumes:
       - ${DATA_PATH:-.}/guacd-record:/var/lib/guacamole/recordings:ro,z
       - ${DATA_PATH:-.}/branding-adfc-hh.jar:/etc/guacamole/extensions/branding-adfc-hh.jar:ro
+
+  nginx:
+   container_name: nginx_guacamole_compose
+   restart: always
+   image: nginx:${NGINX_VERSION}
+   volumes:
+   - ${DATA_PATH:-.}/nginx-templates:/etc/nginx/templates:ro
+   - ${CERT_PATH:-./self.cert}:/etc/nginx/ssl/cert.pem:ro
+   - ${CERT_KEY_PATH:-./self-ssl.key}:/etc/nginx/ssl/private.key:ro
+   ports:
+   - ${PORT}:443
+   networks:
+     - guacnetwork_compose
 
 volumes:
   guacd-drive:
   guacd-record:
   postgres-data:
+  nginx-templates:

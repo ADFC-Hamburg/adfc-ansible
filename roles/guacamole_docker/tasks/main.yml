@@ -22,6 +22,7 @@
     - { path: 'guacd-drive', mode: '0700', uid: '1000', gid: '1000' }
     - { path: 'guacd-record', mode: '0750', uid: '1000', gid: '1000' }
     - { path: 'postgres-data' }
+    - { path: 'nginx-templates' }
 
 - name: Copy Docker Compose file
   ansible.builtin.copy:
@@ -69,6 +70,25 @@
     group: root
     force: true
   register: guacamole_docker_branding_result
+
+- name: Copy nginx template file
+  ansible.builtin.copy:
+    dest: "{{ guacamole_docker_data_path }}/nginx-templates/guacamole.conf.template"
+    src: guacamole.conf.template
+    mode: "0644"
+    owner: root
+    group: root
+
+#- name: Create private key for nginx
+#  community.crypto.openssl_privatekey:
+#    path: "{{ guacamole_docker_data_path }}/nginx-ssl.key"
+#    type: "RSA"
+
+#- name: Create self-signed certificate for nginx
+#  community.crypto.x509_certificate:
+#    path: "{{ guacamole_docker_data_path }}/nginx.pem"
+#    privatekey_path: "{{ guacamole_docker_data_path }}/nginx-ssl.key"
+#    provider: selfsigned
 
 - name: Create variables file for Docker Compose
   ansible.builtin.template:
