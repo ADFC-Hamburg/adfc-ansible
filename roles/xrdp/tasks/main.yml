@@ -131,6 +131,8 @@
       - --append
       - parameter=enable-printing=true
       - --append
+      - parameter=ignore-cert=true
+      - --append
       - group=cn="Domain Admins",cn=groups,dc=hamburg,dc=adfc,dc=de
       - --append
       - group=cn="Domain Users",cn=groups,dc=hamburg,dc=adfc,dc=de
