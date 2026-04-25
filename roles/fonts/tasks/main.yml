@@ -5,9 +5,6 @@
       - libfreetype6
       - libfreetype6-dev
       - libfontconfig
-      - fonts-larabie-deco
-      - fonts-larabie-straight
-      - fonts-larabie-uncommon
 
 - name: Teste TTF
   ansible.builtin.stat:
@@ -24,5 +21,5 @@
 
 - name: Get Debian ttf-mscorefonts-installer package
   ansible.builtin.apt:
-    deb: http://ftp.de.debian.org/debian/pool/contrib/m/msttcorefonts/ttf-mscorefonts-installer_3.6_all.deb
+    name: ttf-mscorefonts-installer
   when: not mssfont.stat.exists

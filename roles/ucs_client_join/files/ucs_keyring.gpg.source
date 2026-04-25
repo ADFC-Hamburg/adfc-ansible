@@ -1,0 +1,5 @@
+get keyids from: https://launchpad.net/~univention-dev
+wget "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xCF1B665E2E1E2157B68F6B931FD1282064467CEE"
+wget "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xD523B8FD547C464C9EA89D5B5E9F163B66AA3A17
+...
+cat lookup\?op\=get\&search\=0x* |gpg  --batch --yes --dearmor --output roles/ucs_client_join/files/ucs_keyring.gpg

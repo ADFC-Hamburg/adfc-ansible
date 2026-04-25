@@ -1,7 +1,16 @@
 ---
+- name: Include distribution-specific variables
+  ansible.builtin.include_vars: "{{ item }}"
+  with_first_found:
+    - files:
+        - "{{ ansible_distribution | lower }}-{{ ansible_distribution_major_version }}.yml"
+        - "{{ ansible_distribution | lower }}.yml"
+        - "default.yml"
+      paths:
+        - "{{ role_path }}/vars"
+
 - name: Install Package
-  ansible.builtin.apt:
-    name: unburden-home-dir
+  ansible.builtin.include_tasks: install-{{ unburden_home_dir_install_method }}.yml
   tags: unburden
 
 - name: Copy Config Files
@@ -22,4 +31,8 @@
     regexp: UNBURDEN_HOME
     line: UNBURDEN_HOME=true
     insertafter: EOF
+    create: true
+    mode: "0644"
+    owner: root
+    group: root
   tags: unburden

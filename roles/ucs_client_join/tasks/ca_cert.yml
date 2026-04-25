@@ -1,0 +1,29 @@
+- name: Create Root Certificate Directory
+  ansible.builtin.file:
+    path: "{{ ucs_client_join_ca_cert_dir }}"
+    state: directory
+    mode: "0755"
+    owner: root
+    group: root
+
+- name: Get Root CA Certificate
+  ansible.builtin.slurp:
+    path: "{{ ucs_client_join_ca_cert_path }}"
+  delegate_to: "{{ ucs_client_join_primary_fqdn }}"
+  register: ucs_root_ca_cert
+
+- name: Copy Root CA Certificate
+  ansible.builtin.copy:
+    content: "{{ ucs_root_ca_cert.content | b64decode }}"
+    dest: "{{ ucs_client_join_ca_cert_path }}"
+    mode: "0644"
+    owner: root
+    group: root
+  notify: Update CA Certificates
+
+- name: Create Certificate Symlink
+  ansible.builtin.file:
+    src: "{{ ucs_client_join_ca_cert_path }}"
+    dest: /usr/local/share/ca-certificates/UCSdomain.crt
+    state: link
+  notify: Update CA Certificates

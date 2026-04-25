@@ -1,0 +1,65 @@
+---
+- name: "Uninstall Firefox snap package"
+  community.general.snap:
+    name:
+      - firefox
+    state: absent
+
+- name: Add Fireox repo
+  ansible.builtin.apt_repository:
+    repo: ppa:mozillateam/ppa
+
+- name: Pin Package
+  ansible.builtin.copy:
+    content: |
+      Package: *
+      Pin: release o=LP-PPA-mozillateam
+      Pin-Priority: 1001
+    dest: "/etc/apt/preferences.d/mozilla-firefox"
+    mode: 0644
+    owner: root
+    group: root
+
+- name: Add unattended update file
+  ansible.builtin.copy:
+    content: |
+      Unattended-Upgrade::Allowed-Origins:: "LP-PPA-mozillateam:${distro_codename}";
+    dest: /etc/apt/apt.conf.d/51unattended-upgrades-firefox
+    mode: 0644
+    owner: root
+    group: root
+
+- name: Installiere Firefox
+  ansible.builtin.apt:
+    name:
+      - firefox
+      - wget
+      - bsd-mailx
+- name: "Create /etc/firefox dir"
+  ansible.builtin.file:
+    path: /etc/firefox
+    mode: 0755
+    state: directory
+    owner: root
+    group: root
+
+- name: Set Firefox sysprefs.js
+  ansible.builtin.template:
+    src: sysprefs.js
+    dest: /etc/firefox/syspref.js
+    mode: 0644
+
+- name: Copy firefox extension update cron script
+  ansible.builtin.template:
+    src: firefox-extension-update.sh
+    dest: /etc/cron.daily/firefox-extension-update.sh
+    mode: 0755
+  notify: Run firefox extension update
+
+- name: Create symbolic links for extensions
+  ansible.builtin.file:
+    src: "/usr/local/share/ansible_downloads/{{ item.name }}"
+    dest: "/usr/share/mozilla/extensions/{ec8030f7-c20a-464f-9b0e-13a3a9e97384}/{{ item.id }}"
+    state: link
+    force: true
+  with_items: "{{ firefox_extensions }}"
