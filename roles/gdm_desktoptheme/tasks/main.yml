@@ -22,7 +22,7 @@
     - "/usr/share/gnome-shell/theme"
 - name: Sync Theme folder
   ansible.builtin.copy:
-    src: "desktopthemes/ADFC/{{ item}}"
+    src: "desktopthemes/ADFC/{{ item }}"
     dest: "/usr/share/plasma/desktoptheme/ADFC/{{ item }}"
     mode: "0644"
     owner: root

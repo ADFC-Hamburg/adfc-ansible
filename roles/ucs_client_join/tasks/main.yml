@@ -41,7 +41,8 @@
 - name: Add ucs-master to /etc/hosts
   ansible.builtin.lineinfile:
     path: /etc/hosts
-    line: "{{ ucs_client_join_primary_ipv4_address }}  {{ ucs_client_join_primary_fqdn }}"
+    line: "{{ ucs_client_join_primary_ipv4_address }}  {{
+      ucs_client_join_primary_fqdn }}"
   tags: etc_hosts
 
 - name: Setup Cups client.conf
@@ -66,6 +67,9 @@
 
 - name: Configure PAM
   ansible.builtin.include_tasks: pam.yml
+
+- name: Configure timesync
+  ansible.builtin.include_tasks: timesync.yml
 
 - name: Force all notified handlers to run now
   ansible.builtin.meta: flush_handlers
