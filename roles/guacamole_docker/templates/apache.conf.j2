@@ -7,7 +7,6 @@ RewriteRule         "^/guacamole/" "/{{ guacamole_docker_url_dir }}/" [R]
 {% endif %}
 ProxyPass           /{{ guacamole_docker_url_dir }}/ http://127.0.0.1:{{ guacamole_docker_port }}/ flushpackets=on retry=0
 ProxyPassReverse    /{{ guacamole_docker_url_dir }}/ http://127.0.0.1:{{ guacamole_docker_port }}/
-ProxyPassReverseCookiePath  / /{{ guacamole_docker_url_dir }}/
 
 <Location /{{ guacamole_docker_url_dir }}/websocket-tunnel>
     Order allow,deny
