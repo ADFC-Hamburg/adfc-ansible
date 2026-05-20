@@ -1,0 +1,2 @@
+ansible_user: ssh-283920-backup
+ansible_ssh_common_args: -A

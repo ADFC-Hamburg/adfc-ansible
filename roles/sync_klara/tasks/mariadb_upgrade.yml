@@ -1,0 +1,40 @@
+- name: Start Mariadb Docker Container
+  ansible.builtin.command:
+    argv:
+      - docker
+      - run
+      - --name
+      - mariadbtest
+      - --env
+      - MARIADB_AUTO_UPGRADE=yes
+      - --volume
+      - "{{ sync_klara_tmp_dir }}/mysql:/var/lib/mysql"
+      - -d
+      - docker.io/library/mariadb:{{ mariadb_version }}
+  tags:
+    - db_upgrade
+
+- name: Wait unitl mysql is started correctly
+  ansible.builtin.command:
+    argv:
+      - docker
+      - logs
+      - mariadbtest
+  register: docker_log_cmd
+  until: "'Finished mariadb-upgrade' in docker_log_cmd.stdout"
+  retries: 1200
+  delay: 5
+  tags:
+    - db_upgrade
+
+- name: Stop Container and remove Container
+  ansible.builtin.command:
+    argv:
+      - docker
+      - "{{ item }}"
+      - mariadbtest
+  loop:
+    - stop
+    - rm
+  tags:
+    - db_upgrade
