@@ -1,0 +1,14 @@
+// {{ ansible_managed }}
+// Disable shutdown for xrdp users on virtual machines
+polkit.addRule(function (action, subject) {
+  if (
+    action.id == "org.freedesktop.login1.power-off" ||
+    action.id == "org.freedesktop.login1.reboot" ||
+    action.id == "org.freedesktop.login1.suspend" ||
+    action.id == "org.freedesktop.login1.hibernate"
+  ) {
+    if (subject.isInGroup("xrdp")) {
+      return polkit.Result.NO;
+    }
+  }
+});

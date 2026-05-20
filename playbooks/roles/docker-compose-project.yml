@@ -1,0 +1,5 @@
+- name: Setup Tools new
+  hosts: tools_2023
+  gather_facts: true
+  roles:
+    - docker_compose_project

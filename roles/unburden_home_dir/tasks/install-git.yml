@@ -1,0 +1,43 @@
+- name: Install needed packages
+  ansible.builtin.apt:
+    name:
+      - libconfig-file-perl
+      - libfile-basedir-perl
+      - libfile-rsync-perl
+      - libfile-touch-perl
+      - libfile-which-perl
+      - libipc-run-perl
+      - libstring-expand-perl
+      - libtry-tiny-perl
+      - libfile-slurper-perl
+      - lsof
+      - mkdocs
+      - moreutils
+      - ronn
+  tags: unburden
+
+- name: Check version
+  ansible.builtin.command:
+    cmd: unburden-home-dir --version
+  register: unburden_home_dir_version
+  changed_when: false
+  failed_when: false
+  tags: unburden
+
+- name: Checkout unburden-home-dir via git
+  ansible.builtin.git:
+    repo: https://github.com/xtaran/unburden-home-dir/
+    dest: /usr/src/unburden-home-dir
+    version: "{{ unburden_home_dir_git_version }}"
+  tags: unburden
+  when: unburden_home_dir_git_version not in unburden_home_dir_version.stdout
+
+- name: Run Makefile
+  ansible.builtin.command:
+    cmd: "{{ item }}"
+    chdir: /usr/src/unburden-home-dir
+  tags: unburden
+  loop:
+    - make
+    - make install
+  when: unburden_home_dir_git_version not in unburden_home_dir_version.stdout

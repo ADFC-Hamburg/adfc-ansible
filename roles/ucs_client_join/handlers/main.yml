@@ -1,0 +1,59 @@
+- name: Reload systemd daemon
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Restart timesyncd
+  ansible.builtin.systemd:
+    name: systemd-timesyncd
+    state: restarted
+    enabled: true
+
+- name: Force immediate time synchronization
+  ansible.builtin.command:
+    argv:
+      - timedatectl
+      - set-ntp
+      - true
+  changed_when: false
+
+- name: Update CA Certificates
+  ansible.builtin.command:
+    argv:
+      - update-ca-certificates
+
+- name: Restart SSSD
+  ansible.builtin.systemd:
+    name: sssd
+    state: restarted
+    enabled: true
+
+- name: PAM auth update
+  ansible.builtin.command:
+    argv:
+      - /usr/sbin/pam-auth-update
+      - --package
+      - --enable
+      - ucs_mkhomedir
+      - sss
+      - local_groups
+      - --disable
+      - mkhomedir
+
+- name: Reboot
+  ansible.builtin.reboot:
+    reboot_timeout: 300
+    connect_timeout: 20
+    test_command: uptime
+  listen:
+    - Update CA Certificates
+    - Restart SSSD
+    - PAM auth update
+
+- name: Set Test Fact
+  ansible.builtin.set_fact:
+    ucs_client_join_run_test: true
+  listen:
+    - Reboot
+    - Update CA Certificates
+    - Restart SSSD
+    - PAM auth update

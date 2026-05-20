@@ -1,0 +1,6 @@
+Name: activate UCS local groups
+Default: yes
+Priority: 900
+Auth-Type: Primary
+Auth:
+            required    pam_group.so use_first_pass

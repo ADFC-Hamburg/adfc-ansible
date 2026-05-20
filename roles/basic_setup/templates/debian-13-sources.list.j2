@@ -1,0 +1,10 @@
+# {{ ansible_managed }}
+
+deb {{ basic_setup_debian_mirror }} trixie main non-free-firmware contrib
+deb-src {{ basic_setup_debian_mirror }} trixie main non-free-firmware contrib
+
+deb https://security.debian.org/debian-security trixie-security main non-free-firmware contrib
+deb-src https://security.debian.org/debian-security trixie-security main non-free-firmware contrib
+
+deb {{ basic_setup_debian_mirror }} trixie-updates main non-free-firmware contrib
+deb-src {{ basic_setup_debian_mirror }} trixie-updates main non-free-firmware contrib

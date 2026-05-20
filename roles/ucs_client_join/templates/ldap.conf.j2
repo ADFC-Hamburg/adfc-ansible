@@ -1,0 +1,5 @@
+# {{ ansible_managed }}
+#
+TLS_CACERT {{ ucs_client_join_ca_cert_path}}
+URI ldap://{{ ucs_client_join_primary_fqdn }}:7389
+BASE {{ ucs_client_join_ldap_base_dn }}
