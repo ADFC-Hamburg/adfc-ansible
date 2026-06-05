@@ -62,3 +62,12 @@ loadbalancer_redirect_domains:
     dest:
       - path: /
         url: https://hamburg.adfc.de/artikel/ghostbike
+  - domains:
+      - quartierefuermenschen.adfc-hamburg.de
+      - quartierefuermenschen.de
+      - www.quartierefuermenschen.de
+      - xn--quartierefrmenschen-fbc.de
+      - www.xn--quartierefrmenschen-fbc.de
+    dest:
+      - path: /
+        url: https://hamburg.adfc.de/artikel/quartiere-fuer-menschen-1
