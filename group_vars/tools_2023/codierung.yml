@@ -27,7 +27,7 @@ docker_compose_project_codierung:
 
 docker_compose_project_codierung_test:
   nodes:
-    - tools1.hamburg.adfc.de
+    - tools2.hamburg.adfc.de
   domains:
     - test-codierung.hamburg.adfc.de
   internal_port: 3310
