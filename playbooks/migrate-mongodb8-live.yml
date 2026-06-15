@@ -1,0 +1,556 @@
+---
+# Live-Migration: MongoDB 7 (bitnami) → MongoDB 8 (official) + RocketChat 7 → 8
+#
+# Ablauf:
+#   Phase 1 – Vorbereitung ohne Downtime:
+#     Neue Hetzner-Volume anlegen, MongoDB-8-Container neben dem laufenden
+#     System hochfahren, Replica Set initialisieren.
+#
+#   Phase 2 – Migrationsfenster (Downtime):
+#     RocketChat stoppen → mongodump → mongorestore in MongoDB 8 →
+#     Finales Compose mit neuer RC-Version → starten → verifizieren.
+#
+#   Phase 3 – group_vars aktualisieren (localhost):
+#     chat.yml auf neues Image + Volume umschreiben, damit das Repo den
+#     laufenden Zustand widerspiegelt.
+#
+# Aufruf:
+#   ansible-playbook playbooks/migrate-mongodb8-live.yml
+#
+# Vorher rocketchat_live_version in group_vars/tools_2023/chat.yml auf die
+# gewünschte neue RC-Version setzen (z.B. 8.5.0).
+# Hetzner-Volume chat-mongo (alt) bleibt erhalten – erst nach Verifikation
+# manuell in der Hetzner-Console löschen.
+
+- name: Phase 1 – Vorbereitung (keine Downtime)
+  hosts: tools1.hamburg.adfc.de
+  gather_facts: true
+
+  vars:
+    docker_dir: /srv/docker-rocket
+    live_container: docker-rocket-mongodb-1
+    new_service: mongodb8
+    new_container: docker-rocket-mongodb8-1
+    new_hcloud_volume: chat-mongo-v8
+    new_hcloud_mount: /var/lib/docker/volumes/docker-rocket_mongodb8_data
+
+  tasks:
+    - name: Hetzner API Token einlesen
+      ansible.builtin.slurp:
+        path: /root/hetzner_cloud_chat.key
+      register: hcloud_key_slurp
+      delegate_to: loadbalancer01.hamburg.adfc.de
+      no_log: true
+
+    - name: Hetzner API Token setzen
+      ansible.builtin.set_fact:
+        hcloud_api_token: "{{ hcloud_key_slurp.content | b64decode | trim }}"
+      no_log: true
+
+    - name: Neue Hetzner-Volume {{ new_hcloud_volume }} anlegen
+      hetzner.hcloud.hcloud_volume:
+        api_token: "{{ hcloud_api_token }}"
+        name: "{{ new_hcloud_volume }}"
+        size: 20
+        server: "{{ inventory_hostname }}"
+        format: ext4
+        state: present
+      delegate_to: localhost
+      register: hcloud_vol_new
+
+    - name: Neue Hetzner-Volume mounten
+      ansible.posix.mount:
+        src: "{{ hcloud_vol_new.hcloud_volume.linux_device }}"
+        path: "{{ new_hcloud_mount }}"
+        opts: discard,noatime
+        fstype: ext4
+        state: mounted
+
+    - name: Aktuelles Compose als Fallback sichern
+      ansible.builtin.copy:
+        remote_src: true
+        src: "{{ docker_dir }}/compose.yml"
+        dest: "{{ docker_dir }}/compose.yml.pre-migration"
+        mode: "0644"
+
+    - name: Intermediate Compose schreiben (alter MongoDB + neuer MongoDB 8)
+      ansible.builtin.copy:
+        dest: "{{ docker_dir }}/compose.yml"
+        mode: "0644"
+        content: |
+          # Ansible Managed – Migrationszustand (MongoDB 7 + 8 parallel)
+          volumes:
+            mongodb_data:
+              driver: local
+            mongodb8_data:
+              driver: local
+            rocket_uploads:
+              driver: local
+          services:
+            rocketchat:
+              image: registry.rocket.chat/rocketchat/rocket.chat:{{ rocketchat_live_version }}
+              restart: unless-stopped
+              environment:
+                MONGO_URL: "mongodb://mongodb:27017/rocketchat?replicaSet=rs0"
+                MONGO_OPLOG_URL: "mongodb://mongodb:27017/local?replicaSet=rs0"
+                ROOT_URL: "{{ rocketchat_live_root_url }}"
+                PORT: "3000"
+                DEPLOY_METHOD: docker
+                DEPLOY_PLATFORM: ""
+              depends_on:
+                - mongodb
+              expose:
+                - 3000
+              ports:
+                - "{{ adfc_internal_ip }}:3000:3000"
+              volumes:
+                - rocket_uploads:/app/uploads
+            mongodb:
+              image: docker.io/bitnamilegacy/mongodb:{{ rocketchat_live_mongodb_version }}
+              restart: unless-stopped
+              volumes:
+                - mongodb_data:/bitnami/mongodb
+              environment:
+                MONGODB_REPLICA_SET_MODE: primary
+                MONGODB_REPLICA_SET_NAME: rs0
+                MONGODB_PORT_NUMBER: "27017"
+                MONGODB_INITIAL_PRIMARY_HOST: mongodb
+                MONGODB_INITIAL_PRIMARY_PORT_NUMBER: "27017"
+                MONGODB_ADVERTISED_HOSTNAME: mongodb
+                MONGODB_ENABLE_JOURNAL: "true"
+                ALLOW_EMPTY_PASSWORD: "yes"
+              deploy:
+                resources:
+                  limits:
+                    cpus: "1.8"
+            mongodb8:
+              image: mongodb/mongodb-community-server:8.0-ubi8
+              restart: unless-stopped
+              volumes:
+                - mongodb8_data:/data/db
+              command:
+                - --replSet
+                - rs0
+                - --bind_ip_all
+
+    - name: Nur mongodb8-Container starten (laufendes System unberührt)
+      ansible.builtin.command:
+        chdir: "{{ docker_dir }}"
+        argv:
+          - docker
+          - compose
+          - up
+          - -d
+          - "{{ new_service }}"
+
+    - name: Warten bis MongoDB 8 bereit ist (max. 60 s)
+      ansible.builtin.command:
+        argv:
+          - docker
+          - exec
+          - "{{ new_container }}"
+          - mongosh
+          - --quiet
+          - --eval
+          - db.runCommand({ping:1}).ok
+      register: mongo_ping
+      retries: 12
+      delay: 5
+      until: mongo_ping.stdout | trim == "1"
+      changed_when: false
+
+    - name: Replica Set rs0 auf MongoDB 8 initialisieren
+      ansible.builtin.command:
+        argv:
+          - docker
+          - exec
+          - "{{ new_container }}"
+          - mongosh
+          - --quiet
+          - --eval
+          - 'rs.initiate({_id:"rs0",members:[{_id:0,host:"localhost:27017"}]})'
+
+    - name: Warten bis MongoDB 8 PRIMARY ist (max. 30 s)
+      ansible.builtin.command:
+        argv:
+          - docker
+          - exec
+          - "{{ new_container }}"
+          - mongosh
+          - --quiet
+          - --eval
+          - rs.status().myState
+      register: rs_state
+      retries: 10
+      delay: 3
+      until: rs_state.stdout | trim == "1"
+      changed_when: false
+
+    - name: Phase 1 abgeschlossen
+      ansible.builtin.debug:
+        msg:
+          - "MongoDB 8 läuft auf {{ new_container }} (Volume: {{ new_hcloud_volume }})"
+          - "RocketChat und alte MongoDB laufen unverändert weiter."
+          - "Wenn bereit: Phase 2 startet das Migrationsfenster (Downtime)."
+
+- name: Phase 2 – Migrationsfenster (Downtime)
+  hosts: tools1.hamburg.adfc.de
+  gather_facts: false
+
+  vars:
+    docker_dir: /srv/docker-rocket
+    dump_file: /usr/local/share/rocketchat/mongodump-migration-v8.gz
+    live_container: docker-rocket-mongodb-1
+    new_container: docker-rocket-mongodb8-1
+
+  tasks:
+    - name: Migrationsfenster bestätigen
+      ansible.builtin.pause:
+        prompt: |
+          ============================================================
+          ACHTUNG: Jetzt beginnt die Downtime.
+          RocketChat (chat.hamburg.adfc.de) wird gestoppt.
+          Bitte JA eingeben um fortzufahren, NEIN zum Abbrechen.
+          ============================================================
+      register: confirm
+      until: confirm.user_input == "JA" or confirm.user_input == "NEIN"
+      retries: 5
+
+    - name: Abbruch auf Wunsch
+      ansible.builtin.fail:
+        msg: "Migration abgebrochen."
+      when: confirm.user_input == "NEIN"
+
+    - name: RocketChat stoppen
+      ansible.builtin.command:
+        chdir: "{{ docker_dir }}"
+        argv:
+          - docker
+          - compose
+          - stop
+          - rocketchat
+
+    - name: Finaler mongodump vom alten Container
+      ansible.builtin.shell:
+        cmd: >
+          docker exec {{ live_container }}
+          sh -c 'mongodump --archive --gzip'
+          > {{ dump_file }}
+          2> {{ dump_file }}.log
+        executable: /bin/bash
+
+    - name: Dump-Größe prüfen
+      ansible.builtin.stat:
+        path: "{{ dump_file }}"
+      register: dump_stat
+
+    - name: Abbruch wenn Dump leer ist
+      ansible.builtin.fail:
+        msg: "Dump-Datei ist leer – alte MongoDB läuft? Manuell prüfen."
+      when: dump_stat.stat.size < 1024
+
+    - name: Dump-Größe ausgeben
+      ansible.builtin.debug:
+        msg: "Dump: {{ (dump_stat.stat.size / 1024 / 1024) | round(1) }} MB"
+
+    - name: mongorestore in MongoDB-8-Container
+      ansible.builtin.shell:
+        cmd: >
+          cat {{ dump_file }} |
+          docker exec -i {{ new_container }}
+          mongorestore --archive --gzip --drop --nsExclude='local.*'
+        executable: /bin/bash
+      register: restore_result
+
+    - name: Restore-Ausgabe (letzte 5 Zeilen)
+      ansible.builtin.debug:
+        msg: "{{ restore_result.stdout_lines[-5:] }}"
+
+    - name: Alten MongoDB-Container stoppen
+      ansible.builtin.command:
+        chdir: "{{ docker_dir }}"
+        argv:
+          - docker
+          - compose
+          - stop
+          - mongodb
+
+    - name: Finales Compose schreiben (nur MongoDB 8 + neue RC-Version)
+      ansible.builtin.copy:
+        dest: "{{ docker_dir }}/compose.yml"
+        mode: "0644"
+        content: |
+          # Ansible Managed
+          volumes:
+            mongodb8_data:
+              driver: local
+            rocket_uploads:
+              driver: local
+          services:
+            rocketchat:
+              image: registry.rocket.chat/rocketchat/rocket.chat:{{ rocketchat_live_version }}
+              restart: unless-stopped
+              environment:
+                MONGO_URL: "mongodb://mongodb:27017/rocketchat?replicaSet=rs0"
+                MONGO_OPLOG_URL: "mongodb://mongodb:27017/local?replicaSet=rs0"
+                ROOT_URL: "{{ rocketchat_live_root_url }}"
+                PORT: "3000"
+                DEPLOY_METHOD: docker
+                DEPLOY_PLATFORM: ""
+              depends_on:
+                - mongodb
+              expose:
+                - 3000
+              ports:
+                - "{{ adfc_internal_ip }}:3000:3000"
+              volumes:
+                - rocket_uploads:/app/uploads
+            mongodb:
+              image: mongodb/mongodb-community-server:8.0-ubi8
+              restart: unless-stopped
+              volumes:
+                - mongodb8_data:/data/db
+              command:
+                - --replSet
+                - rs0
+                - --bind_ip_all
+              deploy:
+                resources:
+                  limits:
+                    cpus: "1.8"
+
+    - name: docker compose up (neues Setup starten)
+      ansible.builtin.command:
+        chdir: "{{ docker_dir }}"
+        argv:
+          - docker
+          - compose
+          - up
+          - -d
+          - --remove-orphans
+
+    - name: Warten bis MongoDB bereit ist (max. 60 s)
+      ansible.builtin.command:
+        argv:
+          - docker
+          - exec
+          - docker-rocket-mongodb-1
+          - mongosh
+          - --quiet
+          - --eval
+          - db.runCommand({ping:1}).ok
+      register: mongo_ready
+      retries: 12
+      delay: 5
+      until: mongo_ready.stdout | trim == "1"
+      changed_when: false
+
+    - name: RS-Mitglied auf Servicenamen mongodb:27017 umkonfigurieren
+      ansible.builtin.command:
+        argv:
+          - docker
+          - exec
+          - docker-rocket-mongodb-1
+          - mongosh
+          - --quiet
+          - --eval
+          - 'cfg = rs.conf(); cfg.members[0].host = "mongodb:27017"; rs.reconfig(cfg)'
+
+    - name: Warten bis RocketChat antwortet (max. 3 min)
+      ansible.builtin.uri:
+        url: "http://{{ adfc_internal_ip }}:3000/api/v1/info"
+        status_code: 200
+      register: rc_health
+      retries: 18
+      delay: 10
+      until: rc_health.status == 200
+
+    - name: Benutzeranzahl in neuer Datenbank prüfen
+      ansible.builtin.command:
+        argv:
+          - docker
+          - exec
+          - docker-rocket-mongodb-1
+          - mongosh
+          - rocketchat
+          - --quiet
+          - --eval
+          - db.users.countDocuments()
+      register: user_count
+      changed_when: false
+
+    - name: Migrationsfenster beenden – Ergebnis
+      ansible.builtin.pause:
+        prompt: |
+          ============================================================
+          RocketChat läuft wieder auf MongoDB 8.
+          Benutzer in DB: {{ user_count.stdout | trim }}
+
+          Bitte https://{{ rocketchat_live_root_url | regex_replace('https?://', '') }}
+          testen und JA (Erfolg) oder NEIN (Rollback nötig) eingeben.
+          ============================================================
+      register: verify
+      until: verify.user_input == "JA" or verify.user_input == "NEIN"
+      retries: 5
+
+    - name: Hinweis bei NEIN
+      ansible.builtin.debug:
+        msg:
+          - "Rollback: compose.yml.pre-migration zurückkopieren und docker compose up."
+          - "  cp {{ docker_dir }}/compose.yml.pre-migration {{ docker_dir }}/compose.yml"
+          - "  docker compose -f {{ docker_dir }}/compose.yml up -d"
+          - "Altes Volume chat-mongo bleibt erhalten."
+      when: verify.user_input == "NEIN"
+
+    - name: Abbruch ohne group_vars-Update bei NEIN
+      ansible.builtin.fail:
+        msg: "Migration nicht bestätigt – group_vars werden nicht aktualisiert."
+      when: verify.user_input == "NEIN"
+
+- name: Phase 3 – group_vars aktualisieren
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    chat_yml: "{{ playbook_dir }}/../group_vars/tools_2023/chat.yml"
+    # tools_2023 group_vars sind im localhost-Play nicht direkt verfügbar,
+    # daher über hostvars des tools1-Hosts lesen.
+    t: "{{ hostvars['tools1.hamburg.adfc.de'] }}"
+
+  tasks:
+    - name: Neue chat.yml schreiben
+      ansible.builtin.copy:
+        dest: "{{ chat_yml }}"
+        mode: "0644"
+        content: |
+          rocketchat_test_version: {{ t.rocketchat_test_version }}
+          rocketchat_test_root_url: {{ t.rocketchat_test_root_url }}
+          rocketchat_test_mongodb_version: {{ t.rocketchat_test_mongodb_version }}
+
+          rocketchat_live_version: {{ t.rocketchat_live_version }}
+          rocketchat_live_root_url: {{ t.rocketchat_live_root_url }}
+
+          docker_compose_project_rocketchat_test:
+            nodes:
+              - tools2.hamburg.adfc.de
+            domains:
+              - chat-test.hamburg.adfc.de
+            internal_port: 3005
+            hetzner_volumes:
+              - name: chat_mongodb_test
+                size_gb: 15
+                location: nbg1
+                mount: /var/lib/docker/volumes/docker-rocketchat_test_mongodb_data
+            backup_on_new_version:
+              - src: /var/lib/docker/volumes/docker-rocketchat_test_mongodb_data
+                hcloud_volume_prefix: backup_chat_mongodb_test
+                hcloud_size_gb: 15
+                hcloud_location: nbg1
+            compose_block:
+              # From https://raw.githubusercontent.com/RocketChat/Docker.Official.Image/master/compose.yml
+              volumes:
+                mongodb_data:
+                  driver: local
+              services:
+                rocketchat:
+                  image: {% raw %}registry.rocket.chat/rocketchat/rocket.chat:{{ rocketchat_test_version }}{% endraw %}
+                  restart: unless-stopped
+                  environment:
+                    MONGO_URL: "mongodb://mongodb:27017/rocketchat?replicaSet=rs0"
+                    MONGO_OPLOG_URL: "mongodb://mongodb:27017/local?replicaSet=rs0"
+                    ROOT_URL: {% raw %}"{{ rocketchat_test_root_url }}"{% endraw %}
+                    PORT: 3005
+                    DEPLOY_METHOD: docker
+                    DEPLOY_PLATFORM: ""
+                  depends_on:
+                    - mongodb
+                  expose:
+                    - 3005
+                  ports:
+                    - {% raw %}"{{ adfc_internal_ip }}:3005:3005"{% endraw %}
+                mongodb:
+                  image: {% raw %}docker.io/bitnamilegacy/mongodb:{{ rocketchat_test_mongodb_version }}{% endraw %}
+                  restart: unless-stopped
+                  volumes:
+                    - mongodb_data:/bitnami/mongodb
+                  environment:
+                    MONGODB_REPLICA_SET_MODE: primary
+                    MONGODB_REPLICA_SET_NAME: rs0
+                    MONGODB_PORT_NUMBER: 27017
+                    MONGODB_INITIAL_PRIMARY_HOST: mongodb
+                    MONGODB_INITIAL_PRIMARY_PORT_NUMBER: 27017
+                    MONGODB_ADVERTISED_HOSTNAME: mongodb
+                    MONGODB_ENABLE_JOURNAL: true
+                    ALLOW_EMPTY_PASSWORD: yes # noqa yaml[truthy]
+
+          docker_compose_project_rocket:
+            nodes:
+              - tools1.hamburg.adfc.de
+            domains:
+              - chat.hamburg.adfc.de
+            internal_port: 3000
+            hetzner_volumes:
+              - name: chat-mongo-v8
+                size_gb: 20
+                location: nbg1
+                mount: /var/lib/docker/volumes/docker-rocket_mongodb8_data
+              - name: chat-upload
+                size_gb: 30
+                location: nbg1
+                mount: /var/lib/docker/volumes/docker-rocket_rocket_uploads
+            backup_on_new_version:
+              - src: /var/lib/docker/volumes/docker-rocket_mongodb8_data
+                hcloud_volume_prefix: backup_chat_mongo_v8
+                hcloud_size_gb: 20
+                hcloud_location: nbg1
+            compose_block:
+              # Migriert von bitnami/mongodb:7 auf mongodb/mongodb-community-server:8
+              volumes:
+                mongodb8_data:
+                  driver: local
+                rocket_uploads:
+                  driver: local
+              services:
+                rocketchat:
+                  image: {% raw %}registry.rocket.chat/rocketchat/rocket.chat:{{ rocketchat_live_version }}{% endraw %}
+                  restart: unless-stopped
+                  environment:
+                    MONGO_URL: "mongodb://mongodb:27017/rocketchat?replicaSet=rs0"
+                    MONGO_OPLOG_URL: "mongodb://mongodb:27017/local?replicaSet=rs0"
+                    ROOT_URL: {% raw %}"{{ rocketchat_live_root_url }}"{% endraw %}
+                    PORT: 3000
+                    DEPLOY_METHOD: docker
+                    DEPLOY_PLATFORM: ""
+                  depends_on:
+                    - mongodb
+                  expose:
+                    - 3000
+                  ports:
+                    - {% raw %}"{{ adfc_internal_ip }}:3000:3000"{% endraw %}
+                  volumes:
+                    - rocket_uploads:/app/uploads
+                mongodb:
+                  image: mongodb/mongodb-community-server:8.0-ubi8
+                  restart: unless-stopped
+                  volumes:
+                    - mongodb8_data:/data/db
+                  command:
+                    - --replSet
+                    - rs0
+                    - --bind_ip_all
+                  deploy:
+                    resources:
+                      limits:
+                        cpus: "1.8"
+
+    - name: group_vars aktualisiert – bitte committen
+      ansible.builtin.debug:
+        msg:
+          - "group_vars/tools_2023/chat.yml wurde aktualisiert."
+          - "Bitte prüfen und committen:"
+          - "  git diff group_vars/tools_2023/chat.yml"
+          - "  git add group_vars/tools_2023/chat.yml"
+          - "  git commit -m 'Migrate RocketChat to v{{ t.rocketchat_live_version }} with MongoDB 8'"
+          - ""
+          - "Altes Hetzner-Volume 'chat-mongo' kann nach Verifikation"
+          - "in der Hetzner-Console gelöscht werden."
