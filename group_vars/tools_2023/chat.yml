@@ -4,7 +4,7 @@ rocketchat_test_mongodb_version: 6.0
 
 rocketchat_live_version: 7.13.2
 rocketchat_live_root_url: https://chat.hamburg.adfc.de
-rocketchat_live_mongodb_version: 7.0
+rocketchat_live_mongodb_version: 8.0
 
 docker_compose_project_rocketchat_test:
   nodes:
@@ -67,24 +67,23 @@ docker_compose_project_rocket:
     - chat.hamburg.adfc.de
   internal_port: 3000
   hetzner_volumes:
-    - name: chat-mongo
+    - name: chat-mongo-v8
       size_gb: 20
       location: nbg1
-      mount: /var/lib/docker/volumes/docker-rocket_mongodb_data
+      mount: /var/lib/docker/volumes/docker-rocket_mongodb8_data
     - name: chat-upload
       size_gb: 30
       location: nbg1
       mount: /var/lib/docker/volumes/docker-rocket_rocket_uploads
   backup_on_new_version:
-    - src: /var/lib/docker/volumes/docker-rocket_mongodb_data
-      hcloud_volume_prefix: backup_chat_mongo
+    - src: /var/lib/docker/volumes/docker-rocket_mongodb8_data
+      hcloud_volume_prefix: backup_chat_mongo_v8
       hcloud_size_gb: 20
       hcloud_location: nbg1
   compose_block:
-    # From https://raw.githubusercontent.com/RocketChat/Docker.Official.Image/master/compose.yml
-    # Version: 63a01a43be966e79a66ce38ad2f1249245deb4cd
+    # Migriert von bitnami/mongodb:7 auf mongodb/mongodb-community-server:8
     volumes:
-      mongodb_data:
+      mongodb8_data:
         driver: local
       rocket_uploads:
         driver: local
@@ -108,19 +107,14 @@ docker_compose_project_rocket:
         volumes:
           - rocket_uploads:/app/uploads
       mongodb:
-        image: docker.io/bitnamilegacy/mongodb:{{ rocketchat_live_mongodb_version }}
+        image: mongodb/mongodb-community-server:{{ rocketchat_live_mongodb_version }}-ubi8
         restart: unless-stopped
         volumes:
-          - mongodb_data:/bitnami/mongodb
-        environment:
-          MONGODB_REPLICA_SET_MODE: primary
-          MONGODB_REPLICA_SET_NAME: rs0
-          MONGODB_PORT_NUMBER: 27017
-          MONGODB_INITIAL_PRIMARY_HOST: mongodb
-          MONGODB_INITIAL_PRIMARY_PORT_NUMBER: 27017
-          MONGODB_ADVERTISED_HOSTNAME: mongodb
-          MONGODB_ENABLE_JOURNAL: true
-          ALLOW_EMPTY_PASSWORD: yes # noqa yaml[truthy]
+          - mongodb8_data:/data/db
+        command:
+          - --replSet
+          - rs0
+          - --bind_ip_all
         # Wenn man von außen zugreifen will:
         # ports:
         # - 127.0.0.1:27017:27017
