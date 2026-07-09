@@ -1,0 +1,28 @@
+- name: Create modern polkit rules for xrdp
+  ansible.builtin.template:
+    src: "{{ item }}.js.j2"
+    dest: "/etc/polkit-1/rules.d/{{ item }}"
+    mode: "0644"
+    owner: root
+    group: root
+  notify: Restart polkit
+  loop:
+    - 50-xrdp-color-manager.rules
+    - 50-xrdp-disable-network-manager.rules
+
+- name: Create polkit rule to disable shutdown for virtual machines
+  ansible.builtin.template:
+    src: 50-xrdp-disable-shutdown.rules.js.j2
+    dest: /etc/polkit-1/rules.d/50-xrdp-disable-shutdown.rules
+    mode: "0644"
+    owner: root
+    group: root
+  notify: Restart polkit
+  when: enable_user_shutdown is defined and not enable_user_shutdown
+
+- name: Remove shutdown restriction for physical machines
+  ansible.builtin.file:
+    path: /etc/polkit-1/rules.d/50-xrdp-disable-shutdown.rules
+    state: absent
+  notify: Restart polkit
+  when: enable_user_shutdown is undefined or enable_user_shutdown

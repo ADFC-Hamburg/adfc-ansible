@@ -1,0 +1,18 @@
+// {{ ansible_managed }}
+// Allow xrdp user to access color management
+polkit.addRule(function (action, subject) {
+  if (
+    action.id == "org.freedesktop.color-manager.create-device" ||
+    action.id == "org.freedesktop.color-manager.create-profile" ||
+    action.id == "org.freedesktop.color-manager.delete-device" ||
+    action.id == "org.freedesktop.color-manager.delete-profile" ||
+    action.id == "org.freedesktop.color-manager.modify-device" ||
+    action.id == "org.freedesktop.color-manager.modify-profile"
+  ) {
+    if (subject.isInGroup("xrdp")) {
+      return polkit.Result.YES;
+    }
+  }
+});
+
+// vim: set ft=javascript:

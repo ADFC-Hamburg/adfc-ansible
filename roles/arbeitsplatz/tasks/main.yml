@@ -1,0 +1,83 @@
+# benötigte Programme installieren
+# pdfshuffler muss bei Wechsel auf Kubuntu >=19 in pdfarranger geändert werden
+- name: Sicherstellen, dass repositories auf dem neusten Stand sind
+  meta: flush_handlers
+
+- name: Installiere Pakete
+  ansible.builtin.apt:
+    clean: true
+    name:
+      - openjdk-25-jre
+      - flameshot
+      - gstreamer1.0-plugins-base
+      - kdenlive
+      - vlc
+      - libccid
+      - gnupg2
+      - gimp
+      - gimp-help-de
+      - glabels
+      - openshot-qt
+      - gnucash
+      - gnucash-docs
+      - bsd-mailx
+      - krdc
+      - pavucontrol
+      - pdfarranger
+      - keepassxc
+      - nextcloud-desktop
+      - nextcloud-desktop
+      - dolphin-nextcloud
+      - qrencode
+      - qtqr
+      - pdfgrep
+      - kleopatra
+      - pandoc
+  tags: software
+
+# Rollen erst includieren wenn das hibiscus-ppa paktet deinstalliert ist
+
+- name: Kein KDE Update Icon mehr anzeigen
+  ansible.builtin.apt:
+    name: plasma-discover
+    state: absent
+  tags: plasma-discover
+
+# XnViewMP installieren
+#- name: XnViewMP Installieren
+#  ansible.builtin.apt:
+#    deb: https://download.xnview.com/XnViewMP-linux-x64.deb
+#  tags: xnviewmp, software
+# FIXME 2025-07-27: geht gerade nicht: erwartet libgdk-pixbuf2.0-0 es gibt aber nur libgdk-pixbuf-2.0-0
+-  # FIXME Freemind-snap
+
+# Shortcuts für Flameshot einrichten
+- name: Create /usr/share/khotkeys directory
+  ansible.builtin.file:
+    path: /usr/share/khotkeys
+    state: directory
+    mode: "0755"
+    owner: root
+    group: root
+
+- name: Erstelle /usr/share/khotkeys/flameshot.khotkeys
+  ansible.builtin.copy:
+    src: flameshot.khotkeys
+    dest: /usr/share/khotkeys/flameshot.khotkeys
+- name: Standard-Hotkeys fuer Spectacle löschen
+  ansible.builtin.file:
+    path: /usr/share/khotkeys/spectacle.khotkeys
+    state: absent
+
+- name: Erstelle /etc/issue
+  ansible.builtin.template:
+    src: issue
+    dest: /etc/issue
+
+- name: sudoer erstellen
+  ansible.builtin.template:
+    src: sudoers-client
+    dest: /etc/sudoers.d/adfc-ansible
+    validate: /usr/sbin/visudo -cf %s
+    mode: 0440
+  tags: sudo

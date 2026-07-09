@@ -1,8 +1,26 @@
 ---
-# benötigte Programme installieren
-- name: Installiere Pakete
+- name: Install base packages
   ansible.builtin.apt:
     name: "{{ basic_setup_base_packages }}"
+
+- name: Check if custom sources.list template exists for this distribution
+  ansible.builtin.stat:
+    path: "{{ role_path }}/templates/{{ ansible_distribution | lower }}-{{ ansible_distribution_major_version }}-sources.list.j2"
+  register: custom_sources_template
+  delegate_to: localhost
+  become: no
+
+# this must be done after base packages are installed, cause of apt-transport-https
+- name: Configure distribution-specific sources.list
+  ansible.builtin.template:
+    src: "{{ ansible_distribution | lower }}-{{ ansible_distribution_major_version }}-sources.list.j2"
+    dest: /etc/apt/sources.list
+    owner: root
+    group: root
+    mode: "0644"
+    backup: yes
+  when: custom_sources_template.stat.exists
+  notify: Update apt cache
 
 - name: Setup Journald Settings
   ansible.builtin.template:
