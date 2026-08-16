@@ -1,0 +1,10 @@
+---
+# Verbindungsdaten der docker-borg-backup-server-Zielboxen (siehe
+# roles/borg_backup_target_docker). Bewusst hier als group_vars und nicht
+# nur als Rollen-Default: roles/borg_server laeuft auf den Quellhosts
+# (Gruppe save_with_borg) in einem ANDEREN Play und muss diese Werte per
+# hostvars[<zielbox>] lesen koennen, auch wenn borg_backup_target_docker im
+# jeweiligen Play gar nicht ausgefuehrt wird - reine Rollen-Defaults waeren
+# dafuer nicht zuverlaessig sichtbar.
+adfc_borg_target_dir: /usr/local/share/adfc-borg-backup-server
+adfc_borg_target_ssh_port: 2222

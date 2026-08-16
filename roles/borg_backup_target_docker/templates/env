@@ -1,0 +1,2 @@
+# {{ ansible_managed }}
+SSH_PORT={{ adfc_borg_target_ssh_port }}

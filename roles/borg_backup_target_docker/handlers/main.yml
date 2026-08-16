@@ -1,0 +1,5 @@
+---
+- name: Reload borg-server keys
+  ansible.builtin.command: docker compose exec -T borg-server /usr/local/bin/build-authorized-keys.sh
+  args:
+    chdir: "{{ adfc_borg_target_dir }}"

@@ -1,0 +1,44 @@
+# {{ ansible_managed }}
+#
+# Anpassungen gegenueber dem eingecheckten compose.yml, ohne dieses selbst
+# anzufassen (Docker Compose merged compose.override.yml automatisch dazu,
+# wenn beide im selben Verzeichnis liegen):
+#
+# - Image entweder auf die von Ansible verwaltete Version gepinnt, oder
+#   (adfc_borg_target_watchtower_enabled) auf einen von Watchtower selbst
+#   aktuell gehaltenen Tag - siehe defaults/main.yml, die beiden schliessen
+#   sich gegenseitig aus.
+# - "borg-data" ist im Original ein reines Docker-Named-Volume (landet ohne
+#   diesen Override im internen Docker-Storage, i.d.R. die Systemplatte).
+#   Per "driver_opts: type=none,o=bind" zeigt es stattdessen direkt auf
+#   adfc_borg_target_data_dir auf der vorhandenen Backup-Platte - technisch
+#   weiterhin ein "Named Volume", nur mit einem festen Pfad dahinter.
+services:
+  borg-server:
+{% if adfc_borg_target_watchtower_enabled %}
+    image: ghcr.io/tabacha/docker-borg-backup-server:{{ adfc_borg_target_watchtower_tag }}
+    labels:
+      - "com.centurylinklabs.watchtower.scope=borg-server"
+{% else %}
+    image: ghcr.io/tabacha/docker-borg-backup-server:{{ adfc_borg_target_image_tag }}
+{% endif %}
+    pull_policy: always
+{% if adfc_borg_target_watchtower_enabled %}
+
+  watchtower:
+    image: containrrr/watchtower
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    command: --interval {{ adfc_borg_target_watchtower_interval }} --cleanup --scope=borg-server
+    labels:
+      - "com.centurylinklabs.watchtower.scope=borg-server"
+{% endif %}
+
+volumes:
+  borg-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: "{{ adfc_borg_target_data_dir }}"

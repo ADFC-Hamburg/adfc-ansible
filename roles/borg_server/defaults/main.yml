@@ -2,3 +2,26 @@
 adfc_borg_repo: /adfc-backup/{{ inventory_hostname }}
 borg_bin_version: 1.1.17
 borg_bin_sha256_sum: "21484d30271478d4a01aad1b286973443b50afc5379e4a6aef40da3379e21ddf"
+
+# Welches adfc-borg-Backend dieser Rechner benutzt: "pyenv" (bisheriges
+# lokal installiertes Borg-Binary) oder "docker" (docker-borg-backup,
+# braucht adfc_borg_docker_dir vorbereitet). Migration erfolgt einzeln pro
+# Rechner ueber host_vars.
+adfc_borg_client_version: pyenv
+adfc_borg_docker_dir: /usr/local/share/adfc-borg-docker
+
+# Deployt docker-borg-backup nach adfc_borg_docker_dir, auch wenn
+# adfc_borg_client_version noch auf "pyenv" steht - so kann man einen
+# Rechner vorbereiten/testen ("adfc-borg-docker init <rechner>" direkt
+# aufrufen), bevor man tatsaechlich umschaltet. Wird automatisch auf true
+# gezogen, sobald adfc_borg_client_version auf "docker" steht.
+adfc_borg_docker_enabled: false
+
+# https://github.com/tabacha/docker-borg-backup - Git-Tag fuer den
+# Checkout nach adfc_borg_docker_dir und der dazu passende Image-Tag auf
+# ghcr.io (Release-Kandidaten wie dieser landen bewusst NICHT unter
+# ":latest", siehe Release-Notes - deshalb der eigene Compose-Override,
+# der das Image explizit pinnt statt compose.yml unveraendert zu lassen).
+adfc_borg_docker_repo: https://github.com/tabacha/docker-borg-backup.git
+adfc_borg_docker_version: v1.1.0-rc0
+adfc_borg_docker_image_tag: 1.1.0-rc0

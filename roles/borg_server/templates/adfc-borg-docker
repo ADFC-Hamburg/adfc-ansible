@@ -1,0 +1,337 @@
+#!/bin/bash
+# {{ ansible_managed }}
+#
+# Docker-Backend fuer "adfc-borg" (siehe adfc-borg-Wrapper-Skript). Nutzt
+# statt eines lokal installierten Borg-Binaries das containerisierte
+# https://github.com/tabacha/docker-borg-backup Projekt, das unter
+# DOCKER_DIR ausgecheckt und konfiguriert sein muss (.env, targets/*.env,
+# secrets/*/ - siehe README des Projekts). Das Bereitstellen von DOCKER_DIR
+# ist NICHT Teil dieses Skripts/dieser Rolle.
+#
+# "RECHNER" entspricht hier 1:1 dem "Zielserver"-Namen (<target>) von
+# docker-borg-backup - es muss also DOCKER_DIR/targets/<RECHNER>.env geben.
+#
+# Eigene Buchhaltung unter STATUS_DIR (getrennt von adfc-borg-pyenv, das
+# direkt unter /usr/local/share/adfc-borg/{clients,tried,success,lock,
+# disabled} ablegt): das Docker-Repo je Rechner ist ein komplett neues
+# Repo (andere Verschluesselung, anderer Pfad auf dem Zielserver) - kein
+# Weiterbenutzen des alten Repos. Ein Umstellen von client-version auf
+# "docker" verlangt also bewusst ein erneutes "adfc-borg init <rechner>",
+# statt faelschlich anzunehmen, das sei schon erledigt.
+
+DOCKER_DIR="{{ adfc_borg_docker_dir }}"
+STATUS_DIR="/usr/local/share/adfc-borg/docker"
+
+# Wie viele Sekunden sollte das letzte erfolgreiche Backup hoechstens her
+# sein 60*60*24 (1 Tag)
+SUCCESS_TIMEOUT="86400"
+
+mkdir -p "${STATUS_DIR}" "${STATUS_DIR}/clients" "${STATUS_DIR}/lock" "${STATUS_DIR}/disabled" "${STATUS_DIR}/success" "${STATUS_DIR}/tried"
+
+borg_last_successfull_backup() {
+    RECHNER="$1"
+    SUCC="${STATUS_DIR}/success/${RECHNER}"
+    if [ ! -f "$SUCC" ] ; then
+        echo 0
+        return
+    fi
+    LAST="$(( $(date +%s) - $(stat -c "%Y" "$SUCC") ))"
+    echo "$(( LAST < SUCCESS_TIMEOUT ))"
+}
+
+borg_lock() {
+    RECHNER="$1"
+    LOCK="${STATUS_DIR}/lock/${RECHNER}"
+    exec 200> "$LOCK" || ( echo "Ein Backup läuft" ; exit 3 )
+    flock -n 200 || ( echo "Ein Backup läuft" ; exit 3 )
+}
+
+borg_unlock() {
+    RECHNER="$1"
+    LOCK="${STATUS_DIR}/lock/${RECHNER}"
+    flock -u 200
+    rm -f "$LOCK"
+}
+
+# Fuehrt ein Kommando (typischerweise "docker compose run --rm borg-admin
+# ...") mit dem unattended Backup-Key aus - fuer lesende/anhaengende
+# Operationen (init, info, list), die keinen per Hand am Agent
+# vorbeigereichten Admin-Key brauchen. Repliziert dabei, was backup.sh in
+# docker-borg-backup selbst macht: eigener kurzlebiger ssh-agent,
+# targets/<rechner>.env (einzige Konfigurationsquelle seit v1.1.0, kein
+# globales .env mehr) in die Umgebung geladen, TARGET gesetzt.
+with_backup_agent() {
+    local rechner="$1"; shift
+    local key="${DOCKER_DIR}/secrets/${rechner}/backup_ed25519"
+    local target_env="${DOCKER_DIR}/targets/${rechner}.env"
+
+    if [ ! -f "$key" ] ; then
+        echo "Kein Backup-Key unter ${key} - erst 'adfc-borg init ${rechner}' ausfuehren." >&2
+        return 1
+    fi
+    if [ ! -f "$target_env" ] ; then
+        echo "Kein ${target_env} - Zielserver muss erst angelegt werden." >&2
+        return 1
+    fi
+
+    eval "$(ssh-agent -s)" >/dev/null
+    trap 'ssh-agent -k >/dev/null' RETURN
+    ssh-add "$key" >/dev/null 2>&1
+    export SSH_AUTH_SOCK
+
+    (
+        cd "${DOCKER_DIR}" || exit 1
+        set -a
+        # shellcheck disable=SC1090
+        source "${target_env}"
+        set +a
+        TARGET="${rechner}" "$@"
+    )
+}
+
+borg_init() {
+    RECHNER="$1"
+    if [ -z "${RECHNER}" ] ; then
+        echo Bitte Rechner angeben
+        exit 1
+    fi
+    if [ ! -f "${DOCKER_DIR}/targets/${RECHNER}.env" ] ; then
+        echo "FEHLER: ${DOCKER_DIR}/targets/${RECHNER}.env fehlt - Zielserver muss erst angelegt werden (targets/example.env.example kopieren)."
+        exit 1
+    fi
+    if [ -f "${STATUS_DIR}/clients/${RECHNER}" ] ; then
+        echo existiert schon
+        exit 1
+    fi
+    echo "Erzeuge Backup-Key/Passphrase/known_hosts fuer ${RECHNER} (setup-secrets.sh) ..."
+    "${DOCKER_DIR}/setup-secrets.sh" "${RECHNER}"
+    echo "TARGET=${RECHNER} docker compose run --rm borg-admin init --encryption=repokey-blake2"
+    if ! with_backup_agent "${RECHNER}" docker compose run --rm borg-admin init --encryption=repokey-blake2 ; then
+        echo Fehler beim borg init
+        exit 1
+    fi
+    touch "${STATUS_DIR}/clients/${RECHNER}"
+    touch "${STATUS_DIR}/tried/${RECHNER}"
+    exit 0
+}
+
+borg_for() {
+    ACTION="$1"
+    RECHNER="$2"
+    if [ -n "$RECHNER" ] ; then
+        "${ACTION}" "${RECHNER}"
+    else
+        for FILE in "${STATUS_DIR}"/clients/* ; do
+            [ -e "$FILE" ] || continue
+            RECHNER=$(basename "$FILE")
+            "${ACTION}" "${RECHNER}"
+        done
+    fi
+    exit 0
+}
+
+borg_cron() {
+    for FILE in $(ls -tr "${STATUS_DIR}"/tried/* 2>/dev/null) ; do
+        RECHNER=$(basename "$FILE")
+        if [ ! -f "${STATUS_DIR}/disabled/${RECHNER}" ] ; then
+            borg_lock "$RECHNER" || exit $?
+            touch "${STATUS_DIR}/tried/${RECHNER}"
+            echo "${DOCKER_DIR}/backup.sh ${RECHNER}"
+            "${DOCKER_DIR}/backup.sh" "${RECHNER}"
+            STATUS=$?
+            borg_unlock "$RECHNER"
+            if [ "$STATUS" -eq 0 ]; then
+                touch "${STATUS_DIR}/success/${RECHNER}"
+                touch "${STATUS_DIR}/success/any"
+                # Wenn eine Sicherung erfolgreich ist, anhalten (Log liegt
+                # unter DOCKER_DIR/logs/backup-<rechner>-*.log, backup.sh
+                # schreibt sein eigenes Log selbst)
+                exit 0
+            fi
+            # Sonst in der Schleife den naechsten Rechner probieren
+        fi
+    done
+}
+
+borg_status() {
+    RECHNER="$1"
+    RED='\033[0;31m'
+    GREEN='\033[0;32m'
+    # NC = NO COLOR
+    NC='\033[0m'
+
+    echo "== Status für Rechner $RECHNER (docker) =="
+    if [ -f "${STATUS_DIR}/disabled/${RECHNER}" ] ; then
+        echo -e "  ${RED}Der Rechner wurde vom Backup ausgenommen${NC}"
+        echo "  Bitte:"
+        echo "    adfc-borg start $RECHNER"
+        echo "  eingeben um ihn wieder hinzuzufügen"
+    else
+        echo -e "  ${GREEN}Der Rechner wird zum sichern verwendet${NC}"
+    fi
+    if [ -f "${STATUS_DIR}/success/${RECHNER}" ] ; then
+        SUC=$(borg_last_successfull_backup "$RECHNER")
+        if [ "$SUC" == "1" ] ; then
+            echo -ne "${GREEN}"
+        else
+            echo -ne "${RED}"
+        fi
+        stat -c "  Letzte erfolgreiche Sicherung: %y" "${STATUS_DIR}/success/${RECHNER}"
+        echo -ne "${NC}"
+    else
+        echo -e "  ${RED}Auf dem Rechner wurde noch nie eine Sicherung erfolgreich gesichert${NC}"
+    fi
+    with_backup_agent "${RECHNER}" docker compose run --rm borg-admin info
+    LOCK="${STATUS_DIR}/lock/${RECHNER}"
+    if [ -f "$LOCK" ] ; then
+        echo -ne "${GREEN}"
+        stat -c "  Prozess aktiv seit: %y" "$LOCK"
+        echo -ne "${NC}"
+    else
+        echo "  Kein Backup aktiv"
+    fi
+    echo ""
+}
+
+borg_prune() {
+    RECHNER="$1"
+    if [ -f "${STATUS_DIR}/disabled/${RECHNER}" ] ; then
+        echo "Rechner $RECHNER wurde deaktiviert"
+        return
+    fi
+    # admin-compact.sh braucht den ADMIN-Key per Agent-Forwarding (per
+    # Design von docker-borg-backup, siehe README "Sicherheit: zwei
+    # Schluessel gegen Ransomware") - NICHT unattended per Cron aufrufbar.
+    # Ohne "ssh -A" bricht das Skript selbst mit einer klaren
+    # Fehlermeldung ab.
+    #
+    # Der alte adfc-borg-pyenv war beim SSH-Key genauso schon auf
+    # "--append-only" beschraenkt (siehe setup_client.yml) - das ist also
+    # keine Neuerung hier. Der eigentliche Unterschied: adfc-borg-pyenv
+    # ruft nirgends "borg compact" auf, gibt also unter Append-Only
+    # vermutlich nie wirklich Speicherplatz frei ("borg prune" markiert
+    # unter Append-Only nur, loescht aber serverseitig nicht wirklich).
+    # docker-borg-backup macht diesen fehlenden Schritt explizit - dafuer
+    # eben mit einem zweiten, nicht append-only-restriktem Admin-Key.
+    "${DOCKER_DIR}/admin-compact.sh" "${RECHNER}"
+}
+
+borg_start() {
+    RECHNER="$1"
+    rm -f "${STATUS_DIR}/disabled/${RECHNER}"
+}
+
+borg_stop() {
+    RECHNER="$1"
+    touch "${STATUS_DIR}/disabled/${RECHNER}"
+}
+
+borg_key_export() {
+    RECHNER="$1"
+    # Kein "borg key export" bei repokey-blake2 + docker-borg-backup -
+    # disaster-recovery-info.sh liefert das Aequivalent (Repo-Adresse,
+    # Passphrase, known_hosts, fertige Restore-Anleitung).
+    "${DOCKER_DIR}/disaster-recovery-info.sh" "${RECHNER}"
+}
+
+borg_list() {
+    RECHNER="$1"
+    echo "Liste der Backups auf ${RECHNER} (docker):"
+    with_backup_agent "${RECHNER}" docker compose run --rm borg-admin list
+}
+
+borg_mount() {
+    RECHNER="$1"
+    echo "Mounten geht bei docker-borg-backup nur interaktiv ueber admin-shell.sh"
+    echo "(braucht den Admin-Key per Agent-Forwarding, siehe README dort):"
+    echo ""
+    echo "  ssh -tA <admin-user>@$(hostname -f) ${DOCKER_DIR}/admin-shell.sh ${RECHNER}"
+    echo ""
+    echo "Im Container dann z.B.:"
+    echo "  cd /restore && borg extract ::<archiv> [pfad]"
+    echo "oder zum Durchsuchen ohne Extrahieren:"
+    echo "  mkdir -p /mnt/borg && borg mount ::<archiv> /mnt/borg"
+    exit 1
+}
+
+borg_umount() {
+    borg_mount "$@"
+}
+
+borg_help() {
+    cat <<EOF
+
+AUFRUF (Docker-Backend, wird ueber "adfc-borg" aufgerufen)
+ adfc-borg <aktion>
+
+aktion kann folgendes sein:
+
+
+help                  - Diese Hilfeseite
+
+init <rechnername>    - Rechner erstmalig initalisieren, braucht vorher
+                         ${DOCKER_DIR}/targets/<rechnername>.env
+
+cron                  - Eine Sicherung durchführen, der nächste freie Rechner
+                         aus der tried-Queue wird gesichert
+
+status <rechnername>  - Status anzeigen
+
+prune <rechnername>   - Alte Sicherungen entfernen, braucht den Admin-Key
+                         per "ssh -A" (siehe docker-borg-backup README)
+
+stop <rechnername>    - Sicherung verhindern
+                         z.B weil man eine Rücksicherung vornehmen will.
+
+start <rechnername>   - Sicherung wieder aufnemen
+
+key-export <rechnername> - Angaben fuer einen Notfall-Restore anzeigen
+                         (Passphrase im Klartext! disaster-recovery-info.sh)
+
+list <rechnername>    - Sicherungen anzeigen
+
+mount/umount <rechnername> - geht nur interaktiv, siehe Hinweistext
+
+Der Rechnername kann außer bei init weggelassen werden, dann gilt es für alle
+registrierten Rechner.
+
+EOF
+}
+
+
+case "$1" in
+    init)
+        borg_init "$2"
+    ;;
+    cron)
+        borg_cron
+    ;;
+    status)
+        borg_for borg_status "$2"
+    ;;
+    prune)
+        borg_for borg_prune "$2"
+    ;;
+    stop)
+        borg_for borg_stop "$2"
+    ;;
+    start)
+        borg_for borg_start "$2"
+    ;;
+    key-export)
+        borg_for borg_key_export "$2"
+    ;;
+    list)
+        borg_for borg_list "$2"
+    ;;
+    mount)
+        borg_mount "$2" "$3"
+    ;;
+    umount)
+        borg_umount "$2"
+    ;;
+    *)
+        borg_help
+    ;;
+esac
+exit 0

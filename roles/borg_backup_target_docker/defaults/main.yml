@@ -1,0 +1,45 @@
+---
+# https://github.com/tabacha/docker-borg-backup-server - Server-Gegenstueck
+# zu docker-borg-backup (siehe roles/borg_server "adfc-borg-docker"). Laeuft
+# auf den Rechnern, auf die gesichert WIRD (Inventory-Gruppe
+# "backup_clients", z.B. adfc-hh-bak-1/2 - trotz des irrefuehrenden
+# Gruppennamens die Ziel-/Speicherseite, nicht die Quellseite).
+# adfc_borg_target_dir und adfc_borg_target_ssh_port stehen NICHT hier,
+# sondern in group_vars/backup_clients.yml - roles/borg_server (Quellhosts,
+# anderes Play) muss sie per hostvars[<zielbox>] lesen koennen, auch wenn
+# diese Rolle im jeweiligen Play gar nicht laeuft. Reine Rollen-Defaults
+# waeren dafuer nicht sichtbar. Siehe Kommentar dort.
+adfc_borg_target_repo: https://github.com/tabacha/docker-borg-backup-server.git
+adfc_borg_target_version: v1.0.0
+adfc_borg_target_image_tag: "1.0.0"
+
+# Watchtower fuer automatische Image-Updates statt Ansible-gesteuertem
+# Pinning - Opt-in, weil sich das mit adfc_borg_target_image_tag
+# widerspricht: ein fest gepinnter Versions-Tag aendert sich nie, Watchtower
+# haette dann nichts zu tun. Aktiviert wechselt das Image bewusst auf
+# adfc_borg_target_watchtower_tag (":latest") statt auf den gepinnten Tag -
+# Kompromiss "immer aktuell" statt "kontrolliert getestet".
+adfc_borg_target_watchtower_enabled: false
+adfc_borg_target_watchtower_tag: latest
+adfc_borg_target_watchtower_interval: 43200
+
+# Unterverzeichnis auf der VORHANDENEN Backup-Platte (siehe
+# playbooks/setup-backup-client.yml, mountet "/adfc-backup" schon) - bewusst
+# ein ANDERER Pfad als die alten adfc-borg-pyenv-Repos
+# (/adfc-backup/<hostname>), damit alte und neue Sicherungen nebeneinander
+# existieren koennen, bis der Umstieg abgeschlossen ist.
+adfc_borg_target_data_dir: /adfc-backup/docker-repos
+
+# Backup-Keys (Quellhosts, die auf dieses Ziel schreiben duerfen) und
+# Admin-Keys (volle, nicht append-only Rechte fuer admin-compact.sh/
+# admin-shell.sh) - siehe adfc-borg-docker "init" auf dem jeweiligen
+# Quellhost fuer den Public Key. "version" ist optional (Name eines auf dem
+# Server per Dockerfile BORG_VERSIONS installierten Borg-Binaries, z.B.
+# "1.2.8" - ohne Angabe kommt die Server-Default-Version zum Einsatz).
+#
+# Beispiel:
+#   adfc_borg_target_backup_keys:
+#     - name: tools1
+#       pubkey: "ssh-ed25519 AAAA... borg-backup-adfc-hh-bak-1"
+adfc_borg_target_backup_keys: []
+adfc_borg_target_admin_keys: []

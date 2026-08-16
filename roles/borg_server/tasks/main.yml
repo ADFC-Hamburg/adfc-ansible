@@ -75,12 +75,38 @@
     creates: /root/.ssh/borgbackup-server
   tags: borg-server
 
-- name: Install borg-script
+- name: Install adfc-borg wrapper and backend scripts
   ansible.builtin.template:
-    src: adfc-borg
-    dest: /usr/local/sbin/adfc-borg
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
     mode: "0755"
+  loop:
+    - { src: adfc-borg, dest: /usr/local/sbin/adfc-borg }
+    - { src: adfc-borg-pyenv, dest: /usr/local/sbin/adfc-borg-pyenv }
+    - { src: adfc-borg-docker, dest: /usr/local/sbin/adfc-borg-docker }
   tags: borg-server,adfc-borg
+
+- name: Set adfc-borg client-version
+  ansible.builtin.copy:
+    content: "{{ adfc_borg_client_version }}\n"
+    dest: /usr/local/share/adfc-borg/client-version
+    mode: "0644"
+    owner: root
+    group: root
+  tags: borg-server,adfc-borg
+
+- name: Deploy docker-borg-backup client
+  ansible.builtin.include_tasks: deploy_docker_client.yml
+  when: adfc_borg_docker_enabled | default(false) or adfc_borg_client_version == 'docker'
+  tags: borg-server,adfc-borg,adfc-borg-docker
+
+- name: Setup docker-borg-backup targets
+  ansible.builtin.include_tasks: setup_client_docker_target.yml
+  loop: "{{ groups['backup_clients'] }}"
+  loop_control:
+    loop_var: backup_client
+  when: adfc_borg_docker_enabled | default(false) or adfc_borg_client_version == 'docker'
+  tags: borg-server,adfc-borg,adfc-borg-docker
 
 - name: Keyscan of clients
   ansible.builtin.command:
