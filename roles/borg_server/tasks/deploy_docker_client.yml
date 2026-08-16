@@ -23,7 +23,7 @@
 
 - name: Pin borg-admin image tag via compose override
   ansible.builtin.template:
-    src: borg-docker-compose.override.yml
+    src: borg-docker-compose.override.yml.j2
     dest: "{{ adfc_borg_docker_dir }}/compose.override.yml"
     mode: "0644"
     owner: root

@@ -19,7 +19,7 @@
 
 - name: Render targets/{{ backup_client }}.env
   ansible.builtin.template:
-    src: docker-target.env
+    src: docker-target.env.j2
     dest: "{{ adfc_borg_docker_dir }}/targets/{{ backup_client }}.env"
     mode: "0644"
     owner: root

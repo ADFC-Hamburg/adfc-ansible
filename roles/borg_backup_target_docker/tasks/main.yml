@@ -25,7 +25,7 @@
 
 - name: Install .env (SSH_PORT)
   ansible.builtin.template:
-    src: env
+    src: env.j2
     dest: "{{ adfc_borg_target_dir }}/.env"
     mode: "0644"
     owner: root
@@ -33,7 +33,7 @@
 
 - name: Pin image tag and bind-mount data dir via compose override
   ansible.builtin.template:
-    src: compose.override.yml
+    src: compose.override.yml.j2
     dest: "{{ adfc_borg_target_dir }}/compose.override.yml"
     mode: "0644"
     owner: root
