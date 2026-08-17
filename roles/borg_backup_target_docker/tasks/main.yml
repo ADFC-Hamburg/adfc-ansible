@@ -83,20 +83,10 @@
     file_type: directory
     recurse: false
   register: adfc_borg_target_identity_dirs
-  when: adfc_borg_target_admin_key_sync_enabled
 
 - name: Admin-Keys je Backup-Identitaet synchronisieren
-  # Noch deaktiviert (adfc_borg_target_admin_key_sync_enabled: false) -
-  # build-authorized-keys.sh auf dem Server bricht aktuell ATOMAR fuer
-  # ALLE Identitaeten ab, sobald eine Identitaet Keys unter beiden
-  # keys/backup/ UND keys/admin/ hat (siehe Kommentar bei
-  # adfc_borg_target_admin_users in defaults/main.yml, Report an
-  # tabacha/docker-borg-backup-server). Erst aktivieren, wenn das dort
-  # behoben ist - sonst blockiert der naechste reload-keys.sh-Aufruf jeden
-  # Key-Reload auf dieser Zielbox.
   ansible.builtin.include_tasks: sync_admin_keys.yml
-  loop: "{{ adfc_borg_target_identity_dirs.files | default([]) }}"
+  loop: "{{ adfc_borg_target_identity_dirs.files }}"
   loop_control:
     loop_var: adfc_borg_identity_dir
     label: "{{ adfc_borg_identity_dir.path | basename }}"
-  when: adfc_borg_target_admin_key_sync_enabled
