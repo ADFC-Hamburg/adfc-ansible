@@ -55,5 +55,7 @@
     - name: Deploy docker-borg-backup-server
       ansible.builtin.include_role:
         name: borg_backup_target_docker
+        apply:
+          tags: borg-target-docker
       when: adfc_borg_target_docker_enabled | default(false)
       tags: borg-target-docker
