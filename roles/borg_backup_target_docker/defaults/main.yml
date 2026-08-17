@@ -81,9 +81,6 @@ adfc_borg_target_admin_keys: []
 # Liste entfernt, werden seine Key-Dateien beim naechsten Lauf auch aus
 # jeder Backup-Identitaet wieder entfernt.
 adfc_borg_target_admin_users:
-  - falkh
   - georgs
-  - lucaf
   - svena
   - volkerk
-  - patrickl
