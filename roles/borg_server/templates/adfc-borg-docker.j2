@@ -75,7 +75,12 @@ with_backup_agent() {
     fi
 
     eval "$(ssh-agent -s)" >/dev/null
-    trap 'ssh-agent -k >/dev/null' RETURN
+    # ">/dev/null 2>&1" statt nur ">/dev/null": RETURN-Traps feuern in bash
+    # sowohl beim "source" unten (im Subshell, das den Trap erbt) als auch
+    # beim eigentlichen Return dieser Funktion - das zweite "ssh-agent -k"
+    # findet den Agent dann schon beendet vor ("kill: No such process" auf
+    # stderr, harmlos aber verwirrend ohne die Umleitung).
+    trap 'ssh-agent -k >/dev/null 2>&1' RETURN
     ssh-add "$key" >/dev/null 2>&1
     export SSH_AUTH_SOCK
 

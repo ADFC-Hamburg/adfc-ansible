@@ -31,25 +31,21 @@ adfc_borg_target_watchtower_interval: 43200
 adfc_borg_target_data_dir: /adfc-backup/docker-repos
 
 # Backup-Keys (Quellhosts, die auf dieses Ziel schreiben duerfen) und
-# Admin-Keys (volle, nicht append-only Rechte fuer admin-compact.sh/
-# admin-shell.sh). Automatisch registrierte Backup-Keys der Quellhosts aus
-# save_with_borg laufen NICHT hierueber, sondern ueber
+# eigenstaendige Admin-Identitaeten OHNE zugehoerige Backup-Rolle. Beides
+# manuell/vollstaendig hier pflegen - automatisch registrierte Backup-Keys
+# der Quellhosts aus save_with_borg laufen NICHT hierueber, sondern ueber
 # roles/borg_server/tasks/setup_client_docker_target.yml (adfc_borg_docker_uid
-# des jeweiligen Quellhosts) - diese Liste ist fuer sonstige manuell zu
-# registrierende Backup-Keys gedacht. Admin-Keys aus
-# adfc_borg_target_admin_users (siehe unten) werden automatisch ergaenzt,
-# diese Liste ist fuer zusaetzliche/Ausnahme-Admin-Keys.
+# des jeweiligen Quellhosts). Admin-Keys je Backup-Identitaet laufen
+# ebenfalls separat, siehe adfc_borg_target_admin_users unten.
 #
 # Seit docker-borg-backup-server v1.1.0 bekommt jede Identitaet einen
 # eigenen Unix-Account (users/<uid>-<name>/, siehe dessen Release-Notes) -
 # "uid" ist deshalb Pflicht und muss pro Zielrechner eindeutig sein (Bereich
-# 1000-2000, siehe adfc_borg_target_admin_uids unten fuer die hier benutzte
-# Konvention). "key_name" ist optional (Default: "name") und wird der
-# Datei-Basisname unter keys/<role>/ - noetig, wenn eine Person mehrere
-# Keys hat, siehe discover_admin_keys.yml. "version" ist optional (Name
-# eines auf dem Server per Dockerfile BORG_VERSIONS installierten
-# Borg-Binaries, z.B. "1.2.8" - ohne Angabe kommt die
-# Server-Default-Version zum Einsatz).
+# 1000-2000). "key_name" ist optional (Default: "name") und wird der
+# Datei-Basisname unter keys/<role>/ - noetig, wenn eine Identitaet mehrere
+# Keys hat. "version" ist optional (Name eines auf dem Server per
+# Dockerfile BORG_VERSIONS installierten Borg-Binaries, z.B. "1.2.8" - ohne
+# Angabe kommt die Server-Default-Version zum Einsatz).
 #
 # Beispiel:
 #   adfc_borg_target_admin_keys:
@@ -59,17 +55,23 @@ adfc_borg_target_data_dir: /adfc-backup/docker-repos
 adfc_borg_target_backup_keys: []
 adfc_borg_target_admin_keys: []
 
-# Wer volle Admin-Rechte (prune/delete/compact) auf DIESER Zielbox
-# bekommt - bewusst eine eigene Liste statt ssh_users_admins
+# Wer volle Admin-Rechte (prune/delete/compact) auf JEDER Backup-Identitaet
+# dieser Zielbox bekommt (users/<uid>-<name>/keys/admin/, dieselbe
+# UID/Identitaet wie der zugehoerige Backup-Key - siehe
+# sync_admin_keys.yml) - bewusst eine eigene Liste statt ssh_users_admins
 # (group_vars/all.yml, roles/ssh_keys) direkt zu verwenden: Admin-Zugriff
 # auf Backups ist sensibler als normaler SSH-Verwaltungszugriff auf die
 # Rechner selbst, beide Listen sollen unabhaengig voneinander pflegbar
 # bleiben, auch wenn sie aktuell identisch besetzt sind. Keys kommen aus
 # ssh_keys/<name>/*.pub (gleiche Quelle/Konvention wie roles/ssh_keys,
-# key_path/inventory_dir aus group_vars/all.yml) - siehe
-# discover_admin_keys.yml. UID-Konvention: Quellhosts (adfc_borg_docker_uid
-# in roles/borg_server) benutzen die 1000er, Admins hier bewusst die
-# 1100er, damit beide Bereiche nie kollidieren.
+# key_path/inventory_dir aus group_vars/all.yml). Wird jemand aus dieser
+# Liste entfernt, werden seine Key-Dateien beim naechsten Lauf auch aus
+# jeder Backup-Identitaet wieder entfernt.
+#
+# HINWEIS: add-admin-key.sh (docker-borg-backup-server) verweigert aktuell
+# Admin-Keys fuer eine Identitaet, die schon eine Backup-Rolle hat -
+# sync_admin_keys.yml schreibt/loescht die Dateien deshalb vorerst direkt,
+# bis das dort behoben ist (siehe Report an tabacha/docker-borg-backup-server).
 adfc_borg_target_admin_users:
   - falkh
   - georgs
@@ -77,10 +79,12 @@ adfc_borg_target_admin_users:
   - svena
   - volkerk
   - patrickl
-adfc_borg_target_admin_uids:
-  falkh: 1101
-  georgs: 1102
-  lucaf: 1103
-  svena: 1104
-  volkerk: 1105
-  patrickl: 1106
+
+# ACHTUNG: bewusst NOCH false. build-authorized-keys.sh (Server) bricht
+# ATOMAR fuer ALLE Identitaeten dieser Zielbox ab, sobald eine Identitaet
+# Keys unter beiden keys/backup/ UND keys/admin/ hat (harter, gewollter
+# Fehler im Server, kein loses Skript-Detail) - "die Rolle muss eindeutig
+# sein". Erst auf true stellen, wenn das dort behoben ist (siehe Report an
+# tabacha/docker-borg-backup-server), sonst blockiert der naechste
+# reload-keys.sh-Aufruf jeden Key-Reload auf dieser Zielbox.
+adfc_borg_target_admin_key_sync_enabled: false
