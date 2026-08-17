@@ -5,12 +5,12 @@
 # mehr in der Liste steht (analog roles/ssh_keys). Keys kommen aus
 # ssh_keys/<name>/*.pub (key_path/inventory_dir aus group_vars/all.yml).
 #
-# Direkte Dateiverwaltung statt add-admin-key.sh: das Skript verweigert
-# aktuell Admin-Keys fuer eine Identitaet, die schon eine Backup-Rolle hat
-# (siehe Report an tabacha/docker-borg-backup-server). Sobald das dort
-# behoben ist, koennte das ggf. wieder auf das Skript umgestellt werden -
-# bis dahin schreiben/loeschen wir die Dateien unter keys/admin/ selbst und
-# rufen reload-keys.sh manuell.
+# Direkte Dateiverwaltung statt add-admin-key.sh: das deckt zwar seit
+# docker-borg-backup-server v1.2.0 auch Identitaeten mit bestehender
+# Backup-Rolle ab, kann aber weiterhin keine Keys entfernen - fuer den
+# vollstaendigen Abgleich (auch Entzug bei Austritt aus
+# adfc_borg_target_admin_users) schreiben/loeschen wir die Dateien unter
+# keys/admin/ deshalb direkt und rufen reload-keys.sh selbst auf.
 
 - name: Admin-Pubkey-Dateien der adfc_borg_target_admin_users suchen
   ansible.builtin.find:

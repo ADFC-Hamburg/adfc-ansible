@@ -10,8 +10,8 @@
 # diese Rolle im jeweiligen Play gar nicht laeuft. Reine Rollen-Defaults
 # waeren dafuer nicht sichtbar. Siehe Kommentar dort.
 adfc_borg_target_repo: https://github.com/tabacha/docker-borg-backup-server.git
-adfc_borg_target_version: v1.1.0
-adfc_borg_target_image_tag: "1.1.0"
+adfc_borg_target_version: v1.2.0
+adfc_borg_target_image_tag: "1.2.0"
 
 # Watchtower fuer automatische Image-Updates statt Ansible-gesteuertem
 # Pinning - Opt-in, weil sich das mit adfc_borg_target_image_tag
@@ -58,7 +58,10 @@ adfc_borg_target_admin_keys: []
 # Wer volle Admin-Rechte (prune/delete/compact) auf JEDER Backup-Identitaet
 # dieser Zielbox bekommt (users/<uid>-<name>/keys/admin/, dieselbe
 # UID/Identitaet wie der zugehoerige Backup-Key - siehe
-# sync_admin_keys.yml) - bewusst eine eigene Liste statt ssh_users_admins
+# sync_admin_keys.yml). Seit docker-borg-backup-server v1.2.0 wirkt so ein
+# Admin-Key ausschliesslich auf das eigene Repo dieser einen Identitaet
+# (--restrict-to-repository), nicht mehr global ueber alle Repos der
+# Zielbox. Bewusst eine eigene Liste statt ssh_users_admins
 # (group_vars/all.yml, roles/ssh_keys) direkt zu verwenden: Admin-Zugriff
 # auf Backups ist sensibler als normaler SSH-Verwaltungszugriff auf die
 # Rechner selbst, beide Listen sollen unabhaengig voneinander pflegbar
@@ -67,11 +70,6 @@ adfc_borg_target_admin_keys: []
 # key_path/inventory_dir aus group_vars/all.yml). Wird jemand aus dieser
 # Liste entfernt, werden seine Key-Dateien beim naechsten Lauf auch aus
 # jeder Backup-Identitaet wieder entfernt.
-#
-# HINWEIS: add-admin-key.sh (docker-borg-backup-server) verweigert aktuell
-# Admin-Keys fuer eine Identitaet, die schon eine Backup-Rolle hat -
-# sync_admin_keys.yml schreibt/loescht die Dateien deshalb vorerst direkt,
-# bis das dort behoben ist (siehe Report an tabacha/docker-borg-backup-server).
 adfc_borg_target_admin_users:
   - falkh
   - georgs
