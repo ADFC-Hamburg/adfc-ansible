@@ -36,9 +36,16 @@
     - docker-borg-backup_borg-config
 
 - name: Pull borg-admin image ({{ adfc_borg_docker_image_tag }})
-  ansible.builtin.command: docker compose pull
-  args:
-    chdir: "{{ adfc_borg_docker_dir }}"
+  # Bewusst "docker pull" statt "docker compose pull": compose.yml
+  # verlangt fuer den borg-admin-Service per "${VAR:?...}" u.a. TARGET und
+  # BORG_SSH_USER/-HOST/... in den volumes/environment-Abschnitten - die
+  # sind fuer den reinen Image-Pull (noch kein konkreter Zielserver)
+  # zwangslaeufig nicht gesetzt, "docker compose pull" wuerde deshalb schon
+  # beim Interpolieren des Compose-Files fehlschlagen (widerspricht der
+  # eigenen README, Schritt 5 - dort ohne vorheriges Sourcing gezeigt).
+  ansible.builtin.command: "docker pull ghcr.io/tabacha/docker-borg-backup:{{ adfc_borg_docker_image_tag }}"
+  register: adfc_borg_docker_pull
+  changed_when: "'Downloaded newer image' in adfc_borg_docker_pull.stdout"
 
 - name: Render Pre-Backup-Hook script
   ansible.builtin.copy:

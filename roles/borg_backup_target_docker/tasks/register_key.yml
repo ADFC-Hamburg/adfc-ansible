@@ -12,10 +12,22 @@
     path: "{{ adfc_borg_target_dir }}/users/{{ adfc_borg_key.uid }}-{{ adfc_borg_key.name }}/keys/{{ adfc_borg_key_role }}/{{ adfc_borg_key.name }}.pub"
   register: adfc_borg_key_stat
 
+- name: "Temporaeres Verzeichnis fuer add-{{ adfc_borg_key_role }}-key.sh"
+  ansible.builtin.file:
+    path: "/tmp/adfc-borg-target-{{ adfc_borg_key_role }}-{{ adfc_borg_key.name }}"
+    state: directory
+    mode: "0700"
+    owner: root
+    group: root
+  when: not adfc_borg_key_stat.stat.exists
+
 - name: "Temporaere Pubkey-Datei fuer add-{{ adfc_borg_key_role }}-key.sh"
+  # Dateiname MUSS "{{ adfc_borg_key.name }}.pub" sein - add-<role>-key.sh
+  # benutzt den Basename der uebergebenen Datei 1:1 als Zielnamen unter
+  # keys/<role>/, und der stat-Check oben prueft genau diesen Pfad.
   ansible.builtin.copy:
     content: "{{ adfc_borg_key.pubkey }}\n"
-    dest: "/tmp/adfc-borg-target-{{ adfc_borg_key_role }}-{{ adfc_borg_key.name }}.pub"
+    dest: "/tmp/adfc-borg-target-{{ adfc_borg_key_role }}-{{ adfc_borg_key.name }}/{{ adfc_borg_key.name }}.pub"
     mode: "0600"
     owner: root
     group: root
@@ -26,7 +38,7 @@
     argv: >-
       {{
         ['./add-' ~ adfc_borg_key_role ~ '-key.sh', adfc_borg_key.name,
-         '/tmp/adfc-borg-target-' ~ adfc_borg_key_role ~ '-' ~ adfc_borg_key.name ~ '.pub',
+         '/tmp/adfc-borg-target-' ~ adfc_borg_key_role ~ '-' ~ adfc_borg_key.name ~ '/' ~ adfc_borg_key.name ~ '.pub',
          '--uid', adfc_borg_key.uid | string]
         + (['--version', adfc_borg_key.version] if adfc_borg_key.version is defined else [])
         + (['--from', adfc_borg_key.from] if adfc_borg_key.from is defined else [])
@@ -34,8 +46,8 @@
     chdir: "{{ adfc_borg_target_dir }}"
   when: not adfc_borg_key_stat.stat.exists
 
-- name: "Temporaere Pubkey-Datei aufraeumen"
+- name: "Temporaeres Verzeichnis aufraeumen"
   ansible.builtin.file:
-    path: "/tmp/adfc-borg-target-{{ adfc_borg_key_role }}-{{ adfc_borg_key.name }}.pub"
+    path: "/tmp/adfc-borg-target-{{ adfc_borg_key_role }}-{{ adfc_borg_key.name }}"
     state: absent
   when: not adfc_borg_key_stat.stat.exists

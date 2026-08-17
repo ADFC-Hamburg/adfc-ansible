@@ -21,6 +21,15 @@ adfc_borg_docker_dir: /usr/local/share/adfc-borg-docker
 # ab). Name der Identitaet ist inventory_hostname_short.
 # adfc_borg_docker_uid: 1001
 
+# Welche Zielboxen dieser Rechner fuer das docker-borg-backup versucht -
+# Default (kein Wert hier, siehe tasks/main.yml) ist ALLE aus
+# groups['backup_clients'], wie beim alten adfc-borg-pyenv. Als host_vars-
+# Liste ueberschreibbar, z.B. waehrend eine neue Zielbox noch nicht ueberall
+# deployed ist, oder wenn ein Rechner bewusst nur auf eine Teilmenge sichern
+# soll:
+# adfc_borg_docker_targets:
+#   - adfc-hh-bak-1
+
 # Deployt docker-borg-backup nach adfc_borg_docker_dir, auch wenn
 # adfc_borg_client_version noch auf "pyenv" steht - so kann man einen
 # Rechner vorbereiten/testen ("adfc-borg-docker init <rechner>" direkt

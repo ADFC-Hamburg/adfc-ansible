@@ -102,7 +102,7 @@
 
 - name: Setup docker-borg-backup targets
   ansible.builtin.include_tasks: setup_client_docker_target.yml
-  loop: "{{ groups['backup_clients'] }}"
+  loop: "{{ adfc_borg_docker_targets | default(groups['backup_clients']) }}"
   loop_control:
     loop_var: backup_client
   when: adfc_borg_docker_enabled | default(false) or adfc_borg_client_version == 'docker'
