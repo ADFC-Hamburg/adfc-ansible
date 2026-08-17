@@ -320,7 +320,7 @@ borg_status() {
     else
         echo -e "  ${RED}Auf dem Rechner wurde noch nie eine Sicherung erfolgreich gesichert${NC}"
     fi
-    with_backup_agent "${RECHNER}" docker compose run --rm borg-admin info
+    with_backup_agent "${RECHNER}" borg_admin_run info
     LOCK="${STATUS_DIR}/lock/${RECHNER}"
     if [ -f "$LOCK" ] ; then
         echo -ne "${GREEN}"
