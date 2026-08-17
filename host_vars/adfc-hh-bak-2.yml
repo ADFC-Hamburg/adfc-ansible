@@ -6,3 +6,9 @@ ansible_host: intranet.volkerkraeft.de
 ansible_port: 2299
 
 backup_disk_src: UUID=c1b6bd58-8aa3-41fb-ad63-e2984134d187
+
+# docker-borg-backup-server (siehe roles/borg_backup_target_docker) - wie
+# adfc-hh-bak-1. Portweiterleitung fuer den Default-Port 2222 (siehe
+# group_vars/backup_clients.yml, hier kein Override noetig) ist
+# eingerichtet.
+adfc_borg_target_docker_enabled: true
