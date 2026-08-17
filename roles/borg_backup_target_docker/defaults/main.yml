@@ -13,6 +13,11 @@ adfc_borg_target_repo: https://github.com/tabacha/docker-borg-backup-server.git
 adfc_borg_target_version: v1.2.0
 adfc_borg_target_image_tag: "1.2.0"
 
+# Server-Default ist 3, siehe env.j2 - mit mehreren Admins, die alle eigene
+# ssh-agents mit mehreren Keys (u.a. Hardware-Token) mitbringen, zu knapp
+# bemessen.
+adfc_borg_target_ssh_max_auth_tries: 20
+
 # Watchtower fuer automatische Image-Updates statt Ansible-gesteuertem
 # Pinning - Opt-in, weil sich das mit adfc_borg_target_image_tag
 # widerspricht: ein fest gepinnter Versions-Tag aendert sich nie, Watchtower
