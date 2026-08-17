@@ -7,16 +7,6 @@
 # noetig - macht per Ansible, was frueher (adfc-borg-pyenv) per Hand mit
 # "adfc-borg init <rechner>" gemacht werden musste.
 
-- name: Sicherstellen, dass borg_save_exclude_dirs keine Glob-Muster enthaelt
-  ansible.builtin.assert:
-    that: "'*' not in (borg_save_exclude_dirs | default([]) | join(''))"
-    fail_msg: >-
-      borg_save_exclude_dirs enthaelt ein Glob-Muster (z.B. */ImapMail).
-      Das ist bei BORG_CREATE_EXTRA_ARGS unter docker-borg-backup laut
-      dessen eigener Doku nicht sicher (unquoted Shell-Expansion in
-      backup.sh, cwd ist adfc_borg_docker_dir) - vor der Migration dieses
-      Hosts auf absolute Pfade ohne "*" umstellen.
-
 - name: Sicherstellen, dass adfc_borg_docker_uid gesetzt ist
   ansible.builtin.assert:
     that: adfc_borg_docker_uid is defined

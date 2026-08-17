@@ -43,5 +43,5 @@ adfc_borg_docker_enabled: false
 # ":latest" folgen zu lassen (eigener Compose-Override) - kontrollierte
 # Updates statt automatisch bei jedem neuen Release.
 adfc_borg_docker_repo: https://github.com/tabacha/docker-borg-backup.git
-adfc_borg_docker_version: v1.1.0
-adfc_borg_docker_image_tag: "1.1.0"
+adfc_borg_docker_version: v1.1.1
+adfc_borg_docker_image_tag: "1.1.1"

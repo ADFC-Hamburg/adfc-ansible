@@ -245,12 +245,22 @@ borg_list() {
     with_backup_agent "${RECHNER}" docker compose run --rm borg-admin list
 }
 
+borg_shell() {
+    RECHNER="$1"
+    # admin-shell.sh braucht wie admin-compact.sh (siehe borg_prune()) den
+    # Admin-Key per Agent-Forwarding (ssh -A) - startet eine interaktive
+    # Shell IM Borg-Container (mitgeschnitten, siehe dessen eigene
+    # Ausgabe) und haelt dabei den Lock fuer diesen Rechner, bis man
+    # "exit" eingibt (blockiert solange Cron-Backup/prune fuer ihn).
+    "${DOCKER_DIR}/admin-shell.sh" "${RECHNER}"
+}
+
 borg_mount() {
     RECHNER="$1"
-    echo "Mounten geht bei docker-borg-backup nur interaktiv ueber admin-shell.sh"
-    echo "(braucht den Admin-Key per Agent-Forwarding, siehe README dort):"
+    echo "Mounten geht bei docker-borg-backup nur interaktiv ueber eine Admin-Shell"
+    echo "(braucht den Admin-Key per Agent-Forwarding):"
     echo ""
-    echo "  ssh -tA <admin-user>@$(hostname -f) ${DOCKER_DIR}/admin-shell.sh ${RECHNER}"
+    echo "  ssh -tA <admin-user>@$(hostname -f) adfc-borg-docker shell ${RECHNER}"
     echo ""
     echo "Im Container dann z.B.:"
     echo "  cd /restore && borg extract ::<archiv> [pfad]"
@@ -295,10 +305,15 @@ key-export <rechnername> - Angaben fuer einen Notfall-Restore anzeigen
 
 list <rechnername>    - Sicherungen anzeigen
 
-mount/umount <rechnername> - geht nur interaktiv, siehe Hinweistext
+shell <rechnername>   - Interaktive Admin-Shell im Borg-Container (fuer
+                         Restore/borg mount), braucht den Admin-Key per
+                         "ssh -A"
 
-Der Rechnername kann außer bei init weggelassen werden, dann gilt es für alle
-registrierten Rechner.
+mount/umount <rechnername> - geht nur interaktiv, siehe Hinweistext (nutzt
+                         intern "shell")
+
+Der Rechnername kann außer bei init und shell weggelassen werden, dann gilt
+es für alle registrierten Rechner.
 
 EOF
 }
@@ -328,6 +343,9 @@ case "$1" in
     ;;
     list)
         borg_for borg_list "$2"
+    ;;
+    shell)
+        borg_shell "$2"
     ;;
     mount)
         borg_mount "$2" "$3"
