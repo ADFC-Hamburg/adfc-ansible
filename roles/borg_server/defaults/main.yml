@@ -43,5 +43,5 @@ adfc_borg_docker_enabled: false
 # ":latest", siehe Release-Notes - deshalb der eigene Compose-Override,
 # der das Image explizit pinnt statt compose.yml unveraendert zu lassen).
 adfc_borg_docker_repo: https://github.com/tabacha/docker-borg-backup.git
-adfc_borg_docker_version: v1.1.0-rc0
-adfc_borg_docker_image_tag: 1.1.0-rc0
+adfc_borg_docker_version: v1.1.0-rc1
+adfc_borg_docker_image_tag: 1.1.0-rc1

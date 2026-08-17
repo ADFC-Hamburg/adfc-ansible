@@ -28,16 +28,6 @@
       {{ inventory_hostname }}.yml ergaenzen, bevor dieser Host migriert
       wird.
 
-- name: "IPv4-Adresse von {{ backup_client }} ermitteln"
-  # ansible_host ist oft ein Dual-Stack-Hostname (DynDNS) - ssh-keyscan in
-  # setup-secrets.sh scheitert, wenn dessen AAAA-Eintrag auf dem Zielport
-  # nicht erreichbar ist (Docker published Ports i.d.R. nur auf IPv4).
-  ansible.builtin.command: "getent ahostsv4 {{ hostvars[backup_client].ansible_host }}"
-  delegate_to: localhost
-  register: adfc_borg_docker_target_ipv4
-  changed_when: false
-  failed_when: false
-
 - name: Render targets/{{ backup_client }}.env
   ansible.builtin.template:
     src: docker-target.env.j2
