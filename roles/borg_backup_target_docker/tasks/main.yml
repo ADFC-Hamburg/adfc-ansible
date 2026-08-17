@@ -64,11 +64,15 @@
   vars:
     adfc_borg_key_role: backup
 
+- name: Admin-Keys aus adfc_borg_target_admin_users ermitteln
+  ansible.builtin.include_tasks: discover_admin_keys.yml
+  when: adfc_borg_target_admin_users | default([]) | length > 0
+
 - name: Register admin keys
   ansible.builtin.include_tasks: register_key.yml
-  loop: "{{ adfc_borg_target_admin_keys }}"
+  loop: "{{ adfc_borg_target_admin_keys + (adfc_borg_target_admin_keys_auto | default([])) }}"
   loop_control:
     loop_var: adfc_borg_key
-    label: "{{ adfc_borg_key.name }}"
+    label: "{{ adfc_borg_key.name }}/{{ adfc_borg_key.key_name | default(adfc_borg_key.name) }}"
   vars:
     adfc_borg_key_role: admin
