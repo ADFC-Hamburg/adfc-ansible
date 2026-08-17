@@ -1,0 +1,20 @@
+- name: Get SMTP auth from master
+  ansible.builtin.slurp:
+    src: /etc/ansible/secrets/smtp_client_auth
+  delegate_to: ucs-master.gst.hamburg.adfc.de
+  register: smtp_auth
+  run_once: true
+
+- ansible.builtin.set_fact:
+    smtp_auth_hostname: "{{ smtp_auth.content | b64decode | regex_search('^[^\\s]+(?= )') }}"
+    smtp_auth_address:  "{{ smtp_auth.content | b64decode | regex_search('(?<= )[^\\s:]+@[^\\s:]+(?=:.+$)') }}"
+    smtp_auth_password: "{{ smtp_auth.content | b64decode | regex_search('(?<=:)[^:]+(?=[$\\n])') }}"
+  run_once: true
+
+- name: Create SMTP password file
+  ansible.builtin.copy:
+    content: "{{ smtp_auth_password }}"
+    dest: "{{ docker_dir }}/{{ smtp_password_filename }}"
+    mode: "0600"
+    owner: root
+    group: root

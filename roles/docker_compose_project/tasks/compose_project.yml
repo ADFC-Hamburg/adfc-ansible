@@ -39,6 +39,10 @@
     group: root
   register: compose_file
 
+- name: Get authentication for email account
+  ansible.builtin.include_tasks: get_smtp_auth.yml
+  when: compose_project.uses_smtp | default(false)
+
 - name: Create Secret file
   ansible.builtin.copy:
     content: "{{ lookup('ansible.builtin.password', '/dev/null', length=16) }}"
