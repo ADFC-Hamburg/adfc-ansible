@@ -56,38 +56,19 @@
     chdir: "{{ adfc_borg_target_dir }}"
 
 - name: Register backup keys
-  ansible.builtin.copy:
-    content: "{{ item.pubkey }}\n"
-    dest: "{{ adfc_borg_target_dir }}/keys/backup/{{ item.name }}.pub"
-    mode: "0644"
-    owner: root
-    group: root
+  ansible.builtin.include_tasks: register_key.yml
   loop: "{{ adfc_borg_target_backup_keys }}"
   loop_control:
-    label: "{{ item.name }}"
-  notify: Reload borg-server keys
-
-- name: Pin backup key borg versions
-  ansible.builtin.copy:
-    content: "{{ item.version }}\n"
-    dest: "{{ adfc_borg_target_dir }}/keys/backup/{{ item.name }}.version"
-    mode: "0644"
-    owner: root
-    group: root
-  loop: "{{ adfc_borg_target_backup_keys }}"
-  loop_control:
-    label: "{{ item.name }}"
-  when: item.version is defined
-  notify: Reload borg-server keys
+    loop_var: adfc_borg_key
+    label: "{{ adfc_borg_key.name }}"
+  vars:
+    adfc_borg_key_role: backup
 
 - name: Register admin keys
-  ansible.builtin.copy:
-    content: "{{ item.pubkey }}\n"
-    dest: "{{ adfc_borg_target_dir }}/keys/admin/{{ item.name }}.pub"
-    mode: "0644"
-    owner: root
-    group: root
+  ansible.builtin.include_tasks: register_key.yml
   loop: "{{ adfc_borg_target_admin_keys }}"
   loop_control:
-    label: "{{ item.name }}"
-  notify: Reload borg-server keys
+    loop_var: adfc_borg_key
+    label: "{{ adfc_borg_key.name }}"
+  vars:
+    adfc_borg_key_role: admin

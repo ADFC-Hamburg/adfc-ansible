@@ -10,6 +10,17 @@ borg_bin_sha256_sum: "21484d30271478d4a01aad1b286973443b50afc5379e4a6aef40da3379
 adfc_borg_client_version: pyenv
 adfc_borg_docker_dir: /usr/local/share/adfc-borg-docker
 
+# UID (1000-2000), unter der dieser Rechner als Backup-Identitaet auf JEDER
+# Zielbox in groups['backup_clients'] registriert wird (docker-borg-
+# backup-server >=1.1.0, users/<uid>-<name>/ - siehe dessen Release-Notes
+# "Multi-User-Isolation"). Bewusst als host_vars-Wert statt vom Zielserver
+# automatisch vergeben: reproduzierbar statt abhaengig davon, welche Keys
+# zum Zeitpunkt der Registrierung schon vorhanden waren. Kein Default -
+# muss vor dem Umstieg eines Rechners auf "docker" in dessen host_vars
+# gesetzt werden (setup_client_docker_target.yml bricht sonst mit assert
+# ab). Name der Identitaet ist inventory_hostname_short.
+# adfc_borg_docker_uid: 1001
+
 # Deployt docker-borg-backup nach adfc_borg_docker_dir, auch wenn
 # adfc_borg_client_version noch auf "pyenv" steht - so kann man einen
 # Rechner vorbereiten/testen ("adfc-borg-docker init <rechner>" direkt

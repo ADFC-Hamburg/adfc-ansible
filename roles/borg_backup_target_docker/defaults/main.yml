@@ -10,8 +10,8 @@
 # diese Rolle im jeweiligen Play gar nicht laeuft. Reine Rollen-Defaults
 # waeren dafuer nicht sichtbar. Siehe Kommentar dort.
 adfc_borg_target_repo: https://github.com/tabacha/docker-borg-backup-server.git
-adfc_borg_target_version: v1.0.0
-adfc_borg_target_image_tag: "1.0.0"
+adfc_borg_target_version: v1.1.0
+adfc_borg_target_image_tag: "1.1.0"
 
 # Watchtower fuer automatische Image-Updates statt Ansible-gesteuertem
 # Pinning - Opt-in, weil sich das mit adfc_borg_target_image_tag
@@ -32,14 +32,23 @@ adfc_borg_target_data_dir: /adfc-backup/docker-repos
 
 # Backup-Keys (Quellhosts, die auf dieses Ziel schreiben duerfen) und
 # Admin-Keys (volle, nicht append-only Rechte fuer admin-compact.sh/
-# admin-shell.sh) - siehe adfc-borg-docker "init" auf dem jeweiligen
-# Quellhost fuer den Public Key. "version" ist optional (Name eines auf dem
-# Server per Dockerfile BORG_VERSIONS installierten Borg-Binaries, z.B.
-# "1.2.8" - ohne Angabe kommt die Server-Default-Version zum Einsatz).
+# admin-shell.sh). Automatisch registrierte Backup-Keys der Quellhosts aus
+# save_with_borg laufen NICHT hierueber, sondern ueber
+# roles/borg_server/tasks/setup_client_docker_target.yml (adfc_borg_docker_uid
+# des jeweiligen Quellhosts) - diese Liste ist fuer Admin-Keys und sonstige
+# manuell zu registrierende Backup-Keys gedacht.
+#
+# Seit docker-borg-backup-server v1.1.0 bekommt jede Identitaet einen
+# eigenen Unix-Account (users/<uid>-<name>/, siehe dessen Release-Notes) -
+# "uid" ist deshalb Pflicht und muss pro Zielrechner eindeutig sein (Bereich
+# 1000-2000). "version" ist optional (Name eines auf dem Server per
+# Dockerfile BORG_VERSIONS installierten Borg-Binaries, z.B. "1.2.8" - ohne
+# Angabe kommt die Server-Default-Version zum Einsatz).
 #
 # Beispiel:
-#   adfc_borg_target_backup_keys:
-#     - name: tools1
-#       pubkey: "ssh-ed25519 AAAA... borg-backup-adfc-hh-bak-1"
+#   adfc_borg_target_admin_keys:
+#     - name: sven
+#       uid: 1001
+#       pubkey: "ssh-ed25519 AAAA... admin@example"
 adfc_borg_target_backup_keys: []
 adfc_borg_target_admin_keys: []

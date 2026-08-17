@@ -17,6 +17,17 @@
       backup.sh, cwd ist adfc_borg_docker_dir) - vor der Migration dieses
       Hosts auf absolute Pfade ohne "*" umstellen.
 
+- name: Sicherstellen, dass adfc_borg_docker_uid gesetzt ist
+  ansible.builtin.assert:
+    that: adfc_borg_docker_uid is defined
+    fail_msg: >-
+      adfc_borg_docker_uid ist fuer {{ inventory_hostname }} nicht gesetzt
+      (siehe roles/borg_server/defaults/main.yml). Seit
+      docker-borg-backup-server v1.1.0 braucht jede Backup-Identitaet eine
+      eindeutige, in Ansible vergebene UID (1000-2000) - in host_vars/
+      {{ inventory_hostname }}.yml ergaenzen, bevor dieser Host migriert
+      wird.
+
 - name: Render targets/{{ backup_client }}.env
   ansible.builtin.template:
     src: docker-target.env.j2
@@ -36,22 +47,40 @@
     src: "{{ adfc_borg_docker_dir }}/secrets/{{ backup_client }}/backup_ed25519.pub"
   register: adfc_borg_docker_backup_pubkey
 
-- name: Register backup key on {{ backup_client }}
+- name: "Pruefe ob Backup-Key auf {{ backup_client }} schon registriert ist"
+  ansible.builtin.stat:
+    path: "{{ hostvars[backup_client].adfc_borg_target_dir | default('/usr/local/share/adfc-borg-backup-server') }}/users/{{ adfc_borg_docker_uid }}-{{ inventory_hostname_short }}/keys/backup/{{ inventory_hostname_short }}.pub"
+  delegate_to: "{{ backup_client }}"
+  register: adfc_borg_docker_key_stat
+
+- name: "Temporaere Pubkey-Datei fuer add-backup-key.sh auf {{ backup_client }}"
   ansible.builtin.copy:
     content: "{{ adfc_borg_docker_backup_pubkey.content | b64decode }}"
-    dest: "{{ hostvars[backup_client].adfc_borg_target_dir | default('/usr/local/share/adfc-borg-backup-server') }}/keys/backup/{{ inventory_hostname_short }}.pub"
-    mode: "0644"
+    dest: "/tmp/adfc-borg-docker-backup-{{ inventory_hostname_short }}.pub"
+    mode: "0600"
     owner: root
     group: root
   delegate_to: "{{ backup_client }}"
-  register: adfc_borg_docker_key_registered
+  when: not adfc_borg_docker_key_stat.stat.exists
 
-- name: Reload keys on {{ backup_client }}
-  ansible.builtin.command: docker compose exec -T borg-server /usr/local/bin/build-authorized-keys.sh
-  args:
+- name: "Registriere Backup-Key auf {{ backup_client }} (uid {{ adfc_borg_docker_uid }})"
+  ansible.builtin.command:
+    argv:
+      - ./add-backup-key.sh
+      - "{{ inventory_hostname_short }}"
+      - "/tmp/adfc-borg-docker-backup-{{ inventory_hostname_short }}.pub"
+      - --uid
+      - "{{ adfc_borg_docker_uid }}"
     chdir: "{{ hostvars[backup_client].adfc_borg_target_dir | default('/usr/local/share/adfc-borg-backup-server') }}"
   delegate_to: "{{ backup_client }}"
-  when: adfc_borg_docker_key_registered.changed
+  when: not adfc_borg_docker_key_stat.stat.exists
+
+- name: "Temporaere Pubkey-Datei auf {{ backup_client }} aufraeumen"
+  ansible.builtin.file:
+    path: "/tmp/adfc-borg-docker-backup-{{ inventory_hostname_short }}.pub"
+    state: absent
+  delegate_to: "{{ backup_client }}"
+  when: not adfc_borg_docker_key_stat.stat.exists
 
 - name: Initialize docker-borg-backup repo on {{ backup_client }}
   ansible.builtin.command: "/usr/local/sbin/adfc-borg-docker init {{ backup_client }}"

@@ -1,0 +1,41 @@
+---
+# Ein Key registrieren, per Loop aus main.yml (adfc_borg_key = ein Item aus
+# adfc_borg_target_backup_keys/_admin_keys, adfc_borg_key_role = "backup"
+# oder "admin"). Ruft add-<role>-key.sh statt users/<uid>-<name>/ selbst zu
+# beschreiben - das Skript prueft UID-Kollisionen/Rollen-Konflikte und ruft
+# reload-keys.sh gleich mit. Nicht idempotent (bricht beim zweiten Aufruf
+# mit "existiert schon" ab), deshalb hier per stat vorher geprueft statt es
+# einfach nochmal aufzurufen.
+
+- name: "Pruefe ob {{ adfc_borg_key_role }}-Key {{ adfc_borg_key.name }} schon registriert ist"
+  ansible.builtin.stat:
+    path: "{{ adfc_borg_target_dir }}/users/{{ adfc_borg_key.uid }}-{{ adfc_borg_key.name }}/keys/{{ adfc_borg_key_role }}/{{ adfc_borg_key.name }}.pub"
+  register: adfc_borg_key_stat
+
+- name: "Temporaere Pubkey-Datei fuer add-{{ adfc_borg_key_role }}-key.sh"
+  ansible.builtin.copy:
+    content: "{{ adfc_borg_key.pubkey }}\n"
+    dest: "/tmp/adfc-borg-target-{{ adfc_borg_key_role }}-{{ adfc_borg_key.name }}.pub"
+    mode: "0600"
+    owner: root
+    group: root
+  when: not adfc_borg_key_stat.stat.exists
+
+- name: "Registriere {{ adfc_borg_key_role }}-Key {{ adfc_borg_key.name }} (uid {{ adfc_borg_key.uid }})"
+  ansible.builtin.command:
+    argv: >-
+      {{
+        ['./add-' ~ adfc_borg_key_role ~ '-key.sh', adfc_borg_key.name,
+         '/tmp/adfc-borg-target-' ~ adfc_borg_key_role ~ '-' ~ adfc_borg_key.name ~ '.pub',
+         '--uid', adfc_borg_key.uid | string]
+        + (['--version', adfc_borg_key.version] if adfc_borg_key.version is defined else [])
+        + (['--from', adfc_borg_key.from] if adfc_borg_key.from is defined else [])
+      }}
+    chdir: "{{ adfc_borg_target_dir }}"
+  when: not adfc_borg_key_stat.stat.exists
+
+- name: "Temporaere Pubkey-Datei aufraeumen"
+  ansible.builtin.file:
+    path: "/tmp/adfc-borg-target-{{ adfc_borg_key_role }}-{{ adfc_borg_key.name }}.pub"
+    state: absent
+  when: not adfc_borg_key_stat.stat.exists
