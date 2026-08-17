@@ -18,6 +18,11 @@ adfc_borg_target_image_tag: "1.2.0"
 # bemessen.
 adfc_borg_target_ssh_max_auth_tries: 20
 
+# Server-Default akzeptiert nur ed25519 (Haertung des Server-Autors) -
+# die meisten aktuell registrierten Admin-Keys (ssh_keys/<name>/*.pub)
+# sind aber RSA. rsa-sha2-512/256 ergaenzt statt komplett zu ersetzen.
+adfc_borg_target_ssh_pubkey_algorithms: "ssh-ed25519,sk-ssh-ed25519@openssh.com,rsa-sha2-512,rsa-sha2-256"
+
 # Watchtower fuer automatische Image-Updates statt Ansible-gesteuertem
 # Pinning - Opt-in, weil sich das mit adfc_borg_target_image_tag
 # widerspricht: ein fest gepinnter Versions-Tag aendert sich nie, Watchtower
