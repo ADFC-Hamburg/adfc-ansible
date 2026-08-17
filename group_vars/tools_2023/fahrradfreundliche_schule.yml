@@ -1,0 +1,58 @@
+fahrradfreundliche_schule_version: 1
+
+docker_compose_project_fahrradfreundliche_schule:
+  uses_smtp: true
+  nodes:
+    - tools2.hamburg.adfc.de
+  domains:
+    - selbstevaluation.hamburg.adfc.de
+  internal_port: 4110
+  hetzner_volumes:
+    - name: fahrradfreundliche_schule-data
+      size_gb: 10
+      location: nbg1
+      mount: /var/lib/docker/volumes/docker-fahrradfreundliche_schule-data
+    - name: fahrradfreundliche_schule-logos
+      size_gb: 10
+      location: nbg1
+      mount: /var/lib/docker/volumes/docker-fahrradfreundliche_schule-logos # WICHTIG: Muss manuell mit Logos befüllt werden
+  compose_block:
+    volumes:
+      data:
+        driver: local
+      logos:
+        driver: local
+    services:
+      webapp:
+        restart: unless-stopped
+        image: ghcr.io/adfc-hamburg/fahrradfreundliche-schule:{{ fahrradfreundliche_schule_version }}
+        volumes:
+          - data:/var/opt/fahrradschule
+          - logos:/opt/fahrradschule/static/img/logos
+        environment:
+          FLASK_SECRET_KEY_FILE: /run/secrets/flask_secret_key
+          SMTP_HOST: "{{ smtp_auth_hostname }}"
+          SMTP_USERNAME: "{{ smtp_auth_address }}"
+          SMTP_PASSWORD_FILE: /run/secrets/smtp_password
+          CONFIGFILE: /var/opt/fahrradschule/config.toml # WICHTIG: Configdatei muss manuell erstellt werden
+        secrets:
+          - flask_secret_key
+          - smtp_password
+        ports:
+          - "{{ adfc_internal_ip }}:4110:8000"
+        labels:
+          - "com.centurylinklabs.watchtower.scope=fahrradfreundliche_schule"
+      watchtower:
+        image: containrrr/watchtower
+        volumes:
+          - /root/.docker/config.json:/config.json:ro
+          - /var/run/docker.sock:/var/run/docker.sock:ro
+        # pruefe alle 12h = 43200s auf Updates
+        command: --interval 43200 --debug --scope=fahrradfreundliche_schule docker-fahrradfreundliche_schule-webapp-1
+        labels:
+          - "com.centurylinklabs.watchtower.scope=fahrradfreundliche_schule"
+    secrets:
+      flask_secret_key:
+        file: flask_secret_key.txt
+      smtp_password:
+        file: "{{ smtp_password_filename }}"
