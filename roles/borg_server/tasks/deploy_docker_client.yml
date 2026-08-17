@@ -36,9 +36,12 @@
     - docker-borg-backup_borg-config
 
 - name: Pull borg-admin image ({{ adfc_borg_docker_image_tag }})
-  ansible.builtin.command: docker compose pull
-  args:
-    chdir: "{{ adfc_borg_docker_dir }}"
+  # Bewusst "docker pull" statt "docker compose pull": funktioniert auch
+  # auf Hosts ohne "docker compose" (adfc-borg-docker faellt dort selbst
+  # auf plain "docker run" zurueck, siehe docker_run_borg() dort).
+  ansible.builtin.command: "docker pull ghcr.io/tabacha/docker-borg-backup:{{ adfc_borg_docker_image_tag }}"
+  register: adfc_borg_docker_pull
+  changed_when: "'Downloaded newer image' in adfc_borg_docker_pull.stdout"
 
 - name: Render Pre-Backup-Hook script
   ansible.builtin.copy:

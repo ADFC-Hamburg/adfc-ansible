@@ -28,6 +28,64 @@ SUCCESS_TIMEOUT="86400"
 
 mkdir -p "${STATUS_DIR}" "${STATUS_DIR}/clients" "${STATUS_DIR}/lock" "${STATUS_DIR}/disabled" "${STATUS_DIR}/success" "${STATUS_DIR}/tried"
 
+# Manche Hosts (z.B. ucs-master) haben nur ein altes Docker ohne "docker
+# compose"-Plugin, und das dort mitinstallierte eigenstaendige
+# "docker-compose" (v1) kann das aktuelle compose.yml von
+# docker-borg-backup nicht mehr parsen (Interpolations-Syntax im
+# entrypoint-Feld: "Invalid interpolation format"). docker_run_borg()/
+# borg_admin_run() unten bilden fuer diesen Fall nach, was compose.yml
+# fuer den borg-admin-Service definiert, direkt per "docker run" - kein
+# Compose noetig. Deckt nur das vorgebaute GHCR-Image ab, kein
+# "build: ."-Fallback.
+if docker compose version >/dev/null 2>&1; then
+    DBB_HAS_COMPOSE=1
+else
+    DBB_HAS_COMPOSE=0
+fi
+DOCKER_EXTRA_ARGS=()
+
+# Nachbau von compose.yml's borg-admin-Service als "docker run"-Aufruf.
+# Erwartet TARGET, BORG_SSH_*, BORG_REPO_PATH, BORG_REMOTE_PATH,
+# TARGET_IPV4_ONLY und SSH_AUTH_SOCK schon gesetzt (siehe
+# with_backup_agent unten bzw. borg_backup_plain/borg_prune_plain/
+# borg_shell_plain). DOCKER_EXTRA_ARGS (Array) fuer zusaetzliche "docker
+# run"-Argumente, z.B. die dynamischen Quellpfad-Mounts beim Backup.
+docker_run_borg() {
+    local rsh="ssh -p ${BORG_SSH_PORT} -o BatchMode=yes -o ServerAliveInterval=10 -o ServerAliveCountMax=30"
+    if [ "${TARGET_IPV4_ONLY:-false}" = "true" ]; then
+        rsh="${rsh} -4"
+    fi
+    docker run --rm \
+        --device /dev/fuse \
+        --cap-add SYS_ADMIN \
+        --security-opt apparmor:unconfined \
+        -v "${DOCKER_DIR}/restore:/restore" \
+        -v "${DOCKER_DIR}/secrets/${TARGET}/known_hosts:/root/.ssh/known_hosts:ro" \
+        -v "${DOCKER_DIR}/secrets/${TARGET}/passphrase:/run/secrets/borg-passphrase:ro" \
+        -v "${SSH_AUTH_SOCK}:/ssh-agent" \
+        -v docker-borg-backup_borg-cache:/root/.cache/borg \
+        -v docker-borg-backup_borg-config:/root/.config/borg \
+        -e SSH_AUTH_SOCK=/ssh-agent \
+        -e BORG_REPO="ssh://${BORG_SSH_USER}@${BORG_SSH_HOST}:${BORG_SSH_PORT}/${BORG_REPO_PATH}" \
+        -e BORG_REMOTE_PATH="${BORG_REMOTE_PATH}" \
+        -e BORG_RSH="${rsh}" \
+        -e BORG_PASSCOMMAND="cat /run/secrets/borg-passphrase" \
+        "${DOCKER_EXTRA_ARGS[@]}" \
+        --entrypoint borg \
+        "ghcr.io/tabacha/docker-borg-backup:{{ adfc_borg_docker_image_tag }}" \
+        "$@"
+}
+
+# "docker compose run --rm borg-admin $@" wenn verfuegbar, sonst
+# docker_run_borg() als Ersatz - fuer init/list (siehe with_backup_agent).
+borg_admin_run() {
+    if [ "${DBB_HAS_COMPOSE}" = "1" ]; then
+        docker compose run --rm "${DOCKER_EXTRA_ARGS[@]}" borg-admin "$@"
+    else
+        docker_run_borg "$@"
+    fi
+}
+
 borg_last_successfull_backup() {
     RECHNER="$1"
     SUCC="${STATUS_DIR}/success/${RECHNER}"
@@ -110,8 +168,8 @@ borg_init() {
     fi
     echo "Erzeuge Backup-Key/Passphrase/known_hosts fuer ${RECHNER} (setup-secrets.sh) ..."
     "${DOCKER_DIR}/setup-secrets.sh" "${RECHNER}"
-    echo "TARGET=${RECHNER} docker compose run --rm borg-admin init --encryption=repokey-blake2"
-    if ! with_backup_agent "${RECHNER}" docker compose run --rm borg-admin init --encryption=repokey-blake2 ; then
+    echo "TARGET=${RECHNER} borg init --encryption=repokey-blake2"
+    if ! with_backup_agent "${RECHNER}" borg_admin_run init --encryption=repokey-blake2 ; then
         echo Fehler beim borg init
         exit 1
     fi
@@ -135,14 +193,90 @@ borg_for() {
     exit 0
 }
 
+# Nachbau von backup.sh fuer Hosts ohne "docker compose" (siehe
+# DBB_HAS_COMPOSE oben) - deckt bewusst nur das fuer den unbeaufsichtigten
+# Cron-Lauf Noetige ab (kein eigenes Logfile/Uptime-Kuma-Push wie im
+# Original, dafuer sorgt schon STATUS_DIR/der aufrufende Cronjob).
+borg_backup_plain() {
+    local RECHNER="$1"
+    local key="${DOCKER_DIR}/secrets/${RECHNER}/backup_ed25519"
+    local target_env="${DOCKER_DIR}/targets/${RECHNER}.env"
+
+    if [ ! -f "$key" ] ; then
+        echo "Kein Backup-Key unter ${key} - erst 'adfc-borg init ${RECHNER}' ausfuehren." >&2
+        return 1
+    fi
+
+    eval "$(ssh-agent -s)" >/dev/null
+    trap 'ssh-agent -k >/dev/null 2>&1' RETURN
+    ssh-add "$key" >/dev/null 2>&1
+    export SSH_AUTH_SOCK
+
+    (
+        cd "${DOCKER_DIR}" || exit 1
+        set -a
+        # shellcheck disable=SC1090
+        source "${target_env}"
+        set +a
+        TARGET="${RECHNER}"
+
+        read -ra SOURCE_DIRS <<< "${BACKUP_SOURCE_DIRS}"
+        read -ra BORG_CREATE_EXTRA_ARGS_ARR <<< "${BORG_CREATE_EXTRA_ARGS:-}"
+
+        DOCKER_EXTRA_ARGS=()
+        declare -A SEEN_NAMES
+        i=0
+        for DIR in "${SOURCE_DIRS[@]}"; do
+            i=$((i + 1))
+            NAME="${DIR#/}"
+            NAME="${NAME%/}"
+            NAME="${NAME//\//-}"
+            NAME="${NAME:-root}"
+            if [ -n "${SEEN_NAMES[${NAME}]+x}" ]; then
+                NAME="${NAME}-${i}"
+            fi
+            SEEN_NAMES[${NAME}]=1
+            DOCKER_EXTRA_ARGS+=(-v "${DIR}:/source/${NAME}:ro")
+        done
+
+        HOOK_OK=1
+        if [ -n "${PRE_BACKUP_HOOK:-}" ]; then
+            echo "=== Pre-Backup-Hook ==="
+            if ! bash -c "${PRE_BACKUP_HOOK}"; then
+                HOOK_OK=0
+            fi
+        fi
+
+        if [ "${HOOK_OK}" -eq 1 ]; then
+            docker_run_borg \
+                create \
+                --lock-wait 600 \
+                --stats \
+                --show-rc \
+                --compression zstd,6 \
+                "${BORG_CREATE_EXTRA_ARGS_ARR[@]}" \
+                "::${ARCHIVE_PREFIX}-{now:%Y-%m-%dT%H:%M:%S}" \
+                /source
+        else
+            echo "Pre-Backup-Hook fehlgeschlagen - borg create wird uebersprungen." >&2
+            exit 1
+        fi
+    )
+}
+
 borg_cron() {
     for FILE in $(ls -tr "${STATUS_DIR}"/tried/* 2>/dev/null) ; do
         RECHNER=$(basename "$FILE")
         if [ ! -f "${STATUS_DIR}/disabled/${RECHNER}" ] ; then
             borg_lock "$RECHNER" || exit $?
             touch "${STATUS_DIR}/tried/${RECHNER}"
-            echo "${DOCKER_DIR}/backup.sh ${RECHNER}"
-            "${DOCKER_DIR}/backup.sh" "${RECHNER}"
+            if [ "${DBB_HAS_COMPOSE}" = "1" ]; then
+                echo "${DOCKER_DIR}/backup.sh ${RECHNER}"
+                "${DOCKER_DIR}/backup.sh" "${RECHNER}"
+            else
+                echo "borg_backup_plain ${RECHNER}"
+                borg_backup_plain "${RECHNER}"
+            fi
             STATUS=$?
             borg_unlock "$RECHNER"
             if [ "$STATUS" -eq 0 ]; then
@@ -218,7 +352,67 @@ borg_prune() {
     # unter Append-Only nur, loescht aber serverseitig nicht wirklich).
     # docker-borg-backup macht diesen fehlenden Schritt explizit - dafuer
     # eben mit einem zweiten, nicht append-only-restriktem Admin-Key.
-    "${DOCKER_DIR}/admin-compact.sh" "${RECHNER}"
+    if [ "${DBB_HAS_COMPOSE}" = "1" ]; then
+        "${DOCKER_DIR}/admin-compact.sh" "${RECHNER}"
+    else
+        borg_prune_plain "${RECHNER}"
+    fi
+}
+
+# Nachbau von admin-compact.sh fuer Hosts ohne "docker compose" - ohne
+# eigenes Lockfile/Logfile/Uptime-Kuma-Push wie im Original (interaktiver
+# Admin-Befehl, kein Cron-Pfad - geringes Risiko einer Ueberschneidung).
+borg_prune_plain() {
+    local RECHNER="$1"
+    local target_env="${DOCKER_DIR}/targets/${RECHNER}.env"
+
+    if [ -z "${SSH_AUTH_SOCK:-}" ]; then
+        echo "ERROR: SSH_AUTH_SOCK is not set." >&2
+        echo "Login using ssh -A first." >&2
+        return 1
+    fi
+
+    echo "SSH agent:"
+    ssh-add -l
+
+    (
+        cd "${DOCKER_DIR}" || exit 1
+        set -a
+        # shellcheck disable=SC1090
+        source "${target_env}"
+        set +a
+        TARGET="${RECHNER}"
+        DOCKER_EXTRA_ARGS=()
+
+        read -ra PRUNE_RETENTION_ARGS <<< "${PRUNE_RETENTION:---keep-within 2d --keep-daily 7 --keep-weekly 3 --keep-monthly 12 --keep-yearly 2}"
+
+        echo "=== Archives BEFORE maintenance ==="
+        docker_run_borg list
+
+        echo
+        echo "=== Applying retention using ADMIN access ==="
+        docker_run_borg prune \
+            --list \
+            --stats \
+            --glob-archives="${ARCHIVE_PREFIX}-*" \
+            "${PRUNE_RETENTION_ARGS[@]}"
+
+        echo
+        if ! read -r -p "compact macht ALLE bisher fuer Zielserver '${TARGET}' als geloescht markierten Daten unwiderruflich weg (auch was VOR diesem Lauf markiert wurde). Wirklich fortfahren? Zum Bestaetigen 'ja' eingeben: " CONFIRM; then
+            CONFIRM=""
+        fi
+        if [ "${CONFIRM,,}" != "ja" ]; then
+            echo "Abgebrochen: compact wurde NICHT ausgefuehrt (Bestaetigung fehlt/verweigert)." >&2
+            exit 1
+        fi
+
+        echo "=== COMPACT ==="
+        docker_run_borg compact
+
+        echo
+        echo "=== Archives AFTER maintenance ==="
+        docker_run_borg list
+    )
 }
 
 borg_start() {
@@ -242,7 +436,7 @@ borg_key_export() {
 borg_list() {
     RECHNER="$1"
     echo "Liste der Backups auf ${RECHNER} (docker):"
-    with_backup_agent "${RECHNER}" docker compose run --rm borg-admin list
+    with_backup_agent "${RECHNER}" borg_admin_run list
 }
 
 borg_shell() {
@@ -252,7 +446,57 @@ borg_shell() {
     # Shell IM Borg-Container (mitgeschnitten, siehe dessen eigene
     # Ausgabe) und haelt dabei den Lock fuer diesen Rechner, bis man
     # "exit" eingibt (blockiert solange Cron-Backup/prune fuer ihn).
-    "${DOCKER_DIR}/admin-shell.sh" "${RECHNER}"
+    if [ "${DBB_HAS_COMPOSE}" = "1" ]; then
+        "${DOCKER_DIR}/admin-shell.sh" "${RECHNER}"
+    else
+        borg_shell_plain "${RECHNER}"
+    fi
+}
+
+# Nachbau von admin-shell.sh fuer Hosts ohne "docker compose" - ohne
+# Sitzungsmitschnitt (script(1)) und ohne Lock wie im Original
+# (interaktiver Admin-Befehl, kein Cron-Pfad).
+borg_shell_plain() {
+    local RECHNER="$1"
+    local target_env="${DOCKER_DIR}/targets/${RECHNER}.env"
+
+    if [ -z "${SSH_AUTH_SOCK:-}" ]; then
+        echo "ERROR: SSH_AUTH_SOCK is not set." >&2
+        echo "Login using ssh -A first." >&2
+        return 1
+    fi
+
+    (
+        cd "${DOCKER_DIR}" || exit 1
+        set -a
+        # shellcheck disable=SC1090
+        source "${target_env}"
+        set +a
+        TARGET="${RECHNER}"
+
+        rsh="ssh -p ${BORG_SSH_PORT} -o BatchMode=yes -o ServerAliveInterval=10 -o ServerAliveCountMax=30"
+        if [ "${TARGET_IPV4_ONLY:-false}" = "true" ]; then
+            rsh="${rsh} -4"
+        fi
+        docker run --rm -it \
+            --device /dev/fuse \
+            --cap-add SYS_ADMIN \
+            --security-opt apparmor:unconfined \
+            -v "${DOCKER_DIR}/restore:/restore" \
+            -v "${DOCKER_DIR}/secrets/${TARGET}/known_hosts:/root/.ssh/known_hosts:ro" \
+            -v "${DOCKER_DIR}/secrets/${TARGET}/passphrase:/run/secrets/borg-passphrase:ro" \
+            -v "${SSH_AUTH_SOCK}:/ssh-agent" \
+            -v docker-borg-backup_borg-cache:/root/.cache/borg \
+            -v docker-borg-backup_borg-config:/root/.config/borg \
+            -e SSH_AUTH_SOCK=/ssh-agent \
+            -e BORG_REPO="ssh://${BORG_SSH_USER}@${BORG_SSH_HOST}:${BORG_SSH_PORT}/${BORG_REPO_PATH}" \
+            -e BORG_REMOTE_PATH="${BORG_REMOTE_PATH}" \
+            -e BORG_RSH="${rsh}" \
+            -e BORG_PASSCOMMAND="cat /run/secrets/borg-passphrase" \
+            -e "PS1=[borg-admin:${TARGET}] \\w # " \
+            --entrypoint /bin/bash \
+            "ghcr.io/tabacha/docker-borg-backup:{{ adfc_borg_docker_image_tag }}"
+    )
 }
 
 borg_mount() {
