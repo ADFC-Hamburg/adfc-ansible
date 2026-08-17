@@ -13,7 +13,12 @@ docker_packages:
   - docker-compose-plugin
   - python3-docker
   - apparmor
-docker_repo_gpg_key: https://download.docker.com/linux/debian/gpg
+# Docker bietet je Distribution ein eigenes Repo unter demselben Muster
+# (".../linux/debian", ".../linux/ubuntu", ...) - ansible_distribution
+# passt dafuer schon (Debian/Ubuntu), nur klein geschrieben. Fest auf
+# "debian" gepinnt haette auf Ubuntu-Hosts (falscher Codename fuers
+# Debian-Repo, z.B. "noble") mit "does not have a Release file" gebrochen.
+docker_repo_gpg_key: "https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg"
 docker_repo_gpg_key_dest: /etc/apt/trusted.gpg.d/docker.asc
 docker_repo_gpg_key_gpg: /etc/apt/trusted.gpg.d/docker.gpg
-docker_repo_url: https://download.docker.com/linux/debian
+docker_repo_url: "https://download.docker.com/linux/{{ ansible_distribution | lower }}"

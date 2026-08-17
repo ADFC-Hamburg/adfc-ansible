@@ -1,40 +1,56 @@
-- name: Install Repo Helper Packages
-  ansible.builtin.apt:
-    name: "{{ docker_repo_helper_packages }}"
+- name: Pruefen ob Docker schon installiert ist
+  ansible.builtin.command: docker --version
+  register: docker_already_installed
+  changed_when: false
+  failed_when: false
 
-- name: Fetch GPG Key
-  ansible.builtin.get_url:
-    url: "{{ docker_repo_gpg_key }}"
-    dest: "{{ docker_repo_gpg_key_dest }}"
-    mode: "0644"
-  register: docker_fetch_gpg
+- name: Docker-Repo einrichten und installieren
+  # Nur wenn noch kein Docker da ist - manche Hosts (z.B. schon
+  # Dockerisierte App-Server) haben Docker bereits ueber eine andere Quelle
+  # (z.B. das aktuelle deb822-Format unter /etc/apt/keyrings/) installiert.
+  # Unsere eigene Legacy-Repo-Datei parallel dazu anzulegen kollidiert mit
+  # apt ("Conflicting values set for option Signed-By"), weil beide
+  # Quellen denselben Docker-Suite/URI-Eintrag mit unterschiedlichem
+  # Signed-By definieren.
+  when: docker_already_installed.rc != 0
+  block:
+    - name: Install Repo Helper Packages
+      ansible.builtin.apt:
+        name: "{{ docker_repo_helper_packages }}"
 
-- name: Create Repo File
-  ansible.builtin.copy:
-    content: >
-      deb [arch=amd64 signed-by={{ docker_repo_gpg_key_dest }}]
-      {{ docker_repo_url }} {{ ansible_distribution_release }} stable
-    dest: /etc/apt/sources.list.d/docker.list
-    mode: "0644"
+    - name: Fetch GPG Key
+      ansible.builtin.get_url:
+        url: "{{ docker_repo_gpg_key }}"
+        dest: "{{ docker_repo_gpg_key_dest }}"
+        mode: "0644"
+      register: docker_fetch_gpg
 
-- name: Delete docker.gpg
-  ansible.builtin.file:
-    path: "{{ docker_repo_gpg_key_gpg }}"
-    state: absent
-  when: docker_fetch_gpg.changed # noqa no-handler
+    - name: Create Repo File
+      ansible.builtin.copy:
+        content: >
+          deb [arch=amd64 signed-by={{ docker_repo_gpg_key_dest }}]
+          {{ docker_repo_url }} {{ ansible_distribution_release }} stable
+        dest: /etc/apt/sources.list.d/docker.list
+        mode: "0644"
 
-- name: Gpg Convert key
-  ansible.builtin.command: >
-    gpg --batch --dearmor --output
-    {{ docker_repo_gpg_key_gpg }}
-    {{ docker_repo_gpg_key_dest }}
-  args:
-    creates: "{{ docker_repo_gpg_key_gpg }}"
+    - name: Delete docker.gpg
+      ansible.builtin.file:
+        path: "{{ docker_repo_gpg_key_gpg }}"
+        state: absent
+      when: docker_fetch_gpg.changed # noqa no-handler
 
-- name: Install Docker Software
-  ansible.builtin.apt:
-    name: "{{ docker_packages }}"
-    update_cache: true
+    - name: Gpg Convert key
+      ansible.builtin.command: >
+        gpg --batch --dearmor --output
+        {{ docker_repo_gpg_key_gpg }}
+        {{ docker_repo_gpg_key_dest }}
+      args:
+        creates: "{{ docker_repo_gpg_key_gpg }}"
+
+    - name: Install Docker Software
+      ansible.builtin.apt:
+        name: "{{ docker_packages }}"
+        update_cache: true
 # - name: Install Pip Packages
 #  ansible.builtin.pip:
 #    name:
