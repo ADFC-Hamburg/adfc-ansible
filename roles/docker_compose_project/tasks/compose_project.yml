@@ -28,6 +28,10 @@
     group: root
   when: compose_stat.stat.exists
 
+- name: Get authentication for email account
+  ansible.builtin.include_tasks: get_smtp_auth.yml
+  when: compose_project.uses_smtp | default(false)
+
 - name: Create Compose File
   ansible.builtin.copy:
     content: |
@@ -38,10 +42,6 @@
     owner: root
     group: root
   register: compose_file
-
-- name: Get authentication for email account
-  ansible.builtin.include_tasks: get_smtp_auth.yml
-  when: compose_project.uses_smtp | default(false)
 
 - name: Create Secret file
   ansible.builtin.copy:

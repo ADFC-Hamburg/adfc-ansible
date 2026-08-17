@@ -55,4 +55,4 @@ docker_compose_project_fahrradfreundliche_schule:
       flask_secret_key:
         file: flask_secret_key.txt
       smtp_password:
-        file: "{{ smtp_password_filename }}"
+        file: smtp_password.txt
