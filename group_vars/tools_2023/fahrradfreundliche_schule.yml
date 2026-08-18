@@ -34,7 +34,7 @@ docker_compose_project_fahrradfreundliche_schule:
           SMTP_HOST: "{{ smtp_auth_hostname }}"
           SMTP_USERNAME: "{{ smtp_auth_address }}"
           SMTP_PASSWORD_FILE: /run/secrets/smtp_password
-          CONFIGFILE: /var/opt/fahrradschule/config.toml # WICHTIG: Configdatei muss manuell erstellt werden
+          FAHRRADSCHULE_CONFIG_FILE: /var/opt/fahrradschule/config.toml # WICHTIG: Configdatei muss manuell erstellt werden
         secrets:
           - flask_secret_key
           - smtp_password
