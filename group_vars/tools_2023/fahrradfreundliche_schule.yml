@@ -8,14 +8,14 @@ docker_compose_project_fahrradfreundliche_schule:
     - selbstevaluation.hamburg.adfc.de
   internal_port: 4110
   hetzner_volumes:
-    - name: fahrradfreundliche_schule-data
+    - name: fahrradfreundliche_schule_data
       size_gb: 10
       location: nbg1
-      mount: /var/lib/docker/volumes/docker-fahrradfreundliche_schule-data
-    - name: fahrradfreundliche_schule-logos
+      mount: /var/lib/docker/volumes/docker-fahrradfreundliche_schule_data
+    - name: fahrradfreundliche_schule_logos
       size_gb: 10
       location: nbg1
-      mount: /var/lib/docker/volumes/docker-fahrradfreundliche_schule-logos # WICHTIG: Muss manuell mit Logos befüllt werden
+      mount: /var/lib/docker/volumes/docker-fahrradfreundliche_schule_logos # WICHTIG: Muss manuell mit Logos befüllt werden
   compose_block:
     volumes:
       data:
