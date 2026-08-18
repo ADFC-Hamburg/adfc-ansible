@@ -7,17 +7,15 @@ public_ipv4: 31.172.106.205
 
 # docker-borg-backup Testmigration (siehe roles/borg_server) - wie
 # tools1/tools2/portal, adfc_borg_client_version bleibt "pyenv".
-# adfc_borg_docker_targets vorerst nur adfc-hh-bak-1. "docker compose"
-# (V2) fehlt hier komplett (nur docker.io + altes eigenstaendiges
-# "docker-compose" v1.29.2 ueber Univentions App-Center-Integration) -
-# adfc-borg-docker faellt dafuer automatisch auf plain "docker run"
-# zurueck (docker_run_borg() dort, kein zusaetzliches apt-Repo noetig).
-# Weiterhin Vorsicht: alter Docker (20.10.24), Root-Platte bei
-# 87%/nur 1,6G frei - vor jedem Lauf gegenchecken.
+# adfc_borg_docker_targets kommt aus group_vars/all.yml (adfc-hh-bak-1 +
+# adfc-hh-bak-2). "docker compose" (V2) fehlt hier komplett (nur docker.io
+# + altes eigenstaendiges "docker-compose" v1.29.2 ueber Univentions
+# App-Center-Integration) - adfc-borg-docker faellt dafuer automatisch auf
+# plain "docker run" zurueck (docker_run_borg() dort, kein zusaetzliches
+# apt-Repo noetig). Weiterhin Vorsicht: alter Docker (20.10.24), Root-Platte
+# bei 87%/nur 1,6G frei - vor jedem Lauf gegenchecken.
 adfc_borg_docker_uid: 1004
 adfc_borg_docker_enabled: true
-adfc_borg_docker_targets:
-  - adfc-hh-bak-1
 
 borg_save_path: /
 borg_save_exclude_dirs:

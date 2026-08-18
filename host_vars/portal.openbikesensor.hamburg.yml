@@ -13,9 +13,7 @@ borg_cron_minute: "9"
 borg_client_user: "borg-obs"
 
 # docker-borg-backup Testmigration (siehe roles/borg_server) - wie tools2,
-# adfc_borg_client_version bleibt "pyenv". adfc_borg_docker_targets
-# vorerst nur adfc-hh-bak-1 (adfc-hh-bak-2 noch nicht deployed).
+# adfc_borg_client_version bleibt "pyenv". adfc_borg_docker_targets kommt
+# aus group_vars/all.yml (adfc-hh-bak-1 + adfc-hh-bak-2).
 adfc_borg_docker_uid: 1003
 adfc_borg_docker_enabled: true
-adfc_borg_docker_targets:
-  - adfc-hh-bak-1

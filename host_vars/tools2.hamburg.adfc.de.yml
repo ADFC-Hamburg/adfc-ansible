@@ -9,12 +9,7 @@ borg_client_user: "tools2"
 # das neue Backend um (adfc_borg_client_version bleibt "pyenv", der
 # bestehende Cronjob laeuft unveraendert weiter). UID 1001 auf
 # adfc-hh-bak-1 (dort noch keine andere Identitaet registriert).
-# adfc_borg_docker_targets vorerst nur adfc-hh-bak-1, da auf
-# adfc-hh-bak-2 noch kein docker-borg-backup-server laeuft (siehe
-# roles/borg_backup_target_docker) - sonst schlaegt die Registrierung dort
-# fehl. Einschraenkung wieder entfernen, sobald adfc-hh-bak-2 auch
-# deployed ist.
+# adfc_borg_docker_targets kommt aus group_vars/all.yml (adfc-hh-bak-1 +
+# adfc-hh-bak-2).
 adfc_borg_docker_uid: 1001
 adfc_borg_docker_enabled: true
-adfc_borg_docker_targets:
-  - adfc-hh-bak-1
