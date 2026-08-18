@@ -20,6 +20,7 @@ borg_save_path: /
 borg_save_exclude_dirs:
   - /mnt
   - /var/cache
+  - /var/lib/docker/overlay2
   - /run
   - /dev
   - /sys
