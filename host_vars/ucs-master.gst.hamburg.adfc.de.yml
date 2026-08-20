@@ -15,6 +15,7 @@ public_ipv4: 31.172.106.205
 # vor jedem Lauf gegenchecken.
 adfc_borg_docker_uid: 1004
 adfc_borg_docker_enabled: true
+borg_docker_create_extra_args: "--files-cache=mtime,size,inode"
 
 borg_save_path: /
 borg_save_exclude_dirs:

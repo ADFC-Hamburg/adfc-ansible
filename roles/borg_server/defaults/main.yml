@@ -30,6 +30,11 @@ adfc_borg_docker_dir: /usr/local/share/adfc-borg-docker
 # adfc_borg_docker_targets:
 #   - adfc-hh-bak-1
 
+# Zusaetzliche Parameter fuer "borg create" beim docker-borg-backup, an
+# BORG_CREATE_EXTRA_ARGS angehaengt (siehe templates/docker-target.env.j2).
+# Als host_vars ueberschreibbar, z.B. --files-cache=mtime,size,inode.
+borg_docker_create_extra_args: ""
+
 # Deployt docker-borg-backup nach adfc_borg_docker_dir, auch wenn
 # adfc_borg_client_version noch auf "pyenv" steht - so kann man einen
 # Rechner vorbereiten/testen ("adfc-borg-docker init <rechner>" direkt
