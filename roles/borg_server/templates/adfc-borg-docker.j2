@@ -212,7 +212,21 @@ borg_backup_plain() {
     ssh-add "$key" >/dev/null 2>&1
     export SSH_AUTH_SOCK
 
+    local log_dir="${DOCKER_DIR}/logs"
+    mkdir -p "${log_dir}"
+    find "${log_dir}" -type f -name "backup-${RECHNER}-*.log" -mtime +30 -delete >/dev/null 2>&1 || true
+    local run_log="${log_dir}/backup-${RECHNER}-$(date '+%Y-%m-%d_%H-%M-%S').log"
+
     (
+        # Wie backup.sh von docker-borg-backup selbst (DBB_HAS_COMPOSE=1-
+        # Pfad): ab hier keine Ausgabe mehr auf stdout/stderr, alles in
+        # run_log. Noetig, weil die Crontab (siehe tasks/main.yml) nur
+        # stdout abfaengt (">/dev/null") - Borgs "--stats"-Ausgabe laeuft
+        # ueber stderr und wuerde sonst bei jedem Lauf eine Cron-Mail
+        # ausloesen.
+        exec >"${run_log}" 2>&1
+        echo "Started: $(date -Is) (target: ${RECHNER})"
+
         cd "${DOCKER_DIR}" || exit 1
         set -a
         # shellcheck disable=SC1090
@@ -257,10 +271,15 @@ borg_backup_plain() {
                 "${BORG_CREATE_EXTRA_ARGS_ARR[@]}" \
                 "::${ARCHIVE_PREFIX}-{now:%Y-%m-%dT%H:%M:%S}" \
                 /source
+            RC=$?
         else
             echo "Pre-Backup-Hook fehlgeschlagen - borg create wird uebersprungen." >&2
-            exit 1
+            RC=1
         fi
+
+        echo "Finished: $(date -Is)"
+        echo "Return code: ${RC}"
+        exit "${RC}"
     )
 }
 
