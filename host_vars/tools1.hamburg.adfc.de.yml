@@ -3,3 +3,8 @@ public_ipv4: "167.235.140.226"
 borg_cron_minute: "9"
 adfc_borg_repo: /adfc-backup/chat.hamburg.adfc.de
 borg_client_user: "borgchat"
+
+# docker-borg-backup Testmigration (siehe roles/borg_server) - wie tools2,
+# adfc_borg_client_version bleibt "pyenv".
+adfc_borg_docker_uid: 1002
+adfc_borg_docker_enabled: true

@@ -1,0 +1,56 @@
+---
+# Deployt docker-borg-backup (Client-Seite) nach adfc_borg_docker_dir, das
+# adfc-borg-docker (siehe templates/adfc-borg-docker) danach benutzt.
+# Zielserver-Konfiguration (targets/<name>.env), Key-Registrierung und Repo-
+# Init passieren NICHT hier, sondern in setup_client_docker_target.yml (pro
+# Zielserver aus groups['backup_clients'], siehe main.yml).
+
+- name: Ensure git is installed
+  ansible.builtin.apt:
+    name: git
+    state: present
+
+- name: Ensure Docker is installed
+  ansible.builtin.include_role:
+    name: docker
+
+- name: Checkout docker-borg-backup ({{ adfc_borg_docker_version }})
+  ansible.builtin.git:
+    repo: "{{ adfc_borg_docker_repo }}"
+    dest: "{{ adfc_borg_docker_dir }}"
+    version: "{{ adfc_borg_docker_version }}"
+    force: false
+
+- name: Pin borg-admin image tag via compose override
+  ansible.builtin.template:
+    src: borg-docker-compose.override.yml.j2
+    dest: "{{ adfc_borg_docker_dir }}/compose.override.yml"
+    mode: "0644"
+    owner: root
+    group: root
+
+- name: Create shared docker-borg-backup cache/config volumes
+  ansible.builtin.command: "docker volume create {{ item }}"
+  loop:
+    - docker-borg-backup_borg-cache
+    - docker-borg-backup_borg-config
+
+- name: Pull borg-admin image ({{ adfc_borg_docker_image_tag }})
+  # Bewusst "docker pull" statt "docker compose pull": funktioniert auch
+  # auf Hosts ohne "docker compose" (adfc-borg-docker faellt dort selbst
+  # auf plain "docker run" zurueck, siehe docker_run_borg() dort).
+  ansible.builtin.command: "docker pull ghcr.io/tabacha/docker-borg-backup:{{ adfc_borg_docker_image_tag }}"
+  register: adfc_borg_docker_pull
+  changed_when: "'Downloaded newer image' in adfc_borg_docker_pull.stdout"
+
+- name: Render Pre-Backup-Hook script
+  ansible.builtin.copy:
+    content: |
+      #!/bin/bash
+      set -e
+      {{ borg_create_pre_job }}
+    dest: "{{ adfc_borg_docker_dir }}/pre-backup-hook.sh"
+    mode: "0755"
+    owner: root
+    group: root
+  when: borg_create_pre_job | default('') != ''

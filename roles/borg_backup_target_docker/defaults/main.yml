@@ -1,0 +1,86 @@
+---
+# https://github.com/tabacha/docker-borg-backup-server - Server-Gegenstueck
+# zu docker-borg-backup (siehe roles/borg_server "adfc-borg-docker"). Laeuft
+# auf den Rechnern, auf die gesichert WIRD (Inventory-Gruppe
+# "backup_clients", z.B. adfc-hh-bak-1/2 - trotz des irrefuehrenden
+# Gruppennamens die Ziel-/Speicherseite, nicht die Quellseite).
+# adfc_borg_target_dir und adfc_borg_target_ssh_port stehen NICHT hier,
+# sondern in group_vars/backup_clients.yml - roles/borg_server (Quellhosts,
+# anderes Play) muss sie per hostvars[<zielbox>] lesen koennen, auch wenn
+# diese Rolle im jeweiligen Play gar nicht laeuft. Reine Rollen-Defaults
+# waeren dafuer nicht sichtbar. Siehe Kommentar dort.
+adfc_borg_target_repo: https://github.com/tabacha/docker-borg-backup-server.git
+adfc_borg_target_version: v1.2.0
+adfc_borg_target_image_tag: "1.2.0"
+
+# Server-Default ist 3, siehe env.j2 - mit mehreren Admins, die alle eigene
+# ssh-agents mit mehreren Keys (u.a. Hardware-Token) mitbringen, zu knapp
+# bemessen.
+adfc_borg_target_ssh_max_auth_tries: 20
+
+# Server-Default akzeptiert nur ed25519 (Haertung des Server-Autors) -
+# die meisten aktuell registrierten Admin-Keys (ssh_keys/<name>/*.pub)
+# sind aber RSA. rsa-sha2-512/256 ergaenzt statt komplett zu ersetzen.
+adfc_borg_target_ssh_pubkey_algorithms: "ssh-ed25519,sk-ssh-ed25519@openssh.com,rsa-sha2-512,rsa-sha2-256"
+
+# Watchtower fuer automatische Image-Updates statt Ansible-gesteuertem
+# Pinning - Opt-in, weil sich das mit adfc_borg_target_image_tag
+# widerspricht: ein fest gepinnter Versions-Tag aendert sich nie, Watchtower
+# haette dann nichts zu tun. Aktiviert wechselt das Image bewusst auf
+# adfc_borg_target_watchtower_tag (":latest") statt auf den gepinnten Tag -
+# Kompromiss "immer aktuell" statt "kontrolliert getestet".
+adfc_borg_target_watchtower_enabled: false
+adfc_borg_target_watchtower_tag: latest
+adfc_borg_target_watchtower_interval: 43200
+
+# Unterverzeichnis auf der VORHANDENEN Backup-Platte (siehe
+# playbooks/setup-backup-client.yml, mountet "/adfc-backup" schon) - bewusst
+# ein ANDERER Pfad als die alten adfc-borg-pyenv-Repos
+# (/adfc-backup/<hostname>), damit alte und neue Sicherungen nebeneinander
+# existieren koennen, bis der Umstieg abgeschlossen ist.
+adfc_borg_target_data_dir: /adfc-backup/docker-repos
+
+# Backup-Keys (Quellhosts, die auf dieses Ziel schreiben duerfen) und
+# eigenstaendige Admin-Identitaeten OHNE zugehoerige Backup-Rolle. Beides
+# manuell/vollstaendig hier pflegen - automatisch registrierte Backup-Keys
+# der Quellhosts aus save_with_borg laufen NICHT hierueber, sondern ueber
+# roles/borg_server/tasks/setup_client_docker_target.yml (adfc_borg_docker_uid
+# des jeweiligen Quellhosts). Admin-Keys je Backup-Identitaet laufen
+# ebenfalls separat, siehe adfc_borg_target_admin_users unten.
+#
+# Seit docker-borg-backup-server v1.1.0 bekommt jede Identitaet einen
+# eigenen Unix-Account (users/<uid>-<name>/, siehe dessen Release-Notes) -
+# "uid" ist deshalb Pflicht und muss pro Zielrechner eindeutig sein (Bereich
+# 1000-2000). "key_name" ist optional (Default: "name") und wird der
+# Datei-Basisname unter keys/<role>/ - noetig, wenn eine Identitaet mehrere
+# Keys hat. "version" ist optional (Name eines auf dem Server per
+# Dockerfile BORG_VERSIONS installierten Borg-Binaries, z.B. "1.2.8" - ohne
+# Angabe kommt die Server-Default-Version zum Einsatz).
+#
+# Beispiel:
+#   adfc_borg_target_admin_keys:
+#     - name: sven
+#       uid: 1001
+#       pubkey: "ssh-ed25519 AAAA... admin@example"
+adfc_borg_target_backup_keys: []
+adfc_borg_target_admin_keys: []
+
+# Wer volle Admin-Rechte (prune/delete/compact) auf JEDER Backup-Identitaet
+# dieser Zielbox bekommt (users/<uid>-<name>/keys/admin/, dieselbe
+# UID/Identitaet wie der zugehoerige Backup-Key - siehe
+# sync_admin_keys.yml). Seit docker-borg-backup-server v1.2.0 wirkt so ein
+# Admin-Key ausschliesslich auf das eigene Repo dieser einen Identitaet
+# (--restrict-to-repository), nicht mehr global ueber alle Repos der
+# Zielbox. Bewusst eine eigene Liste statt ssh_users_admins
+# (group_vars/all.yml, roles/ssh_keys) direkt zu verwenden: Admin-Zugriff
+# auf Backups ist sensibler als normaler SSH-Verwaltungszugriff auf die
+# Rechner selbst, beide Listen sollen unabhaengig voneinander pflegbar
+# bleiben, auch wenn sie aktuell identisch besetzt sind. Keys kommen aus
+# ssh_keys/<name>/*.pub (gleiche Quelle/Konvention wie roles/ssh_keys,
+# key_path/inventory_dir aus group_vars/all.yml). Wird jemand aus dieser
+# Liste entfernt, werden seine Key-Dateien beim naechsten Lauf auch aus
+# jeder Backup-Identitaet wieder entfernt.
+adfc_borg_target_admin_users:
+  - georgs
+  - svena
+  - volkerk
