@@ -455,11 +455,41 @@ borg_stop() {
     touch "${STATUS_DIR}/disabled/${RECHNER}"
 }
 
+# "borg key export --qr-html" braucht anders als "list"/"info" (kein
+# Positionsargument, siehe with_backup_agent) und "key export" ohne
+# --qr-html (kein Positionsargument -> Ausgabe auf stdout) einen expliziten
+# Zielpfad - borgs Argparse fuellt bei nur einem Positionsargument aber
+# immer zuerst REPOSITORY, nicht PATH. Deshalb hier REPOSITORY explizit aus
+# den von with_backup_agent gesourceten BORG_SSH_*/BORG_REPO_PATH gebaut,
+# wie es docker_run_borg() intern per BORG_REPO-Env sonst automatisch tut.
+borg_admin_key_export_qr() {
+    local out_path="$1"
+    borg_admin_run key export --qr-html "ssh://${BORG_SSH_USER}@${BORG_SSH_HOST}:${BORG_SSH_PORT}/${BORG_REPO_PATH}" "${out_path}"
+}
+
 borg_key_export() {
     RECHNER="$1"
-    # Kein "borg key export" bei repokey-blake2 + docker-borg-backup -
-    # disaster-recovery-info.sh liefert das Aequivalent (Repo-Adresse,
-    # Passphrase, known_hosts, fertige Restore-Anleitung).
+    # borg key export funktioniert bei repokey-blake2 genauso wie bei
+    # keyfile (liest/exportiert einfach den im Repo abgelegten Schluessel) -
+    # der Backup-Key reicht dafuer aus (with_backup_agent, kein "ssh -A"
+    # noetig): der Server erlaubt jedem registrierten Key ausschliesslich
+    # "borg serve --restrict-to-repository" (mit --append-only zusaetzlich
+    # beim Backup-Key), was NUR schreibende Operationen einschraenkt - "key
+    # export" ist rein lesend (siehe docker-borg-backup-server
+    # build-authorized-keys.sh). Ergaenzt disaster-recovery-info.sh
+    # (Repo-Adresse/Passphrase/Restore-Anleitung), das den Schluessel selbst
+    # bewusst nicht mit ausgibt.
+    echo "============================================================================"
+    echo "ADFC Hamburg Vertraulich, nicht fuer Dritte!"
+    echo "Borg Key fuer Rechner $(hostname) gesichert auf ${RECHNER} (docker)"
+    echo "Kompakt:"
+    with_backup_agent "${RECHNER}" borg_admin_run key export
+    echo "Papier-Version:"
+    with_backup_agent "${RECHNER}" borg_admin_run key export --paper
+    echo "QR-Code: ${DOCKER_DIR}/restore/borg-key-${RECHNER}.html"
+    with_backup_agent "${RECHNER}" borg_admin_key_export_qr "/restore/borg-key-${RECHNER}.html"
+    echo "============================================================================"
+    echo
     "${DOCKER_DIR}/disaster-recovery-info.sh" "${RECHNER}"
 }
 
