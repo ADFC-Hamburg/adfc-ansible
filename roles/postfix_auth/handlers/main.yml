@@ -1,7 +1,7 @@
 ---
 - name: Postfix postmap smtp_auth
   ansible.builtin.command: /usr/sbin/postmap /etc/postfix/smtp_auth
-  notify: reload postfix
+  notify: Reload postfix
 
 - name: Postfix newaliases
   ansible.builtin.command: /usr/bin/newaliases
