@@ -78,9 +78,11 @@ docker_run_borg() {
 
 # "docker compose run --rm borg-admin $@" wenn verfuegbar, sonst
 # docker_run_borg() als Ersatz - fuer init/list (siehe with_backup_agent).
+# "--progress quiet" unterdrueckt nur die Compose-eigenen "Container X
+# Creating/Created"-Zeilen, nicht die Ausgabe von borg selbst.
 borg_admin_run() {
     if [ "${DBB_HAS_COMPOSE}" = "1" ]; then
-        docker compose run --rm "${DOCKER_EXTRA_ARGS[@]}" borg-admin "$@"
+        docker compose --progress quiet run --rm "${DOCKER_EXTRA_ARGS[@]}" borg-admin "$@"
     else
         docker_run_borg "$@"
     fi
