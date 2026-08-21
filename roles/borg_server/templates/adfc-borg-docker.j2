@@ -401,6 +401,11 @@ borg_prune_plain() {
     ssh-add -l
 
     (
+        # "set -e": bricht sofort ab, sobald "docker_run_borg" fehlschlaegt
+        # (z.B. SSH-Verbindung mit dem Admin-Key abgelehnt) - sonst wuerde
+        # trotz gescheitertem list/prune bis zur compact-Abfrage
+        # weitergelaufen.
+        set -e
         cd "${DOCKER_DIR}" || exit 1
         set -a
         # shellcheck disable=SC1090
