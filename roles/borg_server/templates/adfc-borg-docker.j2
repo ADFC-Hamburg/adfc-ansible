@@ -298,7 +298,13 @@ borg_cron() {
             fi
             STATUS=$?
             borg_unlock "$RECHNER"
-            if [ "$STATUS" -eq 0 ]; then
+            # rc 1 = "warning" (z.B. "file changed while we backed it up"
+            # bei waehrend des Laufs schreibenden Dateien wie Zabbix'
+            # MySQL-Datendateien oder dem systemd-Journal) - das Archiv ist
+            # trotzdem vollstaendig geschrieben, nur rc 2 ist ein
+            # tatsaechlicher Fehler (siehe borg-Dokumentation zu
+            # Exit-Codes).
+            if [ "$STATUS" -le 1 ]; then
                 touch "${STATUS_DIR}/success/${RECHNER}"
                 touch "${STATUS_DIR}/success/any"
                 # Wenn eine Sicherung erfolgreich ist, anhalten (Log liegt
