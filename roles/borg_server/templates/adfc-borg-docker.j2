@@ -290,10 +290,8 @@ borg_cron() {
             borg_lock "$RECHNER" || exit $?
             touch "${STATUS_DIR}/tried/${RECHNER}"
             if [ "${DBB_HAS_COMPOSE}" = "1" ]; then
-                echo "${DOCKER_DIR}/backup.sh ${RECHNER}"
                 "${DOCKER_DIR}/backup.sh" "${RECHNER}"
             else
-                echo "borg_backup_plain ${RECHNER}"
                 borg_backup_plain "${RECHNER}"
             fi
             STATUS=$?
