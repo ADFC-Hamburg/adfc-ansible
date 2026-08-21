@@ -22,6 +22,8 @@ borg_save_exclude_dirs:
   - /mnt
   - /var/cache
   - /var/lib/docker/overlay2
+  - /var/log/journal
+  - /usr/src/zabbix-docker/zbx_env/var/lib/mysql
   - /run
   - /dev
   - /sys
