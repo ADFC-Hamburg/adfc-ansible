@@ -1,0 +1,33 @@
+# {{ ansible_managed }}
+#
+[sssd]
+config_file_version = 2
+reconnection_retries = 3
+sbus_timeout = 30
+{#
+Das machen wir nicht mehr, da die Dienste über socket gestartet werden.
+services = nss, pam, sudo
+#}
+domains = {{ ucs_client_join_krb5_realm }}
+
+[nss]
+reconnection_retries = 3
+
+[pam]
+reconnection_retries = 3
+
+[domain/{{ ucs_client_join_krb5_realm }}]
+auth_provider = krb5
+krb5_realm = {{ ucs_client_join_krb5_realm }}
+krb5_server = {{ ucs_client_join_krb5_server }}
+krb5_kpasswd = {{ ucs_client_join_krb5_kpasswd }}
+id_provider = ldap
+ldap_uri = ldap://{{ ucs_client_join_primary_fqdn }}:7389
+ldap_search_base = {{ ucs_client_join_ldap_base_dn }}
+ldap_tls_reqcert = never
+ldap_tls_cacert = {{ ucs_client_join_ca_cert_path }}
+cache_credentials = true
+enumerate = true
+ldap_default_bind_dn = {{ ucs_client_join_ldap_host_dn }}
+ldap_default_authtok_type = password
+ldap_default_authtok = {{ ucs_client_join_machine_secret }}

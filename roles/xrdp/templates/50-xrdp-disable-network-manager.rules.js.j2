@@ -1,0 +1,9 @@
+// {{ ansible_managed }}
+// Disable network manager for xrdp users
+polkit.addRule(function (action, subject) {
+  if (action.id.indexOf("org.freedesktop.NetworkManager") === 0) {
+    if (subject.isInGroup("xrdp")) {
+      return polkit.Result.NO;
+    }
+  }
+});

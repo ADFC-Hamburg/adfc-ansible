@@ -1,3 +1,8 @@
 ---
 - name: Run firefox extension update
   ansible.builtin.command: /etc/cron.daily/firefox-extension-update.sh
+
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: true
+
