@@ -1,0 +1,333 @@
+- name: Get Database Password for klara wordpress
+  ansible.builtin.shell:
+    cmd: "(cat wp-config.php ; echo '<?php echo DB_PASSWORD;' ) | php"
+    chdir: /kunden/283920_20099/klara/wordpress
+  delegate_to: klara.bike
+  changed_when: false
+  register: klara_wordpress_db_pass_cmd
+  tags:
+    - fetch
+    - replace_setting
+
+- name: Get Database Password for test klara wordpress
+  ansible.builtin.shell:
+    cmd: "(cat wp-config.php ; echo '<?php echo DB_PASSWORD;' ) | php"
+    chdir: /kunden/283920_20099/klara/test/wordpress/wordpress
+  delegate_to: klara.bike
+  changed_when: false
+  register: klara_test_wordpress_db_pass_cmd
+  tags:
+    - fetch
+    - replace_setting
+
+- name: Save Wordpres DB
+  ansible.builtin.shell:
+    cmd: 'ssh -l ssh-283920-backup klara.bike "mysqldump  db283920 -udb283920 -p''{{ db_password }}''"> {{ sync_klara_tmp_dir }}/db-klara.sql'
+  vars:
+    db_password: "{{ klara_wordpress_db_pass_cmd.stdout }}"
+  tags:
+    - fetch
+
+- name: Save Test Wordpres DB
+  ansible.builtin.shell:
+    cmd: 'ssh -l ssh-283920-backup klara.bike "mysqldump  db283920_2 -udb283920_2 -p''{{ db_password }}''"> {{ sync_klara_tmp_dir }}/db-test_klara.sql'
+  vars:
+    db_password: "{{ klara_test_wordpress_db_pass_cmd.stdout }}"
+  tags:
+    - fetch
+
+- name: Save Radzaehler DB
+  ansible.builtin.shell:
+    cmd: 'ssh -l ssh-283920-backup klara.bike "mysqldump  db283920_4 -udb283920_4 -p''{{ db_password }}''"> {{ sync_klara_tmp_dir }}/db-radzaehler.sql'
+  vars:
+    db_password: "{{ klara_wordpress_db_pass_cmd.stdout }}"
+  tags:
+    - fetch
+
+- name: Make Sure database dir is not there
+  ansible.builtin.file:
+    path: "{{ sync_klara_tmp_dir }}/mysql"
+    state: absent
+  tags:
+    - db_delete_dir
+
+- name: Start Mariadb 10.4 Docker Container
+  ansible.builtin.command:
+    argv:
+      - docker
+      - run
+      - --name
+      - mariadbtest
+      - --env
+      - "MYSQL_ROOT_PASSWORD={{ sync_klara_mysql_root_pass }}"
+      - -p
+      - 13306:3306
+      - --volume
+      - "{{ sync_klara_tmp_dir }}/mysql:/var/lib/mysql"
+      - -d
+      - docker.io/library/mariadb:10.4
+  tags:
+    - db_docker
+
+- name: Pause
+  ansible.builtin.pause:
+    seconds: 10
+  tags:
+    - db_dump
+
+- name: Create a new database klara
+  community.mysql.mysql_db:
+    name: "{{ item }}"
+    state: present
+    login_user: root
+    login_password: "{{ sync_klara_mysql_root_pass }}"
+    login_host: 127.0.0.1
+    login_port: 13306
+  loop:
+    - klara
+    - test_klara
+    - radzaehler
+  tags:
+    - db_create
+
+- name: Create new Klara DB User
+  community.mysql.mysql_user:
+    name: "{{ item }}"
+    password: "{{ sync_klara_new_mysql_password[item] }}"
+    priv: "{{ item }}.*:ALL"
+    state: present
+    login_user: root
+    login_password: "{{ sync_klara_mysql_root_pass }}"
+    login_host: 127.0.0.1
+    login_port: 13306
+  loop:
+    - klara
+    - test_klara
+    - radzaehler
+  tags:
+    - db_create
+
+- name: Insert mysqldump
+  ansible.builtin.shell:
+    cmd: "cat {{ sync_klara_tmp_dir }}/db-{{ item }}.sql | docker exec -i mariadbtest  /usr/bin/mysql -p{{ sync_klara_mysql_root_pass }} {{ item }}"
+  loop:
+    - klara
+    - test_klara
+    - radzaehler
+  tags:
+    - db_create
+
+- name: Stop Container and remove Container
+  ansible.builtin.command:
+    argv:
+      - docker
+      - "{{ item }}"
+      - mariadbtest
+  loop:
+    - stop
+    - rm
+  tags:
+    - db_create
+
+- name: Loop over Releases
+  ansible.builtin.include_tasks: mariadb_upgrade.yml
+  loop:
+    - "10.5"
+    - "10.6"
+    - "10.7"
+    - "10.8"
+    - "10.9"
+    - "10.10"
+    - "10.11"
+  loop_control:
+    loop_var: mariadb_version
+  tags:
+    - db_upgrade
+
+- name: Start Mariadb 10.11 Docker Container
+  ansible.builtin.command:
+    argv:
+      - docker
+      - run
+      - --name
+      - mariadbtest
+      - --env
+      - "MYSQL_ROOT_PASSWORD={{ sync_klara_mysql_root_pass }}"
+      - -p
+      - 13306:3306
+      - --volume
+      - "{{ sync_klara_tmp_dir }}/mysql:/var/lib/mysql"
+      - -d
+      - docker.io/library/mariadb:10.11
+  tags:
+    - db_dump
+
+- name: Pause
+  ansible.builtin.pause:
+    seconds: 5
+  tags:
+    - db_dump
+
+- name: Create mysqldump
+  ansible.builtin.shell:
+    cmd: "docker exec -i mariadbtest mysqldump -p{{ sync_klara_mysql_root_pass }} --skip-extended-insert --all-databases >{{ sync_klara_tmp_dir }}/mysqldump-10.11.sql"
+  tags:
+    - db_dump
+    - db_dump_mysqldump
+
+- name: Stop Container and remove Container
+  ansible.builtin.command:
+    argv:
+      - docker
+      - "{{ item }}"
+      - mariadbtest
+  loop:
+    - stop
+    - rm
+  tags:
+    - db_dump
+    - db_dump_clean
+
+- name: Stop Mariadb
+  ansible.builtin.systemd:
+    name: mariadb.service
+    state: stopped
+  delegate_to: klara01.hamburg.adfc.de
+  tags:
+    - clean_mariadb
+    - resync_db
+
+- name: Remove dependencies that are no longer required and purge their configuration files
+  ansible.builtin.apt:
+    name: mariadb-server
+    state: absent
+    autoremove: yes
+    purge: true
+  delegate_to: klara01.hamburg.adfc.de
+  tags:
+    - clean_mariadb
+    - resync_db
+
+- name: Clean DB dir
+  ansible.builtin.file:
+    path: /var/lib/mysql
+    state: absent
+  delegate_to: klara01.hamburg.adfc.de
+  tags:
+    - clean_mariadb
+    - resync_db
+
+- name: Remove dependencies that are no longer required and purge their configuration files
+  ansible.builtin.apt:
+    name:
+      - mariadb-server
+      - python3-pymysql
+    state: present
+  delegate_to: klara01.hamburg.adfc.de
+  tags:
+    - clean_mariadb
+    - resync_db
+
+- name: Start Mariadb
+  ansible.builtin.systemd:
+    name: mariadb.service
+    state: started
+  delegate_to: klara01.hamburg.adfc.de
+  tags:
+    - clean_mariadb
+    - resync_db
+
+- name: Insert Mysqldump
+  ansible.builtin.shell:
+    cmd: "cat {{ sync_klara_tmp_dir }}/mysqldump-10.11.sql | ssh root@klara01.hamburg.adfc.de mysql"
+  tags:
+    - insert_dump
+    - resync_db
+
+- name: Create root User identified by socket
+  community.mysql.mysql_query:
+    query: "{{ item }}"
+    login_user: root
+    login_password: "{{ sync_klara_mysql_root_pass }}"
+    login_unix_socket: /run/mysqld/mysqld.sock
+  delegate_to: klara01.hamburg.adfc.de
+  loop:
+    - "GRANT ALL ON *.* TO 'root'@'localhost' IDENTIFIED VIA unix_socket WITH GRANT OPTION"
+    - 'drop user "root"@"%"'
+  tags:
+    - add_root_socket_user
+    - resync_db
+
+- name: Add ssh known host for klara.bike
+  ansible.builtin.known_hosts:
+    name: klara.bike
+    key: "klara.bike ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPahHFb1MC9/nr+Ze2fDS/sQGneWRF+SH9j3VJ+7vMed"
+    state: present
+  delegate_to: klara01.hamburg.adfc.de
+  tags:
+    - rsync_files
+
+- name: Create dir
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  loop:
+    - /kunden
+    - /kunden/28390_20099/
+  delegate_to: klara01.hamburg.adfc.de
+  tags:
+    - rsync_files
+
+- name: Rsync Data
+  ansible.builtin.shell:
+    cmd: rsync --usermap=744906:www-data --groupmap=99:www-data -av --delete -e ssh ssh-283920-backup@klara.bike:/kunden/283920_20099/klara /kunden/28390_20099/
+  delegate_to: klara01.hamburg.adfc.de
+  tags:
+    - rsync_files
+
+- name: Fix Password and database Settings
+  ansible.builtin.include_tasks: fix_settings.yml
+  loop:
+    - /kunden/28390_20099/klara/wordpress/stuff/jobs/heavy-users/show-heavy-users.php
+    - /kunden/28390_20099/klara/wordpress/wp-config.php
+  loop_control:
+    loop_var: db_settings_file
+  vars:
+    old_db_password: "{{ klara_wordpress_db_pass_cmd.stdout }}"
+    new_db_password: "{{ sync_klara_new_mysql_password.klara }}"
+  tags:
+    - replace_setting
+
+- name: Fix Password and database Settings
+  ansible.builtin.include_tasks: fix_settings.yml
+  loop:
+    - /kunden/28390_20099/klara/test/wordpress/wordpress/wp-config.php
+  loop_control:
+    loop_var: db_settings_file
+  vars:
+    old_db_password: "{{ klara_test_wordpress_db_pass_cmd.stdout }}"
+    new_db_password: "{{ sync_klara_new_mysql_password.test_klara }}"
+  tags:
+    - replace_setting
+
+- name: Fix Password and database Settings
+  ansible.builtin.include_tasks: fix_settings.yml
+  loop:
+    - /kunden/28390_20099/klara/sqlconnectorsforphp/dbconnector-radzaehler.php
+    - /kunden/28390_20099/klara/sqlconnectorsforphp/dbconnector-stadtradtracking.php
+  loop_control:
+    loop_var: db_settings_file
+  vars:
+    old_db_password: "{{ klara_wordpress_db_pass_cmd.stdout }}"
+    new_db_password: "{{ sync_klara_new_mysql_password.radzaehler }}"
+  tags:
+    - replace_setting
+# /etc/apache2/sites-enabled/klara.bike.conf
+#   a2ensite klara.bike
+#   a2dissite 000-default.conf
+# /etc/apache2/ports.conf
+# /etc/apache2/sites-available/test.klara.bike.conf
+#   systemctl restart apache2.service

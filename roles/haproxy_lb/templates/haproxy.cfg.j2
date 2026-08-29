@@ -62,6 +62,16 @@ frontend https
 {% endfor %}
 {% endfor %}
 
+   # Klara.bike Domains
+{% for klara_dom in hostvars['klara01.hamburg.adfc.de'].klara_bike_domains %}
+{% set first_domain = klara_dom.domains[0] %}
+{% for domain in klara_dom.domains %}
+    acl acl_{{ domain }} hdr(host) -i {{ domain }}
+    use_backend https_{{ first_domain }} if acl_{{ domain }}
+
+{% endfor %}
+{% endfor %}
+
     # Redircects
 
 {% for redirect_dom in loadbalancer_redirect_domains %}
@@ -120,6 +130,20 @@ backend https_{{ first_domain }}
 {% endfor %}
 {% endfor %}
 
+{% for klara_dom in hostvars['klara01.hamburg.adfc.de'].klara_bike_domains %}
+{% set domain = klara_dom.domains[0] %}
+{% set port = klara_dom.port %}
+backend https_{{ domain }}
+    option forwardfor
+    http-request add-header X-Forwarded-Proto https
+    http-request add-header X-CLIENT-IP %[src]
+    http-request add-header X-Nginx-Proxy true
+    http-request set-header X-Forwarded-Port %[dst_port]
+    http-request add-header X-Forwarded-Proto https if { ssl_fc }
+
+    server klara01_{{ port }} 192.168.134.3:{{ port }} no-ssl check
+
+{% endfor %}
 # Default Backends
 backend default_http
     errorfile 503 /etc/haproxy/static/fehler.http.static.html
