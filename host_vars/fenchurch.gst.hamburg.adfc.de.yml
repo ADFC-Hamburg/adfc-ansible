@@ -1,0 +1,4 @@
+---
+ansible_host: 192.168.123.76
+tasmota_wireless_ip: 192.168.123.143
+ansible_host_macaddress: 14:b3:1f:1e:3d:b4
