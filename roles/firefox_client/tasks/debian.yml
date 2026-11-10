@@ -1,0 +1,23 @@
+- name: Deinstall Firefox ESR
+  ansible.builtin.apt:
+    name:
+      - firefox-esr
+      - firefox-esr-l10n-de
+      - firefox-esr-l10n-en
+    state: absent
+
+- name: Add Mozilla repository
+  ansible.builtin.copy:
+    src: mozilla-firefox.sources
+    dest: /etc/apt/sources.list.d/mozilla-firefox.sources
+    mode: "0644"
+    owner: root
+    group: root
+  register: mozilla_firefox_sources_copy_result
+
+- name: Install firefox
+  ansible.builtin.apt:
+    name:
+      - firefox
+      - firefox-l10n-de
+    update_cache: "{{ mozilla_firefox_sources_copy_result.changed }}"

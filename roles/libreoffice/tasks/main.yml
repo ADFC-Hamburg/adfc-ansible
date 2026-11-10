@@ -1,6 +1,7 @@
 ---
 - name: Installiere Packete
   ansible.builtin.apt:
+    clean: true
     name: "{{ packages }}"
   vars:
     packages:

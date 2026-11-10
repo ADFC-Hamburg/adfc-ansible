@@ -1,0 +1,30 @@
+type: install
+username: debian
+userpw: ""
+rootpw: ""
+gittype: user
+gituser: http://192.168.123.32/adfc-ssh.pub
+partition: ONE
+repo: ""
+keyboard: de
+suite: trixie
+desktop: ""
+cl5: SSH_SERVER
+addpkgs: curl
+email: ""
+rclocal: "1"
+cmdline: ""
+cl8: HALT
+sbm: "2"
+
+files:
+  postinst:
+    content: |
+      #!/bin/sh
+      echo "Post-install script executed successfully!" > /tmp/postinst.log
+    filename: "postinst.sh"
+    mime_type: "application/x-shellscript"
+
+  rootkey:
+    path: ""
+    filename: "id_rsa.pub"

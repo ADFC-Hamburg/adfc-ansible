@@ -1,0 +1,27 @@
+ucs_client_join_ca_cert_dir: /etc/univention/ssl/ucsCA
+ucs_client_join_ca_cert_path: "{{ ucs_client_join_ca_cert_dir }}/CAcert.pem"
+ucs_client_join_username: Administrator
+ucs_client_join_password: "{{ ucs_client_join_admin_password }}"
+ucs_client_join_cups_server: "{{ ucs_client_join_primary_fqdn }}"
+ucs_client_join_krb5_server: "{{ ucs_client_join_primary_fqdn }}"
+ucs_client_join_krb5_kpasswd: "{{ ucs_client_join_krb5_server }}"
+ucs_client_join_krb5_kdc: "{{ ucs_client_join_krb5_server }}"
+ucs_client_join_krb5_admin_server: "{{ ucs_client_join_krb5_server }}"
+ucs_client_join_apt_packages:
+  - sssd
+  - libnss-sss
+  - libpam-sss
+  - libsss-sudo
+  - heimdal-clients
+  - nfs-common
+  - cups
+ucs_client_join_primary_ipv4_address: "{{ ucs_client_join_primary_ipv4_address_result.stdout }}"
+ucs_client_join_machine_secret_length: 20
+ucs_client_join_force_new_machine_secret: false
+ucs_client_join_additional_udm_properties: {}
+ucs_client_join_ldap_host_dn: "cn={{ inventory_hostname_short }},{{ ucs_client_join_ldap_host_position }}"
+ucs_client_join_ldap_host_position: "cn=computers,{{ ucs_client_join_ldap_base_dn }}"
+ucs_client_join_ldap_base_dn: "{{ ucs_client_join_primary_ucr_dump_cmd.stdout | regex_search('ldap_base=(.+)', '\\1') | first }}"
+ucs_client_join_krb5_realm: "{{ ucs_client_join_primary_ucr_dump_cmd.stdout | regex_search('kerberos_realm=(.+)', '\\1') | first }}"
+ucs_client_join_ntp_servers: []
+ucs_client_nfs_mount_dirs: []
