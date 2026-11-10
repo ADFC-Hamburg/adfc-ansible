@@ -1,18 +1,18 @@
 - name: Create directories
-  file:
+  ansible.builtin.file:
     name: "{{ item }}"
     state: directory
-    mode: 0755
+    mode: "0755"
     owner: root
     group: root
   with_items:
     - /usr/local/share/adfc-usercert
 
 - name: Create Files
-  copy:
+  ansible.builtin.copy:
     src: "{{ item.src }}"
     dest: "{{ item.dst }}"
-    mode: "{{ item.mode |default('0755') }}"
+    mode: "{{ item.mode | default('0755') }}"
     owner: root
     group: root
   with_items:

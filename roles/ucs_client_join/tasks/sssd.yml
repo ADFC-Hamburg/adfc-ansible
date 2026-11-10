@@ -1,8 +1,8 @@
-- name: Creeate sssd configuration
+- name: Create sssd configuration
   ansible.builtin.template:
     src: sssd.conf.j2
     dest: /etc/sssd/sssd.conf
-    mode: "0640"
+    mode: "0600"
     owner: root
     group: root
   notify:

@@ -1,9 +1,6 @@
 ---
-- hosts: meet
+- name: Apply lxc_logrotate patch
+  hosts: meet
   gather_facts: true
   roles:
     - lxc_logrotate
-  tasks:
-    - name: test
-      ansible.builtin.debug:
-        msg: Hello world

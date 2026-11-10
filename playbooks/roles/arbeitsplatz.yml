@@ -1,16 +1,6 @@
 ---
 - hosts: arbeitsplatz
   gather_facts: false
-  handlers:
-    - name: XnViewMP manuell installieren
-      ansible.builtin.apt:
-        deb: /usr/local/share/ansible_downloads/XnViewMP-linux-x64.deb
-
-    - name: apt-get update ausführen
-      ansible.builtin.apt:
-        update_cache: true
-      tags: software
-
   pre_tasks:
     - name: Power on clients
       include_role:

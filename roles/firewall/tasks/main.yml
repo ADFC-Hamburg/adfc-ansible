@@ -3,14 +3,14 @@
   ansible.builtin.copy:
     src: adfc-firewall.service
     dest: /etc/systemd/system/
-    mode: 0644
+    mode: "0644"
   register: adfc_firewall_service
 
 - name: Create ADFC Firewall
   ansible.builtin.template:
     src: adfc-firewall.sh.j2
     dest: /usr/local/sbin/adfc-firewall
-    mode: 0755
+    mode: "0755"
   vars:
     iptables_bin: /usr/sbin/iptables
     ip6tables_bin: /usr/sbin/ip6tables

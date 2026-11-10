@@ -7,7 +7,7 @@
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
-    mode: 0755
+    mode: "0755"
     owner: root
     group: root
   with_items:
@@ -31,7 +31,7 @@
   ansible.builtin.template:
     src: fetch_haproxy_certs.sh.j2
     dest: /usr/local/share/harpoxy-key-copy/fetch-certs
-    mode: 0700
+    mode: "0700"
     owner: root
     group: root
   register: fetch_certs_templ
@@ -42,7 +42,7 @@
   ansible.builtin.copy:
     src: fetch-crl.sh
     dest: /usr/local/share/harpoxy-key-copy/fetch-crl
-    mode: 0700
+    mode: "0700"
     owner: root
     group: root
   tags:
@@ -86,7 +86,7 @@
   ansible.builtin.copy:
     src: "{{ item }}"
     dest: /etc/haproxy/static/{{ item }}
-    mode: 0644
+    mode: "0644"
     owner: root
     group: root
   with_items:
@@ -105,7 +105,7 @@
   ansible.builtin.template:
     src: haproxy.cfg.j2
     dest: /etc/haproxy/haproxy.cfg
-    mode: 0644
+    mode: "0644"
     owner: root
     group: root
     validate: /usr/sbin/haproxy -f %s -c -q

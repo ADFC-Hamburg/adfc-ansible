@@ -27,7 +27,7 @@ docker_compose_project_tresor:
           SIGNUPS_ALLOWED: false
           IP_HEADER: x-client-ip
         ports:
-          - "{{ adfc_internal_ip}}:3900:80"
+          - "{{ adfc_internal_ip }}:3900:80"
         labels:
           - "com.centurylinklabs.watchtower.scope=tresor"
         secrets:

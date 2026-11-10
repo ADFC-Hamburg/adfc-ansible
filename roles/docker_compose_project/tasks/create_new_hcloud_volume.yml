@@ -3,14 +3,14 @@
     api_token: "{{ hcloud_api_token }}"
     name: "{{ vol.hcloud_volume_prefix }}_{{ ansible_date_time.iso8601_basic_short }}"
     size: "{{ vol.hcloud_size_gb }}"
-    #location: "{{ vol.hcloud_location }}"
+    # location: "{{ vol.hcloud_location }}"
     server: "{{ inventory_hostname }}"
     format: ext4
     state: present
   delegate_to: localhost
   register: hcloud_vol
 
-#- name: Assigne Hetzner Volume
+# - name: Assigne Hetzner Volume
 #  hetzner.hcloud.hcloud_volume:
 #    api_token: "{{ hcloud_api_token }}"
 #    name: "{{ vol.hcloud_volume_prefix }}_{{ ansible_date_time.iso8601_basic_short }}"

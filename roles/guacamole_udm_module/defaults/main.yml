@@ -1,0 +1,3 @@
+---
+guacamole_udm_version: "1.0.0"
+guacamole_udm_tag: "v{{ guacamole_udm_version }}"

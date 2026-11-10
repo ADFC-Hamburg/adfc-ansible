@@ -1,4 +1,4 @@
-- name: reload firewall
-  systemd:
+- name: Reload firewall
+  ansible.builtin.systemd:
     name: univention-firewall.service
     state: restarted

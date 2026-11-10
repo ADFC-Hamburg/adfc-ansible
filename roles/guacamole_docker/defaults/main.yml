@@ -1,0 +1,17 @@
+---
+guacamole_docker_port: "40700"
+guacamole_docker_container_path: "/opt/docker/containers/guacamole-docker"
+guacamole_docker_data_path: "/srv/guacamole-docker"
+guacamole_docker_secrets_path: "/opt/docker/secrets"
+guacamole_docker_url_dir: "homeoffice"
+
+guacamole_docker_guacadmin_pass_encoded: "6855D6B7FB5B81A613E8E301040D4BBB5FB4F0D14F3D20ACC0829AC8D7CC6FFB" # SHA256 of concatenated password and salt
+guacamole_docker_guacadmin_pass_salt: "1717C360E66EF8826628C4386EC54BD276023D29026190055145795C37052D86"
+
+guacamole_docker_branding_version: "2026.03.12"
+guacamole_docker_branding_checksum: "sha256:ca8d7a8f7c2d9e8a68b0ff9c2df6216ca2e8b49bce3cac8ca4ac4f3cd3d761a3"
+guacamole_docker_icon_svg: '<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg viewBox="0 0 75 58" xmlns="http://www.w3.org/2000/svg"><style>path{stroke-width:4;stroke:#004b7c;stroke-linecap:round;stroke-linejoin:round;fill:#fff;}</style><path d="M2,56l71,0"/><path d="M65,2a6,6,0,0,1,6,6l0,34a6,6,0,0,1,-6,6l-55,0a6,6,0,0,1,-6,-6l0,-34a6,6,0,0,1,6,-6Z"/><path d="M37.5,11l-14,14l0,14l10,0l0,-10l8,0l0,10l10,0l0,-14Z" style="stroke:#ee7f00;"/></svg>'
+
+guacamole_docker_version_guacamole: "1.6.0"
+guacamole_docker_version_guacd: "1.6.0"
+guacamole_docker_version_postgres: "18-alpine"

@@ -1,4 +1,4 @@
-- name: Create Maschin in UCS Ldap directory
+- name: Create machine in UCS LDAP directory
   univention.ucs_modules.univention_directory_manager:
     module: computers/ubuntu
     position: "{{ ucs_client_join_ldap_host_position }}"

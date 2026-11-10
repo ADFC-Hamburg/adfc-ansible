@@ -6,7 +6,7 @@
   ansible.builtin.get_url:
     url: "{{ docker_repo_gpg_key }}"
     dest: "{{ docker_repo_gpg_key_dest }}"
-    mode: 0644
+    mode: "0644"
   register: docker_fetch_gpg
 
 - name: Create Repo File
@@ -15,7 +15,7 @@
       deb [arch=amd64 signed-by={{ docker_repo_gpg_key_dest }}]
       {{ docker_repo_url }} {{ ansible_distribution_release }} stable
     dest: /etc/apt/sources.list.d/docker.list
-    mode: 0644
+    mode: "0644"
 
 - name: Delete docker.gpg
   ansible.builtin.file:
@@ -35,7 +35,7 @@
   ansible.builtin.apt:
     name: "{{ docker_packages }}"
     update_cache: true
-#- name: Install Pip Packages
-# ansible.builtin.pip:
+# - name: Install Pip Packages
+#  ansible.builtin.pip:
 #    name:
 #      - docker

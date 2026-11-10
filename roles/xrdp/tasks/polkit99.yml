@@ -24,4 +24,4 @@
   ansible.builtin.file:
     state: absent
     path: /etc/polkit-1/localauthority/50-local.d/xrdp-disable-shutdown.pkla
-  when: enable_user_shutdown is undefined
+  when: enable_user_shutdown is undefined or enable_user_shutdown

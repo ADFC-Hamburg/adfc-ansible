@@ -1,40 +1,40 @@
 - name: Create Dir
-  file:
+  ansible.builtin.file:
     path: /usr/src/zabbix-docker
     state: directory
-    mode: 0755
+    mode: "0755"
     owner: root
     group: root
 
 - name: Create Password file for mysql_user
-  shell: pwgen -s1 16 > /usr/src/zabbix-docker/.MYSQL_PASSWORD
+  ansible.builtin.shell: pwgen -s1 16 > /usr/src/zabbix-docker/.MYSQL_PASSWORD
   args:
     creates: "/usr/src/zabbix-docker/.MYSQL_PASSWORD"
 
-- name: chmod Password file
-  file:
+- name: Chmod Password file
+  ansible.builtin.file:
     path: "/usr/src/zabbix-docker/.MYSQL_PASSWORD"
     owner: root
     group: root
     mode: "0644"
 
 - name: Create Username
-  shell: pwgen -s1 > /usr/src/zabbix-docker/.MYSQL_USER
+  ansible.builtin.shell: pwgen -s1 > /usr/src/zabbix-docker/.MYSQL_USER
   args:
     creates: "/usr/src/zabbix-docker/.MYSQL_USER"
 
-- name: chmod Password file
-  file:
+- name: Chmod Password file
+  ansible.builtin.file:
     path: "/usr/src/zabbix-docker/.MYSQL_USER"
     owner: root
     group: root
     mode: "0644"
 
 - name: Create Docker Files
-  template:
+  ansible.builtin.template:
     src: "{{ item }}.j2"
     dest: "/usr/src/zabbix-docker/{{ item }}"
-    mode: 0644
+    mode: "0644"
     owner: root
     group: root
   with_items:
@@ -45,37 +45,37 @@
 
 # Geht leider nicht wegen zu alten Python Docker
 # sollten wir mit neuren UCS noch mal probieren
-#- name: Start Zabbix Docker Conatiners
-#  docker_compose:
-#    project_src: /usr/src/zabbix-docker/
+# - name: Start Zabbix Docker Conatiners
+#   docker_compose:
+#     project_src: /usr/src/zabbix-docker/
 
-- name: docker-compose up shell
-  command: /usr/bin/docker-compose up -d
+- name: Docker-compose up shell
+  ansible.builtin.command: /usr/bin/docker-compose up -d
   args:
     chdir: /usr/src/zabbix-docker
 
 - name: Create Apache File
-  template:
+  ansible.builtin.template:
     src: "apache_conf.j2"
     dest: "/etc/apache2/ucs-sites.conf.d/zabbix_ansible.conf"
-    mode: 0644
+    mode: "0644"
     owner: root
     group: root
 
 - name: Create Firewall file
-  template:
+  ansible.builtin.template:
     src: 51_ansible_zabbix.sh.j2
     dest: /etc/security/packetfilter.d/51_ansible_zabbix.sh
-    mode: 0755
+    mode: "0755"
     owner: root
     group: root
-  notify: reload firewall
+  notify: Reload firewall
 
-- name: create externalscripts
-  copy:
+- name: Create externalscripts
+  ansible.builtin.copy:
     dest: /usr/src/zabbix-docker/zbx_env/usr/lib/zabbix/externalscripts/
     src: externalscripts/
-    mode: 0755
-    directory_mode: 0755
+    mode: "0755"
+    directory_mode: "0755"
     owner: root
     group: root

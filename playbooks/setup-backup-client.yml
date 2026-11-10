@@ -1,5 +1,6 @@
 ---
-- hosts: backup_clients
+- name: Backup Clients
+  hosts: backup_clients
   roles:
     - load_contacts
     - ssh_keys
@@ -27,12 +28,12 @@
       ansible.builtin.file:
         path: /adfc-backup/
         state: directory
-        mode: 0755
+        mode: "0755"
         owner: root
         group: root
 
     - name: Mount Disk to /adfc-backup/
-      mount:
+      ansible.posix.mount:
         path: /adfc-backup
         src: "{{ backup_disk_src }}"
         fstype: ext4

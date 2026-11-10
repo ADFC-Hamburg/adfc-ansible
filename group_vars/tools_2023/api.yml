@@ -14,7 +14,7 @@ docker_compose_project_api:
         image: php:8.3-apache
         restart: unless-stopped
         ports:
-          - "{{ adfc_internal_ip}}:3500:80"
+          - "{{ adfc_internal_ip }}:3500:80"
         volumes:
           - api_data:/var/www/html:rw
         labels:
