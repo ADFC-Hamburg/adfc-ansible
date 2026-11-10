@@ -276,7 +276,7 @@ borg_backup_plain() {
             RC=$?
         else
             echo "Pre-Backup-Hook fehlgeschlagen - borg create wird uebersprungen." >&2
-            RC=1
+            RC=2
         fi
 
         echo "Finished: $(date -Is)"

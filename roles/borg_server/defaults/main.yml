@@ -7,7 +7,7 @@ borg_bin_sha256_sum: "21484d30271478d4a01aad1b286973443b50afc5379e4a6aef40da3379
 # lokal installiertes Borg-Binary) oder "docker" (docker-borg-backup,
 # braucht adfc_borg_docker_dir vorbereitet). Migration erfolgt einzeln pro
 # Rechner ueber host_vars.
-adfc_borg_client_version: pyenv
+adfc_borg_client_version: docker
 adfc_borg_docker_dir: /usr/local/share/adfc-borg-docker
 
 # UID (1000-2000), unter der dieser Rechner als Backup-Identitaet auf JEDER
