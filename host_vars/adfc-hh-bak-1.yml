@@ -6,3 +6,9 @@ ansible_host: svelke.anders-hamburg.de
 ansible_port: 922
 
 backup_disk_src: UUID=d35aa939-f326-418b-9fbd-f65dcfcfca65
+
+# docker-borg-backup-server: externe Portweiterleitung geht hier auf 923
+# statt dem Default 2222 aus group_vars/backup_clients.yml (Router leitet
+# 923 von aussen bis in den Container).
+adfc_borg_target_ssh_port: 923
+adfc_borg_target_docker_enabled: true

@@ -1,0 +1,84 @@
+---
+# Eigentlicher Admin-Key-Abgleich fuer EINE Backup-Identitaet
+# (adfc_borg_identity_dir, aus sync_admin_keys.yml) gegen
+# adfc_borg_target_admin_users: hinzufuegen was fehlt, entfernen was nicht
+# mehr in der Liste steht (analog roles/ssh_keys). Keys kommen aus
+# ssh_keys/<name>/*.pub (key_path/inventory_dir aus group_vars/all.yml).
+#
+# Direkte Dateiverwaltung statt add-admin-key.sh: das deckt zwar seit
+# docker-borg-backup-server v1.2.0 auch Identitaeten mit bestehender
+# Backup-Rolle ab, kann aber weiterhin keine Keys entfernen - fuer den
+# vollstaendigen Abgleich (auch Entzug bei Austritt aus
+# adfc_borg_target_admin_users) schreiben/loeschen wir die Dateien unter
+# keys/admin/ deshalb direkt und rufen reload-keys.sh selbst auf.
+
+- name: Admin-Pubkey-Dateien der adfc_borg_target_admin_users suchen
+  ansible.builtin.find:
+    paths: "{{ inventory_dir }}/{{ key_path }}{{ item }}"
+    patterns: "*.pub"
+    recurse: true
+    file_type: file
+  loop: "{{ adfc_borg_target_admin_users }}"
+  loop_control:
+    label: "{{ item }}"
+  delegate_to: localhost
+  register: adfc_borg_admin_source_files
+
+- name: Gewuenschte Zieldateinamen bestimmen (<user>-<keyname>.pub)
+  ansible.builtin.set_fact:
+    adfc_borg_admin_desired: >-
+      {{
+        adfc_borg_admin_desired | default([]) + [{
+          'src': item.1.path,
+          'dest_name': item.0.item ~ '-' ~ (item.1.path | basename | regex_replace('\.pub$', '')) ~ '.pub',
+        }]
+      }}
+  loop: "{{ adfc_borg_admin_source_files.results | subelements('files') }}"
+  loop_control:
+    label: "{{ item.0.item }}/{{ item.1.path | basename }}"
+
+- name: Vorhandene Admin-Key-Dateien auf der Zielbox auflisten
+  ansible.builtin.find:
+    paths: "{{ adfc_borg_identity_dir.path }}/keys/admin"
+    patterns: "*.pub"
+    file_type: file
+  register: adfc_borg_admin_existing
+
+- name: keys/admin/ anlegen, falls noch nicht vorhanden
+  ansible.builtin.file:
+    path: "{{ adfc_borg_identity_dir.path }}/keys/admin"
+    state: directory
+    mode: "0755"
+    owner: root
+    group: root
+  when: adfc_borg_admin_desired | length > 0
+
+- name: Fehlende Admin-Keys anlegen
+  ansible.builtin.copy:
+    src: "{{ item.src }}"
+    dest: "{{ adfc_borg_identity_dir.path }}/keys/admin/{{ item.dest_name }}"
+    mode: "0644"
+    owner: root
+    group: root
+  loop: "{{ adfc_borg_admin_desired }}"
+  loop_control:
+    label: "{{ item.dest_name }}"
+  register: adfc_borg_admin_keys_added
+
+- name: Nicht mehr gewuenschte Admin-Keys entfernen
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ adfc_borg_admin_existing.files }}"
+  loop_control:
+    label: "{{ item.path | basename }}"
+  when: (item.path | basename) not in (adfc_borg_admin_desired | map(attribute='dest_name') | list)
+  register: adfc_borg_admin_keys_removed
+
+- name: Keys neu laden, falls sich etwas geaendert hat
+  ansible.builtin.command: ./reload-keys.sh
+  args:
+    chdir: "{{ adfc_borg_target_dir }}"
+  when: >-
+    (adfc_borg_admin_keys_added.results | selectattr('changed') | list | length > 0)
+    or (adfc_borg_admin_keys_removed.results | selectattr('changed') | list | length > 0)

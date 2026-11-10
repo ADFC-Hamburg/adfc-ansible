@@ -1,0 +1,21 @@
+---
+# Fuer EINE bestehende Identitaet unter users/<uid>-<name>/ (adfc_borg_identity_dir,
+# per Loop aus main.yml): nur wenn sie ueberhaupt einen Backup-Key hat
+# (keys/backup/*.pub) den eigentlichen Abgleich (sync_admin_keys_body.yml)
+# anstossen - reine, manuell angelegte Admin-Identitaeten
+# (adfc_borg_target_admin_keys) laesst das unangetastet. "when" auf dem
+# include_tasks selbst statt auf einem block: ein block-when wuerde jeden
+# Task darin einzeln als "skipped" markieren und dabei fuer geloopte Tasks
+# huelsenhafte results ohne "files"-Key registrieren - das folgende
+# subelements() in sync_admin_keys_body.yml wuerde daran scheitern.
+
+- name: "Pruefen ob {{ adfc_borg_identity_dir.path | basename }} ein Backup-Key hat"
+  ansible.builtin.find:
+    paths: "{{ adfc_borg_identity_dir.path }}/keys/backup"
+    patterns: "*.pub"
+    file_type: file
+  register: adfc_borg_identity_backup_check
+
+- name: "Admin-Keys fuer {{ adfc_borg_identity_dir.path | basename }} synchronisieren"
+  ansible.builtin.include_tasks: sync_admin_keys_body.yml
+  when: adfc_borg_identity_backup_check.files | length > 0

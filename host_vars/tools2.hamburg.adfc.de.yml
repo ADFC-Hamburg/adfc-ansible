@@ -3,3 +3,11 @@ public_ipv4: "195.201.17.95"
 borg_cron_minute: "29"
 adfc_borg_repo: /adfc-backup/tools2.hamburg.adfc.de
 borg_client_user: "tools2"
+
+# docker-borg-backup Testmigration (siehe roles/borg_server) - deployt den
+# neuen Client und registriert einen Backup-Key, schaltet aber NICHT auf
+# das neue Backend um (adfc_borg_client_version bleibt "pyenv", der
+# bestehende Cronjob laeuft unveraendert weiter). UID 1001 auf
+# adfc-hh-bak-1 (dort noch keine andere Identitaet registriert).
+adfc_borg_docker_uid: 1001
+adfc_borg_docker_enabled: true

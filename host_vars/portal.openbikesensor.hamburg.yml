@@ -11,3 +11,8 @@ public_ipv4: "{{ lookup('dig', inventory_hostname, 'qtype=A') }}"
 borg_cron_hour: "5"
 borg_cron_minute: "9"
 borg_client_user: "borg-obs"
+
+# docker-borg-backup Testmigration (siehe roles/borg_server) - wie tools2,
+# adfc_borg_client_version bleibt "pyenv".
+adfc_borg_docker_uid: 1003
+adfc_borg_docker_enabled: true
