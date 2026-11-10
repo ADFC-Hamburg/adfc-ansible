@@ -109,6 +109,6 @@
     owner: root
     group: root
     validate: /usr/sbin/haproxy -f %s -c -q
-  notify: restart haproxy
+  notify: Restart haproxy
   tags:
     - haproxy_cfg

@@ -27,7 +27,7 @@ docker_compose_project_verteiler:
         secrets:
           - secret_key
         ports:
-          - "{{ adfc_internal_ip }}:4105:8000"
+          - "{{ adfc_internal_ip }}:4105:5000"
         labels:
           - "com.centurylinklabs.watchtower.scope=verteiler"
       watchtower:

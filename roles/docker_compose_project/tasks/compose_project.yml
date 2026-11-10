@@ -28,6 +28,10 @@
     group: root
   when: compose_stat.stat.exists
 
+- name: Get authentication for email account
+  ansible.builtin.include_tasks: get_smtp_auth.yml
+  when: compose_project.uses_smtp | default(false)
+
 - name: Create Compose File
   ansible.builtin.copy:
     content: |
@@ -50,6 +54,11 @@
   loop: "{{ compose_project.compose_block.secrets | default({}) | dict2items }}"
   loop_control:
     loop_var: secret
+
+- name: Prompt for update
+  ansible.builtin.pause:
+    prompt: "Change detected, press Enter to continue"
+  when: compose_file.changed and inventory_hostname in compose_project.nodes
 
 - name: Pull Package and start detached
   ansible.builtin.include_tasks: new_version.yml

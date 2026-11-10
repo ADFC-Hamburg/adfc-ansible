@@ -1,1 +1,2 @@
 hcloud_api_token: "{{ hcloud_key_slurp.content | b64decode | trim }}"
+smtp_password_filename: "smtp_password.txt"

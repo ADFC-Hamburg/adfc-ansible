@@ -27,25 +27,27 @@ for PC in $ARBEITSPLATZ ; do
 done
 
 if [ "$1" == "--map" ] ; then
-    cat <<EOF
-
-+++++++++++++++++++++++++++++++++++++++
-|  iMac           |     :             |
-|          Küche  |     |     WCs     |
-|                 |     ;             |
-+++++++++++++ +++++     +++++++++++++++
-:   Kopierer                          :
-| - - - - - - - -                     |
-| Zaphod               Bob     ++++++++
-| Marvin               Kwaltz  | pro- |
-|                              | xmox |
-|                              :      |
-| - - - - - - - - - - - - - - +++++++++
-| Switch                              |
-| Fritzbox               Testclient   |
-|                        Trillian     |
-|                                     |
-|                                     |
-+++++++++++++++++++++++++++++++++++++++
+    echo -e "$((cat <<EOF
+\e[0;37m
+++++++++++++++++++++++++++++++++++++++++
+| kueche        |„Lager“:    :         |
+|        „Küche“|+++++++|    |  „WCs“  |
+|               |       ;    :         |
++++++++++++++  ++       ++++++++++++++++
+:  „Kopierer“                          :
+| - - - - - - - -                +++++++
+| zaphod                bob      |     |
+|                                | pr- |
+| marvin                slarti-  | ox- |
+|                       bartfass | mox |
+| fenchurch                      :     |
+| - - - - - - - -      - - - - - +++++++
+|„Switch“                              |
+|„Fritzbox“                zem         |
+|                                      |
+|                          trillian    |
+|                                      |
+++++++++++++++++++++++++++++++++++++++++\e[0m
 EOF
+) | sed 's/„/ \\e[2m/g' | sed 's/“/\\e[22m /g')"
 fi

@@ -1,0 +1,274 @@
+---
+# Testweise MongoDB-8-Upgrade-Vorbereitung
+#
+# Phase 1 (jetzt): mongodump vom laufenden Live-System, Restore in temporären
+# MongoDB-8-Container auf tools1. Das Live-System (RocketChat + MongoDB 7)
+# bleibt vollständig unberührt.
+#
+# Bitnami-Legacy-Images werden nicht mehr gepflegt; das Upgrade wechselt zu
+# mongodb/mongodb-community-server (offizielles Image). Datenpfad ändert sich:
+# /bitnami/mongodb  →  /data/db
+#
+# Phase 2 (später ergänzen): RocketChat stoppen → dump → neues Volume mit
+# MongoDB 8 → restore → RocketChat mit neuer Version starten.
+#
+# Voraussetzungen:
+#   - Playbook läuft auf tools1.hamburg.adfc.de
+#   - Live-Container docker-rocket-mongodb-1 läuft
+#   - Freier Speicher auf / (Dump-Datei landet in /usr/local/share/rocketchat/)
+
+- name: MongoDB 8 Upgrade – Testweise Datenübernahme
+  hosts: tools1.hamburg.adfc.de
+  gather_facts: false
+
+  vars:
+    test_dir: /usr/local/share/rocketchat/mongo8-upgrade-test
+    dump_file: "{{ test_dir }}/mongodump.gz"
+    test_container: mongodb8-upgrade-test
+    test_volume: mongodb8-upgrade-test-data
+    mongodb8_image: mongodb/mongodb-community-server:8.0-ubi8
+    live_container: docker-rocket-mongodb-1
+
+  tasks:
+    - name: Testverzeichnis anlegen
+      ansible.builtin.file:
+        path: "{{ test_dir }}"
+        state: directory
+        mode: "0700"
+        owner: root
+        group: root
+
+    - name: Speicherplatz auf / prüfen
+      ansible.builtin.command:
+        argv:
+          - df
+          - -BM
+          - --output=avail
+          - /
+      register: df_out
+      changed_when: false
+
+    - name: Speicherplatz ausgeben
+      ansible.builtin.debug:
+        msg: "Freier Speicherplatz auf /: {{ df_out.stdout_lines[-1] | trim | replace('M', '') }} MB"
+
+    - name: Abbruch wenn weniger als 2 GB frei
+      ansible.builtin.fail:
+        msg: "Zu wenig Speicherplatz: {{ df_out.stdout_lines[-1] | trim | replace('M', '') }} MB frei, mindestens 2048 MB benötigt"
+      when: (df_out.stdout_lines[-1] | trim | replace('M', '') | int) < 2048
+
+    # --- mongodump vom laufenden Live-Container ---
+
+    - name: mongodump vom Live-Container erstellen (Live-System bleibt in Betrieb)
+      ansible.builtin.shell:
+        cmd: >
+          docker exec {{ live_container }}
+          sh -c 'mongodump --archive --gzip'
+          > {{ dump_file }}
+          2> {{ test_dir }}/mongodump.log
+        executable: /bin/bash
+      register: dump_result
+
+    - name: Dump-Log ausgeben
+      ansible.builtin.command:
+        argv:
+          - tail
+          - "-5"
+          - "{{ test_dir }}/mongodump.log"
+      changed_when: false
+      register: dump_log
+
+    - name: Dump-Log anzeigen
+      ansible.builtin.debug:
+        msg: "{{ dump_log.stdout_lines }}"
+
+    - name: Dump-Dateigröße prüfen
+      ansible.builtin.stat:
+        path: "{{ dump_file }}"
+      register: dump_stat
+
+    - name: Abbruch wenn Dump leer ist
+      ansible.builtin.fail:
+        msg: "Dump-Datei ist leer oder fehlt: {{ dump_file }}"
+      when: not dump_stat.stat.exists or dump_stat.stat.size < 1024
+
+    - name: Dump-Größe ausgeben
+      ansible.builtin.debug:
+        msg: "Dump-Größe: {{ (dump_stat.stat.size / 1024 / 1024) | round(1) }} MB"
+
+    # --- Alten Test-Container und -Volume aufräumen ---
+
+    - name: Prüfen ob Test-Container bereits existiert
+      ansible.builtin.command:
+        argv:
+          - docker
+          - ps
+          - -aq
+          - --filter
+          - "name=^/{{ test_container }}$"
+      register: existing_container
+      changed_when: false
+
+    - name: Alten Test-Container entfernen
+      ansible.builtin.command:
+        argv:
+          - docker
+          - rm
+          - -f
+          - "{{ test_container }}"
+      when: existing_container.stdout | trim != ""
+
+    - name: Prüfen ob Test-Volume bereits existiert
+      ansible.builtin.command:
+        argv:
+          - docker
+          - volume
+          - ls
+          - -q
+          - --filter
+          - "name={{ test_volume }}"
+      register: existing_volume
+      changed_when: false
+
+    - name: Altes Test-Volume entfernen
+      ansible.builtin.command:
+        argv:
+          - docker
+          - volume
+          - rm
+          - "{{ test_volume }}"
+      when: existing_volume.stdout | trim != ""
+
+    # --- MongoDB 8 Test-Container starten ---
+
+    - name: MongoDB-8-Image pullen
+      ansible.builtin.command:
+        argv:
+          - docker
+          - pull
+          - "{{ mongodb8_image }}"
+      register: pull_result
+      changed_when: "'Pull complete' in pull_result.stdout or 'Downloaded newer' in pull_result.stdout"
+
+    - name: MongoDB-8-Test-Container starten
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - -d
+          - --name
+          - "{{ test_container }}"
+          - --volume
+          - "{{ test_volume }}:/data/db"
+          - "{{ mongodb8_image }}"
+          - --replSet
+          - rs0
+          - --bind_ip_all
+
+    - name: Warten bis MongoDB 8 bereit ist (max. 60 s)
+      ansible.builtin.command:
+        argv:
+          - docker
+          - exec
+          - "{{ test_container }}"
+          - mongosh
+          - --quiet
+          - --eval
+          - db.runCommand({ping:1}).ok
+      register: mongo_ping
+      retries: 12
+      delay: 5
+      until: mongo_ping.stdout | trim == "1"
+      changed_when: false
+
+    - name: Replica Set rs0 initialisieren
+      ansible.builtin.command:
+        argv:
+          - docker
+          - exec
+          - "{{ test_container }}"
+          - mongosh
+          - --quiet
+          - --eval
+          - 'rs.initiate({_id:"rs0",members:[{_id:0,host:"localhost:27017"}]})'
+      register: rs_init
+
+    - name: Warten bis Test-Container PRIMARY ist (max. 30 s)
+      ansible.builtin.command:
+        argv:
+          - docker
+          - exec
+          - "{{ test_container }}"
+          - mongosh
+          - --quiet
+          - --eval
+          - rs.status().myState
+      register: rs_state
+      retries: 10
+      delay: 3
+      until: rs_state.stdout | trim == "1"
+      changed_when: false
+
+    # --- Daten wiederherstellen ---
+
+    - name: mongorestore in Test-Container (local.* wird übersprungen)
+      ansible.builtin.shell:
+        cmd: >
+          cat {{ dump_file }} |
+          docker exec -i {{ test_container }}
+          mongorestore
+          --archive
+          --gzip
+          --drop
+          --nsExclude='local.*'
+          2>&1
+        executable: /bin/bash
+      register: restore_result
+
+    - name: Restore-Ausgabe anzeigen
+      ansible.builtin.debug:
+        msg: "{{ restore_result.stdout_lines[-10:] }}"
+
+    # --- Ergebnis prüfen ---
+
+    - name: Benutzeranzahl in rocketchat.users prüfen
+      ansible.builtin.command:
+        argv:
+          - docker
+          - exec
+          - "{{ test_container }}"
+          - mongosh
+          - rocketchat
+          - --quiet
+          - --eval
+          - db.users.countDocuments()
+      register: user_count
+      changed_when: false
+
+    - name: Räume-Anzahl in rocketchat.rocketchats prüfen
+      ansible.builtin.command:
+        argv:
+          - docker
+          - exec
+          - "{{ test_container }}"
+          - mongosh
+          - rocketchat
+          - --quiet
+          - --eval
+          - db.rocketchats.countDocuments()
+      register: room_count
+      changed_when: false
+
+    - name: Ergebnis-Zusammenfassung ausgeben
+      ansible.builtin.debug:
+        msg:
+          - "✓ Datenbank erfolgreich in MongoDB 8 importiert"
+          - "  Benutzer:  {{ user_count.stdout | trim }}"
+          - "  Räume:     {{ room_count.stdout | trim }}"
+          - ""
+          - "Test-Container läuft noch für manuelle Inspektion:"
+          - "  docker exec -it {{ test_container }} mongosh rocketchat"
+          - ""
+          - "Zum Aufräumen:"
+          - "  docker rm -f {{ test_container }} && docker volume rm {{ test_volume }}"
+          - "  rm -rf {{ test_dir }}"
