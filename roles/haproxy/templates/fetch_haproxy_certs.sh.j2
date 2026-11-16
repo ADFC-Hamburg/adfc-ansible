@@ -9,6 +9,7 @@ fetch_key() {
     # zur sicherheit Tempfile leeren
     echo '' > ${TMPFILE}
     OK="0"
+    GLEICH="0"
     SSH_AUTH_SOCK="" ssh -o "RequestTTY=no" -i /usr/local/share/harpoxy-key-copy/ssh-key root@${TARGET_HOST} > ${TMPFILE}
     grep 'PRIVATE KEY' ${TMPFILE} >/dev/null && OK="1"
     if [ "$OK" == 1 ] ; then

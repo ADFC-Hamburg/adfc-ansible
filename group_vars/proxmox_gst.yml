@@ -39,6 +39,13 @@ haproxy_file_extra_content: |
      mode http
      server haproxy.gst.hamburg.adfc.de 127.0.0.1:2022
 
+# haproxy (auf jeder Matratze) leitet /.well-known/acme-challenge/ an ansible_host:180 weiter
+dehydrated_acme_listen_ip: "{{ ansible_host }}"
+dehydrated_startup_hook: |
+  systemctl start dehydrated-http.service
+  sleep 5
+dehydrated_exit_hook: "systemctl stop dehydrated-http.service"
+
 dehydrated_deploy_hook: |-
   cp ${FULLCHAINFILE} /etc/pve/local/pveproxy-ssl.pem
   cp ${KEYFILE} /etc/pve/local/pveproxy-ssl.key

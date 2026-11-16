@@ -1,6 +1,6 @@
 ---
 ansible_host: 192.168.123.87
-ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q root@babelfish.spdns.de -p 824"
+ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q root@babelfish.spdns.de -p 825"
 
 haproxy_lets_encrypt_domains:
   - archivcloud.hamburg.adfc.de
