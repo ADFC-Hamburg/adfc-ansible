@@ -1,3 +1,7 @@
+- name: Check whether Hetzner volume {{ vol.name }} is new
+  ansible.builtin.set_fact:
+    dcp_vol_is_new: "{{ vol.name not in (dcp_hcloud_volumes | map(attribute='name') | list) }}"
+
 - name: Create Hetzner volume
   hetzner.hcloud.hcloud_volume:
     api_token: "{{ hcloud_api_token }}"
@@ -9,6 +13,46 @@
   delegate_to: localhost
   register: hcloud_vol
 
+# Wird ein Hetzner Volume für ein bisher lokales Docker Volume neu eingeführt,
+# liegen unter vol.mount schon Daten. Die werden vor dem Mounten auf das neue
+# Volume übernommen (rsync live, Projekt stoppen, rsync, mounten, starten).
+- name: Check whether {{ vol.mount }} is already mounted
+  ansible.builtin.command:
+    argv:
+      - mountpoint
+      - -q
+      - "{{ vol.mount }}"
+  delegate_to: "{{ dcp_node }}"
+  register: dcp_vol_mountpoint
+  changed_when: false
+  failed_when: dcp_vol_mountpoint.rc not in [0, 1, 32]
+
+- name: Check for existing local data in {{ vol.mount }}
+  ansible.builtin.find:
+    paths: "{{ vol.mount }}"
+    file_type: any
+    hidden: true
+  delegate_to: "{{ dcp_node }}"
+  register: dcp_vol_existing
+  when: dcp_vol_mountpoint.rc != 0
+
+- name: Refuse to mount over existing local data
+  ansible.builtin.fail:
+    msg: >-
+      {{ vol.mount }} auf {{ dcp_node }} ist nicht gemountet, enthält aber Daten, und das
+      Hetzner Volume {{ vol.name }} existiert schon. Bitte manuell prüfen, welche Daten aktuell sind.
+  when:
+    - dcp_vol_mountpoint.rc != 0
+    - dcp_vol_existing.matched | default(0) > 0
+    - not dcp_vol_is_new
+
+- name: Adopt existing local data into Hetzner volume {{ vol.name }}
+  ansible.builtin.include_tasks: adopt_local_data.yml
+  when:
+    - dcp_vol_mountpoint.rc != 0
+    - dcp_vol_existing.matched | default(0) > 0
+    - dcp_vol_is_new
+
 - name: Mount vol
   ansible.posix.mount:
     src: "{{ hcloud_vol.hcloud_volume.linux_device }}"
@@ -17,3 +61,18 @@
     fstype: ext4
     state: mounted
   delegate_to: "{{ dcp_node }}"
+
+- name: Start {{ compose_project_name }} again after adopting local data
+  ansible.builtin.command:
+    chdir: "{{ docker_dir }}"
+    argv:
+      - docker
+      - compose
+      - up
+      - -d
+  delegate_to: "{{ dcp_node }}"
+  when:
+    - dcp_vol_mountpoint.rc != 0
+    - dcp_vol_existing.matched | default(0) > 0
+    - dcp_vol_is_new
+    - dcp_adopt_was_running | default(false)

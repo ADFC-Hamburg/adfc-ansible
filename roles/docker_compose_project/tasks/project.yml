@@ -43,6 +43,18 @@
     dcp_move: "{{ dcp_stateful and dcp_current | length == 1 and dcp_current != dcp_desired }}"
     dcp_remove: "{{ [] if dcp_stateful else dcp_current | difference(dcp_desired) }}"
 
+- name: Check volumes of {{ compose_project_name }} before moving
+  ansible.builtin.assert:
+    that: >-
+      dcp_hetzner_volumes | map(attribute='name')
+      | difference(dcp_hcloud_volumes | map(attribute='name')) | length == 0
+    fail_msg: >-
+      {{ compose_project_name }} soll verschoben werden, aber nicht alle Hetzner Volumes existieren
+      schon. Bitte das Projekt erst ohne Verschieben ausrollen (-e docker_compose_only={{ compose_project_name }}
+      ohne docker_compose_evacuate), damit vorhandene lokale Daten übernommen werden.
+    quiet: true
+  when: dcp_move
+
 - name: Show plan for {{ compose_project_name }}
   ansible.builtin.debug:
     msg: >-

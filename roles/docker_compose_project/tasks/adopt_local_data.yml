@@ -1,0 +1,86 @@
+# Kopiert vorhandene lokale Daten aus vol.mount auf das frisch angelegte (noch
+# leere) Hetzner Volume, bevor es an vol.mount gemountet wird.
+- name: Set temporary mount point for {{ vol.name }}
+  ansible.builtin.set_fact:
+    dcp_adopt_tmp: "{{ docker_compose_backup_mount_base }}/adopt-{{ vol.name }}"
+
+- name: Mount new Hetzner volume {{ vol.name }} temporarily
+  ansible.posix.mount:
+    src: "{{ hcloud_vol.hcloud_volume.linux_device }}"
+    path: "{{ dcp_adopt_tmp }}"
+    opts: "discard,noatime"
+    fstype: ext4
+    state: ephemeral
+  delegate_to: "{{ dcp_node }}"
+
+- name: Rsync local data to {{ vol.name }} (live)
+  ansible.builtin.command:
+    argv:
+      - rsync
+      - -aHAX
+      - --numeric-ids
+      - --delete
+      - --exclude=/lost+found
+      - "{{ vol.mount }}/"
+      - "{{ dcp_adopt_tmp }}/"
+  delegate_to: "{{ dcp_node }}"
+
+- name: Check whether {{ compose_project_name }} is running
+  ansible.builtin.set_fact:
+    dcp_adopt_was_running: "{{ dcp_node in dcp_running_on | default([]) }}"
+
+- name: Stop {{ compose_project_name }} for final copy
+  ansible.builtin.command:
+    chdir: "{{ docker_dir }}"
+    argv:
+      - docker
+      - compose
+      - --project-name
+      - "docker-{{ compose_project_name }}"
+      - down
+  delegate_to: "{{ dcp_node }}"
+  when: dcp_adopt_was_running
+
+- name: Rsync local data to {{ vol.name }} (final)
+  ansible.builtin.command:
+    argv:
+      - rsync
+      - -aHAX
+      - --numeric-ids
+      - --delete
+      - --exclude=/lost+found
+      - "{{ vol.mount }}/"
+      - "{{ dcp_adopt_tmp }}/"
+  delegate_to: "{{ dcp_node }}"
+
+- name: Unmount temporary mount of {{ vol.name }}
+  ansible.posix.mount:
+    path: "{{ dcp_adopt_tmp }}"
+    state: unmounted
+  delegate_to: "{{ dcp_node }}"
+
+- name: Remove temporary mount point of {{ vol.name }}
+  ansible.builtin.command:
+    argv:
+      - rmdir
+      - "{{ dcp_adopt_tmp }}"
+  delegate_to: "{{ dcp_node }}"
+
+# Alte lokale Daten beiseite legen, damit unter dem Mountpoint nichts liegt,
+# was nach einem späteren Aushängen (z.B. beim Verschieben) wieder auftaucht.
+- name: Move old local data of {{ vol.name }} aside
+  ansible.builtin.command:
+    argv:
+      - mv
+      - "{{ vol.mount }}"
+      - "{{ vol.mount }}.pre-hetzner-{{ dcp_backup_ts }}"
+  delegate_to: "{{ dcp_node }}"
+
+- name: Recreate empty mount point {{ vol.mount }}
+  ansible.builtin.file:
+    path: "{{ vol.mount }}"
+    state: directory
+    mode: "0701"
+    owner: root
+    group: root
+  delegate_to: "{{ dcp_node }}"

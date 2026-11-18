@@ -61,6 +61,13 @@ Lokale Docker Volumes (Volumes im `compose_block`, die nicht als
 gemountet sind) sind nicht erlaubt; die Rolle bricht dann ab, bevor sie etwas
 ändert.
 
+Um ein lokales Volume umzustellen, einfach einen Eintrag in `hetzner_volumes`
+ergänzen. Beim nächsten Lauf wird das Hetzner Volume angelegt, die vorhandenen
+Daten per rsync übernommen (live, Projekt stoppen, final), die alten lokalen
+Daten nach `<mount>.pre-hetzner-<zeitstempel>` verschoben, das Volume gemountet
+und das Projekt wieder gestartet. Verschieben auf einen anderen Server geht
+erst, wenn alle Hetzner Volumes des Projekts existieren.
+
 Projekte ohne Volumes werden auf neuen Servern zuerst gestartet und danach auf
 den alten gestoppt (`compose.yml.removed`).
 
