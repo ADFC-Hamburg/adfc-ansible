@@ -4,6 +4,11 @@ docker_compose_project_api:
   domains:
     - api.hamburg.adfc.de
   internal_port: 3500
+  hetzner_volumes:
+    - name: api_data
+      size_gb: 10 # Minimum bei Hetzner
+      location: nbg1
+      mount: /var/lib/docker/volumes/docker-api_api_data
   compose_block:
     version: "3"
     volumes:
