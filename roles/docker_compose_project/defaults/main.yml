@@ -8,3 +8,9 @@ smtp_password_filename: "smtp_password.txt"
 # playbooks/docker-compose-delete-backups.yml bestehen.
 docker_compose_backup_label: adfc-compose-backup
 docker_compose_backup_mount_base: /mnt/compose-backup
+
+# Nur ausgewählte Compose Projekte bearbeiten, z.B.
+#   -e docker_compose_only=rocket
+#   -e docker_compose_only=rocket,wiki
+# Leer = alle Projekte.
+docker_compose_only: []

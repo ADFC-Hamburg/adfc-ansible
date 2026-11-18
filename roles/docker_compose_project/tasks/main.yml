@@ -5,17 +5,31 @@
   delegate_to: loadbalancer01.hamburg.adfc.de
   no_log: true
 
-- name: Set timestamp for backup volume names
+- name: Determine compose projects
   ansible.builtin.set_fact:
     dcp_backup_ts: "{{ ansible_date_time.iso8601_basic_short | lower }}"
+    dcp_all_projects: >-
+      {{ hostvars[inventory_hostname].keys()
+         | map('regex_search', '^docker_compose_project_(.*)') | select('string')
+         | map('regex_replace', '^docker_compose_project_', '') | sort }}
+    dcp_only: >-
+      {{ (docker_compose_only.split(',') if docker_compose_only is string else docker_compose_only)
+         | map('trim') | select | list }}
 
-- name: Loop over hostvars starting with docker_compose_project
+- name: Check docker_compose_only for unknown projects
+  ansible.builtin.assert:
+    that: dcp_only | difference(dcp_all_projects) | length == 0
+    fail_msg: >-
+      Unbekannte Projekte in docker_compose_only: {{ dcp_only | difference(dcp_all_projects) | join(', ') }}.
+      Bekannt sind: {{ dcp_all_projects | join(', ') }}
+    quiet: true
+
+- name: Loop over compose projects
   ansible.builtin.include_tasks: compose_project.yml
-  loop: "{{ hostvars[inventory_hostname].keys() | map('regex_search', '^docker_compose_project_(.*)') | select('string') | list }}"
+  loop: "{{ dcp_all_projects | select('in', dcp_only) | list if dcp_only | length > 0 else dcp_all_projects }}"
   loop_control:
-    loop_var: compose_project_hostkey
+    loop_var: compose_project_name
   vars:
-    compose_project: "{{ hostvars[inventory_hostname][compose_project_hostkey] }}"
-    compose_project_name: "{{ compose_project_hostkey | replace('docker_compose_project_', '') }}"
+    compose_project: "{{ hostvars[inventory_hostname]['docker_compose_project_' ~ compose_project_name] }}"
     docker_dir: "/srv/docker-{{ compose_project_name }}"
     dcp_node: "{{ inventory_hostname }}"
