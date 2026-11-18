@@ -17,6 +17,7 @@ docker_compose_project_web20:
     services:
       web20:
         restart: unless-stopped
+        # renovate: datasource=docker
         image: php:8.2-apache
         ports:
           - "{{ adfc_internal_ip }}:3700:80"

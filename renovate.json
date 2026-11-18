@@ -1,0 +1,33 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "enabledManagers": ["custom.regex"],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Versionsvariablen mit Kommentar '# renovate: datasource=... depName=...' in group_vars/host_vars",
+      "managerFilePatterns": ["/(^|/)(group|host)_vars/.+\\.ya?ml$/"],
+      "matchStrings": [
+        "#\\s*renovate:\\s*datasource=(?<datasource>\\S+)\\s+depName=(?<depName>\\S+)(\\s+versioning=(?<versioning>\\S+))?\\s*\\n\\s*[\\w.-]+:\\s*[\"']?(?<currentValue>[^\\s\"']+)[\"']?"
+      ],
+      "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}docker{{/if}}"
+    },
+    {
+      "customType": "regex",
+      "description": "Compose Images mit Kommentar '# renovate: datasource=docker' direkt über 'image: name:tag'",
+      "managerFilePatterns": ["/(^|/)(group|host)_vars/.+\\.ya?ml$/"],
+      "matchStrings": [
+        "#\\s*renovate:\\s*datasource=(?<datasource>\\S+)(\\s+versioning=(?<versioning>\\S+))?\\s*\\n\\s*image:\\s*[\"']?(?<depName>[^\\s\"':]+):(?<currentValue>[^\\s\"'@]+)[\"']?"
+      ],
+      "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}docker{{/if}}"
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "MongoDB Major-Updates brauchen eine Migration (featureCompatibilityVersion), daher keine automatischen PRs",
+      "matchPackageNames": ["mongodb/mongodb-community-server", "docker.io/bitnamilegacy/mongodb"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    }
+  ]
+}

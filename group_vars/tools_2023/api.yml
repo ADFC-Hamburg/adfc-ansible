@@ -11,6 +11,7 @@ docker_compose_project_api:
         driver: local
     services:
       api:
+        # renovate: datasource=docker
         image: php:8.3-apache
         restart: unless-stopped
         ports:

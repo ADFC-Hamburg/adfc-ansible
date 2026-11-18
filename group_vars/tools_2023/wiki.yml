@@ -17,6 +17,7 @@ docker_compose_project_wiki:
     services:
       wiki:
         restart: unless-stopped
+        # renovate: datasource=docker
         image: php:7.4-apache
         ports:
           - "{{ adfc_internal_ip }}:3600:80"

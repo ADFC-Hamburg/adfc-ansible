@@ -1,4 +1,5 @@
-verteiler_app_version: 5
+# renovate: datasource=docker depName=ghcr.io/adfc-hamburg/verteiler-app
+verteiler_app_version: "5"
 
 docker_compose_project_verteiler:
   nodes:
