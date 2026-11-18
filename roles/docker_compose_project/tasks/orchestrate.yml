@@ -1,0 +1,108 @@
+- name: Get hcloud API Token
+  ansible.builtin.slurp:
+    path: /root/hetzner_cloud_chat.key
+  register: hcloud_key_slurp
+  delegate_to: loadbalancer01.hamburg.adfc.de
+  no_log: true
+
+- name: Determine compose projects
+  ansible.builtin.set_fact:
+    dcp_backup_ts: "{{ ansible_date_time.iso8601_basic_short | lower }}"
+    dcp_hosts: "{{ docker_compose_hosts }}"
+    dcp_all_projects: >-
+      {{ hostvars[inventory_hostname].keys()
+         | map('regex_search', '^docker_compose_project_(.*)') | select('string')
+         | map('regex_replace', '^docker_compose_project_', '') | sort }}
+    dcp_only: >-
+      {{ (docker_compose_only.split(',') if docker_compose_only is string else docker_compose_only)
+         | map('trim') | select | list }}
+    dcp_evacuate: >-
+      {{ (docker_compose_evacuate.split(',') if docker_compose_evacuate is string else docker_compose_evacuate)
+         | map('trim') | select | list }}
+
+- name: Check docker_compose_only for unknown projects
+  ansible.builtin.assert:
+    that: dcp_only | difference(dcp_all_projects) | length == 0
+    fail_msg: >-
+      Unbekannte Projekte in docker_compose_only: {{ dcp_only | difference(dcp_all_projects) | join(', ') }}.
+      Bekannt sind: {{ dcp_all_projects | join(', ') }}
+    quiet: true
+
+- name: Check docker_compose_evacuate
+  ansible.builtin.assert:
+    that:
+      - dcp_evacuate | difference(dcp_hosts) | length == 0
+      - dcp_hosts | difference(dcp_evacuate) | length > 0
+    fail_msg: >-
+      docker_compose_evacuate muss eine Teilmenge von {{ dcp_hosts | join(', ') }} sein
+      und es muss mindestens ein Server übrig bleiben.
+    quiet: true
+
+- name: Set selected compose projects
+  ansible.builtin.set_fact:
+    dcp_projects: "{{ dcp_all_projects | select('in', dcp_only) | list if dcp_only | length > 0 else dcp_all_projects }}"
+
+# Jedes Volume im compose_block muss auf einem Hetzner Volume liegen, sonst
+# gingen die Daten beim Verschieben verloren. Geprüft wird vor jeder Änderung.
+- name: Find local docker volumes (not on Hetzner volumes)
+  ansible.builtin.set_fact:
+    dcp_local_volumes: >-
+      {% set r = {} -%}
+      {% for p in dcp_projects -%}
+      {% set cp = hostvars[inventory_hostname]['docker_compose_project_' ~ p] -%}
+      {% set mounts = cp.hetzner_volumes | default([]) | map(attribute='mount') | list -%}
+      {% set local = (cp.compose_block.volumes | default({}, true)).keys()
+           | reject('in', mounts | map('regex_replace', '^/var/lib/docker/volumes/docker-' ~ p ~ '_', '') | list)
+           | list -%}
+      {% if local | length > 0 %}{% set _ = r.update({p: local}) %}{% endif -%}
+      {% endfor -%}
+      {{ r }}
+
+- name: Fail on local docker volumes
+  ansible.builtin.fail:
+    msg: >-
+      Lokale Docker Volumes sind nicht erlaubt, bitte als hetzner_volumes
+      (mount: /var/lib/docker/volumes/docker-<projekt>_<volume>) anlegen:
+      {% for p, v in dcp_local_volumes.items() %}{{ p }}: {{ v | join(', ') }}; {% endfor %}
+  when: dcp_local_volumes | length > 0
+
+- name: Get running compose projects
+  ansible.builtin.command:
+    argv:
+      - docker
+      - compose
+      - ls
+      - --all
+      - --format
+      - json
+  delegate_to: "{{ item }}"
+  loop: "{{ dcp_hosts }}"
+  register: dcp_compose_ls
+  changed_when: false
+
+- name: Get Hetzner volumes
+  hetzner.hcloud.hcloud_volume_info:
+    api_token: "{{ hcloud_api_token }}"
+  delegate_to: localhost
+  register: dcp_volume_info
+
+- name: Store current state
+  ansible.builtin.set_fact:
+    # Server -> Liste der Projekte, die dort Container haben
+    dcp_running: >-
+      {% set r = {} -%}
+      {% for res in dcp_compose_ls.results -%}
+      {% set _ = r.update({res.item: (res.stdout | default('[]', true) | from_json
+           | map(attribute='Name') | map('regex_replace', '^docker-', '') | list)}) -%}
+      {% endfor -%}
+      {{ r }}
+    dcp_hcloud_volumes: "{{ dcp_volume_info.hcloud_volume_info }}"
+
+- name: Loop over compose projects
+  ansible.builtin.include_tasks: project.yml
+  loop: "{{ dcp_projects }}"
+  loop_control:
+    loop_var: compose_project_name
+  vars:
+    compose_project: "{{ hostvars[inventory_hostname]['docker_compose_project_' ~ compose_project_name] }}"
+    docker_dir: "/srv/docker-{{ compose_project_name }}"

@@ -5,6 +5,7 @@
       - docker
       - compose
       - pull
+  delegate_to: "{{ dcp_node }}"
 
 - name: Backup Hetzner volumes (live copy)
   ansible.builtin.include_tasks: backup_start.yml
@@ -23,6 +24,7 @@
       - down
       - --remove-orphans
   when: dcp_backup_volumes | length > 0
+  delegate_to: "{{ dcp_node }}"
 
 - name: Backup Hetzner volumes (final copy and detach)
   ansible.builtin.include_tasks: backup_finish.yml
@@ -41,6 +43,7 @@
       - up
       - -d
       - --remove-orphans
+  delegate_to: "{{ dcp_node }}"
 
 - name: Delete old Docker images
   ansible.builtin.command:
@@ -52,3 +55,4 @@
       - --all
   register: docker_image_prune
   changed_when: "'Total reclaimed space: 0B' not in docker_image_prune.stdout"
+  delegate_to: "{{ dcp_node }}"

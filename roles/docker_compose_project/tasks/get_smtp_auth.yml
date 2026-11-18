@@ -18,3 +18,4 @@
     mode: "0600"
     owner: root
     group: root
+  delegate_to: "{{ dcp_node }}"

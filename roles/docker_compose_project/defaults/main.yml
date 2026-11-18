@@ -14,3 +14,18 @@ docker_compose_backup_mount_base: /mnt/compose-backup
 #   -e docker_compose_only=rocket,wiki
 # Leer = alle Projekte.
 docker_compose_only: []
+
+# Server, auf denen Compose Projekte laufen können.
+docker_compose_hosts: "{{ groups['tools_2023'] }}"
+
+# Server leer räumen (z.B. für ein OS-Update), überschreibt "nodes" aus den
+# group_vars:
+#   -e docker_compose_evacuate=tools1.hamburg.adfc.de
+# Alle Projekte werden nacheinander auf die übrigen Server verschoben (inkl.
+# Hetzner Volumes und lokaler Docker Volumes). Ein erneuter Lauf ohne die
+# Variable verschiebt alles wieder zurück.
+docker_compose_evacuate: []
+
+# Nur anzeigen, was passieren würde (keine Änderungen):
+#   -e docker_compose_plan_only=true
+docker_compose_plan_only: false

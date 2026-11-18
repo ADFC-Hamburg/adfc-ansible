@@ -30,7 +30,7 @@
       no_log: true
 
     - name: List all Hetzner volumes
-      hetzner.hcloud.volume_info:
+      hetzner.hcloud.hcloud_volume_info:
         api_token: "{{ hcloud_key_slurp.content | b64decode | trim }}"
       register: dcp_all_volumes
 
@@ -64,7 +64,7 @@
         label: "{{ item.name }}"
 
     - name: Delete detached backup volumes
-      hetzner.hcloud.volume:
+      hetzner.hcloud.hcloud_volume:
         api_token: "{{ hcloud_key_slurp.content | b64decode | trim }}"
         name: "{{ item.name }}"
         state: absent

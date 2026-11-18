@@ -1,0 +1,25 @@
+# Aktualisiert ein Projekt auf dcp_node (ohne Verschieben).
+- name: Prepare {{ compose_project_name }} on {{ dcp_node }}
+  ansible.builtin.include_tasks: node_prepare.yml
+
+- name: Pull images, backup volumes and restart
+  ansible.builtin.include_tasks: new_version.yml
+  when: compose_file.changed
+  vars:
+    # Backup nur, wenn es vorher schon ein Compose File (also Daten) gab
+    dcp_backup_volumes: >-
+      {{ dcp_hetzner_volumes
+         if compose_stat.stat.exists and (compose_project.backup_on_change | default(true))
+         else [] }}
+
+- name: Start {{ compose_project_name }} on {{ dcp_node }}
+  ansible.builtin.command:
+    chdir: "{{ docker_dir }}"
+    argv:
+      - docker
+      - compose
+      - up
+      - -d
+      - --remove-orphans
+  delegate_to: "{{ dcp_node }}"
+  when: not compose_file.changed and dcp_node not in dcp_running_on

@@ -1,0 +1,94 @@
+# Bereitet ein Projekt auf dcp_node vor: Verzeichnis, Secrets, Compose File.
+# Variablen: dcp_node, dcp_secret_source (optional), dcp_mount_volumes
+- name: Create directory {{ docker_dir }} on {{ dcp_node }}
+  ansible.builtin.file:
+    path: "{{ docker_dir }}"
+    state: directory
+    mode: "0755"
+    owner: root
+    group: root
+  delegate_to: "{{ dcp_node }}"
+
+- name: Read secrets from {{ dcp_secret_source }}
+  ansible.builtin.slurp:
+    src: "{{ docker_dir }}/{{ secret.value.file }}"
+  loop: "{{ compose_project.compose_block.secrets | default({}) | dict2items }}"
+  loop_control:
+    loop_var: secret
+    label: "{{ secret.key }}"
+  delegate_to: "{{ dcp_secret_source }}"
+  register: dcp_secret_slurp
+  failed_when: false
+  no_log: true
+  when: dcp_secret_source | default('') not in ['', dcp_node]
+
+- name: Copy secrets to {{ dcp_node }}
+  ansible.builtin.copy:
+    content: "{{ secret.content | b64decode }}"
+    dest: "{{ docker_dir }}/{{ secret.secret.value.file }}"
+    mode: "0600"
+    owner: root
+    group: root
+  loop: "{{ dcp_secret_slurp.results | default([]) | selectattr('content', 'defined') | list }}"
+  loop_control:
+    loop_var: secret
+    label: "{{ secret.secret.key }}"
+  delegate_to: "{{ dcp_node }}"
+  no_log: true
+
+- name: Mount Hetzner Volumes on {{ dcp_node }}
+  ansible.builtin.include_tasks: mount_hcloud_vol.yml
+  loop: "{{ dcp_hetzner_volumes }}"
+  loop_control:
+    loop_var: vol
+  when: dcp_mount_volumes | default(true)
+
+- name: Test if compose file is there
+  ansible.builtin.stat:
+    path: "{{ docker_dir }}/compose.yml"
+  delegate_to: "{{ dcp_node }}"
+  register: compose_stat
+
+- name: Create Compose Backup
+  ansible.builtin.copy:
+    remote_src: true
+    src: "{{ docker_dir }}/compose.yml"
+    dest: "{{ docker_dir }}/compose.old"
+    mode: "0644"
+    owner: root
+    group: root
+  delegate_to: "{{ dcp_node }}"
+  when: compose_stat.stat.exists
+
+- name: Get authentication for email account
+  ansible.builtin.include_tasks: get_smtp_auth.yml
+  when: compose_project.uses_smtp | default(false)
+
+- name: Create Compose File on {{ dcp_node }}
+  ansible.builtin.copy:
+    content: |
+      # Ansible Managed
+      {{ compose_project.compose_block | to_nice_yaml }}
+    dest: "{{ docker_dir }}/compose.yml"
+    mode: "0644"
+    owner: root
+    group: root
+  delegate_to: "{{ dcp_node }}"
+  register: compose_file
+  vars:
+    # Variablen im compose_block beziehen sich auf den Zielserver
+    adfc_internal_ip: "{{ hostvars[dcp_node].adfc_internal_ip }}"
+
+- name: Create Secret file
+  ansible.builtin.copy:
+    content: "{{ lookup('ansible.builtin.password', '/dev/null', length=16) }}"
+    dest: "{{ docker_dir }}/{{ secret.value.file }}"
+    mode: "0600"
+    owner: root
+    group: root
+    force: false
+  loop: "{{ compose_project.compose_block.secrets | default({}) | dict2items }}"
+  loop_control:
+    loop_var: secret
+    label: "{{ secret.key }}"
+  delegate_to: "{{ dcp_node }}"

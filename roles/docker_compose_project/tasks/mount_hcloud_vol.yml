@@ -1,5 +1,5 @@
 - name: Create Hetzner volume
-  hetzner.hcloud.volume:
+  hetzner.hcloud.hcloud_volume:
     api_token: "{{ hcloud_api_token }}"
     name: "{{ vol.name }}"
     size: "{{ vol.size_gb }}"
@@ -16,3 +16,4 @@
     opts: "discard,noatime"
     fstype: ext4
     state: mounted
+  delegate_to: "{{ dcp_node }}"

@@ -1,0 +1,21 @@
+# Stoppt ein (zustandsloses) Projekt auf dcp_node.
+- name: Stop {{ compose_project_name }} on {{ dcp_node }}
+  ansible.builtin.command:
+    chdir: "{{ docker_dir }}"
+    argv:
+      - docker
+      - compose
+      - --project-name
+      - "docker-{{ compose_project_name }}"
+      - down
+      - --remove-orphans
+  delegate_to: "{{ dcp_node }}"
+
+- name: Disable compose file of {{ compose_project_name }} on {{ dcp_node }}
+  ansible.builtin.command:
+    argv:
+      - mv
+      - "{{ docker_dir }}/compose.yml"
+      - "{{ docker_dir }}/compose.yml.{{ dcp_remove_suffix | default('removed') }}"
+    removes: "{{ docker_dir }}/compose.yml"
+  delegate_to: "{{ dcp_node }}"

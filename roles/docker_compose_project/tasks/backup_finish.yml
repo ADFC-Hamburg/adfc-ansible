@@ -9,19 +9,24 @@
       - --delete
       - "{{ vol.mount }}/"
       - "{{ docker_compose_backup_mount_base }}/{{ dcp_backup_name }}/"
+  delegate_to: "{{ dcp_node }}"
 
 - name: Unmount backup volume {{ dcp_backup_name }}
   ansible.posix.mount:
     path: "{{ docker_compose_backup_mount_base }}/{{ dcp_backup_name }}"
     state: unmounted
+  delegate_to: "{{ dcp_node }}"
 
 - name: Remove mount point of backup volume {{ dcp_backup_name }}
-  ansible.builtin.file:
-    path: "{{ docker_compose_backup_mount_base }}/{{ dcp_backup_name }}"
-    state: absent
+  # rmdir statt file/absent: schlägt fehl, falls doch noch etwas gemountet ist
+  ansible.builtin.command:
+    argv:
+      - rmdir
+      - "{{ docker_compose_backup_mount_base }}/{{ dcp_backup_name }}"
+  delegate_to: "{{ dcp_node }}"
 
 - name: Detach backup volume {{ dcp_backup_name }}
-  hetzner.hcloud.volume:
+  hetzner.hcloud.hcloud_volume:
     api_token: "{{ hcloud_api_token }}"
     name: "{{ dcp_backup_name }}"
     state: present

@@ -1,7 +1,7 @@
 # Legt für ein Hetzner Volume (vol) ein Backup Volume an und kopiert die Daten
 # ein erstes Mal, während die Anwendung noch läuft.
 - name: Create backup volume {{ dcp_backup_name }}
-  hetzner.hcloud.volume:
+  hetzner.hcloud.hcloud_volume:
     api_token: "{{ hcloud_api_token }}"
     name: "{{ dcp_backup_name }}"
     size: "{{ vol.size_gb }}"
@@ -22,6 +22,7 @@
     opts: "discard,noatime"
     fstype: ext4
     state: ephemeral
+  delegate_to: "{{ dcp_node }}"
 
 - name: Rsync live data to backup volume {{ dcp_backup_name }}
   ansible.builtin.command:
@@ -32,3 +33,4 @@
       - --delete
       - "{{ vol.mount }}/"
       - "{{ docker_compose_backup_mount_base }}/{{ dcp_backup_name }}/"
+  delegate_to: "{{ dcp_node }}"

@@ -1,35 +1,7 @@
-- name: Get hcloud API Token
-  ansible.builtin.slurp:
-    path: /root/hetzner_cloud_chat.key
-  register: hcloud_key_slurp
-  delegate_to: loadbalancer01.hamburg.adfc.de
-  no_log: true
-
-- name: Determine compose projects
-  ansible.builtin.set_fact:
-    dcp_backup_ts: "{{ ansible_date_time.iso8601_basic_short | lower }}"
-    dcp_all_projects: >-
-      {{ hostvars[inventory_hostname].keys()
-         | map('regex_search', '^docker_compose_project_(.*)') | select('string')
-         | map('regex_replace', '^docker_compose_project_', '') | sort }}
-    dcp_only: >-
-      {{ (docker_compose_only.split(',') if docker_compose_only is string else docker_compose_only)
-         | map('trim') | select | list }}
-
-- name: Check docker_compose_only for unknown projects
-  ansible.builtin.assert:
-    that: dcp_only | difference(dcp_all_projects) | length == 0
-    fail_msg: >-
-      Unbekannte Projekte in docker_compose_only: {{ dcp_only | difference(dcp_all_projects) | join(', ') }}.
-      Bekannt sind: {{ dcp_all_projects | join(', ') }}
-    quiet: true
-
-- name: Loop over compose projects
-  ansible.builtin.include_tasks: compose_project.yml
-  loop: "{{ dcp_all_projects | select('in', dcp_only) | list if dcp_only | length > 0 else dcp_all_projects }}"
-  loop_control:
-    loop_var: compose_project_name
-  vars:
-    compose_project: "{{ hostvars[inventory_hostname]['docker_compose_project_' ~ compose_project_name] }}"
-    docker_dir: "/srv/docker-{{ compose_project_name }}"
-    dcp_node: "{{ inventory_hostname }}"
+# Die Rolle wird nur vom ersten Host des Plays ausgeführt. Alle Aktionen werden
+# per delegate_to auf den jeweiligen Server ausgeführt, damit Projekte
+# nacheinander (und mit minimaler Downtime) zwischen Servern verschoben werden
+# können.
+- name: Orchestrate compose projects
+  ansible.builtin.include_tasks: orchestrate.yml
+  when: inventory_hostname == ansible_play_hosts_all[0]

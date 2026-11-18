@@ -1,0 +1,82 @@
+# Plant und führt die Änderungen für ein Compose Projekt aus.
+#
+# Zustandsbehaftete Projekte (Hetzner Volumes) laufen auf genau einem Server. Ändert sich der Server (nodes in den group_vars oder
+# docker_compose_evacuate), wird das Projekt verschoben: Ziel vorbereiten
+# (Compose File, Secrets, docker pull), Quelle stoppen, Volumes umhängen bzw.
+# kopieren, Ziel starten.
+#
+# Zustandslose Projekte werden auf neuen Servern zuerst gestartet und erst
+# danach auf nicht mehr gewünschten Servern gestoppt.
+
+- name: Plan {{ compose_project_name }}
+  ansible.builtin.set_fact:
+    dcp_hetzner_volumes: "{{ compose_project.hetzner_volumes | default([]) }}"
+    dcp_desired: >-
+      {% set n = compose_project.nodes | difference(dcp_evacuate) -%}
+      {{ n if n | length > 0 else [dcp_hosts | difference(dcp_evacuate) | first] }}
+    dcp_running_on: "{{ dcp_hosts | select('in', dcp_running | dict2items | selectattr('value', 'contains', compose_project_name) | map(attribute='key') | list) | list }}"
+    dcp_attached_on: >-
+      {{ dcp_hcloud_volumes
+         | selectattr('name', 'in', (compose_project.hetzner_volumes | default([])) | map(attribute='name') | list)
+         | map(attribute='server') | reject('none') | unique | list }}
+
+- name: Plan {{ compose_project_name }} (current state)
+  ansible.builtin.set_fact:
+    dcp_stateful: "{{ dcp_hetzner_volumes | length > 0 }}"
+    # Bei Hetzner Volumes ist der Server maßgeblich, an dem die Volumes hängen
+    dcp_current: "{{ dcp_attached_on if dcp_hetzner_volumes | length > 0 and dcp_attached_on | length > 0 else dcp_running_on }}"
+
+- name: Check {{ compose_project_name }}
+  ansible.builtin.assert:
+    that:
+      - not dcp_stateful or dcp_desired | length == 1
+      - not dcp_stateful or dcp_current | length <= 1
+      - dcp_attached_on | length <= 1
+    fail_msg: >-
+      {{ compose_project_name }}: Projekte mit Volumes dürfen nur auf einem Server laufen
+      (gewünscht: {{ dcp_desired }}, Container auf: {{ dcp_running_on }},
+      Hetzner Volumes an: {{ dcp_attached_on }}).
+    quiet: true
+
+- name: Plan {{ compose_project_name }} (actions)
+  ansible.builtin.set_fact:
+    dcp_move: "{{ dcp_stateful and dcp_current | length == 1 and dcp_current != dcp_desired }}"
+    dcp_remove: "{{ [] if dcp_stateful else dcp_current | difference(dcp_desired) }}"
+
+- name: Show plan for {{ compose_project_name }}
+  ansible.builtin.debug:
+    msg: >-
+      {{ compose_project_name }}:
+      {% if dcp_move %}VERSCHIEBEN {{ dcp_current[0] }} -> {{ dcp_desired[0] }}
+      (Hetzner Volumes: {{ dcp_hetzner_volumes | map(attribute='name') | join(', ') }})
+      {%- else %}aktualisieren auf {{ dcp_desired | join(', ') }}
+      {%- if dcp_remove %}, stoppen auf {{ dcp_remove | join(', ') }}{% endif %}{% endif %}
+
+- name: Move {{ compose_project_name }}
+  ansible.builtin.include_tasks: move.yml
+  when: dcp_move and not (docker_compose_plan_only | bool)
+  vars:
+    dcp_source: "{{ dcp_current[0] }}"
+    dcp_target: "{{ dcp_desired[0] }}"
+    # Backup nur, wenn sich beim Verschieben auch das Compose File ändert
+    dcp_move_backup_volumes: >-
+      {{ dcp_hetzner_volumes
+         if dcp_compose_changed and (compose_project.backup_on_change | default(true))
+         else [] }}
+
+- name: Deploy {{ compose_project_name }}
+  ansible.builtin.include_tasks: node_deploy.yml
+  when: not dcp_move and not (docker_compose_plan_only | bool)
+  loop: "{{ dcp_desired }}"
+  loop_control:
+    loop_var: dcp_node
+  vars:
+    # Secrets von einem Server übernehmen, auf dem das Projekt schon läuft
+    dcp_secret_source: "{{ dcp_current | difference([dcp_node]) | first | default('') }}"
+
+- name: Stop {{ compose_project_name }} on servers no longer used
+  ansible.builtin.include_tasks: node_remove.yml
+  when: not (docker_compose_plan_only | bool)
+  loop: "{{ dcp_remove }}"
+  loop_control:
+    loop_var: dcp_node

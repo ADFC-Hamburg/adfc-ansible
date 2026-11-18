@@ -1,0 +1,137 @@
+# Verschiebt ein zustandsbehaftetes Projekt von dcp_source nach dcp_target.
+# Downtime nur zwischen "Stop on source" und "Start on target".
+
+- name: Read current compose file on {{ dcp_source }}
+  ansible.builtin.slurp:
+    src: "{{ docker_dir }}/compose.yml"
+  delegate_to: "{{ dcp_source }}"
+  register: dcp_source_compose
+  failed_when: false
+
+- name: Check whether compose file changes with the move
+  ansible.builtin.set_fact:
+    # Inhalt so rendern, als bliebe das Projekt auf der Quelle
+    dcp_compose_changed: "{{ (dcp_source_compose.content | default('') | b64decode) != dcp_compose_on_source }}"
+  vars:
+    adfc_internal_ip: "{{ hostvars[dcp_source].adfc_internal_ip }}"
+    dcp_compose_on_source: |
+      # Ansible Managed
+      {{ compose_project.compose_block | to_nice_yaml }}
+
+- name: Prepare {{ compose_project_name }} on {{ dcp_target }}
+  ansible.builtin.include_tasks: node_prepare.yml
+  vars:
+    dcp_node: "{{ dcp_target }}"
+    dcp_secret_source: "{{ dcp_source }}"
+    dcp_mount_volumes: false
+
+- name: Docker compose pull on {{ dcp_target }}
+  ansible.builtin.command:
+    chdir: "{{ docker_dir }}"
+    argv:
+      - docker
+      - compose
+      - pull
+  delegate_to: "{{ dcp_target }}"
+
+- name: Backup Hetzner volumes on {{ dcp_source }} (live copy)
+  ansible.builtin.include_tasks: backup_start.yml
+  loop: "{{ dcp_move_backup_volumes }}"
+  loop_control:
+    loop_var: vol
+  vars:
+    dcp_node: "{{ dcp_source }}"
+    dcp_backup_name: "backup-{{ vol.name }}-{{ dcp_backup_ts }}"
+
+# ---- ab hier Downtime ----
+
+- name: Stop {{ compose_project_name }} on {{ dcp_source }}
+  ansible.builtin.command:
+    chdir: "{{ docker_dir }}"
+    argv:
+      - docker
+      - compose
+      - --project-name
+      - "docker-{{ compose_project_name }}"
+      - down
+      - --remove-orphans
+  delegate_to: "{{ dcp_source }}"
+
+- name: Backup Hetzner volumes on {{ dcp_source }} (final copy and detach)
+  ansible.builtin.include_tasks: backup_finish.yml
+  loop: "{{ dcp_move_backup_volumes }}"
+  loop_control:
+    loop_var: vol
+  vars:
+    dcp_node: "{{ dcp_source }}"
+    dcp_backup_name: "backup-{{ vol.name }}-{{ dcp_backup_ts }}"
+
+- name: Unmount Hetzner volumes on {{ dcp_source }}
+  ansible.posix.mount:
+    path: "{{ vol.mount }}"
+    state: unmounted
+  loop: "{{ dcp_hetzner_volumes }}"
+  loop_control:
+    loop_var: vol
+  delegate_to: "{{ dcp_source }}"
+
+- name: Remove Hetzner volumes from fstab on {{ dcp_source }}
+  ansible.posix.mount:
+    path: "{{ vol.mount }}"
+    state: absent_from_fstab
+  loop: "{{ dcp_hetzner_volumes }}"
+  loop_control:
+    loop_var: vol
+  delegate_to: "{{ dcp_source }}"
+
+- name: Detach Hetzner volumes from {{ dcp_source }}
+  hetzner.hcloud.hcloud_volume:
+    api_token: "{{ hcloud_api_token }}"
+    name: "{{ vol.name }}"
+    state: present
+  loop: "{{ dcp_hetzner_volumes }}"
+  loop_control:
+    loop_var: vol
+  delegate_to: localhost
+
+- name: Attach and mount Hetzner volumes on {{ dcp_target }}
+  ansible.builtin.include_tasks: mount_hcloud_vol.yml
+  loop: "{{ dcp_hetzner_volumes }}"
+  loop_control:
+    loop_var: vol
+  vars:
+    dcp_node: "{{ dcp_target }}"
+
+- name: Start {{ compose_project_name }} on {{ dcp_target }}
+  ansible.builtin.command:
+    chdir: "{{ docker_dir }}"
+    argv:
+      - docker
+      - compose
+      - up
+      - -d
+      - --remove-orphans
+  delegate_to: "{{ dcp_target }}"
+
+# ---- Downtime vorbei ----
+
+- name: Disable compose file of {{ compose_project_name }} on {{ dcp_source }}
+  ansible.builtin.command:
+    argv:
+      - mv
+      - "{{ docker_dir }}/compose.yml"
+      - "{{ docker_dir }}/compose.yml.moved"
+    removes: "{{ docker_dir }}/compose.yml"
+  delegate_to: "{{ dcp_source }}"
+
+- name: Delete old Docker images on {{ dcp_target }}
+  ansible.builtin.command:
+    argv:
+      - docker
+      - image
+      - prune
+      - --force
+      - --all
+  delegate_to: "{{ dcp_target }}"
+  register: docker_image_prune
+  changed_when: "'Total reclaimed space: 0B' not in docker_image_prune.stdout"
