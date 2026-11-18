@@ -55,11 +55,12 @@
   loop_control:
     loop_var: secret
 
-- name: Prompt for update
-  ansible.builtin.pause:
-    prompt: "Change detected, press Enter to continue"
-  when: compose_file.changed and inventory_hostname in compose_project.nodes
-
-- name: Pull Package and start detached
+- name: Pull images, backup volumes and restart
   ansible.builtin.include_tasks: new_version.yml
   when: compose_file.changed and inventory_hostname in compose_project.nodes
+  vars:
+    # Backup nur, wenn es vorher schon ein Compose File (also Daten) gab
+    dcp_backup_volumes: >-
+      {{ (compose_project.hetzner_volumes | default([]))
+         if compose_stat.stat.exists and (compose_project.backup_on_change | default(true))
+         else [] }}

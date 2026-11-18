@@ -17,11 +17,6 @@ docker_compose_project_rocketchat_test:
       size_gb: 15
       location: nbg1
       mount: /var/lib/docker/volumes/docker-rocketchat_test_mongodb_data
-  backup_on_new_version:
-    - src: /var/lib/docker/volumes/docker-rocketchat_test_mongodb_data
-      hcloud_volume_prefix: backup_chat_mongodb_test
-      hcloud_size_gb: 15
-      hcloud_location: nbg1
   compose_block:
     # From https://raw.githubusercontent.com/RocketChat/Docker.Official.Image/master/compose.yml
     # Version: 63a01a43be966e79a66ce38ad2f1249245deb4cd
@@ -75,11 +70,6 @@ docker_compose_project_rocket:
       size_gb: 30
       location: nbg1
       mount: /var/lib/docker/volumes/docker-rocket_rocket_uploads
-  backup_on_new_version:
-    - src: /var/lib/docker/volumes/docker-rocket_mongodb8_data
-      hcloud_volume_prefix: backup_chat_mongo_v8
-      hcloud_size_gb: 20
-      hcloud_location: nbg1
   compose_block:
     # Migriert von bitnami/mongodb:7 auf mongodb/mongodb-community-server:8
     volumes:

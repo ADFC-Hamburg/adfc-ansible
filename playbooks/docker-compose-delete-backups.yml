@@ -1,0 +1,74 @@
+---
+# Löscht alle (abgehängten) Backup Volumes, die die Rolle docker_compose_project
+# bei einer Änderung eines Compose Files anlegt.
+#
+# Aufruf:
+#   ansible-playbook playbooks/docker-compose-delete-backups.yml
+#   ansible-playbook playbooks/docker-compose-delete-backups.yml -e docker_compose_only=rocket
+#   ansible-playbook playbooks/docker-compose-delete-backups.yml -e dry_run=true
+#
+# Gefunden werden Volumes mit dem Label "adfc-compose-backup=true" sowie (für
+# Altlasten aus der früheren Rocket.Chat-Variante) Volumes, deren Name mit
+# "backup_" beginnt. Volumes, die noch an einem Server hängen, werden nie gelöscht.
+
+- name: Delete docker compose backup volumes
+  hosts: localhost
+  gather_facts: false
+  vars:
+    docker_compose_backup_label: adfc-compose-backup
+    docker_compose_only: []
+    dry_run: false
+    dcp_only: >-
+      {{ (docker_compose_only.split(',') if docker_compose_only is string else docker_compose_only)
+         | map('trim') | select | list }}
+  tasks:
+    - name: Get hcloud API Token
+      ansible.builtin.slurp:
+        path: /root/hetzner_cloud_chat.key
+      register: hcloud_key_slurp
+      delegate_to: loadbalancer01.hamburg.adfc.de
+      no_log: true
+
+    - name: List all Hetzner volumes
+      hetzner.hcloud.volume_info:
+        api_token: "{{ hcloud_key_slurp.content | b64decode | trim }}"
+      register: dcp_all_volumes
+
+    - name: Select backup volumes
+      ansible.builtin.set_fact:
+        dcp_backup_volumes: >-
+          {{ dcp_all_volumes.hcloud_volume_info
+             | selectattr('name', 'match', '^backup_')
+             | list
+             + dcp_all_volumes.hcloud_volume_info
+             | selectattr('labels.' ~ docker_compose_backup_label, 'defined')
+             | selectattr('labels.' ~ docker_compose_backup_label, 'equalto', 'true')
+             | list }}
+
+    - name: Filter backup volumes by project
+      ansible.builtin.set_fact:
+        dcp_backup_volumes: >-
+          {{ dcp_backup_volumes
+             | selectattr('labels.compose-project', 'defined')
+             | selectattr('labels.compose-project', 'in', dcp_only)
+             | list }}
+      when: dcp_only | length > 0
+
+    - name: Show backup volumes
+      ansible.builtin.debug:
+        msg: >-
+          {{ item.name }} ({{ item.size }} GB)
+          {{ '-> wird gelöscht' if item.server is none else '-> hängt an ' ~ item.server ~ ', wird NICHT gelöscht' }}
+      loop: "{{ dcp_backup_volumes | unique(attribute='id') }}"
+      loop_control:
+        label: "{{ item.name }}"
+
+    - name: Delete detached backup volumes
+      hetzner.hcloud.volume:
+        api_token: "{{ hcloud_key_slurp.content | b64decode | trim }}"
+        name: "{{ item.name }}"
+        state: absent
+      loop: "{{ dcp_backup_volumes | unique(attribute='id') | selectattr('server', 'none') | list }}"
+      loop_control:
+        label: "{{ item.name }}"
+      when: not (dry_run | bool)

@@ -6,27 +6,33 @@
       - compose
       - pull
 
-- name: Create New Hetzner Volumes
-  ansible.builtin.include_tasks: create_new_hcloud_volume.yml
-  loop: "{{ compose_project.backup_on_new_version | default([]) }}"
+- name: Backup Hetzner volumes (live copy)
+  ansible.builtin.include_tasks: backup_start.yml
+  loop: "{{ dcp_backup_volumes }}"
   loop_control:
     loop_var: vol
+  vars:
+    dcp_backup_name: "backup-{{ vol.name }}-{{ dcp_backup_ts }}"
 
-- name: Docker compose stop
+- name: Docker compose down
   ansible.builtin.command:
     chdir: "{{ docker_dir }}"
     argv:
       - docker
       - compose
       - down
+      - --remove-orphans
+  when: dcp_backup_volumes | length > 0
 
-- name: Rsync 2nd time
-  ansible.builtin.include_tasks: 2nd_sync_hcloud.yml
-  loop: "{{ compose_project.backup_on_new_version | default([]) }}"
+- name: Backup Hetzner volumes (final copy and detach)
+  ansible.builtin.include_tasks: backup_finish.yml
+  loop: "{{ dcp_backup_volumes }}"
   loop_control:
     loop_var: vol
+  vars:
+    dcp_backup_name: "backup-{{ vol.name }}-{{ dcp_backup_ts }}"
 
-- name: Docker compose start
+- name: Docker compose up
   ansible.builtin.command:
     chdir: "{{ docker_dir }}"
     argv:
@@ -34,30 +40,7 @@
       - compose
       - up
       - -d
-
-- name: Ask if everything is working
-  ansible.builtin.pause:
-    prompt: >
-      Funktioniert der Docker Container mit den Domains:
-      {% for dom in compose_project.domains %}
-      https://{{ dom }}
-      {% endfor %}
-      ? Bitte JA oder NEIN und danach RETURN eingeben.
-  when: "compose_project.backup_on_new_version | default([]) != []"
-  register: pres
-  until: "pres.user_input=='JA' or pres.user_input=='NEIN'"
-  retries: 100
-
-- name: Clean Hetzner
-  ansible.builtin.include_tasks: clean_hcloud_vol.yml
-  loop: "{{ compose_project.backup_on_new_version | default([]) }}"
-  loop_control:
-    loop_var: vol
-  when: "compose_project.backup_on_new_version | default([]) != [] and pres.user_input=='JA'"
-
-- name: Restore Hcloud Vol
-  ansible.builtin.include_tasks: restore_version.yml
-  when: "compose_project.backup_on_new_version | default([]) != [] and pres.user_input=='NEIN'"
+      - --remove-orphans
 
 - name: Delete old Docker images
   ansible.builtin.command:

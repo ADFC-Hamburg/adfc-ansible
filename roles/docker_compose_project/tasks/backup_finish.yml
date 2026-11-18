@@ -1,0 +1,28 @@
+# Zweiter rsync nachdem die Anwendung gestoppt wurde, danach wird das Backup
+# Volume ausgehängt und vom Server abgehängt (es bleibt in Hetzner bestehen).
+- name: Rsync stopped data to backup volume {{ dcp_backup_name }}
+  ansible.builtin.command:
+    argv:
+      - rsync
+      - -aHAX
+      - --numeric-ids
+      - --delete
+      - "{{ vol.mount }}/"
+      - "{{ docker_compose_backup_mount_base }}/{{ dcp_backup_name }}/"
+
+- name: Unmount backup volume {{ dcp_backup_name }}
+  ansible.posix.mount:
+    path: "{{ docker_compose_backup_mount_base }}/{{ dcp_backup_name }}"
+    state: unmounted
+
+- name: Remove mount point of backup volume {{ dcp_backup_name }}
+  ansible.builtin.file:
+    path: "{{ docker_compose_backup_mount_base }}/{{ dcp_backup_name }}"
+    state: absent
+
+- name: Detach backup volume {{ dcp_backup_name }}
+  hetzner.hcloud.volume:
+    api_token: "{{ hcloud_api_token }}"
+    name: "{{ dcp_backup_name }}"
+    state: present
+  delegate_to: localhost

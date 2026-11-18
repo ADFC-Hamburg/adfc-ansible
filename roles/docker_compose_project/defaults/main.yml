@@ -1,2 +1,10 @@
 hcloud_api_token: "{{ hcloud_key_slurp.content | b64decode | trim }}"
 smtp_password_filename: "smtp_password.txt"
+
+# Backup bei Änderung des Compose Files:
+# Für jedes Hetzner Volume eines Projekts wird ein zusätzliches Volume angelegt,
+# die Daten per rsync kopiert (einmal live, einmal nach dem Stoppen) und das
+# Volume danach abgehängt. Es bleibt bis zum Aufräumen mit
+# playbooks/docker-compose-delete-backups.yml bestehen.
+docker_compose_backup_label: adfc-compose-backup
+docker_compose_backup_mount_base: /mnt/compose-backup

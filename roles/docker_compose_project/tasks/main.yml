@@ -5,6 +5,10 @@
   delegate_to: loadbalancer01.hamburg.adfc.de
   no_log: true
 
+- name: Set timestamp for backup volume names
+  ansible.builtin.set_fact:
+    dcp_backup_ts: "{{ ansible_date_time.iso8601_basic_short | lower }}"
+
 - name: Loop over hostvars starting with docker_compose_project
   ansible.builtin.include_tasks: compose_project.yml
   loop: "{{ hostvars[inventory_hostname].keys() | map('regex_search', '^docker_compose_project_(.*)') | select('string') | list }}"
@@ -14,3 +18,4 @@
     compose_project: "{{ hostvars[inventory_hostname][compose_project_hostkey] }}"
     compose_project_name: "{{ compose_project_hostkey | replace('docker_compose_project_', '') }}"
     docker_dir: "/srv/docker-{{ compose_project_name }}"
+    dcp_node: "{{ inventory_hostname }}"

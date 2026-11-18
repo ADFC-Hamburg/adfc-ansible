@@ -1,9 +1,9 @@
 - name: Create Hetzner volume
-  hetzner.hcloud.hcloud_volume:
+  hetzner.hcloud.volume:
     api_token: "{{ hcloud_api_token }}"
     name: "{{ vol.name }}"
     size: "{{ vol.size_gb }}"
-    server: "{{ inventory_hostname }}"
+    server: "{{ dcp_node }}"
     format: ext4
     state: present
   delegate_to: localhost
