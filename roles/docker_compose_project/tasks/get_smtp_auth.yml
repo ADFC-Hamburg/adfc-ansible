@@ -11,6 +11,17 @@
     smtp_auth_password: "{{ smtp_auth.content | b64decode | regex_search('(?<=:)[^:]+(?=[$\\n])') }}"
   run_once: true
 
+# Der compose_block wird über hostvars[dcp_node] gerendert, daher die Facts
+# auch dort setzen.
+- name: Set SMTP auth facts on {{ dcp_node }}
+  ansible.builtin.set_fact:
+    smtp_auth_hostname: "{{ smtp_auth_hostname }}"
+    smtp_auth_address: "{{ smtp_auth_address }}"
+    smtp_auth_password: "{{ smtp_auth_password }}"
+  delegate_to: "{{ dcp_node }}"
+  delegate_facts: true
+  no_log: true
+
 - name: Create SMTP password file
   ansible.builtin.copy:
     content: "{{ smtp_auth_password }}"

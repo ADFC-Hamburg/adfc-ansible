@@ -9,7 +9,7 @@
     group: root
   delegate_to: "{{ dcp_node }}"
 
-- name: Read secrets from {{ dcp_secret_source }}
+- name: Read secrets from source server
   ansible.builtin.slurp:
     src: "{{ docker_dir }}/{{ secret.value.file }}"
   loop: "{{ compose_project.compose_block.secrets | default({}) | dict2items }}"
@@ -64,20 +64,20 @@
   ansible.builtin.include_tasks: get_smtp_auth.yml
   when: compose_project.uses_smtp | default(false)
 
+# Wichtig: compose_block über hostvars[dcp_node] lesen, dann werden Variablen
+# wie adfc_internal_ip im Kontext des Zielservers gerendert (und nicht im
+# Kontext des Hosts, auf dem die Rolle läuft).
 - name: Create Compose File on {{ dcp_node }}
   ansible.builtin.copy:
     content: |
       # Ansible Managed
-      {{ compose_project.compose_block | to_nice_yaml }}
+      {{ hostvars[dcp_node]['docker_compose_project_' ~ compose_project_name].compose_block | to_nice_yaml }}
     dest: "{{ docker_dir }}/compose.yml"
     mode: "0644"
     owner: root
     group: root
   delegate_to: "{{ dcp_node }}"
   register: compose_file
-  vars:
-    # Variablen im compose_block beziehen sich auf den Zielserver
-    adfc_internal_ip: "{{ hostvars[dcp_node].adfc_internal_ip }}"
 
 - name: Create Secret file
   ansible.builtin.copy:

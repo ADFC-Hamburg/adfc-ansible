@@ -7,10 +7,11 @@
     size: "{{ vol.size_gb }}"
     server: "{{ dcp_node }}"
     format: ext4
-    labels:
-      "{{ docker_compose_backup_label }}": "true"
-      compose-project: "{{ compose_project_name }}"
-      source-volume: "{{ vol.name }}"
+    # Dict-Keys werden von Ansible nicht templatisiert, daher als Ausdruck
+    labels: >-
+      {{ {docker_compose_backup_label: 'true',
+          'compose-project': compose_project_name,
+          'source-volume': vol.name} }}
     state: present
   delegate_to: localhost
   register: dcp_backup_vol
