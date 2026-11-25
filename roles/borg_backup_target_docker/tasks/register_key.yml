@@ -1,0 +1,59 @@
+---
+# Ein Key registrieren, per Loop aus main.yml (adfc_borg_key = ein Item aus
+# adfc_borg_target_backup_keys/_admin_keys bzw. adfc_borg_target_admin_keys_auto
+# (siehe discover_admin_keys.yml), adfc_borg_key_role = "backup" oder
+# "admin"). "name" ist die Identitaet (uid-Verzeichnis, Argument fuer
+# add-<role>-key.sh), "key_name" (Default: "name") der Datei-Basisname
+# unter keys/<role>/ - fuer Personen mit mehreren Keys (z.B. aus
+# discover_admin_keys.yml) sind das bewusst zwei verschiedene Werte, sonst
+# wuerde jeder weitere Key derselben Person den vorherigen ueberschreiben.
+# Ruft add-<role>-key.sh statt users/<uid>-<name>/ selbst zu beschreiben -
+# das Skript prueft UID-Kollisionen/Rollen-Konflikte und ruft reload-
+# keys.sh gleich mit. Nicht idempotent (bricht beim zweiten Aufruf mit
+# "existiert schon" ab), deshalb hier per stat vorher geprueft statt es
+# einfach nochmal aufzurufen.
+
+- name: "Pruefe ob {{ adfc_borg_key_role }}-Key {{ adfc_borg_key.name }}/{{ adfc_borg_key.key_name | default(adfc_borg_key.name) }} schon registriert ist"
+  ansible.builtin.stat:
+    path: "{{ adfc_borg_target_dir }}/users/{{ adfc_borg_key.uid }}-{{ adfc_borg_key.name }}/keys/{{ adfc_borg_key_role }}/{{ adfc_borg_key.key_name | default(adfc_borg_key.name) }}.pub"
+  register: adfc_borg_key_stat
+
+- name: "Temporaeres Verzeichnis fuer add-{{ adfc_borg_key_role }}-key.sh"
+  ansible.builtin.file:
+    path: "/tmp/adfc-borg-target-{{ adfc_borg_key_role }}-{{ adfc_borg_key.name }}-{{ adfc_borg_key.key_name | default(adfc_borg_key.name) }}"
+    state: directory
+    mode: "0700"
+    owner: root
+    group: root
+  when: not adfc_borg_key_stat.stat.exists
+
+- name: "Temporaere Pubkey-Datei fuer add-{{ adfc_borg_key_role }}-key.sh"
+  # Dateiname MUSS exakt "key_name.pub" sein - add-<role>-key.sh benutzt
+  # den Basename der uebergebenen Datei 1:1 als Zielnamen unter
+  # keys/<role>/, und der stat-Check oben prueft genau diesen Pfad.
+  ansible.builtin.copy:
+    content: "{{ adfc_borg_key.pubkey }}\n"
+    dest: "/tmp/adfc-borg-target-{{ adfc_borg_key_role }}-{{ adfc_borg_key.name }}-{{ adfc_borg_key.key_name | default(adfc_borg_key.name) }}/{{ adfc_borg_key.key_name | default(adfc_borg_key.name) }}.pub"
+    mode: "0600"
+    owner: root
+    group: root
+  when: not adfc_borg_key_stat.stat.exists
+
+- name: "Registriere {{ adfc_borg_key_role }}-Key {{ adfc_borg_key.name }}/{{ adfc_borg_key.key_name | default(adfc_borg_key.name) }} (uid {{ adfc_borg_key.uid }})"
+  ansible.builtin.command:
+    argv: >-
+      {{
+        ['./add-' ~ adfc_borg_key_role ~ '-key.sh', adfc_borg_key.name,
+         '/tmp/adfc-borg-target-' ~ adfc_borg_key_role ~ '-' ~ adfc_borg_key.name ~ '-' ~ (adfc_borg_key.key_name | default(adfc_borg_key.name)) ~ '/' ~ (adfc_borg_key.key_name | default(adfc_borg_key.name)) ~ '.pub',
+         '--uid', adfc_borg_key.uid | string]
+        + (['--version', adfc_borg_key.version] if adfc_borg_key.version is defined else [])
+        + (['--from', adfc_borg_key.from] if adfc_borg_key.from is defined else [])
+      }}
+    chdir: "{{ adfc_borg_target_dir }}"
+  when: not adfc_borg_key_stat.stat.exists
+
+- name: "Temporaeres Verzeichnis aufraeumen"
+  ansible.builtin.file:
+    path: "/tmp/adfc-borg-target-{{ adfc_borg_key_role }}-{{ adfc_borg_key.name }}-{{ adfc_borg_key.key_name | default(adfc_borg_key.name) }}"
+    state: absent
+  when: not adfc_borg_key_stat.stat.exists

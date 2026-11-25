@@ -1,0 +1,32 @@
+#!/bin/bash
+# {{ ansible_managed }}
+#
+# Wrapper: waehlt je nach Inhalt von "${STATUS_DIR}/client-version" (Werte
+# "pyenv" oder "docker") das passende Backend aus und reicht alle Argumente
+# unveraendert durch. So kann dieser Rechner einzeln zwischen der alten
+# lokal installierten Borg-Version (adfc-borg-pyenv) und dem neuen
+# docker-borg-backup-Setup (adfc-borg-docker) umgestellt werden, ohne dass
+# sich fuer Aufrufer (Cron, Menschen) am Kommando "adfc-borg" etwas
+# aendert. Der Wert steht in Ansible in "adfc_borg_client_version"
+# (host_vars je Rechner).
+
+STATUS_DIR="/usr/local/share/adfc-borg"
+VERSION_FILE="${STATUS_DIR}/client-version"
+
+VERSION="pyenv"
+if [ -f "${VERSION_FILE}" ]; then
+    VERSION="$(tr -d '[:space:]' < "${VERSION_FILE}")"
+fi
+
+case "${VERSION}" in
+    pyenv)
+        exec /usr/local/sbin/adfc-borg-pyenv "$@"
+        ;;
+    docker)
+        exec /usr/local/sbin/adfc-borg-docker "$@"
+        ;;
+    *)
+        echo "ERROR: Unbekannter Wert '${VERSION}' in ${VERSION_FILE} (erlaubt: pyenv, docker)" >&2
+        exit 1
+        ;;
+esac

@@ -1,0 +1,92 @@
+---
+# Fuer EINEN Rechner aus der backup_clients-Gruppe ("backup_client", per
+# loop aus main.yml - trotz des Namens die Ziel-/Speicherseite, siehe
+# roles/borg_backup_target_docker): targets/<backup_client>.env anlegen,
+# Backup-Key erzeugen, Public Key auf der Zielbox registrieren, Repo
+# initialisieren. Alles idempotent, kein manuelles "adfc-borg-docker init"
+# noetig - macht per Ansible, was frueher (adfc-borg-pyenv) per Hand mit
+# "adfc-borg init <rechner>" gemacht werden musste.
+
+- name: Sicherstellen, dass adfc_borg_docker_uid gesetzt ist
+  ansible.builtin.assert:
+    that: adfc_borg_docker_uid is defined
+    fail_msg: >-
+      adfc_borg_docker_uid ist fuer {{ inventory_hostname }} nicht gesetzt
+      (siehe roles/borg_server/defaults/main.yml). Seit
+      docker-borg-backup-server v1.1.0 braucht jede Backup-Identitaet eine
+      eindeutige, in Ansible vergebene UID (1000-2000) - in host_vars/
+      {{ inventory_hostname }}.yml ergaenzen, bevor dieser Host migriert
+      wird.
+
+- name: Render targets/{{ backup_client }}.env
+  ansible.builtin.template:
+    src: docker-target.env.j2
+    dest: "{{ adfc_borg_docker_dir }}/targets/{{ backup_client }}.env"
+    mode: "0644"
+    owner: root
+    group: root
+
+- name: Generate backup key/passphrase/known_hosts for {{ backup_client }}
+  ansible.builtin.command: "bash setup-secrets.sh {{ backup_client }}"
+  args:
+    chdir: "{{ adfc_borg_docker_dir }}"
+    creates: "{{ adfc_borg_docker_dir }}/secrets/{{ backup_client }}/backup_ed25519"
+
+- name: Read generated backup public key
+  ansible.builtin.slurp:
+    src: "{{ adfc_borg_docker_dir }}/secrets/{{ backup_client }}/backup_ed25519.pub"
+  register: adfc_borg_docker_backup_pubkey
+
+- name: "Pruefe ob Backup-Key auf {{ backup_client }} schon registriert ist"
+  ansible.builtin.stat:
+    path: "{{ hostvars[backup_client].adfc_borg_target_dir | default('/usr/local/share/adfc-borg-backup-server') }}/users/{{ adfc_borg_docker_uid }}-{{ inventory_hostname_short }}/keys/backup/{{ inventory_hostname_short }}.pub"
+  delegate_to: "{{ backup_client }}"
+  register: adfc_borg_docker_key_stat
+
+- name: "Temporaeres Verzeichnis fuer add-backup-key.sh auf {{ backup_client }}"
+  ansible.builtin.file:
+    path: "/tmp/adfc-borg-docker-backup-{{ inventory_hostname_short }}"
+    state: directory
+    mode: "0700"
+    owner: root
+    group: root
+  delegate_to: "{{ backup_client }}"
+  when: not adfc_borg_docker_key_stat.stat.exists
+
+- name: "Temporaere Pubkey-Datei fuer add-backup-key.sh auf {{ backup_client }}"
+  # Dateiname MUSS "{{ inventory_hostname_short }}.pub" sein - add-backup-
+  # key.sh benutzt den Basename der uebergebenen Datei 1:1 als Zielnamen
+  # unter keys/backup/, und der stat-Check oben prueft genau diesen Pfad.
+  ansible.builtin.copy:
+    content: "{{ adfc_borg_docker_backup_pubkey.content | b64decode }}"
+    dest: "/tmp/adfc-borg-docker-backup-{{ inventory_hostname_short }}/{{ inventory_hostname_short }}.pub"
+    mode: "0600"
+    owner: root
+    group: root
+  delegate_to: "{{ backup_client }}"
+  when: not adfc_borg_docker_key_stat.stat.exists
+
+- name: "Registriere Backup-Key auf {{ backup_client }} (uid {{ adfc_borg_docker_uid }})"
+  ansible.builtin.command:
+    argv:
+      - ./add-backup-key.sh
+      - "{{ inventory_hostname_short }}"
+      - "/tmp/adfc-borg-docker-backup-{{ inventory_hostname_short }}/{{ inventory_hostname_short }}.pub"
+      - --uid
+      - "{{ adfc_borg_docker_uid }}"
+    chdir: "{{ hostvars[backup_client].adfc_borg_target_dir | default('/usr/local/share/adfc-borg-backup-server') }}"
+  delegate_to: "{{ backup_client }}"
+  when: not adfc_borg_docker_key_stat.stat.exists
+
+- name: "Temporaeres Verzeichnis auf {{ backup_client }} aufraeumen"
+  ansible.builtin.file:
+    path: "/tmp/adfc-borg-docker-backup-{{ inventory_hostname_short }}"
+    state: absent
+  delegate_to: "{{ backup_client }}"
+  when: not adfc_borg_docker_key_stat.stat.exists
+
+- name: Initialize docker-borg-backup repo on {{ backup_client }}
+  ansible.builtin.command: "/usr/local/sbin/adfc-borg-docker init {{ backup_client }}"
+  register: adfc_borg_docker_init
+  changed_when: adfc_borg_docker_init.rc == 0
+  failed_when: adfc_borg_docker_init.rc != 0 and 'existiert schon' not in adfc_borg_docker_init.stdout

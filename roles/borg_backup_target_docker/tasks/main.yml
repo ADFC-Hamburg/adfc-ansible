@@ -1,0 +1,92 @@
+---
+- name: Ensure git is installed
+  ansible.builtin.apt:
+    name: git
+    state: present
+
+- name: Ensure Docker is installed
+  ansible.builtin.include_role:
+    name: docker
+
+- name: Create data directory on the backup disk
+  ansible.builtin.file:
+    path: "{{ adfc_borg_target_data_dir }}"
+    state: directory
+    mode: "0755"
+    owner: root
+    group: root
+
+- name: Checkout docker-borg-backup-server ({{ adfc_borg_target_version }})
+  ansible.builtin.git:
+    repo: "{{ adfc_borg_target_repo }}"
+    dest: "{{ adfc_borg_target_dir }}"
+    version: "{{ adfc_borg_target_version }}"
+    force: false
+
+- name: Install .env (SSH_PORT)
+  ansible.builtin.template:
+    src: env.j2
+    dest: "{{ adfc_borg_target_dir }}/.env"
+    mode: "0644"
+    owner: root
+    group: root
+
+- name: Pin image tag and bind-mount data dir via compose override
+  ansible.builtin.template:
+    src: compose.override.yml.j2
+    dest: "{{ adfc_borg_target_dir }}/compose.override.yml"
+    mode: "0644"
+    owner: root
+    group: root
+
+- name: Generate SSH host key (setup-secrets.sh)
+  ansible.builtin.command: bash setup-secrets.sh
+  args:
+    chdir: "{{ adfc_borg_target_dir }}"
+    creates: "{{ adfc_borg_target_dir }}/secrets/ssh_host_ed25519_key"
+
+- name: Pull borg-server image ({{ adfc_borg_target_image_tag }})
+  ansible.builtin.command: docker compose pull
+  args:
+    chdir: "{{ adfc_borg_target_dir }}"
+
+- name: Start borg-server container
+  ansible.builtin.command: docker compose up -d
+  args:
+    chdir: "{{ adfc_borg_target_dir }}"
+
+- name: Register backup keys
+  ansible.builtin.include_tasks: register_key.yml
+  loop: "{{ adfc_borg_target_backup_keys }}"
+  loop_control:
+    loop_var: adfc_borg_key
+    label: "{{ adfc_borg_key.name }}"
+  vars:
+    adfc_borg_key_role: backup
+
+- name: Register admin keys
+  # Fuer eigenstaendige Admin-Identitaeten OHNE zugehoerige Backup-Rolle
+  # (manuell in adfc_borg_target_admin_keys gepflegt) - Admin-Keys je
+  # Backup-Identitaet (adfc_borg_target_admin_users) laufen separat unten
+  # ueber sync_admin_keys.yml, nicht hierueber.
+  ansible.builtin.include_tasks: register_key.yml
+  loop: "{{ adfc_borg_target_admin_keys }}"
+  loop_control:
+    loop_var: adfc_borg_key
+    label: "{{ adfc_borg_key.name }}"
+  vars:
+    adfc_borg_key_role: admin
+
+- name: Bestehende users/-Identitaeten auflisten
+  ansible.builtin.find:
+    paths: "{{ adfc_borg_target_dir }}/users"
+    file_type: directory
+    recurse: false
+  register: adfc_borg_target_identity_dirs
+
+- name: Admin-Keys je Backup-Identitaet synchronisieren
+  ansible.builtin.include_tasks: sync_admin_keys.yml
+  loop: "{{ adfc_borg_target_identity_dirs.files }}"
+  loop_control:
+    loop_var: adfc_borg_identity_dir
+    label: "{{ adfc_borg_identity_dir.path | basename }}"

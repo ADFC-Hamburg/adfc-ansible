@@ -1,0 +1,13 @@
+# {{ ansible_managed }}
+#
+# Pinnt das borg-admin-Image auf die von Ansible verwaltete Version, statt
+# dem ":latest" aus dem eingecheckten compose.yml zu folgen - Release-
+# Kandidaten wie {{ adfc_borg_docker_version }} landen bei
+# tabacha/docker-borg-backup bewusst NICHT unter ":latest"/":1.1" (siehe
+# Release-Notes des Tags). Docker Compose merged compose.override.yml
+# automatisch mit compose.yml, wenn beide im selben Verzeichnis liegen -
+# das eingecheckte compose.yml bleibt dadurch unangetastet.
+services:
+  borg-admin:
+    image: ghcr.io/tabacha/docker-borg-backup:{{ adfc_borg_docker_image_tag }}
+    pull_policy: missing

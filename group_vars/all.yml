@@ -12,6 +12,15 @@ adfc_vpnc_gateway: babelfish.spdns.de
 adfc_secret_folder: /etc/ansible/secrets/
 adfc_vpnc_source: ucs-master.gst.hamburg.adfc.de
 adfc_borg_server: "{{ ansible_user + '@' + adfc_vpnc_source + ':/path/to/repo' }}"
+
+# docker-borg-backup-Zielserver (siehe roles/borg_server), fuer die
+# save_with_borg-Hosts standardmaessig ihren Backup-Key registrieren -
+# einzelne Hosts koennen das per host_vars ueberschreiben (siehe
+# roles/borg_server/defaults/main.yml), falls sie bewusst nur auf eine
+# Teilmenge sichern sollen.
+adfc_borg_docker_targets:
+  - adfc-hh-bak-1
+  - adfc-hh-bak-2
 ssh_users_admins:
   - falkh
   - georgs
